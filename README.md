@@ -1,5 +1,5 @@
 # QT-example
-QT-example
+QT-example应用程序
 
 # YOLOV5-Window
 
@@ -9,6 +9,7 @@ QT-example
   下载地址：https://pan.baidu.com/s/1hP0AUQtyDqOijYXYYUJpWQ 
 提取码：22jg
 ## 3.程序运行截图
+   https://github.com/FakeItUtillMakeIt/QT-example/app.png
 
 # 综控机测试软件 
 
@@ -17,3 +18,4 @@ QT-example
 ## 1.需要NI设备支持
 ## 2.需要串口支持
 ## 3.程序运行截图
+   https://github.com/FakeItUtillMakeIt/QT-example/aoo.png
