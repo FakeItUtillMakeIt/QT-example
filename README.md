@@ -9,7 +9,8 @@ QT-example应用程序
   下载地址：https://pan.baidu.com/s/1hP0AUQtyDqOijYXYYUJpWQ 
 提取码：22jg
 ## 3.程序运行截图
-   https://github.com/FakeItUtillMakeIt/QT-example/app.png
+   
+   <img align="center" src="./app.png">
 
 # 综控机测试软件 
 
@@ -18,4 +19,5 @@ QT-example应用程序
 ## 1.需要NI设备支持
 ## 2.需要串口支持
 ## 3.程序运行截图
-   https://github.com/FakeItUtillMakeIt/QT-example/aoo.png
+   
+  <img align="center" src="./aoo.png">
