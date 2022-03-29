@@ -8,6 +8,7 @@ QT-example
 ## 2.需要QT动态库，版本5.14.2
   下载地址：https://pan.baidu.com/s/1hP0AUQtyDqOijYXYYUJpWQ 
 提取码：22jg
+## 3.程序运行截图
 
 # 综控机测试软件 
 
@@ -15,3 +16,4 @@ QT-example
 
 ## 1.需要NI设备支持
 ## 2.需要串口支持
+## 3.程序运行截图
