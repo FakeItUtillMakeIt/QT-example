@@ -9,7 +9,9 @@ QT-example
   下载地址：https://pan.baidu.com/s/1hP0AUQtyDqOijYXYYUJpWQ 
 提取码：22jg
 
-# 综控机测试软件[./GeneralCTrlMacTest]
+# 综控机测试软件 
+
+  地址：https://github.com/FakeItUtillMakeIt/QT-example/tree/main/GeneralCTrlMacTest
 
 ## 1.需要NI设备支持
 ## 2.需要串口支持
