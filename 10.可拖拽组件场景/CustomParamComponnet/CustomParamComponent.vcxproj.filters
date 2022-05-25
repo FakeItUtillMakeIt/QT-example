@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>qrc;rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Translation Files">
+      <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
+      <Extensions>ts</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CustomComponent Header">
+      <UniqueIdentifier>{1f43536a-9024-469e-93a1-8d65d8dbee35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CustomComponent Files">
+      <UniqueIdentifier>{96c44917-1305-49db-aa08-a8901193b0c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\img">
+      <UniqueIdentifier>{96e93196-8452-433a-be89-4e5a7c6dc1d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DropArea">
+      <UniqueIdentifier>{3f3a7779-1a93-4c58-94fc-de46fcb730d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DropArea">
+      <UniqueIdentifier>{53731612-8f22-42a7-96a5-ed0960d651dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DragAndZoomFunction">
+      <UniqueIdentifier>{6eebd594-1281-4162-89a6-967f4404c725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DragAndZoomFunction">
+      <UniqueIdentifier>{68e4cf30-84fd-44c0-8310-5eca2d8c1212}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="CustomParamComponent.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <QtUic Include="CustomParamComponent.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtMoc Include="CustomParamComponent.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <ClCompile Include="CustomParamComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qcustomplot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomLabel.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomPlot.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomPushButton.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomListWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomCurvePlot.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WidgetHandle.cpp">
+      <Filter>Source Files\DragAndZoomFunction</Filter>
+    </ClCompile>
+    <ClCompile Include="DropWidget.cpp">
+      <Filter>Source Files\DropArea</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomAttributeWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CustomPlot.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomPushButton.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomListWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomCurvePlot.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </ClInclude>
+    <ClInclude Include="DropWidget.h">
+      <Filter>Header Files\DropArea</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomAttributeWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="qcustomplot.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="WidgetHandle.h">
+      <Filter>Header Files\DragAndZoomFunction</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomLabel.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="img\boat.png">
+      <Filter>Resource Files\img</Filter>
+    </None>
+    <None Include="img\car.png">
+      <Filter>Resource Files\img</Filter>
+    </None>
+    <None Include="img\house.png">
+      <Filter>Resource Files\img</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CustomParamComponent.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

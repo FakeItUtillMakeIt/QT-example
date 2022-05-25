@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="ParamEquivalent">
+    <file>icon/InstrumentPanel.svg</file>
+  </qresource>
+</RCC>
