@@ -24,7 +24,7 @@ QT-example应用程序
 
   <img align="center" src="./aoo.png">
   
-  ##--------------------------------------
+## --------------------------------------
    **https://zhuanlan.zhihu.com/p/368984870** 
 
 1. QDrag 支持基于mime的拖放数据传输
