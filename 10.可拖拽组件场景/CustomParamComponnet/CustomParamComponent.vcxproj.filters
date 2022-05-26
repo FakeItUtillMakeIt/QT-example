@@ -93,17 +93,11 @@
     <ClInclude Include="CustomPlot.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
-    <ClInclude Include="CustomPushButton.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
-    </ClInclude>
     <ClInclude Include="CustomListWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomCurvePlot.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
     <ClInclude Include="DropWidget.h">
       <Filter>Header Files\DropArea</Filter>
@@ -120,6 +114,12 @@
       <Filter>Header Files\DragAndZoomFunction</Filter>
     </QtMoc>
     <QtMoc Include="CustomLabel.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomPushButton.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomCurvePlot.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
   </ItemGroup>

@@ -33,7 +33,6 @@ void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 		return;
 	}
 
-
 	if ((event->pos()-dragStartPosition).manhattanLength()<QApplication::startDragDistance())
 	{
 		return;
@@ -46,7 +45,7 @@ void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 	//dataByte.setNum(selectIndex);
 	QDataStream dataStream(&dataByte, QIODevice::WriteOnly);
 
-	dataStream << selectIndex << QPoint(event->pos());
+	dataStream << selectIndex << QPoint(event->pos()-dragStartPosition);
 
 	mimeData->setData("selectIndex", dataByte);
 	

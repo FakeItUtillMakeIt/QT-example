@@ -15,13 +15,13 @@ namespace CUSTOM_CURVE_PLOT {
 	class CustomCurvePlot :
 		public QCustomPlot
 	{
-
+		Q_OBJECT
 	public:
 		CustomCurvePlot(QWidget* parent=nullptr);
 		~CustomCurvePlot();
 
-		QWidget* attributeWidget;
-		void loadAttributeWidget(QWidget* widget);
+		QWidget attributeWidget;
+		QWidget* loadAttributeWidget();
 
 	private:
 
@@ -36,7 +36,12 @@ namespace CUSTOM_CURVE_PLOT {
 	protected:
 		void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
 		void mouseMoveEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
+		void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
+
 		void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+
+	signals:
+		void displayAttribute(QWidget&);
 	};
 }
 

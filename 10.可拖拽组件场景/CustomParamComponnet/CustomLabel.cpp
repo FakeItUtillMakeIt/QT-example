@@ -1,4 +1,10 @@
 #include "CustomLabel.h"
+#include "CustomParamComponent.h"
+#include "DropWidget.h"
+
+class DROP_WIDGET::DropWidget;
+
+class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_LABEL;
 
@@ -14,10 +20,7 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 
 	mLabelText = displayText;
 	this->setMaximumSize(QSize(100, 20));
-	attributeWidget = nullptr;
-
-	this->setFocusPolicy(Qt::ClickFocus);
-	this->grabKeyboard();
+	
 	selectSelf = false;
 
 }
@@ -54,16 +57,58 @@ void CustomLabel::setLabelText(QString labelT) {
 	update();
 }
 
-void CustomLabel::loadAttributeWidget(QWidget* widget) {
+QWidget* CustomLabel::loadAttributeWidget() {
 	{
-		if (!widget)
-		{
-			widget = new QWidget();
-		}
+		
+		//QWidget* widget = new QWidget();
+		//attributeWidget1 = new QWidget();
 
-		QGridLayout* attributeLayout = new QGridLayout(attributeWidget);
+		//attributeWidget1->setMaximumWidth(200);
+
+		//QGridLayout* attributeLayout = new QGridLayout(attributeWidget1);
+		//QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
+		//QLineEdit* lineEdit1 = new QLineEdit();
+		//lineEdit1->setReadOnly(false);
+		//lineEdit1->setEnabled(true);
+		//QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
+		//QComboBox* comboBox1 = new QComboBox();
+		//QStringList colorList = QColor::colorNames();
+		//for each (QString color in colorList)
+		//{
+		//	QPixmap pix(QSize(70, 20));
+		//	pix.fill(QColor(color));
+		//	comboBox1->addItem(QIcon(pix), "");
+		//	comboBox1->setIconSize(QSize(70, 20));
+		//	comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+		//}
+
+		//QPushButton* button1 = new QPushButton();
+		//button1->setText("button1");
+
+		//attributeLayout->addWidget(label1, 0, 0);
+		//attributeLayout->addWidget(lineEdit1, 0, 1);
+		//attributeLayout->addWidget(label2, 1, 0);
+		//attributeLayout->addWidget(comboBox1, 1, 1);
+		//attributeLayout->addWidget(button1, 2, 1);
+
+		//connect(button1, &QPushButton::clicked, this, [&] (){
+		//	mLabelText = lineEdit1->text();
+		//	this->update();
+		//	});
+
+		//attributeWidget1->setLayout(attributeLayout);
+
+		////widget->show();
+		//attributeWidget1->setObjectName("attr");
+		//return attributeWidget1;
+
+		attributeWidget1.setMaximumWidth(200);
+
+		QGridLayout* attributeLayout = new QGridLayout();
 		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
+		lineEdit1->setReadOnly(false);
+		lineEdit1->setEnabled(true);
 		QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
@@ -71,18 +116,34 @@ void CustomLabel::loadAttributeWidget(QWidget* widget) {
 		{
 			QPixmap pix(QSize(70, 20));
 			pix.fill(QColor(color));
-			comboBox1->addItem(QIcon(pix), "");
+			comboBox1->addItem(QIcon(pix), "",QColor(color));
 			comboBox1->setIconSize(QSize(70, 20));
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
+
+		QPushButton* button1 = new QPushButton();
+		button1->setText("button1");
+
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
+		attributeLayout->addWidget(button1, 2, 1);
 
-		widget->setLayout(attributeLayout);
+		connect(button1, &QPushButton::clicked, this, [=]() {
+			mLabelText = lineEdit1->text();
+			mBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor> ();
+			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
+			qDebug() << mBackGroundColor;
+			this->update();
+			});
 
-		widget->show();
+		attributeWidget1.setLayout(attributeLayout);
+
+		//widget->show();
+		//attributeWidget1.setObjectName("attr");
+		return &attributeWidget1;
+
 	}
 }
 
@@ -93,7 +154,8 @@ void CustomLabel::loadAttributeWidget(QWidget* widget) {
 **/
 void CustomLabel::paintEvent(QPaintEvent*) {
 
-	
+	//信号槽
+	connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
 
 	QPainter painter(this);
 	QPen pen;
@@ -131,14 +193,18 @@ void CustomLabel::paintEvent(QPaintEvent*) {
     @param event - 
 **/
 void CustomLabel::mousePressEvent(QMouseEvent* event) {
-	//呼出属性栏
-
+	
+	this->raise();
+	//添加可拉伸控件
 	selection->addWidget(this);
+	
 
-	if (!attributeWidget)
+	if (!&attributeWidget1)
 	{
-		//loadAttributeWidget(attributeWidget);
+		//attributeWidget1=loadAttributeWidget();
+		loadAttributeWidget();
 	}
+	loadAttributeWidget();
 	if (event->button() == Qt::LeftButton)
 	{
 		selectSelf = true;
@@ -151,6 +217,10 @@ void CustomLabel::mousePressEvent(QMouseEvent* event) {
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
 
+	//呼出属性栏信号
+	emit displayAttribute(attributeWidget1);
+
+	this->grabKeyboard();
 }
 
 void CustomLabel::mouseMoveEvent(QMouseEvent* event) {
@@ -163,6 +233,18 @@ void CustomLabel::mouseMoveEvent(QMouseEvent* event) {
 
 	selection->clear();
 	QWidget::mouseMoveEvent(event);
+
+	//mousePressed = false;
+	this->releaseKeyboard();
+
+}
+
+/**
+    @brief 
+    @param event - 
+**/
+void CustomLabel::leaveEvent(QEvent* event) {
+	this->releaseKeyboard();
 }
 
 /**
@@ -186,6 +268,15 @@ void CustomLabel::keyPressEvent(QKeyEvent* event) {
 		this->~CustomLabel();
 		
 	}
-
+	
+	//QWidget::keyPressEvent(event);
+	this->releaseKeyboard();
+	selectSelf = false;
 }
 
+void CustomLabel::updateAttributeDisplay() {
+	qDebug() << "--------";
+
+
+
+}

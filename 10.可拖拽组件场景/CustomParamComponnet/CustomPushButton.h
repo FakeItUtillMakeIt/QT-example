@@ -26,6 +26,8 @@ namespace CUSTOM_PUSHBUTTON {
 		public QPushButton
 	{
 
+		Q_OBJECT
+
 	public:
 		CustomPushButton(QString displayText="", QWidget* parent = nullptr);
 		~CustomPushButton();
@@ -63,7 +65,7 @@ namespace CUSTOM_PUSHBUTTON {
 
 		QString mButtonText;
 
-		QWidget* attributeWidget;
+		
 
 		bool selectSelf;
 		QPoint m_pos;
@@ -77,7 +79,8 @@ namespace CUSTOM_PUSHBUTTON {
 		void setBackGroundColor(QColor backGroundC);
 		void setLabelText(QString buttonT);
 
-		void loadAttributeWidget(QWidget* widget);
+		QWidget attributeWidget;
+		QWidget* loadAttributeWidget();
 
 	private:
 		void paintBackGround(QPainter* painter);
@@ -89,7 +92,12 @@ namespace CUSTOM_PUSHBUTTON {
 		void leaveEvent(QEvent*) Q_DECL_OVERRIDE;
 		void mousePressEvent(QMouseEvent*) Q_DECL_OVERRIDE;
 		void mouseMoveEvent(QMouseEvent* ev) Q_DECL_OVERRIDE;
+
+
 		void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+
+	signals:
+		void displayAttribute(QWidget&);
 	};
 }
 

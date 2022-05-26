@@ -6,6 +6,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets>
+#include <QObject>
 #include "ui_CustomParamComponent.h"
 #include "CustomPlot.h"
 #include "CustomCurvePlot.h"
@@ -14,38 +15,49 @@
 #include "DropWidget.h"
 #include "CustomListWidget.h"
 
-/**
+
+namespace CUSTOM_PARAM_COMPONENT {
+
+    /**
 
     @class   CustomParamComponent
     @brief   自定义组件类
     @details ~
 
 **/
-class CustomParamComponent : public QMainWindow
-{
-    Q_OBJECT
 
-public:
-    CustomParamComponent(QWidget *parent = Q_NULLPTR);
-    ~CustomParamComponent();
+    class CustomParamComponent : public QMainWindow
+    {
+        Q_OBJECT
 
-private:
-    Ui::CustomParamComponentClass ui;
+    public:
+        CustomParamComponent(QWidget* parent = Q_NULLPTR);
+        ~CustomParamComponent();
+        QWidget* attributeWidget=new QWidget(this);
+        QGridLayout* windowLayout=new QGridLayout(this);
 
-    int selectElementIndex;
+    private:
+        Ui::CustomParamComponentClass ui;
 
-public:
-    CUSTOM_PLOT::CustomPlot* customPlot;
-    CUSTOM_PUSHBUTTON::CustomPushButton* customButton;
-    CUSTOM_LABEL::CustomLabel* customLabel;
-    CUSTOM_CURVE_PLOT::CustomCurvePlot* customCurvePlot;
-    DROP_WIDGET::DropWidget* dropWidget;
-    CUSTOM_LIST_WIDGET::CustomListWidget* customListWidget;
-
-
-private slots:
+        int selectElementIndex;
    
-};
+    public:
+        CUSTOM_PLOT::CustomPlot* customPlot;
+        CUSTOM_PUSHBUTTON::CustomPushButton* customButton;
+        CUSTOM_LABEL::CustomLabel* customLabel;
+        CUSTOM_CURVE_PLOT::CustomCurvePlot* customCurvePlot;
+        DROP_WIDGET::DropWidget* dropWidget;
+        CUSTOM_LIST_WIDGET::CustomListWidget* customListWidget;
+
+
+    protected:
+        void paintEvent(QPaintEvent* event);
+
+    public slots:
+        void displayAttributeWindow(QWidget&);
+    };
+}
+
 
 
 #endif

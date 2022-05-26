@@ -105,11 +105,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomAttributeWidget.h" />
-    <ClInclude Include="CustomCurvePlot.h" />
+    <QtMoc Include="CustomCurvePlot.h" />
     <QtMoc Include="CustomLabel.h" />
     <ClInclude Include="CustomListWidget.h" />
     <ClInclude Include="CustomPlot.h" />
-    <ClInclude Include="CustomPushButton.h" />
+    <QtMoc Include="CustomPushButton.h" />
     <ClInclude Include="DropWidget.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="WidgetHandle.h" />

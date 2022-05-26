@@ -1,4 +1,7 @@
 #include "CustomPushButton.h"
+#include "CustomParamComponent.h"
+
+class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_PUSHBUTTON;
 
@@ -29,7 +32,7 @@ CustomPushButton::CustomPushButton(QString displayText,QWidget* parent):QPushBut
 	 mButtonText=displayText;
 
 	 this->setBaseSize(QSize(100, 20));
-	 attributeWidget = nullptr;
+	 //attributeWidget = nullptr;
 	 
 	 this->grabKeyboard();
 	 selectSelf = false;
@@ -68,16 +71,15 @@ void CustomPushButton::setLabelText(QString buttonT) {
 }
 
 
-void CustomPushButton::loadAttributeWidget(QWidget* widget) {
+QWidget* CustomPushButton::loadAttributeWidget() {
 	{
-		if (!widget)
-		{
-			widget = new QWidget();
-		}
+		attributeWidget.setMaximumWidth(200);
 
-		QGridLayout* attributeLayout = new QGridLayout(attributeWidget);
+		QGridLayout* attributeLayout = new QGridLayout();
 		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
+		lineEdit1->setReadOnly(false);
+		lineEdit1->setEnabled(true);
 		QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
@@ -85,18 +87,36 @@ void CustomPushButton::loadAttributeWidget(QWidget* widget) {
 		{
 			QPixmap pix(QSize(70, 20));
 			pix.fill(QColor(color));
-			comboBox1->addItem(QIcon(pix), "");
+			comboBox1->addItem(QIcon(pix), "", QColor(color));
 			comboBox1->setIconSize(QSize(70, 20));
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
+
+		QPushButton* button1 = new QPushButton();
+		QPushButton* button2 = new QPushButton();
+		button1->setText("button1");
+
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
+		attributeLayout->addWidget(button1, 2, 1);
 
-		widget->setLayout(attributeLayout);
+		attributeLayout->addWidget(button2, 3, 1);
 
-		widget->show();
+		connect(button1, &QPushButton::clicked, this, [=]() {
+			
+			mBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor>();
+			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
+			qDebug() << mBackGroundColor;
+			this->update();
+			});
+
+		attributeWidget.setLayout(attributeLayout);
+
+		//widget->show();
+		//attributeWidget.setObjectName("attr");
+		return &attributeWidget;
 	}
 }
 
@@ -106,6 +126,11 @@ void CustomPushButton::loadAttributeWidget(QWidget* widget) {
     @param  - 
 **/
 void CustomPushButton::paintEvent(QPaintEvent*) {
+
+	//信号槽
+	connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+
+
 	QPainter painter(this);
 	painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 	
@@ -159,6 +184,7 @@ void CustomPushButton::paintEvent(QPaintEvent*) {
 **/
 void CustomPushButton::leaveEvent(QEvent*) {
 	buttonState = BUTTON_STATE::normal;
+	this->releaseKeyboard();
 	update();
 }
 
@@ -167,14 +193,16 @@ void CustomPushButton::leaveEvent(QEvent*) {
     @param e - 
 **/
 void CustomPushButton::mousePressEvent(QMouseEvent* event) {
-
+	this->raise();
 	selection->addWidget(this);
-	//呼出属性栏
+	
 
-	if (!attributeWidget)
+	/*if (!attributeWidget)
 	{
-		//loadAttributeWidget(attributeWidget);
-	}
+		attributeWidget=loadAttributeWidget();
+	}*/
+	loadAttributeWidget();
+
 	if (event->button() == Qt::LeftButton)
 	{
 		buttonState = BUTTON_STATE::pressed;
@@ -188,6 +216,10 @@ void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	}
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
+
+	emit displayAttribute(attributeWidget);
+
+	this->grabKeyboard();
 	
 }
 
@@ -210,8 +242,6 @@ void CustomPushButton::mouseMoveEvent(QMouseEvent* event) {
 	@param event -
 **/
 void CustomPushButton::keyPressEvent(QKeyEvent* event) {
-
-
 
 	//先获取本身对象
 	if (!selectSelf)

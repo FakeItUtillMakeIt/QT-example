@@ -1,10 +1,13 @@
 #include "CustomCurvePlot.h"
+#include "CustomParamComponent.h"
+
+class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_CURVE_PLOT;
 
 CustomCurvePlot::CustomCurvePlot(QWidget* parent) :QCustomPlot(parent) {
 
-	attributeWidget = nullptr;
+	//attributeWidget = nullptr;
 	selectSelf = false;
 }
 
@@ -12,16 +15,16 @@ CustomCurvePlot::~CustomCurvePlot() {
 	
 }
 
-void CustomCurvePlot::loadAttributeWidget(QWidget* widget) {
+QWidget* CustomCurvePlot::loadAttributeWidget() {
 	{
-		if (!widget)
-		{
-			widget = new QWidget();
-		}
+		
+		attributeWidget.setMaximumWidth(200);
 
-		QGridLayout* attributeLayout = new QGridLayout(attributeWidget);
+		QGridLayout* attributeLayout = new QGridLayout(&attributeWidget);
 		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
+		lineEdit1->setReadOnly(false);
+		lineEdit1->setEnabled(true);
 		QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
@@ -29,29 +32,55 @@ void CustomCurvePlot::loadAttributeWidget(QWidget* widget) {
 		{
 			QPixmap pix(QSize(70, 20));
 			pix.fill(QColor(color));
-			comboBox1->addItem(QIcon(pix), "");
+			comboBox1->addItem(QIcon(pix), "", QColor(color));
 			comboBox1->setIconSize(QSize(70, 20));
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
+
+		QPushButton* button1 = new QPushButton();
+		QPushButton* button2 = new QPushButton();
+		QPushButton* button3 = new QPushButton();
+		button1->setText("button1");
+
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
+		attributeLayout->addWidget(button1, 2, 1);
 
-		widget->setLayout(attributeLayout);
+		attributeLayout->addWidget(button2, 3, 1);
 
-		widget->show();
+		attributeLayout->addWidget(button3, 4, 1);
+
+		connect(button1, &QPushButton::clicked, this, [=]() {
+			
+			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
+
+			this->update();
+			});
+
+		attributeWidget.setLayout(attributeLayout);
+
+		//widget->show();
+		//attributeWidget.setObjectName("attr");
+		return &attributeWidget;
 	}
 }
 
 void CustomCurvePlot::mousePressEvent(QMouseEvent* event) {
-	//呼出属性栏
+	this->raise();
+	//信号槽
+	connect(this, &CustomCurvePlot::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+
+	//添加缩放组件
 	selection->addWidget(this);
 
-	if (!attributeWidget)
+	/*if (!attributeWidget)
 	{
-		//loadAttributeWidget(attributeWidget);
-	}
+		attributeWidget=loadAttributeWidget();
+	}*/
+
+	loadAttributeWidget();
 	if (event->button() == Qt::LeftButton)
 	{
 		selectSelf = true;
@@ -64,8 +93,14 @@ void CustomCurvePlot::mousePressEvent(QMouseEvent* event) {
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
 
+	emit displayAttribute(attributeWidget);
+
+	this->grabKeyboard();
 }
 
+void CustomCurvePlot::leaveEvent(QEvent* event) {
+	this->releaseKeyboard();
+}
 
 void CustomCurvePlot::mouseMoveEvent(QMouseEvent* event) {
 	if ((event->buttons() == Qt::LeftButton) && mousePressed)
