@@ -13,6 +13,7 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QPainter>
+#include <QBoxLayout>
 
 #include <QListWidgetItem>
 #include "CustomLabel.h"
@@ -26,6 +27,7 @@ class CUSTOM_LABEL::CustomLabel;
 class CUSTOM_PLOT::CustomPlot;
 class CUSTOM_PUSHBUTTON::CustomPushButton;
 class CUSTOM_CURVE_PLOT::CustomCurvePlot;
+
 
 /**
     @namespace DROP_WIDGET

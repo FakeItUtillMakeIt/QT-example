@@ -9,6 +9,7 @@ CustomCurvePlot::CustomCurvePlot(QWidget* parent) :QCustomPlot(parent) {
 
 	//attributeWidget = nullptr;
 	selectSelf = false;
+	
 }
 
 CustomCurvePlot::~CustomCurvePlot() {
@@ -20,7 +21,7 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		
 		attributeWidget.setMaximumWidth(200);
 
-		QGridLayout* attributeLayout = new QGridLayout(&attributeWidget);
+		QGridLayout* attributeLayout = new QGridLayout();
 		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
 		lineEdit1->setReadOnly(false);
@@ -38,20 +39,25 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		}
 
 		QPushButton* button1 = new QPushButton();
-		QPushButton* button2 = new QPushButton();
-		QPushButton* button3 = new QPushButton();
+
 		button1->setText("button1");
+		QGroupBox* groupBox = new QGroupBox();
+		groupBox->setTitle(QString::fromLocal8Bit("参数绑定"));
+		QLabel* labelGroup1 = new QLabel("param1:");
+		QComboBox* comboGroup1 = new QComboBox();
+		QHBoxLayout* boxLayout = new QHBoxLayout();
+		boxLayout->addWidget(labelGroup1);
+		boxLayout->addWidget(comboGroup1);
+		groupBox->setLayout(boxLayout);
 
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
-		attributeLayout->addWidget(button1, 2, 1);
+		attributeLayout->addWidget(groupBox,2,0,1,2);
+		attributeLayout->addWidget(button1, 3, 1);
 
-		attributeLayout->addWidget(button2, 3, 1);
-
-		attributeLayout->addWidget(button3, 4, 1);
-
+		//处理属性编辑窗口配置
 		connect(button1, &QPushButton::clicked, this, [=]() {
 			
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
@@ -59,10 +65,11 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 			this->update();
 			});
 
-		attributeWidget.setLayout(attributeLayout);
+		if (!attributeWidget.layout())
+		{
+			attributeWidget.setLayout(attributeLayout);
+		}
 
-		//widget->show();
-		//attributeWidget.setObjectName("attr");
 		return &attributeWidget;
 	}
 }
@@ -72,8 +79,8 @@ void CustomCurvePlot::mousePressEvent(QMouseEvent* event) {
 	//信号槽
 	connect(this, &CustomCurvePlot::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
 
-	//添加缩放组件
 	selection->addWidget(this);
+	selection->show(this);
 
 	/*if (!attributeWidget)
 	{
@@ -100,6 +107,9 @@ void CustomCurvePlot::mousePressEvent(QMouseEvent* event) {
 
 void CustomCurvePlot::leaveEvent(QEvent* event) {
 	this->releaseKeyboard();
+
+	selection->hide(this);
+	selection->removeWidget(this);
 }
 
 void CustomCurvePlot::mouseMoveEvent(QMouseEvent* event) {

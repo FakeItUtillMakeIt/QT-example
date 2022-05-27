@@ -10,7 +10,7 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
 {
     ui.setupUi(this);
     
-
+    //this->setAttribute(Qt::WA_DeleteOnClose);
     //界面布局
     customPlot = new CUSTOM_PLOT::CustomPlot();
     customPlot->setBaseSize(size());
@@ -29,17 +29,16 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
 
     customPlot->setDataSource(1, yData, xData);
 
-    customButton = new CUSTOM_PUSHBUTTON::CustomPushButton("testtext");
-    //customCurvePlot = new CUSTOM_CURVE_PLOT::CustomCurvePlot();
-    customLabel = new CUSTOM_LABEL::CustomLabel("textLabel");
-    dropWidget =new DROP_WIDGET::DropWidget(this);
+    
 
     customPlot->resize(QSize(100, 60));
     customPlot->move(QPoint(60, 60));
 
-    customListWidget = new CUSTOM_LIST_WIDGET::CustomListWidget(this);
+
+	dropWidget = new DROP_WIDGET::DropWidget(this);
     
-    dropWidget->setMinimumWidth(500);
+	dropWidget->setMinimumWidth(500);
+    customListWidget = new CUSTOM_LIST_WIDGET::CustomListWidget(this);
 
 
     customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/boat.png")), QString::fromLocal8Bit("标签")));
@@ -48,22 +47,19 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
 
     customListWidget->setMaximumWidth(100);
 
-    //attributeWidget = new QWidget(nullptr);
-    attributeWidget->setFixedWidth(200);
-
-    //windowLayout = new QGridLayout(this);
+    //attributeWidget->setFixedWidth(200);
+    //windowLayout->addWidget(attributeWidget, 0, 2);
 
     windowLayout->addWidget(dropWidget,0,1);
     windowLayout->addWidget(customListWidget, 0, 0);
-    windowLayout->addWidget(attributeWidget, 0, 2);
-
+    
     ui.centralWidget->setLayout(windowLayout);
-
 
 }
 
 
 CustomParamComponent::~CustomParamComponent() {
+  
 
 }
 

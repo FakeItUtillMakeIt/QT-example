@@ -88,6 +88,9 @@
     <ClCompile Include="CustomAttributeWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CustomCombinedWidget.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomPlot.h">
@@ -120,6 +123,9 @@
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
     <QtMoc Include="CustomCurvePlot.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
+    <QtMoc Include="CustomCombinedWidget.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
   </ItemGroup>

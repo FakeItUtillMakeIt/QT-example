@@ -36,6 +36,8 @@ CustomPushButton::CustomPushButton(QString displayText,QWidget* parent):QPushBut
 	 
 	 this->grabKeyboard();
 	 selectSelf = false;
+
+	
 }
 
 CustomPushButton::~CustomPushButton() {
@@ -106,16 +108,18 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 
 		connect(button1, &QPushButton::clicked, this, [=]() {
 			
-			mBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor>();
+			mDisableBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor>();
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
-			qDebug() << mBackGroundColor;
+			qDebug() << mDisableBackGroundColor;
 			this->update();
 			});
 
-		attributeWidget.setLayout(attributeLayout);
+		if (!attributeWidget.layout())
+		{
+			attributeWidget.setLayout(attributeLayout);
+		}
+		
 
-		//widget->show();
-		//attributeWidget.setObjectName("attr");
 		return &attributeWidget;
 	}
 }
@@ -185,6 +189,8 @@ void CustomPushButton::paintEvent(QPaintEvent*) {
 void CustomPushButton::leaveEvent(QEvent*) {
 	buttonState = BUTTON_STATE::normal;
 	this->releaseKeyboard();
+	selection->hide(this);
+	selection->removeWidget(this);
 	update();
 }
 
@@ -194,7 +200,9 @@ void CustomPushButton::leaveEvent(QEvent*) {
 **/
 void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	this->raise();
+
 	selection->addWidget(this);
+	selection->show(this);
 	
 
 	/*if (!attributeWidget)

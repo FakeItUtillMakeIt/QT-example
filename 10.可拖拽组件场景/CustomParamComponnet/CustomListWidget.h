@@ -8,13 +8,17 @@
 #include <QMouseEvent>
 #include <QtWidgets>
 
+
+Q_DECLARE_METATYPE(int)
+
+
 /**
     @namespace CUSTOM_LIST_WIDGET
     @brief     自定义ListWidget类
 **/
 namespace CUSTOM_LIST_WIDGET
 {
-    //Q_DECLARE_METATYPE (int)
+   
 
     class CustomListWidget :
         public QListWidget

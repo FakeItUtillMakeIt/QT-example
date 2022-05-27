@@ -23,6 +23,8 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 	
 	selectSelf = false;
 
+
+
 }
 
 CustomLabel::~CustomLabel() {
@@ -138,10 +140,11 @@ QWidget* CustomLabel::loadAttributeWidget() {
 			this->update();
 			});
 
-		attributeWidget1.setLayout(attributeLayout);
+		if (!attributeWidget1.layout())
+		{
+			attributeWidget1.setLayout(attributeLayout);
+		}
 
-		//widget->show();
-		//attributeWidget1.setObjectName("attr");
 		return &attributeWidget1;
 
 	}
@@ -195,8 +198,9 @@ void CustomLabel::paintEvent(QPaintEvent*) {
 void CustomLabel::mousePressEvent(QMouseEvent* event) {
 	
 	this->raise();
-	//添加可拉伸控件
+
 	selection->addWidget(this);
+	selection->show(this);
 	
 
 	if (!&attributeWidget1)
@@ -245,6 +249,8 @@ void CustomLabel::mouseMoveEvent(QMouseEvent* event) {
 **/
 void CustomLabel::leaveEvent(QEvent* event) {
 	this->releaseKeyboard();
+	selection->hide(this);
+	selection->removeWidget(this);
 }
 
 /**
