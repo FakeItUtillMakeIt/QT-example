@@ -91,6 +91,7 @@
     <ClCompile Include="CustomAttributeWidget.cpp" />
     <ClCompile Include="CustomCombinedWidget.cpp" />
     <ClCompile Include="CustomCurvePlot.cpp" />
+    <ClCompile Include="CustomGroupBox.cpp" />
     <ClCompile Include="CustomLabel.cpp" />
     <ClCompile Include="CustomListWidget.cpp" />
     <ClCompile Include="CustomPushButton.cpp" />
@@ -109,6 +110,7 @@
     <QtMoc Include="CustomCurvePlot.h" />
     <QtMoc Include="CustomLabel.h" />
     <QtMoc Include="CustomCombinedWidget.h" />
+    <ClInclude Include="CustomGroupBox.h" />
     <ClInclude Include="CustomListWidget.h" />
     <ClInclude Include="CustomPlot.h" />
     <QtMoc Include="CustomPushButton.h" />

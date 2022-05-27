@@ -103,11 +103,11 @@ void DropWidget::dropEvent(QDropEvent* event) {
         switch (dropType)
         {
         case TYPE_LABEL:
-            dropObject = new CUSTOM_LABEL::CustomLabel("label", this);
+            dropObject = new CUSTOM_LABEL::CustomLabel("label",this);
 
             break;
         case TYPE_BUTTON:
-            dropObject = new CUSTOM_PUSHBUTTON::CustomPushButton("button", this);
+            dropObject = new CUSTOM_PUSHBUTTON::CustomPushButton("button",this);
             break;
         case TYPE_PLOT:
             //dropObject = new CUSTOM_PLOT::CustomPlot(this);
@@ -118,18 +118,23 @@ void DropWidget::dropEvent(QDropEvent* event) {
         }
 
 
-        //boxLayout->addWidget(dropObject);
-        //this->layout()->addWidget(dropObject);
 
         if (dropObject)
         {
 
-            dropObject->resize(QSize(80, 80));
-            dropObject->move(event->pos() - offset);
+			dropObject->resize(QSize(80, 80));
+			dropObject->move(event->pos() - offset);
+			dropObject->show();
+			dropObject->setAttribute(Qt::WA_DeleteOnClose);
 
-            dropObject->show();
-            dropObject->setAttribute(Qt::WA_DeleteOnClose);
-
+			/*QGroupBox* groupBox = new QGroupBox(this);
+			QVBoxLayout* lay = new QVBoxLayout(groupBox);
+            lay->addWidget(dropObject);
+           
+            groupBox->setTitle("222");
+            groupBox->move(event->pos() - offset);
+            
+            groupBox->showNormal();*/
         }
 
         

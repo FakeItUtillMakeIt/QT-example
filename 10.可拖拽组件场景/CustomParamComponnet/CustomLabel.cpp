@@ -23,8 +23,6 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 	
 	selectSelf = false;
 
-
-
 }
 
 CustomLabel::~CustomLabel() {

@@ -43,6 +43,7 @@ namespace CUSTOM_CURVE_PLOT {
 	signals:
 		void displayAttribute(QWidget&);
 	};
+
 }
 
 

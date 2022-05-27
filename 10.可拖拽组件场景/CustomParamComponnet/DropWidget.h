@@ -50,7 +50,7 @@ namespace DROP_WIDGET {
 		~DropWidget();
 
 	private:
-		QBoxLayout* boxLayout=new QBoxLayout(QBoxLayout::Direction::TopToBottom,this);
+		//QBoxLayout* boxLayout=new QBoxLayout(QBoxLayout::Direction::TopToBottom,this);
 
 	protected:
 		void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;

@@ -91,6 +91,9 @@
     <ClCompile Include="CustomCombinedWidget.cpp">
       <Filter>Source Files\CustomComponent Files</Filter>
     </ClCompile>
+    <ClCompile Include="CustomGroupBox.cpp">
+      <Filter>Source Files\CustomComponent Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomPlot.h">
@@ -107,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="CustomAttributeWidget.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomGroupBox.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
