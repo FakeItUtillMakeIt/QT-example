@@ -37,7 +37,16 @@ CustomPushButton::CustomPushButton(QString displayText,QWidget* parent):QPushBut
 	 this->grabKeyboard();
 	 selectSelf = false;
 
-	
+	 if (parent->objectName() == "customGroupBox")
+	 {
+		 myParentType = MY_PARENT_TYPE::CUSTOM_GROUPBOX;
+
+}
+	 else
+	 {
+		 myParentType = MY_PARENT_TYPE::CUSTOM_LISTWIDGET;
+	 }
+
 }
 
 CustomPushButton::~CustomPushButton() {
@@ -76,13 +85,14 @@ void CustomPushButton::setLabelText(QString buttonT) {
 QWidget* CustomPushButton::loadAttributeWidget() {
 	{
 		attributeWidget.setMaximumWidth(200);
+		
 
 		QGridLayout* attributeLayout = new QGridLayout();
-		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
+		QLabel* label1 = new QLabel(QString::fromLocal8Bit("控件名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
 		lineEdit1->setReadOnly(false);
 		lineEdit1->setEnabled(true);
-		QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
+		QLabel* label2 = new QLabel(QString::fromLocal8Bit("控件底色:"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
 		for each (QString color in colorList)
@@ -94,22 +104,35 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
 
+		QLabel* label3 = new QLabel(QString::fromLocal8Bit("绑定参数:"));
+		QComboBox* comboBox2 = new QComboBox();
+		QStringList paramList1 = { QString::fromLocal8Bit("参数1"),QString::fromLocal8Bit("参数2") };
+		for each (QString param in paramList1)
+		{
+			
+			comboBox2->addItem(param);
+			comboBox2->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+		}
+
 		QPushButton* button1 = new QPushButton();
-		QPushButton* button2 = new QPushButton();
-		button1->setText("button1");
+
+		button1->setText(QString::fromLocal8Bit("确定"));
 
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
-		attributeLayout->addWidget(button1, 2, 1);
+		attributeLayout->addWidget(label3, 2, 0);
+		attributeLayout->addWidget(comboBox2, 2, 1);
+		attributeLayout->addWidget(button1, 3, 1);
 
-		attributeLayout->addWidget(button2, 3, 1);
 
 		connect(button1, &QPushButton::clicked, this, [=]() {
 			
 			mDisableBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor>();
-			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
+			mBindingParam = comboBox2->currentText();
+			mButtonText = lineEdit1->text();
+			qDebug() << comboBox1->itemData(comboBox1->currentIndex())<<mBindingParam;
 			qDebug() << mDisableBackGroundColor;
 			this->update();
 			});
@@ -118,9 +141,10 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 		{
 			attributeWidget.setLayout(attributeLayout);
 		}
-		
 
-		return &attributeWidget;
+
+		//return &attributeWidget;
+		return nullptr;
 	}
 }
 
@@ -132,8 +156,20 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 void CustomPushButton::paintEvent(QPaintEvent*) {
 
 	//信号槽
+#ifdef ONLY_CONTROL_COMPARAM
 	connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-
+#endif //ONLY_CONTROL_COMPARAM
+	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
+	{
+		//信号槽
+		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
+	else
+	{
+		//信号槽
+		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
+	
 
 	QPainter painter(this);
 	painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -201,15 +237,24 @@ void CustomPushButton::leaveEvent(QEvent*) {
 void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	this->raise();
 
-	selection->addWidget(this);
-	selection->show(this);
+	/*隔离GroupBox*/
+	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
+	{
+		selection->addWidget(this);
+		selection->show(this);
+	}
 	
 
 	/*if (!attributeWidget)
 	{
 		attributeWidget=loadAttributeWidget();
 	}*/
-	loadAttributeWidget();
+
+	if (attributeWidget.isActiveWindow()==false)
+	{
+		loadAttributeWidget();
+	}
+	
 
 	if (event->button() == Qt::LeftButton)
 	{
@@ -224,8 +269,9 @@ void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	}
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
-
+	
 	emit displayAttribute(attributeWidget);
+
 
 	this->grabKeyboard();
 	
@@ -233,16 +279,22 @@ void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 
 
 void CustomPushButton::mouseMoveEvent(QMouseEvent* event) {
+	selection->clear();
+
+	
+
+	if (this->parent()->objectName() == "customGroupBox")
+	{
+		return;
+	}
 	if ((event->buttons() == Qt::LeftButton) && mousePressed)
 	{
 		QPoint relativePos = event->globalPos() - m_point;
 
 		this->move(m_pos + relativePos);
 	}
-
-	selection->clear();
-
 	QWidget::mouseMoveEvent(event);
+	
 }
 
 /**

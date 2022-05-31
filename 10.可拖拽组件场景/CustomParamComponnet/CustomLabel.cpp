@@ -8,6 +8,8 @@ class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_LABEL;
 
+
+
 CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 
 	mBackGroundColor = Qt::darkGray;
@@ -20,8 +22,22 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 
 	mLabelText = displayText;
 	this->setMaximumSize(QSize(100, 20));
-	
+	attributeWidget = nullptr;
+
+	this->setFocusPolicy(Qt::ClickFocus);
+	this->grabKeyboard();
 	selectSelf = false;
+
+
+	if (parent->objectName()=="customGroupBox")
+	{
+		myParentType = MY_PARENT_TYPE::CUSTOM_GROUPBOX;
+		
+}
+	else
+	{
+		myParentType = MY_PARENT_TYPE::CUSTOM_LISTWIDGET;
+	}
 
 }
 
@@ -105,11 +121,11 @@ QWidget* CustomLabel::loadAttributeWidget() {
 		attributeWidget1.setMaximumWidth(200);
 
 		QGridLayout* attributeLayout = new QGridLayout();
-		QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
+		QLabel* label1 = new QLabel(QString::fromLocal8Bit("控件名称:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
 		lineEdit1->setReadOnly(false);
 		lineEdit1->setEnabled(true);
-		QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
+		QLabel* label2 = new QLabel(QString::fromLocal8Bit("控件底色"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
 		for each (QString color in colorList)
@@ -122,7 +138,7 @@ QWidget* CustomLabel::loadAttributeWidget() {
 		}
 
 		QPushButton* button1 = new QPushButton();
-		button1->setText("button1");
+		button1->setText(QString::fromLocal8Bit("确定"));
 
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
@@ -130,22 +146,25 @@ QWidget* CustomLabel::loadAttributeWidget() {
 		attributeLayout->addWidget(comboBox1, 1, 1);
 		attributeLayout->addWidget(button1, 2, 1);
 
+		/**/
 		connect(button1, &QPushButton::clicked, this, [=]() {
 			mLabelText = lineEdit1->text();
 			mBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor> ();
+
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
 			qDebug() << mBackGroundColor;
 			this->update();
 			});
+		/**/
 
 		if (!attributeWidget1.layout())
 		{
 			attributeWidget1.setLayout(attributeLayout);
-		}
+	}
 
 		return &attributeWidget1;
 
-	}
+}
 }
 
 
@@ -155,8 +174,23 @@ QWidget* CustomLabel::loadAttributeWidget() {
 **/
 void CustomLabel::paintEvent(QPaintEvent*) {
 
-	//信号槽
+	
+#ifdef ONLY_CONTROL_COMPARAM
+//信号槽
 	connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+#endif // ONLY_CONTROL_COMPARAM
+
+	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
+	{
+		//信号槽
+		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+
+	}
+	else
+	{
+		//信号槽
+		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
 
 	QPainter painter(this);
 	QPen pen;
@@ -194,19 +228,24 @@ void CustomLabel::paintEvent(QPaintEvent*) {
     @param event - 
 **/
 void CustomLabel::mousePressEvent(QMouseEvent* event) {
-	
+	//呼出属性栏
+
 	this->raise();
 
-	selection->addWidget(this);
-	selection->show(this);
-	
-
-	if (!&attributeWidget1)
+	/*隔离GroupBox*/
+	if (myParentType==MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
 	{
-		//attributeWidget1=loadAttributeWidget();
+		selection->addWidget(this);
+		selection->show(this);
+	}
+
+
+	if (attributeWidget1.isActiveWindow() == false)
+	{
 		loadAttributeWidget();
 	}
-	loadAttributeWidget();
+	
+
 	if (event->button() == Qt::LeftButton)
 	{
 		selectSelf = true;
@@ -215,6 +254,7 @@ void CustomLabel::mousePressEvent(QMouseEvent* event) {
 
 		m_pos = this->frameGeometry().topLeft();
 
+		dragStartPoint = event->pos();
 	}
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
@@ -223,21 +263,31 @@ void CustomLabel::mousePressEvent(QMouseEvent* event) {
 	emit displayAttribute(attributeWidget1);
 
 	this->grabKeyboard();
+
 }
 
 void CustomLabel::mouseMoveEvent(QMouseEvent* event) {
+	selection->clear();
+	//mousePressed = false;
+	this->releaseKeyboard();
+	
+	if (this->parent()->objectName()=="customGroupBox")
+	{
+		return;
+	}
+	
 	if ((event->buttons() == Qt::LeftButton) && mousePressed)
 	{
+
 		QPoint relativePos = event->globalPos() - m_point;
+		this->move(m_pos + relativePos);
 
 		this->move(m_pos + relativePos);
 	}
 
-	selection->clear();
+	
 	QWidget::mouseMoveEvent(event);
 
-	//mousePressed = false;
-	this->releaseKeyboard();
 
 }
 
@@ -272,7 +322,7 @@ void CustomLabel::keyPressEvent(QKeyEvent* event) {
 		this->~CustomLabel();
 		
 	}
-	
+
 	//QWidget::keyPressEvent(event);
 	this->releaseKeyboard();
 	selectSelf = false;

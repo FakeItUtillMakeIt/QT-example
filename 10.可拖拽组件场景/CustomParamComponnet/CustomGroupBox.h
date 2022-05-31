@@ -4,44 +4,71 @@
 #define CUSTOM_GROUP_BOX_H
 
 #include <QWidget>
-#include <QGroupBox>
-#include "CustomCurvePlot.h"
+#include <QtGui>
+#include <qgroupbox.h>
+#include "WidgetHandle.h"
 #include "CustomLabel.h"
+#include "CustomPushButton.h"
+#include "CustomCurvePlot.h"
 
-class CUSTOM_CURVE_PLOT::CustomCurvePlot;
 class CUSTOM_LABEL::CustomLabel;
 
-namespace CUSTOM_GROUP_BOX {
+class CUSTOM_PUSHBUTTON::CustomPushButton;
+class CUSTOM_CURVE_PLOT::CustomCurvePlot;
 
-	enum CUSTOM_GROUP_TYPE
+
+namespace CUSTOM_GROUP_BOX{
+
+	enum MY_PARENT_TYPE
 	{
-		LABEL_GROUP,
-		CURVE_PLOT
+		CUSTOM_LISTWIDGET,
+		CUSTOM_GROUPBOX
 	};
- /**
 
-     @class   CustomGroupBox
-     @brief   外部包含一个Box的控件容器
-     @details ~
-
- **/
-	class CustomGroupBox
+	class CustomGroupBox :
+		public QGroupBox
 	{
-	public:
-		QGroupBox* groupBox;
+		Q_OBJECT
 
 	public:
-		CustomGroupBox(QWidget* parent=nullptr);
+		CustomGroupBox(QWidget* parent = nullptr);
 		~CustomGroupBox();
-		QGroupBox* getGroupWidget(CUSTOM_GROUP_TYPE type);
-		void addWidget2Group(CUSTOM_GROUP_TYPE type);
+		QWidget attributeWidget;
+		QWidget* loadAttributeWidget();
 
 	private:
-		CUSTOM_CURVE_PLOT::CustomCurvePlot* customCurvePlot;
-		CUSTOM_LABEL::CustomLabel* customLabel;
 
-		QString styleSheet;
+		MY_PARENT_TYPE myParentType;
+		QGridLayout* boxLayout;
+		bool selectSelf;
+		bool mousePressed;
+
+		int hasWidgetNum = 0;
+
+		QString myTitle;
+
+		QPoint m_point;
+		QPoint m_pos;
+		WIDGET_HANDLE::Selection* selection = new WIDGET_HANDLE::Selection(this);
+
+	protected:
+		//void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
+
+		void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
+		void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
+		void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
+
+		void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+		void mouseMoveEvent(QMouseEvent* event) Q_DECL_OVERRIDE;
+
+		void leaveEvent(QEvent* event) Q_DECL_OVERRIDE;
+
+		void keyPressEvent(QKeyEvent* event) Q_DECL_OVERRIDE;
+
+	signals:
+		void displayAttribute(QWidget&);
 	};
+
 }
 
 

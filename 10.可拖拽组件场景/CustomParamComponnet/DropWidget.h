@@ -3,6 +3,8 @@
 #ifndef DROP_WIDGET_H
 #define DROP_WIDGET_H
 
+#define CONTROL_COMPARAM_AND_GROUPBOX
+//#define ONLY_CONTROL_COMPARAM
 
 #include <qframe.h>
 #include <QEvent>
@@ -22,6 +24,8 @@
 #include "CustomPushButton.h"
 
 #include "WidgetHandle.h"
+#include "CustomGroupBoxWidget.h"
+
 
 class CUSTOM_LABEL::CustomLabel;
 class CUSTOM_PLOT::CustomPlot;
@@ -39,7 +43,8 @@ namespace DROP_WIDGET {
 	{
 		TYPE_LABEL = 0,
 		TYPE_BUTTON = 1,
-		TYPE_PLOT = 2
+		TYPE_PLOT = 2,
+		TYPE_BOX = 3
 	};
 
 	class DropWidget :

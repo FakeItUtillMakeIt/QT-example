@@ -50,11 +50,29 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "img\\boat.png"
+IDB_PNG1                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\boat.png"
 
-IDB_PNG2                PNG                     "img\\car.png"
+IDB_PNG2                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\car.png"
 
-IDB_PNG3                PNG                     "img\\house.png"
+IDB_PNG3                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\house.png"
+
+IDB_PNG4                PNG                     "img\\+hao.png"
+
+IDB_PNG5                PNG                     "img\\button.png"
+
+IDB_PNG6                PNG                     "img\\groupbox.png"
+
+IDB_PNG7                PNG                     "img\\-hao.png"
+
+IDB_PNG8                PNG                     "img\\hongyuanbutton.png"
+
+IDB_PNG9                PNG                     "img\\label.png"
+
+IDB_PNG10               PNG                     "img\\lvyuanbutton.png"
+
+IDB_PNG11               PNG                     "img\\OKbutton.png"
+
+IDB_PNG12               PNG                     "img\\plot.png"
 
 #endif    // 中文(简体，中国) resources
 /////////////////////////////////////////////////////////////////////////////

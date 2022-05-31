@@ -24,8 +24,8 @@ CustomListWidget::~CustomListWidget() {
 }
 
 /**
-	@brief
-	@param event -
+    @brief 
+    @param event - 
 **/
 void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 	if (!selectElement)
@@ -48,7 +48,7 @@ void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 	dataStream << selectIndex << QPoint(event->pos() - dragStartPosition);
 
 	mimeData->setData("selectIndex", dataByte);
-
+	
 
 	QPixmap tmpPixmap = this->currentItem()->icon().pixmap(0);
 	drag->setPixmap(tmpPixmap);
@@ -59,23 +59,23 @@ void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 }
 
 /**
-	@brief
-	@param event -
+    @brief 
+    @param event - 
 **/
 void CustomListWidget::mousePressEvent(QMouseEvent* event) {
-
+	
 	selectIndex = row(itemAt(event->pos()));
 	dragStartPosition = event->pos();
 	if (event->button() == Qt::LeftButton)
 	{
 		selectElement = true;
-
+		
 	}
 }
 
 /**
-	@brief
-	@param event -
+    @brief 
+    @param event - 
 **/
 void CustomListWidget::mouseReleaseEvent(QMouseEvent* event) {
 	selectElement = false;

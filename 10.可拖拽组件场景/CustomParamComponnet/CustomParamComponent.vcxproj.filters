@@ -91,6 +91,9 @@
     <ClCompile Include="CustomCombinedWidget.cpp">
       <Filter>Source Files\CustomComponent Files</Filter>
     </ClCompile>
+    <ClCompile Include="CustomGroupBoxWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="CustomGroupBox.cpp">
       <Filter>Source Files\CustomComponent Files</Filter>
     </ClCompile>
@@ -99,11 +102,17 @@
     <ClInclude Include="CustomPlot.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
+    <ClInclude Include="CustomPushButton.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </ClInclude>
     <ClInclude Include="CustomListWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomCurvePlot.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
     <ClInclude Include="DropWidget.h">
       <Filter>Header Files\DropArea</Filter>
@@ -111,8 +120,8 @@
     <ClInclude Include="CustomAttributeWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CustomGroupBox.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
+    <ClInclude Include="CustomGroupBoxWidget.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +143,9 @@
     <QtMoc Include="CustomCombinedWidget.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
+    <QtMoc Include="CustomGroupBox.h">
+      <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <None Include="img\boat.png">
@@ -150,5 +162,34 @@
     <ResourceCompile Include="CustomParamComponent.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="img\+hao.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\button.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\groupbox.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\-hao.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\hongyuanbutton.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\label.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\lvyuanbutton.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\OKbutton.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
+    <Image Include="img\plot.png">
+      <Filter>Resource Files\img</Filter>
+    </Image>
   </ItemGroup>
 </Project>

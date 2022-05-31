@@ -9,11 +9,18 @@
 #include "WidgetHandle.h"
 
 
+
 /**
     @namespace CUSTOM_LABEL
     @brief     自定义标签类
 **/
 namespace CUSTOM_LABEL {
+
+	enum MY_PARENT_TYPE
+	{
+		CUSTOM_LISTWIDGET,
+		CUSTOM_GROUPBOX
+	};
 
 	class CustomLabel :
 		public QLabel
@@ -25,6 +32,11 @@ namespace CUSTOM_LABEL {
 		~CustomLabel();
 
 	private:
+		MY_PARENT_TYPE myParentType;
+
+		int myType = 0;
+		QPoint dragStartPoint;
+
 		QPixmap pixmap;
 		QColor mBackGroundColor;
 		QColor mBorderColor;
@@ -35,6 +47,8 @@ namespace CUSTOM_LABEL {
 		QColor fontColor;
 
 		QString mLabelText;
+
+		QWidget* attributeWidget;
 
 		bool selectSelf;
 		QPoint m_pos;

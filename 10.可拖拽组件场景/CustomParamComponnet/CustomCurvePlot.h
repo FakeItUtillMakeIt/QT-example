@@ -12,6 +12,12 @@
 **/
 namespace CUSTOM_CURVE_PLOT {
 
+	enum MY_PARENT_TYPE
+	{
+		CUSTOM_LISTWIDGET,
+		CUSTOM_GROUPBOX
+	};
+
 	class CustomCurvePlot :
 		public QCustomPlot
 	{
@@ -24,6 +30,12 @@ namespace CUSTOM_CURVE_PLOT {
 		QWidget* loadAttributeWidget();
 
 	private:
+
+		MY_PARENT_TYPE myParentType;
+
+		QVector<QString> mBindingParamList;
+		int hasAddButNotNameParamNum = 0;
+		int currentSelectParam = -1;
 
 		WIDGET_HANDLE::Selection* selection = new WIDGET_HANDLE::Selection(this);
 		bool selectSelf;

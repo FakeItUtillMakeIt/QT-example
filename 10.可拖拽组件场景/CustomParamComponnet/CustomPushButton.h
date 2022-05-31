@@ -5,6 +5,7 @@
 
 
 #include <QtWidgets>
+#include <QString>
 #include <qpushbutton.h>
 #include "WidgetHandle.h"
 
@@ -22,6 +23,12 @@ namespace CUSTOM_PUSHBUTTON {
 		pressed=2
 	};
 
+	enum MY_PARENT_TYPE
+	{
+		CUSTOM_LISTWIDGET,
+		CUSTOM_GROUPBOX
+	};
+
 	class CustomPushButton :
 		public QPushButton
 	{
@@ -37,6 +44,9 @@ namespace CUSTOM_PUSHBUTTON {
 
 		
 	private:
+		MY_PARENT_TYPE myParentType;
+		QString mBindingParam;
+
 		int buttonState;
 
 		qreal mBorderWidth;

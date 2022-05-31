@@ -5,7 +5,7 @@ using namespace DROP_WIDGET;
 DropWidget::DropWidget(QWidget* parent) {
 
     this->setMinimumWidth(800);
-
+    
     //this->setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
     this->setAcceptDrops(true);
 
@@ -18,13 +18,13 @@ DropWidget::~DropWidget() {
 }
 
 /**
-    @brief
-    @param event -
+    @brief 
+    @param event - 
 **/
 void DropWidget::dragEnterEvent(QDragEnterEvent* event) {
     auto a = event->mimeData()->formats();
-    if (event->mimeData()->hasFormat("application/x-dnditemdata") || event->mimeData()->hasFormat("selectIndex"))
-    {
+	if (event->mimeData()->hasFormat("application/x-dnditemdata") || event->mimeData()->hasFormat("selectIndex"))
+	{
         if (event->source() == this)
         {
             event->setDropAction(Qt::MoveAction);
@@ -35,7 +35,7 @@ void DropWidget::dragEnterEvent(QDragEnterEvent* event) {
             event->acceptProposedAction();
         }
 
-    }
+	}
     else
     {
         event->ignore();
@@ -43,8 +43,8 @@ void DropWidget::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 /**
-    @brief
-    @param event -
+    @brief 
+    @param event - 
 **/
 void DropWidget::dragMoveEvent(QDragMoveEvent* event) {
     if (event->mimeData()->hasFormat("application/x-dnditemdata") || event->mimeData()->hasFormat("selectIndex"))
@@ -69,15 +69,15 @@ void DropWidget::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 /**
-    @brief
-    @param event -
+    @brief 
+    @param event - 
 **/
 void DropWidget::dropEvent(QDropEvent* event) {
-
+    auto a = event->source();
 	if (event->source() == this)
 	{
 		event->setDropAction(Qt::MoveAction);
-		event->accept();
+		event->ignore();
         return;
 	}
 	else
@@ -104,41 +104,76 @@ void DropWidget::dropEvent(QDropEvent* event) {
         {
         case TYPE_LABEL:
             dropObject = new CUSTOM_LABEL::CustomLabel("label",this);
-
+            dropObject->resize(QSize(80, 20));
             break;
         case TYPE_BUTTON:
             dropObject = new CUSTOM_PUSHBUTTON::CustomPushButton("button",this);
+            dropObject->resize(QSize(80, 20));
             break;
         case TYPE_PLOT:
-            //dropObject = new CUSTOM_PLOT::CustomPlot(this);
             dropObject = new CUSTOM_CURVE_PLOT::CustomCurvePlot(this);
+            dropObject->resize(QSize(200, 200));
             break;
+		case TYPE_BOX:
+			dropObject = new CUSTOM_GROUP_BOX::CustomGroupBox(this);
+            dropObject->resize(QSize(200, 80));
+			break;
         default:
             break;
         }
 
-
-
-        if (dropObject)
-        {
-
-			dropObject->resize(QSize(80, 80));
-			dropObject->move(event->pos() - offset);
-			dropObject->show();
-			dropObject->setAttribute(Qt::WA_DeleteOnClose);
-
-			/*QGroupBox* groupBox = new QGroupBox(this);
-			QVBoxLayout* lay = new QVBoxLayout(groupBox);
-            lay->addWidget(dropObject);
-           
-            groupBox->setTitle("222");
-            groupBox->move(event->pos() - offset);
+#ifdef ONLY_CONTROL_COMPARAM
+		/*2022/05/30*/
             
-            groupBox->showNormal();*/
+		CUSTOM_GROUP_BOX::CustomGroupBox* dropObject = nullptr;
+        CUSTOM_GROUP_BOX_WIDGET::CustomGroupBoxWidget* boxW = new CUSTOM_GROUP_BOX_WIDGET::CustomGroupBoxWidget(this);
+
+		//根据拖拽类型创建实例
+		switch (dropType)
+		{
+		case TYPE_LABEL:
+			dropObject = boxW->getGroupWidget(CUSTOM_GROUP_BOX_WIDGET::CUSTOM_GROUP_WIDGET_TYPE::LABEL_GROUP);
+
+            break;
+		case TYPE_BUTTON:
+			//dropObject = new CUSTOM_PUSHBUTTON::CustomPushButton("button", this);
+			break;
+		case TYPE_PLOT:
+            //dropObject = new CUSTOM_PLOT::CustomPlot(this);
+            dropObject = boxW->getGroupWidget(CUSTOM_GROUP_BOX_WIDGET::CUSTOM_GROUP_WIDGET_TYPE::CURVE_PLOT);
+			break;
+        default:
+            break;
+        }
+#endif // ONLY_CONTROL_COMPARAM
+
+/*2022/05/30*/
+        
+#ifdef CONTROL_COMPARAM_AND_GROUPBOX
+
+        if (!dropObject)
+			{
+            return;
+			
         }
 
-        
-    }
+        dropObject->move(event->pos() - offset);
+		dropObject->show();
+		dropObject->setAttribute(Qt::WA_DeleteOnClose);
+          
+        /*QGroupBox* groupBox = new QGroupBox(this);
+        QVBoxLayout* lay = new QVBoxLayout(groupBox);
+        lay->addWidget(dropObject);
+
+        groupBox->setTitle("222");
+        groupBox->move(event->pos() - offset);
+
+        groupBox->showNormal();*/
+
+#endif // CONTROL_COMPARAM_AND_GROUPBOX
+			
+     }
+    
     else
     {
         event->ignore();
@@ -148,8 +183,8 @@ void DropWidget::dropEvent(QDropEvent* event) {
 }
 
 /**
-    @brief
-    @param event -
+    @brief 
+    @param event - 
 **/
 void DropWidget::mousePressEvent(QMouseEvent* event) {
     auto posWidget = (childAt(event->pos()));
@@ -159,6 +194,6 @@ void DropWidget::mousePressEvent(QMouseEvent* event) {
     }
 
     //单点下时显示属性栏
-
+    
 }
 

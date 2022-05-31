@@ -10,42 +10,43 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
 {
     ui.setupUi(this);
     
-    //this->setAttribute(Qt::WA_DeleteOnClose);
-    //界面布局
-    customPlot = new CUSTOM_PLOT::CustomPlot();
-    customPlot->setBaseSize(size());
-    QVector<double> xData;
-    QVector<double> yData;
+    /**/
+    ////plot
+    //customPlot = new CUSTOM_PLOT::CustomPlot();
+    //customPlot->setBaseSize(size());
+    //QVector<double> xData;
+    //QVector<double> yData;
 
-    customPlot->setCurveXYAxis(0, 10, 0, 5, QString::fromLocal8Bit("x轴"),QString::fromLocal8Bit( "y轴"));
+    //customPlot->setCurveXYAxis(0, 10, 0, 5, QString::fromLocal8Bit("x轴"),QString::fromLocal8Bit( "y轴"));
 
-    customPlot->addOneCurve("test1",Qt::blue);
-    customPlot->addOneCurve("test2", Qt::black);
+    //customPlot->addOneCurve("test1",Qt::blue);
+    //customPlot->addOneCurve("test2", Qt::black);
 
-    xData = { 0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0 };
-    yData = { 0.0,1.0,2.0,3.0,5.0,3.0,2.0,1.0 };
+    //xData = { 0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0 };
+    //yData = { 0.0,1.0,2.0,3.0,5.0,3.0,2.0,1.0 };
+    //
+    //customPlot->setDataSource(0, xData, yData);
+
+    //customPlot->setDataSource(1, yData, xData);
+
+    //customPlot->resize(QSize(100, 60));
+    //customPlot->move(QPoint(60, 60));
+    /**/
     
-    customPlot->setDataSource(0, xData, yData);
-
-    customPlot->setDataSource(1, yData, xData);
-
-    
-
-    customPlot->resize(QSize(100, 60));
-    customPlot->move(QPoint(60, 60));
-
+  
 
 	dropWidget = new DROP_WIDGET::DropWidget(this);
-    
+
 	dropWidget->setMinimumWidth(500);
     customListWidget = new CUSTOM_LIST_WIDGET::CustomListWidget(this);
+    
 
+    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/label.png").scaled(QSize(60,60))), QString::fromLocal8Bit("标签")));
+    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/button.png").scaled(QSize(60, 60))), QString::fromLocal8Bit("按钮")));
+    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/plot.png").scaled(QSize(60, 60))), QString::fromLocal8Bit("信号图")));
+    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/groupbox.png").scaled(QSize(60, 60))), QString::fromLocal8Bit("容器")));
 
-    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/boat.png")), QString::fromLocal8Bit("标签")));
-    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/car.png")), QString::fromLocal8Bit("按钮")));
-    customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/house.png")), QString::fromLocal8Bit("信号图")));
-
-    customListWidget->setMaximumWidth(100);
+    customListWidget->setFixedWidth(90);
 
     //attributeWidget->setFixedWidth(200);
     //windowLayout->addWidget(attributeWidget, 0, 2);
@@ -54,18 +55,20 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
     windowLayout->addWidget(customListWidget, 0, 0);
     
     ui.centralWidget->setLayout(windowLayout);
-
+    
 }
 
-
+    
 CustomParamComponent::~CustomParamComponent() {
-  
+
+    QFrame* attributeWidget = new QFrame;
+    attributeWidget->setFixedWidth(200);
 
 }
 
-
+ 
 void CustomParamComponent::paintEvent(QPaintEvent* event) {
-   
+
 }
 
 /**
@@ -96,11 +99,16 @@ void CustomParamComponent::displayAttributeWindow(QWidget& widget) {
         auto itemPos = windowLay->itemAtPosition(0, 2)->widget();
         itemPos->hide();
         windowLay->removeWidget(itemPos);
-        itemPos->close();
+        
+        //itemPos->close();
+
+        //itemPos->show();
 
     }
-
-    windowLay->addWidget(&widget, 0, 2);
-    widget.show();
+   
+	windowLay->addWidget(&widget, 0, 2);
+	widget.show();
+   
+    
 
 }

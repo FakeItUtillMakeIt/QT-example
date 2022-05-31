@@ -92,6 +92,7 @@
     <ClCompile Include="CustomCombinedWidget.cpp" />
     <ClCompile Include="CustomCurvePlot.cpp" />
     <ClCompile Include="CustomGroupBox.cpp" />
+    <ClCompile Include="CustomGroupBoxWidget.cpp" />
     <ClCompile Include="CustomLabel.cpp" />
     <ClCompile Include="CustomListWidget.cpp" />
     <ClCompile Include="CustomPushButton.cpp" />
@@ -110,7 +111,8 @@
     <QtMoc Include="CustomCurvePlot.h" />
     <QtMoc Include="CustomLabel.h" />
     <QtMoc Include="CustomCombinedWidget.h" />
-    <ClInclude Include="CustomGroupBox.h" />
+    <QtMoc Include="CustomGroupBox.h" />
+    <ClInclude Include="CustomGroupBoxWidget.h" />
     <ClInclude Include="CustomListWidget.h" />
     <ClInclude Include="CustomPlot.h" />
     <QtMoc Include="CustomPushButton.h" />
@@ -126,6 +128,17 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CustomParamComponent.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="img\+hao.png" />
+    <Image Include="img\-hao.png" />
+    <Image Include="img\button.png" />
+    <Image Include="img\groupbox.png" />
+    <Image Include="img\hongyuanbutton.png" />
+    <Image Include="img\label.png" />
+    <Image Include="img\lvyuanbutton.png" />
+    <Image Include="img\OKbutton.png" />
+    <Image Include="img\plot.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
