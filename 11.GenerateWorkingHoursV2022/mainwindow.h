@@ -70,7 +70,10 @@ private:
     //删除数据
     void deleteData();
 
+    //
     void setTableItemEditable(bool editFlag);
+    //
+    void saveExcelData(QString saveFileName);
 
     void dingCheckImport();
     void hoursRatioConfigImport();

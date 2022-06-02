@@ -331,7 +331,21 @@ void MainWindow::importDintCheckData(){
 
 //保存配置信息
 void MainWindow::saveConfigInfo(){
-    setTableItemEditable(false);
+
+    QString saveFileName;
+    switch (currentPage) {
+    case CURRENT_PAGE::GENERATE_RATIO_CONFIG:
+        saveFileName=hoursRatioConfigImportFilename;
+        break;
+    case CURRENT_PAGE::PROJECT_DATA_CONFIG:
+        saveFileName=projectConfigImportFilename;
+        break;
+    default:
+        break;
+    }
+
+    saveExcelData(saveFileName);
+
 }
 //新增数据
 void MainWindow::insertData(){
@@ -342,6 +356,12 @@ void MainWindow::insertData(){
     int currentSelectColumn=ui->tableWidget->currentColumn();
     if(currentSelectRow==-1 && currentSelectColumn==-1){
         //在最后添加
+        int insertRow=ui->tableWidget->rowCount();
+        ui->tableWidget->insertRow(insertRow);
+        for (int c=0;c<ui->tableWidget->columnCount();c++) {
+            ui->tableWidget->setItem(insertRow,c,new QTableWidgetItem(""));
+        }
+        qDebug()<<"insert a row in back" ;
     }
     else
     {
@@ -375,6 +395,7 @@ void MainWindow::deleteData(){
     }
     else{
         //删除行
+        ui->tableWidget->removeRow(ui->tableWidget->currentRow());
     }
 
 }
@@ -391,7 +412,58 @@ void MainWindow::setTableItemEditable(bool editFlag){
     int currentColumn=ui->tableWidget->columnCount();
     for (int r=0;r<currentRow;r++) {
         for (int c=0;c<currentColumn;c++) {
-            ui->tableWidget->item(r,c)->setFlags(itemF);
+            try {
+                ui->tableWidget->item(r,c)->setFlags(itemF);
+                }
+            catch (QException) {
+
+                }
+
         }
     }
+}
+
+//保存Excel信息
+void MainWindow::saveExcelData(QString saveFileName){
+    if(saveFileName.isNull())
+    {
+        qDebug()<<"not import a excel file";
+        return;
+    }
+    QXlsx::Document xlsxExcel(saveFileName);
+    int tableRowCount=ui->tableWidget->rowCount();
+    int tableColumnCount=ui->tableWidget->columnCount();
+
+    for (int r=1;r<=tableRowCount;r++) {
+        for (int c=1;c<=tableColumnCount;c++) {
+//            int type=0;
+//            try {
+//                type= ui->tableWidget->item(r-1,c-1)->type();
+
+//                } catch (_exception) {
+//                    qDebug()<<"write null";
+//                }
+
+            auto data=ui->tableWidget->item(r-1,c-1)->text();
+            xlsxExcel.write(r,c,data);
+//            qDebug()<<type<<data;
+//            switch(type)
+//            {
+//            case 6:
+//                xlsxExcel.write(r,c,data.toInt());
+//                break;
+//            case 10:
+//                xlsxExcel.write(r,c,data);
+//                break;
+//            default:
+//                xlsxExcel.write(r,c,"");
+//                qDebug()<<"typy:0";
+//            }
+        }
+    }
+
+    xlsxExcel.save();
+
+    qDebug()<<"save excel successfully";
+    setTableItemEditable(false);
 }
