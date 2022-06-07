@@ -154,6 +154,13 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="btnPostTypeCfg">
+        <property name="text">
+         <string>岗位类型配置</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnAssembleHoursData">
         <property name="text">
          <string>组装工时数据</string>
@@ -188,7 +195,7 @@
       <item>
        <widget class="QPushButton" name="btnInputExcelData">
         <property name="text">
-         <string>导入考勤数据</string>
+         <string>导入数据</string>
         </property>
        </widget>
       </item>
