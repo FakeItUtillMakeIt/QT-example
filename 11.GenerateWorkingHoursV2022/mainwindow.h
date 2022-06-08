@@ -61,24 +61,29 @@ private:
 
     //岗位占比配置信息
     QMap<QString,QVector<qreal>> postTypeConfigData;
-    //人和岗位对应关系
-    QMap<QString,QString> humanPostTypeInfo;
+    //工号和岗位对应关系
+    QMap<QString,QString> jobNumPostTypeInfo;
+    //工号和人对应
+    QMap<QString,QString> jobNumHumanInfo;
     //项目和人的关系
     QMap<QString,QVector<QString>> projectHumansInfo;
     //项目和时间对应关系
     QMap<QString,QVector<QDate>> projectDateInfo;
     //项目和部门对应关系
     QMap<QString,QString> projectDepartmentInfo;
-    //项目和项目类型关系
-    QMap<QString,QString> projectTypeInfo;
-    //人和部门--根据考勤表得到一级部门，二级部门关系
-    QMap<QString,QVector<QString>> humanDepartmentInfo;
-    //人-工作日所在行统计  应该分配工时的工作日
-    QMap<QString,QVector<int>> humanWorkdayRowInfo;
+    //项目和项目类型/项目属性关系
+    QMap<QString,QVector<QString>> projectTypeInfo;
+    //工号和部门--根据工时人员信息分类得到所属公司，一级部门，二级部门关系
+    QMap<QString,QVector<QString>> jobNumDepartmentInfo;
+    //工号和离职时间
+    QMap<QString,QDate> jobNumLeaveTimeInfo;
+    //工号-工作日所在行统计  应该分配工时的工作日
+    QMap<QString,QVector<QString>> jobNumWorkdayRowInfo;
     //获取当前处理表的月份
     int currentMonth;
-    //人-当月项目的总数关系
-    QMap<QString,QVector<QString>> humanCurrentMonthProjectInfo;
+    int currentYear;
+    //工号-当月项目的总数关系
+    QMap<QString,QVector<QString>> jobNumCurrentMonthProjectInfo;
 
 
 
@@ -111,6 +116,8 @@ private:
 
     //计算人员当月项目信息
     void calHumanCurrentMonthProjectInfo();
+    //添加一行至组装工时表
+    void appendRowInAssemableTable(int rowNum,QVector<QString> dataList);
 
 private slots:
 

@@ -312,40 +312,87 @@ void MainWindow::dingCheckImport(){
                                  .arg(ui->spinBoxMonth->value())
                                  .arg(dingCheckImportFilename));
 
+        /*杨晨光给的考勤表0608*/
+        currentYear=dingCheckExcel->read(1,1).toString().split(QRegExp("[:：]"))[1].split(QRegExp("[/-]"))[0].toInt();
+        currentMonth=dingCheckExcel->read(1,1).toString().split(QRegExp("[:：]"))[1].split(QRegExp("[/-]"))[1].toInt();
+
         //统计当前月人员的上班时间所在行
-        int columnBanci,columnDepartment,columnDate;
+        int columnDepartment,columnJobNum,columnHumanName;
         for (int c=0;c<columnC;c++) {
-            if(dingCheckExcel->read(1,c+1)==QString("班次"))
-                columnBanci=c+1;
-            if(dingCheckExcel->read(1,c+1)==QString("部门"))
+
+            if(dingCheckExcel->read(3,c+1)==QString("部门"))
                 columnDepartment=c+1;
-            if(dingCheckExcel->read(1,c+1)==QString("日期"))
-                columnDate=c+1;
+            if(dingCheckExcel->read(3,c+1)==QString("工号"))
+                columnJobNum=c+1;
+            if(dingCheckExcel->read(3,c+1)==QString("姓名"))
+                columnHumanName=c+1;
+
         }
 
-        auto dateList=dingCheckExcel->read(4,columnDate).toString().split(QRegExp("-"));
-        currentMonth=dateList[1].toInt();
-        qDebug()<<columnDate<<dateList<<currentMonth;
+        //qDebug()<<currentMonth<<currentYear;
+        QVector<QString> daysOfMonth;
+        for (int c=columnJobNum+1;c<=columnC;c++) {
+            daysOfMonth.push_back(dingCheckExcel->read(4,c).toString());
+        }
+
 
         for (int r=0;r<=rowC;r++) {
-            QString content=dingCheckExcel->read(r+1,columnBanci).toString();
-            //请假
-            if(content.contains(vacateRegFormat))
-                continue;
-            //休息
-            if(content.contains(breakDateRegFormat))
-                continue;
+            QString content=dingCheckExcel->read(r+1,columnDepartment).toString();
+
             //空信息
             if(content.isNull())
                 continue;
-            //每个人
-            if(dingCheckExcel->read(r+1,1).toString()==QString("姓名"))
+            //每个工号
+            if(dingCheckExcel->read(r+1,columnJobNum).toString()==QString("工号"))
                 continue;
-            if(dingCheckExcel->read(r+1,1).toString().isNull())
+            if(dingCheckExcel->read(r+1,columnJobNum).toString().isNull())
                 continue;
-            humanWorkdayRowInfo[dingCheckExcel->read(r+1,1).toString()].push_back(r+1);
 
+            jobNumHumanInfo[dingCheckExcel->read(r+1,columnJobNum).toString()]=dingCheckExcel->read(r+1,columnHumanName).toString();
+
+            for (int c=columnJobNum+1;c<=columnC;c++) {
+                if(dingCheckExcel->read(r+1,c).toString()=="在岗")
+                    jobNumWorkdayRowInfo[dingCheckExcel->read(r+1,columnJobNum).toString()].push_back(daysOfMonth[c-columnJobNum-1]);
+            }
         }
+
+        /*兵哥给的考勤表*/
+//        //统计当前月人员的上班时间所在行
+//        int columnBanci,columnDepartment,columnDate;
+//        for (int c=0;c<columnC;c++) {
+//            if(dingCheckExcel->read(1,c+1)==QString("班次"))
+//                columnBanci=c+1;
+//            if(dingCheckExcel->read(1,c+1)==QString("部门"))
+//                columnDepartment=c+1;
+//            if(dingCheckExcel->read(1,c+1)==QString("日期"))
+//                columnDate=c+1;
+//        }
+
+//        auto dateList=dingCheckExcel->read(4,columnDate).toString().split(QRegExp("-"));
+//        currentMonth=dateList[1].toInt();
+//        currentYear=dateList[0].toInt();
+//        qDebug()<<columnDate<<dateList<<currentMonth<<currentYear;
+
+//        for (int r=0;r<=rowC;r++) {
+//            QString content=dingCheckExcel->read(r+1,columnBanci).toString();
+//            //请假
+//            if(content.contains(vacateRegFormat))
+//                continue;
+//            //休息
+//            if(content.contains(breakDateRegFormat))
+//                continue;
+//            //空信息
+//            if(content.isNull())
+//                continue;
+//            //每个人
+//            if(dingCheckExcel->read(r+1,1).toString()==QString("姓名"))
+//                continue;
+//            if(dingCheckExcel->read(r+1,1).toString().isNull())
+//                continue;
+//            humanWorkdayRowInfo[dingCheckExcel->read(r+1,1).toString()].push_back(r+1);
+
+//        }
+
 
     }
 
@@ -375,32 +422,40 @@ void MainWindow::hoursRatioConfigImport(){
     }
 
     //统计当前月人员的岗位类别和工时占比信息
-    int columnGangwei,columnYanfa,columnShengchan,columnGuanli,columnDepart1,columnDepart2;
+    int columnJobNum,columnHumanName,columnLeaveDate;
+    int columnCharClsfy,columnDepart1,columnDepart2;
     for (int c=0;c<columnC;c++) {
-        if(hourRatioExcel->read(1,c+1).toString().contains("研发"))
-            columnYanfa=c+1;
-        if(hourRatioExcel->read(1,c+1).toString().contains("生产"))
-            columnShengchan=c+1;
-        if(hourRatioExcel->read(1,c+1).toString().contains("管理"))
-            columnGuanli=c+1;
-        if(hourRatioExcel->read(1,c+1).toString().contains("岗位"))
-            columnGangwei=c+1;
+        if(hourRatioExcel->read(1,c+1).toString().contains("工号"))
+            columnJobNum=c+1;
+        if(hourRatioExcel->read(1,c+1).toString().contains("姓名"))
+            columnHumanName=c+1;
+        if(hourRatioExcel->read(1,c+1).toString().contains("离职时间"))
+            columnLeaveDate=c+1;
+        if(hourRatioExcel->read(1,c+1).toString().contains("工时人员性质"))
+            columnCharClsfy=c+1;
+
         if(hourRatioExcel->read(1,c+1).toString().contains("BU"))
             columnDepart1=c+1;
-        if(hourRatioExcel->read(1,c+1).toString().contains("部门"))
+        if(hourRatioExcel->read(1,c+1).toString().contains("二级部门"))
             columnDepart2=c+1;
     }
     for (int r=0;r<=rowC;r++) {
 
-        if(hourRatioExcel->read(r+1,1).toString()==QString("姓名"))
+        if(hourRatioExcel->read(r+1,columnJobNum).toString()==QString("工号"))
             continue;
-        if(hourRatioExcel->read(r+1,1).toString().isNull())
+        if(hourRatioExcel->read(r+1,columnJobNum).toString().isNull())
             continue;
-        //每个人的岗位信息
-        humanPostTypeInfo[hourRatioExcel->read(r+1,1).toString()]=hourRatioExcel->read(r+1,columnGangwei).toString();
-        //每个人的部门信息
-        humanDepartmentInfo[hourRatioExcel->read(r+1,1).toString()].push_back(hourRatioExcel->read(r+1,columnDepart1).toString());
-        humanDepartmentInfo[hourRatioExcel->read(r+1,1).toString()].push_back(hourRatioExcel->read(r+1,columnDepart2).toString());
+        //每个工号的性质信息
+        jobNumPostTypeInfo[hourRatioExcel->read(r+1,columnJobNum).toString()]=hourRatioExcel->read(r+1,columnCharClsfy).toString();
+        //每个工号的部门信息
+        jobNumDepartmentInfo[hourRatioExcel->read(r+1,columnJobNum).toString()].push_back(hourRatioExcel->read(r+1,columnDepart1).toString());
+        jobNumDepartmentInfo[hourRatioExcel->read(r+1,columnJobNum).toString()].push_back(hourRatioExcel->read(r+1,columnDepart2).toString());
+        QString tmp=hourRatioExcel->read(r+1,columnLeaveDate).toString();
+        if(tmp.contains(QRegExp("[0-9/]")))
+        {
+            auto leaveT=hourRatioExcel->read(r+1,columnLeaveDate).toString().split(QRegExp("[/-]"));
+            jobNumLeaveTimeInfo[hourRatioExcel->read(r+1,columnJobNum).toString()]=QDate(leaveT[0].toInt(),leaveT[1].toInt(),leaveT[2].toInt());
+        }
     }
 
 }
@@ -433,34 +488,39 @@ void MainWindow::projectDataConfigImport(){
 
     //统计项目和人员对应关系 项目和时间的关系
     int columnPrjName,columnDepartment,columnStartTime,columnEndTime,columnPrjType,columnPrjWorker;
+    int columnPrjChar;
     for (int c=0;c<columnC;c++) {
         if(projectDataExcel->read(1,c+1).toString().contains("项目名称"))
             columnPrjName=c+1;
-        if(projectDataExcel->read(1,c+1).toString().contains("所属部门"))
+        if(projectDataExcel->read(1,c+1).toString().contains("二级部门"))
             columnDepartment=c+1;
         if(projectDataExcel->read(1,c+1).toString().contains("开始时间"))
             columnStartTime=c+1;
         if(projectDataExcel->read(1,c+1).toString().contains("结束时间"))
             columnEndTime=c+1;
-        if(projectDataExcel->read(1,c+1).toString().contains("项目类别"))
+        if(projectDataExcel->read(1,c+1).toString().contains("项目类型"))
             columnPrjType=c+1;
+        if(projectDataExcel->read(1,c+1).toString().contains("项目属性"))
+            columnPrjChar=c+1;
         if(projectDataExcel->read(1,c+1).toString().contains("项目成员"))
             columnPrjWorker=c+1;
     }
     for (int r=0;r<=rowC;r++) {
         //每个人的岗位
-        if(projectDataExcel->read(r+1,1).toString()==QString("项目名称") )
+        if(projectDataExcel->read(r+1,columnPrjName).toString()==QString("项目名称") )
             continue;
-        if(projectDataExcel->read(r+1,1).toString().isNull())
+        if(projectDataExcel->read(r+1,columnPrjName).toString().isNull())
             continue;
-        projectTypeInfo[projectDataExcel->read(r+1,1).toString()]=projectDataExcel->read(r+1,columnPrjType).toString();
-        projectDepartmentInfo[projectDataExcel->read(r+1,1).toString()]=projectDataExcel->read(r+1,columnDepartment).toString();
+        projectTypeInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnPrjType).toString());
+        projectTypeInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnPrjChar).toString());
 
-        projectDateInfo[projectDataExcel->read(r+1,1).toString()].push_back(QDate::fromString(projectDataExcel->read(r+1,columnStartTime).toString(),"yyyyMMdd"));
+        projectDepartmentInfo[projectDataExcel->read(r+1,columnPrjName).toString()]=projectDataExcel->read(r+1,columnDepartment).toString();
 
-        projectDateInfo[projectDataExcel->read(r+1,1).toString()].push_back(QDate::fromString(projectDataExcel->read(r+1,columnEndTime).toString(),"yyyyMMdd"));
+        projectDateInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(QDate::fromString(projectDataExcel->read(r+1,columnStartTime).toString(),"yyyyMMdd"));
 
-        auto workersList=projectDataExcel->read(r+1,columnPrjWorker).toString().split(QRegExp("[,，]"));
+        projectDateInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(QDate::fromString(projectDataExcel->read(r+1,columnEndTime).toString(),"yyyyMMdd"));
+
+        auto workersList=projectDataExcel->read(r+1,columnPrjWorker).toString().split(QRegExp("[,，/、]"));
         foreach (QString worker, workersList) {
             projectHumansInfo[projectDataExcel->read(r+1,1).toString()].push_back(worker);
         }
@@ -473,6 +533,13 @@ void MainWindow::projectWorkingHoursGenerate(){
     ui->tableWidget->clear();
 }
 
+/**/
+void MainWindow::appendRowInAssemableTable(int rowNum,QVector<QString> dataList){
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+    for (int c=0;c<dataList.count();c++) {
+        ui->tableWidget->setItem(rowNum,c,new QTableWidgetItem(dataList[c]));
+    }
+}
 
 //组装工时数据
 void MainWindow::assemblWorkingHoursData(){
@@ -487,14 +554,50 @@ void MainWindow::assemblWorkingHoursData(){
     //3.生成信息包括 姓名 日期 所属部门 一级部门 二级部门 岗位类别 项目名称 项目类型 工时占比
     //先生成当前月人员的项目信息
     calHumanCurrentMonthProjectInfo();
-    assemablesExcel=new QXlsx::Document;
-    foreach(QString humanKey,humanWorkdayRowInfo.keys()){
-        qDebug()<<humanKey;
-        //确定这个人当天的项目个数  <3
-        //根据这个人的当月项目总数进行排
-        //humanCurrentMonthProjectInfo
-        //assemablesExcel->write()
+    //显示在tableWidget上
+    int newRowNum=0;
+    ui->tableWidget->setColumnCount(9);
+
+    QVector<QString> rowData;
+    rowData<<"工号"<<"姓名"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"<<QString("日期/号(%1)").arg(QString::number(currentYear)+"年"+QString::number(currentMonth)+"月")<<"工时占比";
+    appendRowInAssemableTable(newRowNum,rowData);
+    newRowNum++;
+    //这个人的工号
+    foreach(QString jobNumKey,jobNumWorkdayRowInfo.keys()){
+        qDebug()<<jobNumKey;
+        //这个人员当前月工作日工作
+
+        foreach (QString humanWorkDay,jobNumWorkdayRowInfo[jobNumKey]) {
+
+            //确定这个人当天的项目个数  <3
+            //根据这个人的当月项目总数进行排
+            int prjCount=0;
+            if(jobNumCurrentMonthProjectInfo[jobNumKey].size()>3){
+                prjCount=3;
+            }
+            else{
+                prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
+            }
+
+            if(prjCount==0)
+                continue;
+
+            qDebug()<<"日期："+humanWorkDay+"项目个数:"+prjCount;
+            for (int numPrj=0;numPrj<prjCount;numPrj++) {
+
+                QVector<QString> rowTmp;
+                //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
+                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
+                      <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
+                     <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<humanWorkDay<<"工时占比";
+                appendRowInAssemableTable(newRowNum,rowTmp);
+                newRowNum++;
+            }
+        }
     }
+
+    qDebug()<<"共写入行："+QString::number(newRowNum);
+
 
 
 }
@@ -512,7 +615,7 @@ void MainWindow::exportProjectHours(){
     {
         qDebug()<<"not file";
         file.open(QIODevice::WriteOnly);
-        file.close();
+
     }
 
 
@@ -522,22 +625,19 @@ void MainWindow::exportProjectHours(){
 
     for (int r=1;r<=tableRowCount;r++) {
         for (int c=1;c<=tableColumnCount;c++) {
-            auto type= ui->tableWidget->item(r-1,c-1)->type();
-            auto data=ui->tableWidget->item(r-1,c-1)->text();
-            qDebug()<<type<<data;
-            switch(type)
-            {
-            case 6:
-                xlsxExcel.write(r,c,data.toInt());
-                break;
-            case 10:
+            if(ui->tableWidget->item(r-1,c-1)!=0){
+
+                auto type= ui->tableWidget->item(r-1,c-1)->type();
+                auto data=ui->tableWidget->item(r-1,c-1)->text();
+
+                //qDebug()<<type<<data;
                 xlsxExcel.write(r,c,data);
-                break;
             }
         }
     }
 
     xlsxExcel.save();
+    file.close();
 }
 
 //导入数据
@@ -575,34 +675,6 @@ void MainWindow::importDintCheckData(){
     }
 
     qDebug()<<dingCheckImportFilename<<hoursRatioConfigImportFilename<<projectConfigImportFilename<<generateHoursImportFilename;
-
-//    if(!dingCheckImportFilename.isNull())
-//    {
-//        dingCheckImport();
-//        return;
-//    }
-
-//    QXlsx::Document xlsxDoc(selectFile);
-//    qDebug()<<xlsxDoc.dimension().rowCount()<<xlsxDoc.dimension().columnCount();
-//    int rowC,columnC;
-//    rowC=xlsxDoc.dimension().rowCount();
-//    columnC=xlsxDoc.dimension().columnCount();
-//    ui->tableWidget->setRowCount(rowC);
-//    ui->tableWidget->setColumnCount(columnC);
-
-//    for (int r=0;r<=rowC;r++) {
-//        for (int c=0;c<columnC;c++) {
-//            //qDebug()<<xlsxDoc.read(r,c).userType()<<xlsxDoc.read(r,c).type()<<xlsxDoc.read(r,c).toString();
-//            auto data=xlsxDoc.read(r+1,c+1);
-//            QString content=data.toString();
-//            auto item=new QTableWidgetItem(content,data.type());
-//            item->setTextAlignment(Qt::AlignCenter);
-//            item->setFlags(Qt::ItemIsEditable);
-//            ui->tableWidget->setItem(r,c,item);
-//        }
-//    }
-
-
 
 }
 
@@ -777,7 +849,31 @@ void MainWindow::configPostType(){
 
 /*计算人员当月项目信息*/
 void MainWindow::calHumanCurrentMonthProjectInfo(){
+    //必须先导入项目信息
+    if(projectConfigImportFilename.isNull())
+        return;
+
+
     //根据当前月，项目参与人员进行配置
-    humanCurrentMonthProjectInfo.clear();
+    jobNumCurrentMonthProjectInfo.clear();
     //更新humanCurrentMonthProjectInfo
+    //1.projectHumansInfo 项目-人名
+    //2.humanWorkdayRowInfo.keys() 当前月的人名
+    //3.必须确保当前月有该项目，项目周期和当前月的匹配
+
+    int prjStartYear,prjEndYear,prjStartMonth,prjEndMonth;
+    foreach (QString jobNum, jobNumWorkdayRowInfo.keys()) {
+        foreach (QString prjName, projectHumansInfo.keys()) {
+            prjStartYear=projectDateInfo[prjName][0].year();
+            prjEndYear=projectDateInfo[prjName][1].year();
+            prjStartMonth=projectDateInfo[prjName][0].month();
+            prjEndMonth=projectDateInfo[prjName][1].month();
+            if(currentYear>=prjStartYear && currentYear<=prjEndYear &&currentMonth>=prjStartMonth && currentMonth<=prjEndMonth){
+                if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
+                    jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+                }
+            }
+        }
+    }
+
 }
