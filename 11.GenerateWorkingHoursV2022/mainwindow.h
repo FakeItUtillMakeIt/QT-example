@@ -60,7 +60,7 @@ private:
 
 
     //岗位占比配置信息
-    QMap<QString,QVector<qreal>> postTypeConfigData;
+    QMap<QString,QMap<QString,QVector<qreal>>> postTypeConfigData;
     //工号和岗位对应关系
     QMap<QString,QString> jobNumPostTypeInfo;
     //工号和人对应
@@ -84,7 +84,8 @@ private:
     int currentYear;
     //工号-当月项目的总数关系
     QMap<QString,QVector<QString>> jobNumCurrentMonthProjectInfo;
-
+    //工号-当月项目的类型关系
+    QMap<QString,QMap<QString,int>> jobNumCurrentMonthPrjTypeInfo;
 
 
     //岗位配置界面
@@ -118,6 +119,9 @@ private:
     void calHumanCurrentMonthProjectInfo();
     //添加一行至组装工时表
     void appendRowInAssemableTable(int rowNum,QVector<QString> dataList);
+
+    //分配工时
+    void assignWorkingHourRatio(int jobNumType,int restYanfa,int restWaijie,int restQita,int restYanfaRatio,int restWaijieRatio,int restQitaRatio);
 
 private slots:
 

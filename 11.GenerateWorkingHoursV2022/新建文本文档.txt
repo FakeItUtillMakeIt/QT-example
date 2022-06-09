@@ -1,0 +1,40 @@
+if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("研发")){
+                    if(tmpPrjTypeCount[jobNumKey]["外接产品"]+tmpPrjTypeCount[jobNumKey]["外接技术"]==0){
+                        restYanfa+=restWaiji;
+                    }
+                    if(tmpPrjTypeCount[jobNumKey]["外接产品"]==1 && tmpPrjTypeCount[jobNumKey]["外接技术"]==0){
+                        int dd=restWaiji%10;
+                        restWaiji-=restWaiji>10?(dd):0;
+                        restYanfa+=dd;
+                    }
+
+                    if(tmpPrjTypeCount[jobNumKey]["研发"]==1){
+                        ratio=restYanfa;
+                    }
+                    else{
+                        tmpPrjTypeCount[jobNumKey]["研发"]-=1;
+                        ratio=rdGen.bounded(1,restYanfa);
+                    }
+
+                }
+
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("外接")){
+                    if(tmpPrjTypeCount[jobNumKey]["外接产品"]==0){
+                        restWaijijishu=restWaiji;
+                        if(tmpPrjTypeCount[jobNumKey]["外接技术"]==1){
+                            ratio=restWaiji;
+                        }
+                        else{
+                            ratio=rdGen.bounded(1,restWaiji);
+                        }
+                    }
+                    if(tmpPrjTypeCount[jobNumKey]["外接技术"]==0){
+                        restWaijijishu=restWaiji;
+                        if(tmpPrjTypeCount[jobNumKey]["外接技术"]==1){
+                            ratio=restWaiji;
+                        }
+                        else{
+                            ratio=rdGen.bounded(1,restWaiji);
+                        }
+                    }
+                }

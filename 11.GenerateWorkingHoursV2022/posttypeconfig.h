@@ -7,6 +7,7 @@
 #include <QtWidgets>
 
 
+
 class PostTypeConfig : public QWidget
 {
     Q_OBJECT
@@ -21,7 +22,7 @@ public:
         return  instance;
     }
 
-QMap<QString,QVector<qreal>> postTypeConfigData;
+QMap<QString,QMap<QString,QVector<qreal>>> postTypeConfigData;
 
 private:
     static PostTypeConfig* instance;
@@ -35,6 +36,8 @@ private:
     QPushButton* btnCancel;
     QPushButton* btnOK;
     QStringList configData;
+
+    QMap<int,QString> columnPrjTypeName;
 
 private slots:
     void editConfig();

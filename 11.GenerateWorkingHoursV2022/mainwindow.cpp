@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
                                           "border-color: red;");
 
     postTyprCfgWidget=nullptr;
+    postTyprCfgWidget=PostTypeConfig::getInstance();
+    postTypeConfigData=postTyprCfgWidget->postTypeConfigData;
 }
 
 MainWindow::~MainWindow()
@@ -54,7 +56,7 @@ void MainWindow::initConnect(){
     /*导出项目工时*/
     connect(ui->btnOutputPjctHours,&QPushButton::clicked,this,&MainWindow::exportProjectHours);
 
-    /*配置岗位类型*/
+    /*配置岗位占比类型*/
     connect(ui->btnPostTypeCfg,&QPushButton::clicked,this,&MainWindow::configPostType);
 
     /*Excel操作*/
@@ -279,7 +281,7 @@ void MainWindow::dingCheckImport(){
     dimissionRegFormat.setPattern(dimissionPattern);
     QString breakPattern("休息");
     breakDateRegFormat.setPattern(breakPattern);
-    QString vacatePattern("请假");
+    QString vacatePattern("在岗");
     vacateRegFormat.setPattern(vacatePattern);
 
 
@@ -295,9 +297,10 @@ void MainWindow::dingCheckImport(){
             if(content.contains(dingCheckRegFormat))
                 item->setBackground(QColor(120,255,0));
             if(content.contains(vacateRegFormat))
-                item->setBackground(QColor(255,106,106));
+                item->setBackground(QColor(100,250,106));
             if(content.contains(breakDateRegFormat))
                 item->setBackground(QColor(189,183,107));
+
 
             item->setTextAlignment(Qt::AlignCenter);
             item->setFlags(Qt::ItemIsEditable);
@@ -556,41 +559,139 @@ void MainWindow::assemblWorkingHoursData(){
     calHumanCurrentMonthProjectInfo();
     //显示在tableWidget上
     int newRowNum=0;
-    ui->tableWidget->setColumnCount(9);
+    ui->tableWidget->setColumnCount(10);
 
     QVector<QString> rowData;
-    rowData<<"工号"<<"姓名"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"<<QString("日期/号(%1)").arg(QString::number(currentYear)+"年"+QString::number(currentMonth)+"月")<<"工时占比";
+    rowData<<"工号"<<"姓名"<<"岗位类型"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
+          <<QString("日期/号(%1)").arg(QString::number(currentYear)+"年"+QString::number(currentMonth)+"月")
+         <<"工时占比(%)";
+    //先对工号的项目进行统计  得到工号对应的项目和工号对应的类型及性质
     appendRowInAssemableTable(newRowNum,rowData);
     newRowNum++;
     //这个人的工号
     foreach(QString jobNumKey,jobNumWorkdayRowInfo.keys()){
         qDebug()<<jobNumKey;
-        //这个人员当前月工作日工作
+        QRandomGenerator rdGen;
 
+        //对每个工作日 //每个项目占比  需要根据这个人的岗位和项目的类型/属性决定
         foreach (QString humanWorkDay,jobNumWorkdayRowInfo[jobNumKey]) {
+            int ratio;
 
-            //确定这个人当天的项目个数  <3
-            //根据这个人的当月项目总数进行排
-            int prjCount=0;
-            if(jobNumCurrentMonthProjectInfo[jobNumKey].size()>3){
-                prjCount=3;
+            int sumRatio=0;//总体
+            int restRatio=100;
+
+            int yanfaRatio=0;//研发
+            int sumYanfaRatio=0;
+            int restYanfa=0;
+
+            int waiJieJishuRatio=0;//外接技术
+            int sumWaijijishuRatio=0;
+            int restWaijijishu=0;
+
+            int waiJiChanpinRatio=0;//外接产品
+            int sumWaijichanpinRatio=0;
+            int restWaijichanpin=0;
+
+            int waiJieRatio=0;//外接
+            int sumWaijiRatio=0;
+            int restWaiji=20;
+
+            int qitaRatio=0;//其他
+            int sumQitaRatio=0;
+            int restQita=0;
+
+            /*占比分配算法*/
+            //这个工号岗位为什么岗位
+            int jobNumTypeFlag;
+            if(jobNumPostTypeInfo[jobNumKey].contains("研发")){
+                int low=postTypeConfigData["研发岗位"]["自研"][0];
+                int high=postTypeConfigData["研发岗位"]["自研"][1];
+                restYanfa=rdGen.bounded(low,high);
+                restWaiji=100-restYanfa;
+                restQita=0;
+                jobNumTypeFlag=1;
             }
-            else{
-                prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
+            if(jobNumPostTypeInfo[jobNumKey].contains("生产")){
+                restYanfa=0;
+                restWaijijishu=0;
+                restWaijichanpin=rdGen.bounded(1,100);
+                restQita=100-restWaijichanpin;
+                jobNumTypeFlag=2;
             }
+            if(jobNumPostTypeInfo[jobNumKey].contains("质量")){
+                int low=postTypeConfigData["质量岗位"]["外接产品"][0];
+                int high=postTypeConfigData["质量岗位"]["外接产品"][1];
+                restYanfa=0;
+                restWaiji=rdGen.bounded(low,high);
+                restWaijijishu=rdGen.bounded(1,50>restWaiji?restWaiji:50);
+                restWaijichanpin=restWaiji-restWaijijishu;
+                restQita=100-restWaiji;
+                jobNumTypeFlag=3;
+            }
+            if(jobNumPostTypeInfo[jobNumKey].contains("采购")){
+                restYanfa=0;
+                restWaijijishu=0;
+                restWaijichanpin=rdGen.bounded(1,100);
+                restWaiji=restWaijichanpin;
+                restQita=100-restWaijichanpin;
+                jobNumTypeFlag=4;
+            }
+            if(jobNumPostTypeInfo[jobNumKey].contains("其他")){
+                restYanfa=0;
+                restWaiji=0;
+                restQita=0;
+                jobNumTypeFlag=5;
+            }
+            /**/
+
+            //确定这个人当天的项目个数
+            int prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
 
             if(prjCount==0)
                 continue;
 
+            //项目类型
+            //先分配占比 防止工号当前月没有外接项目造成比例错误的情况
+
+            auto tmpPrjTypeCount=jobNumCurrentMonthPrjTypeInfo;
+            int restYanfaC=tmpPrjTypeCount[jobNumKey]["研发"];
+            int restWaijieJishuC=tmpPrjTypeCount[jobNumKey]["外接技术"];
+            int restWaijieChanpinC=tmpPrjTypeCount[jobNumKey]["外接产品"];
+            int restQitaC=tmpPrjTypeCount[jobNumKey]["其他"];
+
             qDebug()<<"日期："+humanWorkDay+"项目个数:"+prjCount;
             for (int numPrj=0;numPrj<prjCount;numPrj++) {
+                //根据工号岗位和项目类型及属性共同确定这个项目的占比分配
+                //当前项目属性
+
+                switch (jobNumTypeFlag) {
+                    case 1://研发岗位
+                        //判断项目属性
+
+                    break;
+                    case 2://生产岗位
+
+                    break;
+                    case 3://质量岗位
+
+                    break;
+                    case 4://采购岗位
+
+                    break;
+                    case 5://其他岗位
+
+                    break;
+                }
+
+
 
                 QVector<QString> rowTmp;
                 //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
-                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
+                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
                       <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
-                     <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<humanWorkDay<<"工时占比";
+                     <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<humanWorkDay<<QString::number(ratio);
                 appendRowInAssemableTable(newRowNum,rowTmp);
+                qDebug()<<rowTmp;
                 newRowNum++;
             }
         }
@@ -598,7 +699,11 @@ void MainWindow::assemblWorkingHoursData(){
 
     qDebug()<<"共写入行："+QString::number(newRowNum);
 
+}
 
+
+//分配工时
+void MainWindow::assignWorkingHourRatio(int jobNumType,int restYanfa,int restWaijie,int restQita,int restYanfaRatio,int restWaijieRatio,int restQitaRatio){
 
 }
 
@@ -827,7 +932,7 @@ void MainWindow::saveExcelData(QString saveFileName){
     setTableItemEditable(false);
 }
 
-/*配置岗位类型*/
+/*配置岗位占比类型*/
 void MainWindow::configPostType(){
     if(postTyprCfgWidget==nullptr){
 
@@ -861,6 +966,7 @@ void MainWindow::calHumanCurrentMonthProjectInfo(){
     //2.humanWorkdayRowInfo.keys() 当前月的人名
     //3.必须确保当前月有该项目，项目周期和当前月的匹配
 
+    //统计工号对应的项目
     int prjStartYear,prjEndYear,prjStartMonth,prjEndMonth;
     foreach (QString jobNum, jobNumWorkdayRowInfo.keys()) {
         foreach (QString prjName, projectHumansInfo.keys()) {
@@ -868,12 +974,36 @@ void MainWindow::calHumanCurrentMonthProjectInfo(){
             prjEndYear=projectDateInfo[prjName][1].year();
             prjStartMonth=projectDateInfo[prjName][0].month();
             prjEndMonth=projectDateInfo[prjName][1].month();
+            //统计当前年月的项目信息
             if(currentYear>=prjStartYear && currentYear<=prjEndYear &&currentMonth>=prjStartMonth && currentMonth<=prjEndMonth){
                 if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
                     jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
                 }
             }
         }
+    }
+
+    //统计工号对应项目的类型和性质
+    foreach(QString jobNumKey,jobNumCurrentMonthProjectInfo.keys()){
+        for(int i=0;i<jobNumCurrentMonthProjectInfo[jobNumKey].size();i++){
+            //第i个项目的信息 /项目类型
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][i]][0].contains("研发")){
+                jobNumCurrentMonthPrjTypeInfo[jobNumKey]["研发"]+=1;
+            }
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][i]][0].contains("外接")){
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][i]][1].contains("技术")){
+                    jobNumCurrentMonthPrjTypeInfo[jobNumKey]["外接技术"]+=1;
+                }
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][i]][1].contains("产品")){
+                    jobNumCurrentMonthPrjTypeInfo[jobNumKey]["外接产品"]+=1;
+                }
+            }
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][i]][0].contains("其他")){
+                jobNumCurrentMonthPrjTypeInfo[jobNumKey]["其他"]+=1;
+            }
+        }
+
+           // jobNumCurrentMonthPrjTypeInfo
     }
 
 }
