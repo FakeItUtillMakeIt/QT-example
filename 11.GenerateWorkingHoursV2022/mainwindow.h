@@ -40,6 +40,7 @@ private:
 
     bool isImportDingCheckData;
     bool isNewImportDingCheckFlag;
+    bool isDayHourGFlag;
 
     QString dingCheckImportFilename;
     QString hoursRatioConfigImportFilename;
@@ -133,6 +134,7 @@ private slots:
 
     //组装工时数据
     void assemblWorkingHoursData();
+    void assemblWorkingHoursMonthData();
 
     //导出项目工时
     void exportProjectHours();

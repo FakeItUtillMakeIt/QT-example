@@ -53,6 +53,7 @@ void MainWindow::initConnect(){
 
     /*组装工时*/
     connect(ui->btnAssembleHoursData,&QPushButton::clicked,this,&MainWindow::assemblWorkingHoursData);
+    connect(ui->btnAssembleHoursMonthData,&QPushButton::clicked,this,&MainWindow::assemblWorkingHoursMonthData);
     /*导出项目工时*/
     connect(ui->btnOutputPjctHours,&QPushButton::clicked,this,&MainWindow::exportProjectHours);
 
@@ -81,6 +82,7 @@ void MainWindow::projectHoursGeneratePage(){
     ui->cbxDepartment->show();
     ui->cbxCompany->show();
     ui->btnAssembleHoursData->show();
+    ui->btnAssembleHoursMonthData->show();
     ui->btnOutputPjctHours->show();
 
     ui->btnSaveData->hide();
@@ -100,7 +102,11 @@ void MainWindow::projectHoursGeneratePage(){
 
     }
     projectWorkingHoursGenerate();
-    assemblWorkingHoursData();
+    if(isDayHourGFlag)
+
+        assemblWorkingHoursData();
+    else
+        assemblWorkingHoursMonthData();
     isEditFlag=false;
 
 }
@@ -118,6 +124,7 @@ void MainWindow::dingCheckWorkDataPage(){
     ui->cbxDepartment->show();
     ui->cbxCompany->show();
     ui->btnAssembleHoursData->hide();
+    ui->btnAssembleHoursMonthData->hide();
     ui->btnOutputPjctHours->hide();
 
     ui->btnSaveData->show();
@@ -154,6 +161,7 @@ void MainWindow::hoursRatioConfigPage(){
     ui->cbxDepartment->show();
     ui->cbxCompany->show();
     ui->btnAssembleHoursData->hide();
+    ui->btnAssembleHoursMonthData->hide();
     ui->btnOutputPjctHours->hide();
 
     ui->btnSaveData->hide();
@@ -189,6 +197,7 @@ void MainWindow::projectDataConfigPage(){
     ui->cbxDepartment->show();
     ui->cbxCompany->show();
     ui->btnAssembleHoursData->hide();
+    ui->btnAssembleHoursMonthData->hide();
     ui->btnOutputPjctHours->hide();
 
     ui->btnSaveData->hide();
@@ -534,6 +543,8 @@ void MainWindow::projectDataConfigImport(){
 
 void MainWindow::projectWorkingHoursGenerate(){
     ui->tableWidget->clear();
+    ui->tableWidget->setRowCount(0);
+    ui->tableWidget->setColumnCount(0);
 }
 
 /**/
@@ -550,7 +561,7 @@ void MainWindow::assemblWorkingHoursData(){
     if(dingCheckImportFilename.isNull() || hoursRatioConfigImportFilename.isNull() || projectConfigImportFilename.isNull())
         return;
     isAssemableHoursFlag=true;
-
+    isDayHourGFlag=true;
     //将excel进行组装操作
     //1.应该以考勤表为基础添加当天的分配的项目类型，工时，
     //2.生成的工时文件需要和OPM输出的文件格式尽量保持一致
@@ -573,73 +584,44 @@ void MainWindow::assemblWorkingHoursData(){
         qDebug()<<jobNumKey;
         QRandomGenerator rdGen;
 
+        rdGen.seed(1);
         //对每个工作日 //每个项目占比  需要根据这个人的岗位和项目的类型/属性决定
         foreach (QString humanWorkDay,jobNumWorkdayRowInfo[jobNumKey]) {
             int ratio;
 
-            int sumRatio=0;//总体
-            int restRatio=100;
-
-            int yanfaRatio=0;//研发
-            int sumYanfaRatio=0;
             int restYanfa=0;
 
-            int waiJieJishuRatio=0;//外接技术
-            int sumWaijijishuRatio=0;
+
             int restWaijijishu=0;
 
-            int waiJiChanpinRatio=0;//外接产品
-            int sumWaijichanpinRatio=0;
             int restWaijichanpin=0;
 
-            int waiJieRatio=0;//外接
-            int sumWaijiRatio=0;
+
             int restWaiji=20;
 
-            int qitaRatio=0;//其他
-            int sumQitaRatio=0;
             int restQita=0;
 
             /*占比分配算法*/
             //这个工号岗位为什么岗位
             int jobNumTypeFlag;
             if(jobNumPostTypeInfo[jobNumKey].contains("研发")){
-                int low=postTypeConfigData["研发岗位"]["自研"][0];
-                int high=postTypeConfigData["研发岗位"]["自研"][1];
-                restYanfa=rdGen.bounded(low,high);
-                restWaiji=100-restYanfa;
-                restQita=0;
+
                 jobNumTypeFlag=1;
             }
             if(jobNumPostTypeInfo[jobNumKey].contains("生产")){
-                restYanfa=0;
-                restWaijijishu=0;
-                restWaijichanpin=rdGen.bounded(1,100);
-                restQita=100-restWaijichanpin;
+
                 jobNumTypeFlag=2;
             }
             if(jobNumPostTypeInfo[jobNumKey].contains("质量")){
-                int low=postTypeConfigData["质量岗位"]["外接产品"][0];
-                int high=postTypeConfigData["质量岗位"]["外接产品"][1];
-                restYanfa=0;
-                restWaiji=rdGen.bounded(low,high);
-                restWaijijishu=rdGen.bounded(1,50>restWaiji?restWaiji:50);
-                restWaijichanpin=restWaiji-restWaijijishu;
-                restQita=100-restWaiji;
+
                 jobNumTypeFlag=3;
             }
             if(jobNumPostTypeInfo[jobNumKey].contains("采购")){
-                restYanfa=0;
-                restWaijijishu=0;
-                restWaijichanpin=rdGen.bounded(1,100);
-                restWaiji=restWaijichanpin;
-                restQita=100-restWaijichanpin;
+
                 jobNumTypeFlag=4;
             }
             if(jobNumPostTypeInfo[jobNumKey].contains("其他")){
-                restYanfa=0;
-                restWaiji=0;
-                restQita=0;
+
                 jobNumTypeFlag=5;
             }
             /**/
@@ -654,36 +636,191 @@ void MainWindow::assemblWorkingHoursData(){
             //先分配占比 防止工号当前月没有外接项目造成比例错误的情况
 
             auto tmpPrjTypeCount=jobNumCurrentMonthPrjTypeInfo;
+            //当天的各个类型项目数
             int restYanfaC=tmpPrjTypeCount[jobNumKey]["研发"];
             int restWaijieJishuC=tmpPrjTypeCount[jobNumKey]["外接技术"];
             int restWaijieChanpinC=tmpPrjTypeCount[jobNumKey]["外接产品"];
             int restQitaC=tmpPrjTypeCount[jobNumKey]["其他"];
 
+            switch (jobNumTypeFlag) {
+                case 1://研发岗位
+                    restQita=0;
+                    //有外接技术
+                    if((restWaijieJishuC)>0){
+                        //外接产品
+                        if(restWaijieChanpinC>0){
+                            restWaijichanpin=rdGen.bounded(0,10);
+                            restWaijijishu=rdGen.bounded(0,20-restWaijichanpin);
+                            restYanfa=100-restWaijijishu-restWaijichanpin;
+                        }
+                        else{
+                            restWaijijishu=rdGen.bounded(0,20);
+                            restYanfa=100-restWaijijishu;
+                        }
+
+                    }
+                    //有产品 无技术
+                    if(restWaijieChanpinC>0){
+                        if(restWaijieJishuC==0){
+                            restWaijichanpin=rdGen.bounded(0,10);
+                            restYanfa=100-restWaijichanpin;
+                        }
+                    }
+
+                    if((restWaijieJishuC+restWaijieChanpinC)==0){
+                        restYanfa=100;
+                    }
+
+                break;
+                case 2://生产岗位
+                    restYanfa=0;
+                    restWaijijishu=0;
+                    //有外接产品
+                    if((restWaijieChanpinC)>0){
+                        //you其他
+                        if( restQitaC>0){
+                            restWaijichanpin=rdGen.bounded(0,100);
+                            restQita=100-restWaijichanpin;
+                        }
+                        else{
+                            restWaijichanpin=100;
+                            restQita=0;
+                        }
+
+                    }
+                    //有其他  无产品
+                    if(restQitaC>0){
+                        if(restWaijieChanpinC==0){
+                            restQita=100;
+                            restWaijichanpin=0;
+                        }
+                    }
+
+
+                break;
+                case 3://质量岗位
+                    restYanfa=0;
+                    //有外接  //肯定有其他项目
+                    //外接合计不超过0.6
+                    //有产品
+                    if(restWaijieChanpinC>0){
+                        //有技术
+                        if(restWaijieJishuC>0){
+                            restWaijijishu=rdGen.bounded(0,50);
+                            restWaijichanpin=rdGen.bounded(0,60-restWaijijishu);
+                            restQita=100-restWaijijishu-restWaijichanpin;
+                        }
+                        //无技术
+                        else{
+                            restWaijichanpin=rdGen.bounded(0,60);
+                            restWaijijishu=0;
+                            restQita=100-restWaijijishu-restWaijichanpin;
+                        }
+                    }
+                    //有技术
+                    if(restWaijieJishuC>0){
+                        //没产品
+                        if(restWaijieChanpinC==0){
+                            restWaijijishu=rdGen.bounded(0,50);
+                            restWaijichanpin=0;
+                            restQita=100-restWaijijishu-restWaijichanpin;
+                        }
+                    }
+                    if((restWaijieJishuC+restWaijieChanpinC)==0){
+                        restQita=100;
+                        restWaijijishu=0;
+                        restWaijichanpin=0;
+                    }
+
+                break;
+                case 4://采购岗位
+                    restYanfa=0;
+                    restWaijijishu=0;
+                    //有产品
+                    if(restWaijieChanpinC>0){
+                        //无其他
+                        if(restQitaC==0){
+                            restWaijichanpin=100;
+                        }
+                        //有其他
+                        if(restQitaC>0){
+                            restWaijichanpin=rdGen.bounded(0,100);
+                            restQita=100-restWaijichanpin;
+                        }
+                    }
+                    //无产品
+                    if(restWaijieChanpinC==0){
+                        if(restQitaC>0){
+                            restQita=100;
+                        }
+                    }
+                break;
+                case 5://其他岗位
+                    restQita=0;
+                    restYanfa=0;
+                    restWaiji=0;
+                    restWaijijishu=0;
+                    restWaijichanpin=0;
+                break;
+            }
+
+
             qDebug()<<"日期："+humanWorkDay+"项目个数:"+prjCount;
             for (int numPrj=0;numPrj<prjCount;numPrj++) {
                 //根据工号岗位和项目类型及属性共同确定这个项目的占比分配
                 //当前项目属性
+                //项目为研发
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("研发")){
+                    if(restYanfaC==1){
+                        ratio=restYanfa;
+                        restYanfa-=restYanfa;
+                    }
+                    else{
+                        ratio=rdGen.bounded(0,restYanfa);
+                        restYanfa-=ratio;
 
-                switch (jobNumTypeFlag) {
-                    case 1://研发岗位
-                        //判断项目属性
-
-                    break;
-                    case 2://生产岗位
-
-                    break;
-                    case 3://质量岗位
-
-                    break;
-                    case 4://采购岗位
-
-                    break;
-                    case 5://其他岗位
-
-                    break;
+                    }
+                    restYanfaC--;
                 }
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("外接")){
+                    if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1].contains("技术")){
+                        if(restWaijieJishuC==1){
+                            ratio=restWaijijishu;
+                            restWaijijishu-=restWaijijishu;
+                        }
+                        else{
 
+                            ratio=rdGen.bounded(0,restWaijijishu);
+                            restWaijijishu-=ratio;
 
+                        }
+                        restWaijieJishuC--;
+                    }
+                    if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1].contains("产品")){
+                        if(restWaijieChanpinC==1){
+                            ratio=restWaijichanpin;
+                           restWaijichanpin-=restWaijichanpin;
+                        }
+                        else{
+                            ratio=rdGen.bounded(0,restWaijichanpin);
+                            restWaijichanpin-=ratio;
+
+                        }
+                        restWaijieChanpinC--;
+                    }
+                }
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("其他")){
+                    if(restQitaC==1){
+                        ratio=restQita;
+                        restQita-=restQita;
+                    }
+                    else{
+                        ratio=rdGen.bounded(0,restQita);
+                        restQita-=ratio;
+
+                    }
+                    restQitaC--;
+                }
 
                 QVector<QString> rowTmp;
                 //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
@@ -695,6 +832,289 @@ void MainWindow::assemblWorkingHoursData(){
                 newRowNum++;
             }
         }
+    }
+
+    qDebug()<<"共写入行："+QString::number(newRowNum);
+
+}
+
+
+//组装工时数据  按月
+void MainWindow::assemblWorkingHoursMonthData(){
+
+    if(dingCheckImportFilename.isNull() || hoursRatioConfigImportFilename.isNull() || projectConfigImportFilename.isNull())
+        return;
+    isAssemableHoursFlag=true;
+    isDayHourGFlag=false;
+
+    //将excel进行组装操作
+    //1.应该以考勤表为基础添加当天的分配的项目类型，工时，
+    //2.生成的工时文件需要和OPM输出的文件格式尽量保持一致
+    //3.生成信息包括 姓名 日期 所属部门 一级部门 二级部门 岗位类别 项目名称 项目类型 工时占比
+    //先生成当前月人员的项目信息
+    calHumanCurrentMonthProjectInfo();
+    //显示在tableWidget上
+    int newRowNum=0;
+    ui->tableWidget->setColumnCount(10);
+
+    QVector<QString> rowData;
+    rowData<<"工号"<<"姓名"<<"岗位类型"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
+          <<QString("日期/年(%1)").arg(QString::number(currentYear)+"年")
+         <<"工时占比(%)";
+    //先对工号的项目进行统计  得到工号对应的项目和工号对应的类型及性质
+    appendRowInAssemableTable(newRowNum,rowData);
+    newRowNum++;
+    QRandomGenerator* rdGen=new QRandomGenerator;
+
+    int restYanfaC,restWaijieJishuC,restWaijieChanpinC,restQitaC;
+
+
+    //根据这个人的工号 + 当月项目
+    foreach (QString jobNumKey, jobNumCurrentMonthProjectInfo.keys()) {
+        int ratio;
+
+        int restYanfa=0;
+
+
+        int restWaijijishu=0;
+
+        int restWaijichanpin=0;
+
+
+        int restWaiji=0;
+
+        int restQita=0;
+
+        /*占比分配算法*/
+        //这个工号岗位为什么岗位
+        int jobNumTypeFlag;
+        if(jobNumPostTypeInfo[jobNumKey].contains("研发")){
+
+            jobNumTypeFlag=1;
+        }
+        if(jobNumPostTypeInfo[jobNumKey].contains("生产")){
+
+            jobNumTypeFlag=2;
+        }
+        if(jobNumPostTypeInfo[jobNumKey].contains("质量")){
+
+            jobNumTypeFlag=3;
+        }
+        if(jobNumPostTypeInfo[jobNumKey].contains("采购")){
+
+            jobNumTypeFlag=4;
+        }
+        if(jobNumPostTypeInfo[jobNumKey].contains("其他")){
+
+            jobNumTypeFlag=5;
+        }
+        /**/
+
+        //确定这个人当天的项目个数
+        int prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
+
+        if(prjCount==0)
+            continue;
+
+        //项目类型
+        //先分配占比 防止工号当前月没有外接项目造成比例错误的情况
+
+        auto tmpPrjTypeCount=jobNumCurrentMonthPrjTypeInfo;
+        //当天的各个类型项目数
+        restYanfaC=tmpPrjTypeCount[jobNumKey]["研发"];
+        restWaijieJishuC=tmpPrjTypeCount[jobNumKey]["外接技术"];
+        restWaijieChanpinC=tmpPrjTypeCount[jobNumKey]["外接产品"];
+        restQitaC=tmpPrjTypeCount[jobNumKey]["其他"];
+
+        switch (jobNumTypeFlag) {
+            case 1://研发岗位
+                restQita=0;
+                //有外接技术
+                if((restWaijieJishuC)>0){
+                    //外接产品
+                    if(restWaijieChanpinC>0){
+                        restWaijichanpin=rdGen->bounded(0,10);
+                        restWaijijishu=rdGen->bounded(0,20-restWaijichanpin);
+                        restYanfa=100-restWaijijishu-restWaijichanpin;
+                    }
+                    else{
+                        restWaijijishu=rdGen->bounded(0,20);
+                        restYanfa=100-restWaijijishu;
+                    }
+
+                }
+                //有产品 无技术
+                if(restWaijieChanpinC>0){
+                    if(restWaijieJishuC==0){
+                        restWaijichanpin=rdGen->bounded(0,10);
+                        restYanfa=100-restWaijichanpin;
+                    }
+                }
+
+                if((restWaijieJishuC+restWaijieChanpinC)==0){
+                    restYanfa=100;
+                }
+
+            break;
+            case 2://生产岗位
+                restYanfa=0;
+                restWaijijishu=0;
+                //有外接产品
+                if((restWaijieChanpinC)>0){
+                    //you其他
+                    if( restQitaC>0){
+                        restWaijichanpin=rdGen->bounded(0,100);
+                        restQita=100-restWaijichanpin;
+                    }
+                    else{
+                        restWaijichanpin=100;
+                        restQita=0;
+                    }
+
+                }
+                //有其他  无产品
+                if(restQitaC>0){
+                    if(restWaijieChanpinC==0){
+                        restQita=100;
+                        restWaijichanpin=0;
+                    }
+                }
+
+
+            break;
+            case 3://质量岗位
+                restYanfa=0;
+                //有外接  //肯定有其他项目
+                //外接合计不超过0.6
+                //有产品
+                if(restWaijieChanpinC>0){
+                    //有技术
+                    if(restWaijieJishuC>0){
+                        restWaijijishu=rdGen->bounded(0,50);
+                        restWaijichanpin=rdGen->bounded(0,60-restWaijijishu);
+                        restQita=100-restWaijijishu-restWaijichanpin;
+                    }
+                    //无技术
+                    else{
+                        restWaijichanpin=rdGen->bounded(0,60);
+                        restWaijijishu=0;
+                        restQita=100-restWaijijishu-restWaijichanpin;
+                    }
+                }
+                //有技术
+                if(restWaijieJishuC>0){
+                    //没产品
+                    if(restWaijieChanpinC==0){
+                        restWaijijishu=rdGen->bounded(0,50);
+                        restWaijichanpin=0;
+                        restQita=100-restWaijijishu-restWaijichanpin;
+                    }
+                }
+                if((restWaijieJishuC+restWaijieChanpinC)==0){
+                    restQita=100;
+                    restWaijijishu=0;
+                    restWaijichanpin=0;
+                }
+
+            break;
+            case 4://采购岗位
+                restYanfa=0;
+                restWaijijishu=0;
+                //有产品
+                if(restWaijieChanpinC>0){
+                    //无其他
+                    if(restQitaC==0){
+                        restWaijichanpin=100;
+                    }
+                    //有其他
+                    if(restQitaC>0){
+                        restWaijichanpin=rdGen->bounded(0,100);
+                        restQita=100-restWaijichanpin;
+                    }
+                }
+                //无产品
+                if(restWaijieChanpinC==0){
+                    if(restQitaC>0){
+                        restQita=100;
+                    }
+                }
+            break;
+            case 5://其他岗位
+                restQita=0;
+                restYanfa=0;
+                restWaiji=0;
+                restWaijijishu=0;
+                restWaijichanpin=0;
+            break;
+        }
+
+        qDebug()<<"jobNum："+jobNumKey+"项目个数:"+prjCount;
+        for (int numPrj=0;numPrj<prjCount;numPrj++) {
+            //根据工号岗位和项目类型及属性共同确定这个项目的占比分配
+            //当前项目属性
+            //项目为研发
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("研发")){
+                if(restYanfaC==1){
+                    ratio=restYanfa;
+                    restYanfa-=restYanfa;
+                }
+                else{
+                    ratio=rdGen->bounded(0,restYanfa);
+                    restYanfa-=ratio;
+                    restYanfaC-=1;
+                }
+
+            }
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("外接")){
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1].contains("技术")){
+                    if(restWaijieJishuC==1){
+                        ratio=restWaijijishu;
+                        restWaijijishu-=restWaijijishu;
+                    }
+                    else{
+
+                        ratio=rdGen->bounded(0,restWaijijishu);
+                        restWaijijishu-=ratio;
+                        restWaijieJishuC-=1;
+                    }
+
+                }
+                if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1].contains("产品")){
+                    if(restWaijieChanpinC==1){
+                        ratio=restWaijichanpin;
+                       restWaijichanpin-=restWaijichanpin;
+                    }
+                    else{
+                        ratio=rdGen->bounded(0,restWaijichanpin);
+                        restWaijichanpin-=ratio;
+                        restWaijieChanpinC-=1;
+                    }
+
+                }
+            }
+            if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("其他")){
+                if(restQitaC==1){
+                    ratio=restQita;
+                    restQita-=restQita;
+                }
+                else{
+                    ratio=rdGen->bounded(0,restQita);
+                    restQita-=ratio;
+                    restQitaC-=1;
+                }
+
+            }
+
+            QVector<QString> rowTmp;
+            //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
+            rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
+                  <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
+                 <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<QString::number(currentMonth)<<QString::number(ratio);
+            appendRowInAssemableTable(newRowNum,rowTmp);
+            qDebug()<<rowTmp;
+            newRowNum++;
+        }
+
     }
 
     qDebug()<<"共写入行："+QString::number(newRowNum);
@@ -961,6 +1381,7 @@ void MainWindow::calHumanCurrentMonthProjectInfo(){
 
     //根据当前月，项目参与人员进行配置
     jobNumCurrentMonthProjectInfo.clear();
+    jobNumCurrentMonthPrjTypeInfo.clear();
     //更新humanCurrentMonthProjectInfo
     //1.projectHumansInfo 项目-人名
     //2.humanWorkdayRowInfo.keys() 当前月的人名
@@ -975,11 +1396,46 @@ void MainWindow::calHumanCurrentMonthProjectInfo(){
             prjStartMonth=projectDateInfo[prjName][0].month();
             prjEndMonth=projectDateInfo[prjName][1].month();
             //统计当前年月的项目信息
-            if(currentYear>=prjStartYear && currentYear<=prjEndYear &&currentMonth>=prjStartMonth && currentMonth<=prjEndMonth){
-                if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
-                    jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+            if(currentYear==prjStartYear ){
+                if(currentYear==prjEndYear){
+                    if(currentMonth>=prjStartMonth && currentMonth<=prjEndMonth)
+                    {
+                        if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
+                            jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+                            qDebug()<<jobNum+":prj"+prjName+"prj start:"<<QString::number(prjStartYear)+"年"+QString::number(prjStartMonth)+"prj end:"<<QString::number(prjEndYear)+"年"+QString::number(prjEndMonth);
+                        }
+                    }
                 }
+                if(currentYear<prjEndYear){
+                    if(currentMonth>=prjStartMonth)
+                    {
+                        if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
+                            jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+                            qDebug()<<jobNum+":prj"+prjName+"prj start:"<<QString::number(prjStartYear)+"年"+QString::number(prjStartMonth)+"prj end:"<<QString::number(prjEndYear)+"年"+QString::number(prjEndMonth);
+                        }
+                    }
+                }
+
             }
+
+            if(currentYear>prjStartYear){
+                if( currentYear<prjEndYear){
+                    if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
+                        jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+                        qDebug()<<jobNum+":prj"+prjName+"prj start:"<<QString::number(prjStartYear)+"年"+QString::number(prjStartMonth)+"prj end:"<<QString::number(prjEndYear)+"年"+QString::number(prjEndMonth);
+                    }
+                }
+                if(currentYear==prjEndYear){
+                    if(currentMonth<=prjEndMonth){
+                        if(projectHumansInfo[prjName].contains(jobNumHumanInfo[jobNum])){
+                            jobNumCurrentMonthProjectInfo[jobNum].push_back(prjName);
+                            qDebug()<<jobNum+":prj"+prjName+"prj start:"<<QString::number(prjStartYear)+"年"+QString::number(prjStartMonth)+"prj end:"<<QString::number(prjEndYear)+"年"+QString::number(prjEndMonth);
+                        }
+                    }
+                }
+
+            }
+
         }
     }
 
