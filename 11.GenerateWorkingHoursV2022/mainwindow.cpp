@@ -1,4 +1,4 @@
-﻿/**/
+﻿/*written by lijin*/
 
 
 #include "mainwindow.h"
@@ -560,6 +560,8 @@ void MainWindow::assemblWorkingHoursData(){
 
     if(dingCheckImportFilename.isNull() || hoursRatioConfigImportFilename.isNull() || projectConfigImportFilename.isNull())
         return;
+
+    ui->tableWidget->clear();
     isAssemableHoursFlag=true;
     isDayHourGFlag=true;
     //将excel进行组装操作
@@ -590,13 +592,8 @@ void MainWindow::assemblWorkingHoursData(){
             int ratio;
 
             int restYanfa=0;
-
-
             int restWaijijishu=0;
-
             int restWaijichanpin=0;
-
-
             int restWaiji=20;
 
             int restQita=0;
@@ -844,6 +841,7 @@ void MainWindow::assemblWorkingHoursMonthData(){
 
     if(dingCheckImportFilename.isNull() || hoursRatioConfigImportFilename.isNull() || projectConfigImportFilename.isNull())
         return;
+    ui->tableWidget->clear();
     isAssemableHoursFlag=true;
     isDayHourGFlag=false;
 
