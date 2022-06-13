@@ -71,7 +71,7 @@ private:
     //项目和时间对应关系
     QMap<QString,QVector<QDate>> projectDateInfo;
     //项目和部门对应关系
-    QMap<QString,QString> projectDepartmentInfo;
+    QMap<QString,QVector<QString>> projectDepartmentInfo;
     //项目和项目类型/项目属性关系
     QMap<QString,QVector<QString>> projectTypeInfo;
     //工号和部门--根据工时人员信息分类得到所属公司，一级部门，二级部门关系

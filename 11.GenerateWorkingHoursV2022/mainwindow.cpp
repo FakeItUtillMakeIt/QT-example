@@ -286,7 +286,7 @@ void MainWindow::dingCheckImport(){
     dateRegFormat.setPattern(datePattern);
     QString checkPattern("迟到");
     dingCheckRegFormat.setPattern(checkPattern);
-    QString dimissionPattern("离职");
+    QString dimissionPattern("不在岗");
     dimissionRegFormat.setPattern(dimissionPattern);
     QString breakPattern("休息");
     breakDateRegFormat.setPattern(breakPattern);
@@ -301,7 +301,7 @@ void MainWindow::dingCheckImport(){
             QString content=data.toString();
 
             auto item=new QTableWidgetItem(content,data.type());
-            if(content.contains(dateRegFormat))
+            if(content.contains(dimissionRegFormat))
                 item->setForeground(Qt::red);
             if(content.contains(dingCheckRegFormat))
                 item->setBackground(QColor(120,255,0));
@@ -317,7 +317,7 @@ void MainWindow::dingCheckImport(){
         }
     }
 
-    if(isNewImportDingCheckFlag){
+    if(isNewImportDingCheckFlag && !dingCheckImportFilename.isNull()){
         //导入之后呼出小窗，通知选定考勤年月
         QMessageBox::information(nullptr,"Info",QString("当前选定%1年%2月,\n确定要导入的文件名为:%3")
                                  .arg(ui->spinBoxYear->value())
@@ -499,11 +499,13 @@ void MainWindow::projectDataConfigImport(){
     }
 
     //统计项目和人员对应关系 项目和时间的关系
-    int columnPrjName,columnDepartment,columnStartTime,columnEndTime,columnPrjType,columnPrjWorker;
+    int columnPrjName,columnBU,columnDepartment,columnStartTime,columnEndTime,columnPrjType,columnPrjWorker;
     int columnPrjChar;
     for (int c=0;c<columnC;c++) {
         if(projectDataExcel->read(1,c+1).toString().contains("项目名称"))
             columnPrjName=c+1;
+        if(projectDataExcel->read(1,c+1).toString().contains("所属BU"))
+            columnBU=c+1;
         if(projectDataExcel->read(1,c+1).toString().contains("二级部门"))
             columnDepartment=c+1;
         if(projectDataExcel->read(1,c+1).toString().contains("开始时间"))
@@ -526,7 +528,8 @@ void MainWindow::projectDataConfigImport(){
         projectTypeInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnPrjType).toString());
         projectTypeInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnPrjChar).toString());
 
-        projectDepartmentInfo[projectDataExcel->read(r+1,columnPrjName).toString()]=projectDataExcel->read(r+1,columnDepartment).toString();
+        projectDepartmentInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnBU).toString());
+        projectDepartmentInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(projectDataExcel->read(r+1,columnDepartment).toString());
 
         projectDateInfo[projectDataExcel->read(r+1,columnPrjName).toString()].push_back(QDate::fromString(projectDataExcel->read(r+1,columnStartTime).toString(),"yyyyMMdd"));
 
@@ -549,6 +552,7 @@ void MainWindow::projectWorkingHoursGenerate(){
 
 /**/
 void MainWindow::appendRowInAssemableTable(int rowNum,QVector<QString> dataList){
+    qDebug()<<dataList;
     ui->tableWidget->insertRow(ui->tableWidget->rowCount());
     for (int c=0;c<dataList.count();c++) {
         ui->tableWidget->setItem(rowNum,c,new QTableWidgetItem(dataList[c]));
@@ -572,12 +576,14 @@ void MainWindow::assemblWorkingHoursData(){
     calHumanCurrentMonthProjectInfo();
     //显示在tableWidget上
     int newRowNum=0;
-    ui->tableWidget->setColumnCount(10);
+
 
     QVector<QString> rowData;
-    rowData<<"工号"<<"姓名"<<"岗位类型"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
+
+    rowData<<"工号"<<"姓名"<<"岗位类型"<<"所属部门"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
           <<QString("日期/号(%1)").arg(QString::number(currentYear)+"年"+QString::number(currentMonth)+"月")
          <<"工时占比(%)";
+    ui->tableWidget->setColumnCount(rowData.size());
     //先对工号的项目进行统计  得到工号对应的项目和工号对应的类型及性质
     appendRowInAssemableTable(newRowNum,rowData);
     newRowNum++;
@@ -594,7 +600,7 @@ void MainWindow::assemblWorkingHoursData(){
             int restYanfa=0;
             int restWaijijishu=0;
             int restWaijichanpin=0;
-            int restWaiji=20;
+            int restWaiji=0;
 
             int restQita=0;
 
@@ -669,7 +675,9 @@ void MainWindow::assemblWorkingHoursData(){
                     }
 
                 break;
-                case 2://生产岗位
+                case 2://生产岗位 //应该自动生成一个管理类项目
+                    restQitaC=1;
+                    jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                     restYanfa=0;
                     restWaijijishu=0;
                     //有外接产品
@@ -696,6 +704,8 @@ void MainWindow::assemblWorkingHoursData(){
 
                 break;
                 case 3://质量岗位
+                    restQitaC=1;
+                    jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                     restYanfa=0;
                     //有外接  //肯定有其他项目
                     //外接合计不超过0.6
@@ -731,6 +741,8 @@ void MainWindow::assemblWorkingHoursData(){
 
                 break;
                 case 4://采购岗位
+                    restQitaC=1;
+                    jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                     restYanfa=0;
                     restWaijijishu=0;
                     //有产品
@@ -761,9 +773,23 @@ void MainWindow::assemblWorkingHoursData(){
                 break;
             }
 
-
+            prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
             qDebug()<<"日期："+humanWorkDay+"项目个数:"+prjCount;
             for (int numPrj=0;numPrj<prjCount;numPrj++) {
+                QVector<QString> rowTmp;
+                  if(jobNumCurrentMonthProjectInfo[jobNumKey][numPrj].contains("管理")){
+
+                      ratio=restQita;
+                      rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]+"-"+jobNumDepartmentInfo[jobNumKey][1]
+                            <<QString("管理")<<QString("管理")
+                              <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<QString("管理")
+                           <<QString("管理")<<humanWorkDay<<QString::number(ratio);
+
+                      appendRowInAssemableTable(newRowNum,rowTmp);
+                      qDebug()<<rowTmp;
+                      newRowNum++;
+                      break;
+                  }
                 //根据工号岗位和项目类型及属性共同确定这个项目的占比分配
                 //当前项目属性
                 //项目为研发
@@ -819,13 +845,14 @@ void MainWindow::assemblWorkingHoursData(){
                     restQitaC--;
                 }
 
-                QVector<QString> rowTmp;
+
                 //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
-                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
-                      <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
+                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]+"-"+jobNumDepartmentInfo[jobNumKey][1]
+                      <<projectDepartmentInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]<<projectDepartmentInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]
+                        <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
                      <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<humanWorkDay<<QString::number(ratio);
                 appendRowInAssemableTable(newRowNum,rowTmp);
-                qDebug()<<rowTmp;
+
                 newRowNum++;
             }
         }
@@ -853,13 +880,14 @@ void MainWindow::assemblWorkingHoursMonthData(){
     calHumanCurrentMonthProjectInfo();
     //显示在tableWidget上
     int newRowNum=0;
-    ui->tableWidget->setColumnCount(10);
+
 
     QVector<QString> rowData;
-    rowData<<"工号"<<"姓名"<<"岗位类型"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
-          <<QString("日期/年(%1)").arg(QString::number(currentYear)+"年")
-         <<"工时占比(%)";
+    rowData<<"工号"<<"姓名"<<"岗位类型"<<"所属部门"<<"一级部门"<<"二级部门"<<"项目名称"<<"项目类型"<<"项目属性"
+              <<QString("日期/号(%1)").arg(QString::number(currentYear)+"年"+QString::number(currentMonth)+"月")
+             <<"工时占比(%)";
     //先对工号的项目进行统计  得到工号对应的项目和工号对应的类型及性质
+    ui->tableWidget->setColumnCount(rowData.size());
     appendRowInAssemableTable(newRowNum,rowData);
     newRowNum++;
     QRandomGenerator* rdGen=new QRandomGenerator;
@@ -870,17 +898,10 @@ void MainWindow::assemblWorkingHoursMonthData(){
     //根据这个人的工号 + 当月项目
     foreach (QString jobNumKey, jobNumCurrentMonthProjectInfo.keys()) {
         int ratio;
-
         int restYanfa=0;
-
-
         int restWaijijishu=0;
-
         int restWaijichanpin=0;
-
-
         int restWaiji=0;
-
         int restQita=0;
 
         /*占比分配算法*/
@@ -955,6 +976,8 @@ void MainWindow::assemblWorkingHoursMonthData(){
 
             break;
             case 2://生产岗位
+                restQitaC=1;
+                jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                 restYanfa=0;
                 restWaijijishu=0;
                 //有外接产品
@@ -981,6 +1004,8 @@ void MainWindow::assemblWorkingHoursMonthData(){
 
             break;
             case 3://质量岗位
+                restQitaC=1;
+                jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                 restYanfa=0;
                 //有外接  //肯定有其他项目
                 //外接合计不超过0.6
@@ -1016,6 +1041,8 @@ void MainWindow::assemblWorkingHoursMonthData(){
 
             break;
             case 4://采购岗位
+                restQitaC=1;
+                jobNumCurrentMonthProjectInfo[jobNumKey].push_back(QString("管理"));
                 restYanfa=0;
                 restWaijijishu=0;
                 //有产品
@@ -1046,8 +1073,24 @@ void MainWindow::assemblWorkingHoursMonthData(){
             break;
         }
 
+        prjCount=jobNumCurrentMonthProjectInfo[jobNumKey].size();
         qDebug()<<"jobNum："+jobNumKey+"项目个数:"+prjCount;
+
         for (int numPrj=0;numPrj<prjCount;numPrj++) {
+            QVector<QString> rowTmp;
+            if(jobNumCurrentMonthProjectInfo[jobNumKey][numPrj].contains("管理")){
+
+                ratio=restQita;
+                rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]+"-"+jobNumDepartmentInfo[jobNumKey][1]
+                        <<QString("管理")<<QString("管理")
+                      <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<QString("管理")
+                     <<QString("管理")<<QString::number(currentMonth)<<QString::number(ratio);
+                appendRowInAssemableTable(newRowNum,rowTmp);
+                qDebug()<<rowTmp;
+                newRowNum++;
+                continue;
+            }
+
             //根据工号岗位和项目类型及属性共同确定这个项目的占比分配
             //当前项目属性
             //项目为研发
@@ -1063,6 +1106,7 @@ void MainWindow::assemblWorkingHoursMonthData(){
                 }
 
             }
+
             if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0].contains("外接")){
                 if(projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1].contains("技术")){
                     if(restWaijieJishuC==1){
@@ -1103,11 +1147,16 @@ void MainWindow::assemblWorkingHoursMonthData(){
 
             }
 
-            QVector<QString> rowTmp;
+
             //工时占比需要由配置的项目类型占比比例进行分配，分配原则为最小分配比例1%
-            rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]<<jobNumDepartmentInfo[jobNumKey][1]
+
+            rowTmp<<jobNumKey<<jobNumHumanInfo[jobNumKey]<<jobNumPostTypeInfo[jobNumKey]<<jobNumDepartmentInfo[jobNumKey][0]+"-"+jobNumDepartmentInfo[jobNumKey][1]
+                    <<projectDepartmentInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]<<projectDepartmentInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]
                   <<jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]<<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][0]
                  <<projectTypeInfo[jobNumCurrentMonthProjectInfo[jobNumKey][numPrj]][1]<<QString::number(currentMonth)<<QString::number(ratio);
+
+
+
             appendRowInAssemableTable(newRowNum,rowTmp);
             qDebug()<<rowTmp;
             newRowNum++;
