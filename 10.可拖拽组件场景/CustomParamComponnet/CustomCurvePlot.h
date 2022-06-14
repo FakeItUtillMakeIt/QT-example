@@ -2,13 +2,13 @@
 #ifndef CUSTOM_CURVE_PLOT_H
 #define CUSTOM_CURVE_PLOT_H
 
-
+#include <random>
 #include "qcustomplot.h"
 #include "WidgetHandle.h"
 
 /**
     @namespace CUSTOM_CURVE_PLOT
-    @brief     自定义信号图类
+    @brief     自定义画图类，继承于qcustomplot类
 **/
 namespace CUSTOM_CURVE_PLOT {
 
@@ -32,8 +32,10 @@ namespace CUSTOM_CURVE_PLOT {
 	private:
 
 		MY_PARENT_TYPE myParentType;
+		//存储项绑定参数与QListWidget中存留参数的关系，
+		//当选择一个索引时，下面项绑定窗口的配置能顺利配置到参数上
+		QMap<int, QString> mBindingParam;
 
-		QVector<QString> mBindingParamList;
 		int hasAddButNotNameParamNum = 0;
 		int currentSelectParam = -1;
 
@@ -44,6 +46,17 @@ namespace CUSTOM_CURVE_PLOT {
 		QPoint m_point;
 
 		bool mousePressed;
+
+		QVector< QCPGraph*> paramCurves;
+		QVector<QTimer*> paramTimers;
+
+		qreal testPlotData;
+		qreal xdata;
+		QCPGraph* graph1;
+		QVector<qreal> xset, yset;
+
+		void generateShuffleData();
+		
 
 	protected:
 		void mousePressEvent(QMouseEvent* event) Q_DECL_OVERRIDE;

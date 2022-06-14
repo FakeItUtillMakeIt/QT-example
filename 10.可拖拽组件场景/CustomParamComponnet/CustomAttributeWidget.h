@@ -7,7 +7,7 @@
 
 /**
     @namespace CUSTOM_ATTRIBUTE_WIDGET
-    @brief     自定义属性窗口类
+    @brief     自定义属性窗口类,放弃使用
 **/
 namespace CUSTOM_ATTRIBUTE_WIDGET {
 

@@ -2,6 +2,10 @@
 
 using namespace DROP_WIDGET;
 
+/**
+    @brief DropWidget object constructor
+    @param parent - 构造函数
+**/
 DropWidget::DropWidget(QWidget* parent) {
 
     this->setMinimumWidth(800);
@@ -10,6 +14,8 @@ DropWidget::DropWidget(QWidget* parent) {
     this->setAcceptDrops(true);
 
     this->setAttribute(Qt::WA_PaintOnScreen, true);
+
+    this->setStyleSheet("* {background-color:#f0f8ff}");
 
 }
 
@@ -56,9 +62,7 @@ void DropWidget::dragMoveEvent(QDragMoveEvent* event) {
         }
         else
         {
-
             event->acceptProposedAction();
-
         }
 
     }
@@ -192,8 +196,6 @@ void DropWidget::mousePressEvent(QMouseEvent* event) {
     {
         return;
     }
-
-    //单点下时显示属性栏
     
 }
 

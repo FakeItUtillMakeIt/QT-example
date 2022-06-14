@@ -4,42 +4,39 @@ using namespace CUSTOM_PARAM_COMPONENT;
 
 
 
-
+/**
+    @brief  构造函数
+    @param  parent - 
+    @retval        - 
+**/
 CustomParamComponent::CustomParamComponent(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
     
-    /**/
-    ////plot
-    //customPlot = new CUSTOM_PLOT::CustomPlot();
-    //customPlot->setBaseSize(size());
-    //QVector<double> xData;
-    //QVector<double> yData;
 
-    //customPlot->setCurveXYAxis(0, 10, 0, 5, QString::fromLocal8Bit("x轴"),QString::fromLocal8Bit( "y轴"));
+    /*设置窗口最上层*/
+	/*this->setWindowFlags(Qt::FramelessWindowHint |
+		Qt::WindowStaysOnTopHint |
+		Qt::Tool| Qt::WindowSystemMenuHint |
+		Qt::WindowCloseButtonHint|
+		Qt::MacWindowToolBarButtonHint|
+		Qt::WindowContextHelpButtonHint
+		);*/
 
-    //customPlot->addOneCurve("test1",Qt::blue);
-    //customPlot->addOneCurve("test2", Qt::black);
 
-    //xData = { 0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0 };
-    //yData = { 0.0,1.0,2.0,3.0,5.0,3.0,2.0,1.0 };
-    //
-    //customPlot->setDataSource(0, xData, yData);
-
-    //customPlot->setDataSource(1, yData, xData);
-
-    //customPlot->resize(QSize(100, 60));
-    //customPlot->move(QPoint(60, 60));
-    /**/
+    QLabel* labelComponnet = new QLabel(QString::fromLocal8Bit("基本组件"));
     
-  
+    //labelComponnet->setPixmap((QPixmap("img/groupbox.png").scaled(QSize(20,20))));
+    labelComponnet->setAlignment(Qt::AlignCenter);
+    labelComponnet->setMargin(4);
+    
+    labelComponnet->setStyleSheet("* {background-color:0f0000}");
 
 	dropWidget = new DROP_WIDGET::DropWidget(this);
 
-	dropWidget->setMinimumWidth(500);
+	dropWidget->setMinimumWidth(600);
     customListWidget = new CUSTOM_LIST_WIDGET::CustomListWidget(this);
-    
 
     customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/label.png").scaled(QSize(60,60))), QString::fromLocal8Bit("标签")));
     customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/button.png").scaled(QSize(60, 60))), QString::fromLocal8Bit("按钮")));
@@ -47,14 +44,19 @@ CustomParamComponent::CustomParamComponent(QWidget *parent)
     customListWidget->addItem(new QListWidgetItem(QIcon(QPixmap("img/groupbox.png").scaled(QSize(60, 60))), QString::fromLocal8Bit("容器")));
 
     customListWidget->setFixedWidth(90);
+    customListWidget->setMinimumHeight(400);
 
-    //attributeWidget->setFixedWidth(200);
-    //windowLayout->addWidget(attributeWidget, 0, 2);
+    
+    QVBoxLayout* listLayout = new QVBoxLayout();
+    listLayout->addWidget(labelComponnet);
+    listLayout->addWidget(customListWidget);
 
     windowLayout->addWidget(dropWidget,0,1);
-    windowLayout->addWidget(customListWidget, 0, 0);
+    //windowLayout->addWidget(customListWidget, 1, 0);
+    windowLayout->addLayout(listLayout, 0, 0);
     
     ui.centralWidget->setLayout(windowLayout);
+
     
 }
 
@@ -66,7 +68,10 @@ CustomParamComponent::~CustomParamComponent() {
 
 }
 
- 
+/**
+    @brief 重写绘制函数
+    @param event - 
+**/
 void CustomParamComponent::paintEvent(QPaintEvent* event) {
 
 }
@@ -105,10 +110,8 @@ void CustomParamComponent::displayAttributeWindow(QWidget& widget) {
         //itemPos->show();
 
     }
-   
+    widget.setStyleSheet("* {background-color:#f0ffff }");
 	windowLay->addWidget(&widget, 0, 2);
 	widget.show();
-   
-    
 
 }

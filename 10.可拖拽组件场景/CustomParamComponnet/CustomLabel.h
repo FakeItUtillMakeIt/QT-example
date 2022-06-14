@@ -9,7 +9,9 @@
 #include "WidgetHandle.h"
 
 
+#include "SingleDataController.h"
 
+using namespace std;
 /**
     @namespace CUSTOM_LABEL
     @brief     自定义标签类
@@ -32,6 +34,8 @@ namespace CUSTOM_LABEL {
 		~CustomLabel();
 
 	private:
+		int mBindingParamIndex;
+
 		MY_PARENT_TYPE myParentType;
 
 		int myType = 0;
@@ -65,8 +69,10 @@ namespace CUSTOM_LABEL {
 		void setBackGroundColor(QColor backGroundC);
 		void setLabelText(QString labelT);
 
-
 		QWidget* loadAttributeWidget();
+
+	private:
+		void getDataBaseParamList(QString tableName, QVector<QString>& paramList);
 
 
 	protected:

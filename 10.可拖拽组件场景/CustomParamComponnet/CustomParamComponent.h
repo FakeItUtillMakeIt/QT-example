@@ -5,11 +5,10 @@
 
 
 
-
-
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets>
 #include <QObject>
+
 #include "ui_CustomParamComponent.h"
 #include "CustomPlot.h"
 #include "CustomCurvePlot.h"
@@ -19,12 +18,18 @@
 #include "CustomListWidget.h"
 
 
+
+using namespace std;
+/**
+    @namespace CUSTOM_PARAM_COMPONENT
+    @brief     组件命名空间
+**/
 namespace CUSTOM_PARAM_COMPONENT {
 
 /**
 
     @class   CustomParamComponent
-    @brief   自定义组件类
+    @brief   自定义组件类，容纳所有控件
     @details ~
 
 **/
@@ -34,10 +39,10 @@ class CustomParamComponent : public QMainWindow
     Q_OBJECT
 
 public:
-        CustomParamComponent(QWidget* parent = Q_NULLPTR);
-    ~CustomParamComponent();
-        QWidget* attributeWidget=new QWidget(this);
-        QGridLayout* windowLayout=new QGridLayout(this);
+	CustomParamComponent(QWidget* parent = Q_NULLPTR);
+	~CustomParamComponent();
+	QWidget* attributeWidget = new QWidget(this);
+	QGridLayout* windowLayout = new QGridLayout(this);
 
 private:
     Ui::CustomParamComponentClass ui;

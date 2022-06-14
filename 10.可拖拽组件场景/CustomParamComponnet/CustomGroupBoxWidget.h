@@ -13,6 +13,10 @@ class CUSTOM_CURVE_PLOT::CustomCurvePlot;
 class CUSTOM_LABEL::CustomLabel;
 class CUSTOM_GROUP_BOX::CustomGroupBox;
 
+/**
+    @namespace CUSTOM_GROUP_BOX_WIDGET
+    @brief     自定义外部包含一个Box的控件容器，放弃使用，用CUSTOM_GROUP_BOX代替
+**/
 namespace CUSTOM_GROUP_BOX_WIDGET {
 
 	enum CUSTOM_GROUP_WIDGET_TYPE

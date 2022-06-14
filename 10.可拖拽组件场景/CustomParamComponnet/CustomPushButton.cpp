@@ -104,9 +104,20 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
 
-		QLabel* label3 = new QLabel(QString::fromLocal8Bit("绑定参数:"));
+		QLabel* label3 = new QLabel(QString::fromLocal8Bit("绑定命令:"));
 		QComboBox* comboBox2 = new QComboBox();
-		QStringList paramList1 = { QString::fromLocal8Bit("参数1"),QString::fromLocal8Bit("参数2") };
+		
+		
+		/*这里打开数据库对应表获取参数表*/
+		SingleDataController* controller = SingleDataController::getInstance();
+		map<int, vector<string>> paramInfos = controller->getDataBaseParamInfo();
+
+		QVector<QString> paramList1 = { "None bind param" };
+		for (auto it = paramInfos.begin(); it != paramInfos.end(); it++)
+		{
+			paramList1.push_back(QString::fromStdString(it->second[0]));
+		}
+		
 		for each (QString param in paramList1)
 		{
 			
@@ -116,7 +127,7 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 
 		QPushButton* button1 = new QPushButton();
 
-		button1->setText(QString::fromLocal8Bit("确定"));
+		button1->setText(QString::fromLocal8Bit("应用控件配置"));
 
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
@@ -155,21 +166,6 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 **/
 void CustomPushButton::paintEvent(QPaintEvent*) {
 
-	//信号槽
-#ifdef ONLY_CONTROL_COMPARAM
-	connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-#endif //ONLY_CONTROL_COMPARAM
-	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
-	{
-		//信号槽
-		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-	}
-	else
-	{
-		//信号槽
-		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-	}
-	
 
 	QPainter painter(this);
 	painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -236,6 +232,21 @@ void CustomPushButton::leaveEvent(QEvent*) {
 **/
 void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	this->raise();
+
+	//信号槽
+#ifdef ONLY_CONTROL_COMPARAM
+	connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+#endif //ONLY_CONTROL_COMPARAM
+	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
+	{
+		//信号槽
+		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
+	else
+	{
+		//信号槽
+		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
 
 	/*隔离GroupBox*/
 	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)

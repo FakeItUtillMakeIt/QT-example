@@ -2,6 +2,10 @@
 
 using namespace CUSTOM_LIST_WIDGET;
 
+/**
+    @brief CustomListWidget object constructor
+    @param parent - 类初始化，构造函数
+**/
 CustomListWidget::CustomListWidget(QWidget* parent) :QListWidget(parent) {
 
 	selectIndex = -1;
@@ -17,6 +21,7 @@ CustomListWidget::CustomListWidget(QWidget* parent) :QListWidget(parent) {
 	setLayoutMode(QListView::SinglePass);
 	setGridSize(QSize(80, 80));
 
+	this->setStyleSheet("* {background-color:0f3000}");
 }
 
 CustomListWidget::~CustomListWidget() {
@@ -55,6 +60,8 @@ void CustomListWidget::mouseMoveEvent(QMouseEvent* event) {
 	drag->setHotSpot(event->pos());
 
 	drag->exec();
+
+	//event->accept();
 	//drag->setDragCursor(tmpPixmap,Qt::CopyAction);
 }
 
@@ -71,6 +78,9 @@ void CustomListWidget::mousePressEvent(QMouseEvent* event) {
 		selectElement = true;
 		
 	}
+
+
+
 }
 
 /**
@@ -80,4 +90,16 @@ void CustomListWidget::mousePressEvent(QMouseEvent* event) {
 void CustomListWidget::mouseReleaseEvent(QMouseEvent* event) {
 	selectElement = false;
 	selectIndex = -1;
+}
+
+
+void CustomListWidget::dragMoveEvent(QDragMoveEvent* event) {
+	event->acceptProposedAction();
+}
+
+void CustomListWidget::dragEnterEvent(QDragEnterEvent* event) {
+	
+	
+	event->acceptProposedAction();
+
 }

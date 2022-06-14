@@ -58,8 +58,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>E:\VSProject\QT\CustomParamComponent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\OneSpaceChina\SimulatedTraining_DEV\tools\mysql_c\include;E:\VSProject\QT\CustomParamComponent;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalDependencies>libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\OneSpaceChina\SimulatedTraining_DEV\tools\mysql_c\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
@@ -97,26 +101,30 @@
     <ClCompile Include="CustomListWidget.cpp" />
     <ClCompile Include="CustomPushButton.cpp" />
     <ClCompile Include="DropWidget.cpp" />
+    <ClCompile Include="MysqlOP.cpp" />
+    <ClCompile Include="ParamUpdateThread.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
+    <ClCompile Include="SingleDataController.cpp" />
     <ClCompile Include="WidgetHandle.cpp" />
     <QtRcc Include="CustomParamComponent.qrc" />
     <QtUic Include="CustomParamComponent.ui" />
     <QtMoc Include="CustomParamComponent.h" />
     <ClCompile Include="CustomParamComponent.cpp" />
-    <ClCompile Include="CustomPlot.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomAttributeWidget.h" />
+    <ClInclude Include="SingleDataController.h" />
     <QtMoc Include="CustomCurvePlot.h" />
     <QtMoc Include="CustomLabel.h" />
     <QtMoc Include="CustomCombinedWidget.h" />
     <QtMoc Include="CustomGroupBox.h" />
     <ClInclude Include="CustomGroupBoxWidget.h" />
     <ClInclude Include="CustomListWidget.h" />
-    <ClInclude Include="CustomPlot.h" />
     <QtMoc Include="CustomPushButton.h" />
     <ClInclude Include="DropWidget.h" />
+    <ClInclude Include="MysqlOP.h" />
+    <QtMoc Include="ParamUpdateThread.h" />
     <ClInclude Include="resource.h" />
     <QtMoc Include="WidgetHandle.h" />
     <QtMoc Include="qcustomplot.h" />

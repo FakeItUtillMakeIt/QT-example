@@ -42,6 +42,12 @@
     <Filter Include="Header Files\DragAndZoomFunction">
       <UniqueIdentifier>{68e4cf30-84fd-44c0-8310-5eca2d8c1212}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DataBaseOP">
+      <UniqueIdentifier>{b613df55-d61b-46c4-ad60-408361a6430a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataBaseOP">
+      <UniqueIdentifier>{e14503ea-2127-465a-8d6b-9eda0837dd88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="CustomParamComponent.qrc">
@@ -65,9 +71,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CustomLabel.cpp">
-      <Filter>Source Files\CustomComponent Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomPlot.cpp">
       <Filter>Source Files\CustomComponent Files</Filter>
     </ClCompile>
     <ClCompile Include="CustomPushButton.cpp">
@@ -97,22 +100,22 @@
     <ClCompile Include="CustomGroupBox.cpp">
       <Filter>Source Files\CustomComponent Files</Filter>
     </ClCompile>
+    <ClCompile Include="MysqlOP.cpp">
+      <Filter>Source Files\DataBaseOP</Filter>
+    </ClCompile>
+    <ClCompile Include="ParamUpdateThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleDataController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomPlot.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomPushButton.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
-    </ClInclude>
     <ClInclude Include="CustomListWidget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomCurvePlot.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
     </ClInclude>
     <ClInclude Include="DropWidget.h">
       <Filter>Header Files\DropArea</Filter>
@@ -121,6 +124,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomGroupBoxWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MysqlOP.h">
+      <Filter>Header Files\DataBaseOP</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleDataController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -145,6 +154,9 @@
     </QtMoc>
     <QtMoc Include="CustomGroupBox.h">
       <Filter>Header Files\CustomComponent Header</Filter>
+    </QtMoc>
+    <QtMoc Include="ParamUpdateThread.h">
+      <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

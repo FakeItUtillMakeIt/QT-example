@@ -84,6 +84,7 @@ namespace CUSTOM_PUSHBUTTON {
 		bool mousePressed;
 		WIDGET_HANDLE::Selection* selection = new WIDGET_HANDLE::Selection(this);
 
+
 	public:
 		void setFontColor(QColor fontC);
 		void setBackGroundColor(QColor backGroundC);

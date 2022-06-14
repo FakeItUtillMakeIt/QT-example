@@ -9,7 +9,12 @@ class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 using namespace CUSTOM_LABEL;
 
 
-
+/**
+    @brief  构造函数
+    @param  displayText - 
+    @param  parent      - 
+    @retval             - 
+**/
 CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 
 	mBackGroundColor = Qt::darkGray;
@@ -27,6 +32,8 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 	this->setFocusPolicy(Qt::ClickFocus);
 	this->grabKeyboard();
 	selectSelf = false;
+	//默认不绑定参数
+	mBindingParamIndex = 0;
 
 
 	if (parent->objectName()=="customGroupBox")
@@ -73,50 +80,12 @@ void CustomLabel::setLabelText(QString labelT) {
 	update();
 }
 
+/**
+    @brief  加载属性窗口
+    @retval  - 
+**/
 QWidget* CustomLabel::loadAttributeWidget() {
 	{
-		
-		//QWidget* widget = new QWidget();
-		//attributeWidget1 = new QWidget();
-
-		//attributeWidget1->setMaximumWidth(200);
-
-		//QGridLayout* attributeLayout = new QGridLayout(attributeWidget1);
-		//QLabel* label1 = new QLabel(QString::fromLocal8Bit("参数名称:"));
-		//QLineEdit* lineEdit1 = new QLineEdit();
-		//lineEdit1->setReadOnly(false);
-		//lineEdit1->setEnabled(true);
-		//QLabel* label2 = new QLabel(QString::fromLocal8Bit("边框底色"));
-		//QComboBox* comboBox1 = new QComboBox();
-		//QStringList colorList = QColor::colorNames();
-		//for each (QString color in colorList)
-		//{
-		//	QPixmap pix(QSize(70, 20));
-		//	pix.fill(QColor(color));
-		//	comboBox1->addItem(QIcon(pix), "");
-		//	comboBox1->setIconSize(QSize(70, 20));
-		//	comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-		//}
-
-		//QPushButton* button1 = new QPushButton();
-		//button1->setText("button1");
-
-		//attributeLayout->addWidget(label1, 0, 0);
-		//attributeLayout->addWidget(lineEdit1, 0, 1);
-		//attributeLayout->addWidget(label2, 1, 0);
-		//attributeLayout->addWidget(comboBox1, 1, 1);
-		//attributeLayout->addWidget(button1, 2, 1);
-
-		//connect(button1, &QPushButton::clicked, this, [&] (){
-		//	mLabelText = lineEdit1->text();
-		//	this->update();
-		//	});
-
-		//attributeWidget1->setLayout(attributeLayout);
-
-		////widget->show();
-		//attributeWidget1->setObjectName("attr");
-		//return attributeWidget1;
 
 		attributeWidget1.setMaximumWidth(200);
 
@@ -137,22 +106,45 @@ QWidget* CustomLabel::loadAttributeWidget() {
 			comboBox1->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
 
+		QLabel* label3 = new QLabel(QString::fromLocal8Bit("参数绑定:"));
+		QComboBox* comboBox2 = new QComboBox();
+		/*这里打开数据库对应表获取参数表*/
+		SingleDataController* controller = SingleDataController::getInstance();
+		map<int, vector<string>> paramInfos=controller->getDataBaseParamInfo();
+		
+		QVector<QString> paramList = { "None bind param" };
+		for (auto it=paramInfos.begin();it!=paramInfos.end();it++)
+		{
+			paramList.push_back(QString::fromStdString(it->second[0]));
+		}
+		
+
+		for each(QString paramName in paramList)
+		{
+			comboBox2->addItem(paramName);
+		}
+
 		QPushButton* button1 = new QPushButton();
-		button1->setText(QString::fromLocal8Bit("确定"));
+		button1->setText(QString::fromLocal8Bit("应用控件配置"));
 
 		attributeLayout->addWidget(label1, 0, 0);
 		attributeLayout->addWidget(lineEdit1, 0, 1);
 		attributeLayout->addWidget(label2, 1, 0);
 		attributeLayout->addWidget(comboBox1, 1, 1);
-		attributeLayout->addWidget(button1, 2, 1);
+		//根据是否配置绑定参数确定这个label是纯label还是需要绑定刷新参数的label
+		attributeLayout->addWidget(label3, 2, 0);
+		attributeLayout->addWidget(comboBox2, 2, 1);
+
+		attributeLayout->addWidget(button1, 3, 1);
 
 		/**/
 		connect(button1, &QPushButton::clicked, this, [=]() {
+			mBindingParamIndex = comboBox2->currentIndex();
 			mLabelText = lineEdit1->text();
 			mBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor> ();
 
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
-			qDebug() << mBackGroundColor;
+			qDebug() << mBackGroundColor<<mBindingParamIndex;
 			this->update();
 			});
 		/**/
@@ -160,13 +152,23 @@ QWidget* CustomLabel::loadAttributeWidget() {
 		if (!attributeWidget1.layout())
 		{
 			attributeWidget1.setLayout(attributeLayout);
-	}
+		}
 
 		return &attributeWidget1;
 
-}
+	}
 }
 
+/**
+    @brief 根据数据库表名获取数据库参数表
+    @param sqlString - 
+    @param paramList - 
+**/
+void CustomLabel::getDataBaseParamList(QString tableName, QVector<QString>& paramList) {
+
+	//mysql_query(&my_connection, "INSERT INTO `simulatedtraining`.`user_info`(`id`, `userName`, `password`) VALUES (4, 'lijin', '111')");
+
+}
 
 /**
     @brief 重写paintEvent改变外观
@@ -174,23 +176,7 @@ QWidget* CustomLabel::loadAttributeWidget() {
 **/
 void CustomLabel::paintEvent(QPaintEvent*) {
 
-	
-#ifdef ONLY_CONTROL_COMPARAM
-//信号槽
-	connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-#endif // ONLY_CONTROL_COMPARAM
 
-	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
-	{
-		//信号槽
-		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-
-	}
-	else
-	{
-		//信号槽
-		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
-	}
 
 	QPainter painter(this);
 	QPen pen;
@@ -220,6 +206,16 @@ void CustomLabel::paintEvent(QPaintEvent*) {
 	painter.setFont(font);
 
 	painter.drawText(this->rect(), mLabelText, Qt::AlignHCenter | Qt::AlignVCenter);
+
+
+	//参数绑定编辑
+	//不为0则绑定了参数
+	if (mBindingParamIndex!=0)
+	{
+		/*做参数绑定的相关事件,假如该参数需要更新，则需要新建一个线程获取实时数据*/
+		qDebug() << "bindingPram";
+	}
+
 }
 
 
@@ -228,9 +224,27 @@ void CustomLabel::paintEvent(QPaintEvent*) {
     @param event - 
 **/
 void CustomLabel::mousePressEvent(QMouseEvent* event) {
-	//呼出属性栏
+	
 
 	this->raise();
+
+	//呼出属性栏
+#ifdef ONLY_CONTROL_COMPARAM
+	//信号槽
+	connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+#endif // ONLY_CONTROL_COMPARAM
+	//这里根据父类型做相应槽接收对象的更改
+	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
+	{
+		//信号槽
+		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+
+	}
+	else
+	{
+		//信号槽
+		connect(this, &CUSTOM_LABEL::CustomLabel::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
+	}
 
 	/*隔离GroupBox*/
 	if (myParentType==MY_PARENT_TYPE::CUSTOM_LISTWIDGET)

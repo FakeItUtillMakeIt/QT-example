@@ -2,6 +2,31 @@
 
 using namespace CUSTOM_PLOT;
 
+
+	/**/
+   ////plot
+   //customPlot = new CUSTOM_PLOT::CustomPlot();
+   //customPlot->setBaseSize(size());
+   //QVector<double> xData;
+   //QVector<double> yData;
+
+   //customPlot->setCurveXYAxis(0, 10, 0, 5, QString::fromLocal8Bit("xè½´"),QString::fromLocal8Bit( "yè½´"));
+
+   //customPlot->addOneCurve("test1",Qt::blue);
+   //customPlot->addOneCurve("test2", Qt::black);
+
+   //xData = { 0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0 };
+   //yData = { 0.0,1.0,2.0,3.0,5.0,3.0,2.0,1.0 };
+   //
+   //customPlot->setDataSource(0, xData, yData);
+
+   //customPlot->setDataSource(1, yData, xData);
+
+   //customPlot->resize(QSize(100, 60));
+   //customPlot->move(QPoint(60, 60));
+   /**/
+
+
 CustomPlot::CustomPlot(QWidget* parent):QWidget(parent) {
 	QGridLayout* layout1 = new QGridLayout(parent);
 
@@ -35,7 +60,7 @@ void CUSTOM_PLOT::CustomPlot::setDataSource(int numCurve, QVector<double> x, QVe
 }
 
 /**
-    @brief ÉèÖÃ×ø±êÖáÇø¼ä·¶Î§
+    @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä·¶Î§
     @param xMin       - 
     @param xMax       - 
     @param yMin       - 
@@ -58,7 +83,7 @@ void CUSTOM_PLOT::CustomPlot::setCurveXYAxis(double xMin, double xMax, double yM
 }
 
 /**
-    @brief Ìí¼ÓÇúÏß
+    @brief ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     @param curveName      - 
     @param curveColor     - 
     @param curveLineWidth - 
@@ -69,9 +94,9 @@ void CUSTOM_PLOT::CustomPlot::addOneCurve( QString curveName,Qt::GlobalColor cur
 	QPen pen = QPen(curveColor);
 	pen.setWidthF(curveLineWidth);
 	pen.setStyle(curveStyle);
-	//»­±Ê
+	//ï¿½ï¿½ï¿½ï¿½
 	curvePlot->graph(curveNum)->setPen(pen);
-	//Í¼Àý
+	//Í¼ï¿½ï¿½
 	curvePlot->graph(curveNum)->setName(curveName);
 
 	curveNum++;
@@ -91,9 +116,9 @@ void CustomPlot::loadAttributeWidget(QWidget* widget) {
 		}
 
 		QGridLayout* attributeLayout = new QGridLayout(attributeWidget);
-		QLabel* label1 = new QLabel(QString::fromLocal8Bit("²ÎÊýÃû³Æ:"));
+		QLabel* label1 = new QLabel(QString::fromLocal8Bit("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:"));
 		QLineEdit* lineEdit1 = new QLineEdit();
-		QLabel* label2 = new QLabel(QString::fromLocal8Bit("±ß¿òµ×É«"));
+		QLabel* label2 = new QLabel(QString::fromLocal8Bit("ï¿½ß¿ï¿½ï¿½É«"));
 		QComboBox* comboBox1 = new QComboBox();
 		QStringList colorList = QColor::colorNames();
 		for each (QString color in colorList)
@@ -121,7 +146,7 @@ void CustomPlot::loadAttributeWidget(QWidget* widget) {
 	@param event -
 **/
 //void CustomPlot::mousePressEvent(QMouseEvent* event) {
-//	//ºô³öÊôÐÔÀ¸
+//	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //
 //	if (!attributeWidget)
 //	{

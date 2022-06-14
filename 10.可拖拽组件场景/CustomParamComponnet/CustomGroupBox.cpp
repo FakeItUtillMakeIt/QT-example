@@ -5,6 +5,11 @@ class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_GROUP_BOX;
 
+/**
+    @brief  类初始化
+    @param  parent - 
+    @retval        - 
+**/
 CustomGroupBox::CustomGroupBox(QWidget* parent /* = nullptr */) {
 
 	this->setParent(parent);
@@ -36,7 +41,10 @@ CustomGroupBox::~CustomGroupBox() {
 //	setTitle(myTitle);
 //}
 
-
+/**
+    @brief  加载属性窗口
+    @retval  - 
+**/
 QWidget* CustomGroupBox::loadAttributeWidget() {
 	{
 
@@ -103,7 +111,7 @@ void CustomGroupBox::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 /**
-    @brief 
+    @brief 重写拖拽移动事件
     @param event - 
 **/
 void CustomGroupBox::dragMoveEvent(QDragMoveEvent* event) {
@@ -130,7 +138,7 @@ void CustomGroupBox::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 /**
-    @brief 
+    @brief 重写放下对象事件
     @param event - 
 **/
 void CustomGroupBox::dropEvent(QDropEvent* event) {
@@ -187,11 +195,10 @@ void CustomGroupBox::dropEvent(QDropEvent* event) {
 
 	}
 
-
 }
 
 /**
-	@brief
+	@brief 重写鼠标按下事件
 	@param event -
 **/
 void CustomGroupBox::mousePressEvent(QMouseEvent* event) {
@@ -210,7 +217,10 @@ void CustomGroupBox::mousePressEvent(QMouseEvent* event) {
 		connect(this, &CustomGroupBox::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
 	}
 
-	loadAttributeWidget();
+	if (attributeWidget.isActiveWindow() == false)
+	{
+		loadAttributeWidget();
+	}
 
 	/*隔离GroupBox*/
 	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
@@ -227,7 +237,6 @@ void CustomGroupBox::mousePressEvent(QMouseEvent* event) {
 		
 		m_point = event->globalPos();
 		m_pos = this->frameGeometry().topLeft();
-		
 
 	}
 	
@@ -238,7 +247,7 @@ void CustomGroupBox::mousePressEvent(QMouseEvent* event) {
 }
 
 /**
-    @brief 
+    @brief 重写鼠标移动事件
     @param event - 
 **/
 void CustomGroupBox::mouseMoveEvent(QMouseEvent* event) {
@@ -254,6 +263,10 @@ void CustomGroupBox::mouseMoveEvent(QMouseEvent* event) {
 
 }
 
+/**
+    @brief 重写离开事件
+    @param event - 
+**/
 void CustomGroupBox::leaveEvent(QEvent* event) {
 
 	mousePressed = false;

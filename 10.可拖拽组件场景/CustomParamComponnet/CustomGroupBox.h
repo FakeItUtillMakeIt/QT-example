@@ -16,7 +16,10 @@ class CUSTOM_LABEL::CustomLabel;
 class CUSTOM_PUSHBUTTON::CustomPushButton;
 class CUSTOM_CURVE_PLOT::CustomCurvePlot;
 
-
+/**
+    @namespace CUSTOM_GROUP_BOX
+    @brief     自定义容器类，容器可装载基础控件
+**/
 namespace CUSTOM_GROUP_BOX{
 
 	enum MY_PARENT_TYPE

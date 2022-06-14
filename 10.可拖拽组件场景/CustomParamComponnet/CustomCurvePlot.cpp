@@ -5,31 +5,72 @@ class CUSTOM_PARAM_COMPONENT::CustomParamComponent;
 
 using namespace CUSTOM_CURVE_PLOT;
 
+/**
+    @brief  构造函数
+    @param  parent - 
+    @retval        - 
+**/
 CustomCurvePlot::CustomCurvePlot(QWidget* parent) :QCustomPlot(parent) {
 
 	//attributeWidget = nullptr;
 	selectSelf = false;
+	mousePressed = false;
 
 	if (parent->objectName() == "customGroupBox")
 	{
 		myParentType = MY_PARENT_TYPE::CUSTOM_GROUPBOX;
-
-}
+	}
 	else
 	{
 		myParentType = MY_PARENT_TYPE::CUSTOM_LISTWIDGET;
 	}
 
+	xdata = 0;
 }
+
+
 
 CustomCurvePlot::~CustomCurvePlot() {
 	
 }
 
+
+/**
+	@brief 生成随机数据，供plot使用测试
+**/
+void CustomCurvePlot::generateShuffleData() {
+
+	if (xdata > 10000)
+		xdata = 1;
+
+	xset.resize(10);
+	xset = { 0,1,2,3,4,5,6,7,8,9 };
+	yset.resize(10);
+	std::default_random_engine rdGen;
+	rdGen.seed(xdata++);
+	std::uniform_int_distribution<int> dis(1, 10);
+	testPlotData = dis(rdGen);
+
+	if (yset.size() == 10)
+	{
+		yset.pop_front();
+	}
+
+	yset << testPlotData;
+	qDebug() << xset << yset;
+	paramCurves[currentSelectParam]->setData(xset, yset);
+	replot();
+}
+
+/**
+    @brief  加载属性窗口
+    @retval  - 
+**/
 QWidget* CustomCurvePlot::loadAttributeWidget() {
 	{
-		
 		attributeWidget.setMaximumWidth(200);
+		this->xAxis->setRange(0, 10);
+		this->yAxis->setRange(0, 10);
 
 		QGridLayout* attributeLayout = new QGridLayout();
 		QLabel* label1 = new QLabel(QString::fromLocal8Bit("添加或删除绑定:"));
@@ -40,11 +81,19 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		buttonSub->setIcon(QIcon(QPixmap("img/-hao.png")));
 
 		QListWidget* paramListWidget = new QListWidget;
+
+		//添加按钮对应操作
 		connect(buttonAdd, &QPushButton::clicked, this, [=]() {
 			hasAddButNotNameParamNum++;
 			paramListWidget->addItem(QString::fromLocal8Bit("第%1个参数").arg(hasAddButNotNameParamNum));
+			paramCurves.push_back(this->addGraph());
+			QTimer* timer = new QTimer(this);
+			paramTimers.push_back(timer);
+
+			connect(timer, &QTimer::timeout, this, &CUSTOM_CURVE_PLOT::CustomCurvePlot::generateShuffleData);
 			});
 
+		//删除按钮对应操作
 		connect(buttonSub, &QPushButton::clicked, this, [=]() {
 			if (hasAddButNotNameParamNum == 0)
 		{
@@ -56,15 +105,49 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 			{
 				auto item1=paramListWidget->takeItem(paramListWidget->currentRow());
 				item1->~QListWidgetItem();
-			}
-			});
+				
+				paramCurves[currentSelectParam]->setVisible(false);
+				paramCurves[currentSelectParam]->removeFromLegend();
+				
+				paramCurves.remove(currentSelectParam);
+				paramTimers[currentSelectParam]->stop();
+				paramTimers.remove(currentSelectParam);
 
-		connect(paramListWidget, &QListWidget::itemClicked, this, [=]() {
-			currentSelectParam = paramListWidget->currentRow();
-			});
+				qDebug() << "paramCurveSize:" << paramCurves.size();
+			}
+		});
 
 		QGroupBox* groupBox = new QGroupBox();
 		groupBox->setTitle(QString::fromLocal8Bit("项参数绑定"));
+		QPushButton* buttonOK = new QPushButton();
+		buttonOK->setText(QString::fromLocal8Bit("应用控件配置"));
+
+		//点击LIstWidget中的item项对应操作
+		connect(paramListWidget, &QListWidget::itemClicked, this, [=]() {
+			currentSelectParam = paramListWidget->currentRow();
+			qDebug() << "current selected:" << currentSelectParam;
+			groupBox->show();
+			buttonOK->show();
+			});
+
+		QLabel* labelParam = new QLabel(QString::fromLocal8Bit("绑定参数:"));
+		QComboBox* comboBoxParam = new QComboBox();
+
+		/*这里打开数据库对应表获取参数表*/
+		SingleDataController* controller = SingleDataController::getInstance();
+		map<int, vector<string>> paramInfos = controller->getDataBaseParamInfo();
+
+		QVector<QString> paramList1 = { "None bind param" };
+		for (auto it = paramInfos.begin(); it != paramInfos.end(); it++)
+		{
+			paramList1.push_back(QString::fromStdString(it->second[0]));
+		}
+
+		for each (QString param in paramList1)
+		{
+			comboBoxParam->addItem(param);
+			comboBoxParam->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+		}
 
 		QLabel* label2 = new QLabel(QString::fromLocal8Bit("线形底色:"));
 		QComboBox* comboBox1 = new QComboBox();
@@ -85,30 +168,29 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		{
 			
 			comboBox2->addItem(QString::number(width));
-	
 			comboBox2->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		}
 
 		QPushButton* buttonParamOK = new QPushButton(QString::fromLocal8Bit("确认设置"));
-		/*点击参数设置按钮之后设置对应参数绑定*/
+		/*点击参数设置按钮之后设置对应参数绑定，引入mBindingParam*/
 		connect(buttonParamOK, &QPushButton::clicked, this, [=]() {
+			mBindingParam[currentSelectParam] = "";
+			paramCurves[currentSelectParam]->setPen(QPen(comboBox1->itemData(comboBox1->currentIndex()).value<QColor>()));
 
 			});
+		/************************************************************************/
 
 		QGridLayout* boxLayout = new QGridLayout();
-		boxLayout->addWidget(label2,0,0);
-		boxLayout->addWidget(comboBox1,0,1);
-		boxLayout->addWidget(label3,1,0);
-		boxLayout->addWidget(comboBox2,1,1);
+		boxLayout->addWidget(label2,1,0);
+		boxLayout->addWidget(comboBox1,1,1);
+		boxLayout->addWidget(label3,2,0);
+		boxLayout->addWidget(comboBox2,2,1);
+		boxLayout->addWidget(labelParam, 0, 0);
+		boxLayout->addWidget(comboBoxParam, 0, 1);
 		boxLayout->addWidget(buttonParamOK, 3, 0);
 
 		groupBox->setLayout(boxLayout);
 
-
-		QPushButton* buttonOK = new QPushButton();
-		buttonOK->setText(QString::fromLocal8Bit("应用控件配置"));
-		
-		
 		attributeLayout->addWidget(label1, 0, 0,1,2);
 		attributeLayout->addWidget(buttonAdd, 1, 0);
 		attributeLayout->addWidget(buttonSub, 1, 1);
@@ -116,21 +198,22 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		attributeLayout->addWidget(groupBox, 3, 0,1,2);
 		attributeLayout->addWidget(buttonOK, 4, 1,1,1);
 
-		
-
 		//处理属性编辑窗口配置
 		//全部配置完成之后保存至sql，并更新界面
 		connect(buttonOK, &QPushButton::clicked, this, [=]() {
 			/*操作Curve*/
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
-
-			this->update();
+			paramTimers[currentSelectParam]->start(100);
+			
+			//this->update();
 			});
 
 		if (!attributeWidget.layout())
 		{
 			attributeWidget.setLayout(attributeLayout);
 		}
+		groupBox->hide();
+		buttonOK->hide();
 
 		return &attributeWidget;
 	}
