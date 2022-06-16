@@ -37,3 +37,6 @@ QT-example应用程序
 - 确认是否应该拖动，并构造一个拖动对象来处理该操作，实现dragMoveEvent
 - 通常用于通知qt小部件接受的数据类型，实现dragEnterEvent
 - dropEvent用于解包丢弃的数据，并以适合您的应用程序的方式对其进行处理。
+
+## -------------------------------------
+Qt处理Excel文件  https://www.guyuehome.com/35399
