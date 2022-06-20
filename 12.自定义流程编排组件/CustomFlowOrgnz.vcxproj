@@ -89,11 +89,13 @@
     <ClCompile Include="CustomFlowEditWidget.cpp" />
     <ClCompile Include="CustomTableWidget.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SubTableWidget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CustomFlowEditWidget.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="SubTableWidget.h" />
     <QtMoc Include="CustomTableWidget.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

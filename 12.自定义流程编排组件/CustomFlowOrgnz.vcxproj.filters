@@ -35,12 +35,18 @@
     <ClCompile Include="CustomTableWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SubTableWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CustomFlowEditWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="CustomTableWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SubTableWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

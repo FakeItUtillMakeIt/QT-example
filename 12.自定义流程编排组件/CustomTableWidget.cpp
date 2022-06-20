@@ -24,4 +24,15 @@ void CustomTableWidget::mousePressEvent(QMouseEvent* event) {
 
 	}
 
+
+}
+
+
+void CustomTableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
+
+	auto a = this->indexAt(event->pos());
+	if (!a.isValid())
+		return;
+	auto b = this->itemFromIndex(a);
+	emit cellDoubleClicked(b->row(), b->column());
 }

@@ -10,7 +10,11 @@
 #include <QtXlsx>
 
 #include "CustomTableWidget.h"
+#include "SubTableWidget.h"
 using namespace CUSTOM_TABLE_WIDGET;
+
+#define _USE_SPAN_
+#define _USE_TABLE_ENBLED_
 
 namespace CUSTOM_FLOW_EDIT_WIDGET {
 
@@ -46,6 +50,11 @@ namespace CUSTOM_FLOW_EDIT_WIDGET {
 	private:
 		int currentFlowIndex;
 		QPoint cursorPos;
+		int rowHeight;
+		int columnWidth;
+
+		QMap<int, QVector<int>> mergeCell;
+		QMap<int, QVector<int>> rowInclude;
 
 	private:
 		void initConnection();
@@ -58,7 +67,9 @@ namespace CUSTOM_FLOW_EDIT_WIDGET {
 		void loadFlowTable();
 		void tableCellClick(int row, int column);
 		void tableRightMouseClick(QPoint pos);
-
+		void tableEditClick();
+		void doubleClickTable(int row, int column);
+		void adjustCellHeight(QPoint);
 	};
 
 

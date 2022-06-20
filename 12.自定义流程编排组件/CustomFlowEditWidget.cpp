@@ -95,11 +95,18 @@ void CustomFlowEditWidget::initConnection() {
 
 	connect(leftAddFlowButton, &QPushButton::clicked, this, &CustomFlowEditWidget::addNewFlow);
 
-	connect(leftProjectFlowList, &QListWidget::itemClicked, this, &CustomFlowEditWidget::loadFlowTable);
+	connect(leftProjectFlowList, &QListWidget::itemPressed, this, &CustomFlowEditWidget::loadFlowTable);
 
 	connect(rightFlowTable, &CustomTableWidget::mouseRightClicked, this, &CustomFlowEditWidget::tableRightMouseClick);
 
 	connect(rightFlowTable, &CustomTableWidget::cellClicked, this, &CustomFlowEditWidget::tableCellClick);
+
+	connect(rightFlowEditButton, &QPushButton::clicked, this, &CustomFlowEditWidget::tableEditClick);
+
+	connect(rightFlowTable, &CustomTableWidget::cellDoubleClicked, this, &CustomFlowEditWidget::doubleClickTable);
+
+	
+
 }
 
 /**
@@ -117,7 +124,9 @@ void CustomFlowEditWidget::addNewFlow() {
 	newFlowLayout->addWidget(lineEdit);
 	newFlowLayout->addWidget(okButton);
 	newFlowName->setLayout(newFlowLayout);
+	//newFlowName->setWindowFlags(Qt::SubWindow);
 	newFlowName->raise();
+	newFlowName->setWindowFlags(Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 	newFlowName->show();
 
 	connect(okButton, &QPushButton::clicked, this, [=]() {
@@ -137,8 +146,12 @@ void CustomFlowEditWidget::addNewFlow() {
 void CustomFlowEditWidget::loadFlowTable() {
 	rightFlowTable->horizontalHeader()->hide();
 	rightFlowTable->verticalHeader()->hide();
+	rightFlowTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	rightFlowTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 	rightFlowTable->setColumnCount(5);
 	rightFlowTable->setRowCount(1);
+	rowHeight = rightFlowTable->height() / 6;
 	rightFlowTable->setRowHeight(0, rightFlowTable->height() / 6);
 	
 	int i = 0;
@@ -149,6 +162,7 @@ void CustomFlowEditWidget::loadFlowTable() {
 		font.setBold(true);
 		item->setFont(font);
 		item->setFlags(Qt::NoItemFlags);
+		columnWidth = rightFlowTable->width() / 5;
 		rightFlowTable->setColumnWidth(i, rightFlowTable->width() / 5);
 		
 		rightFlowTable->setItem(0, i++, item);
@@ -184,38 +198,208 @@ void CustomFlowEditWidget::tableCellClick(int row,int column) {
 
 		widget->setLayout(boxLayout);
 
+		widget->setWindowFlags(Qt::Popup);
 		widget->raise();
 		widget->setFixedWidth(rightFlowTable->columnWidth(column));
 		
 		widget->move(cursorPos.x(),cursorPos.y());
 		widget->show();
-
+		//向前插入
 		connect(frontInsertCell, &QPushButton::clicked, this, [=]() {
-			rightFlowTable->insertRow(row);
-			for (int i=0;i<rightFlowTable->columnCount();i++)
+			if (row==0)
 			{
-				rightFlowTable->setItem(row, i, new QTableWidgetItem);
+				return;
 			}
-			widget->deleteLater();
+
+
+#ifdef _USE_TABLE_ENBLED_
+			if (column == 0 || column == 1)
+			{
+				rightFlowTable->insertRow(row);
+
+			}
+			else
+			{
+				
+				SubTableWidget* subTable = new SubTableWidget();
+
+				//subTable->setEditTriggers(QAbstractItemView::CurrentChanged);
+				subTable->setRowCount(2);
+				subTable->setColumnCount(1);
+				subTable->horizontalHeader()->hide();
+				subTable->verticalHeader()->hide();
+				rightFlowTable->setCellWidget(row, column, subTable);
+				rightFlowTable->setRowHeight(row, rowHeight * subTable->rowCount() / 2);
+				subTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+				subTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+				for (int i = 0; i < subTable->rowCount(); i++)
+				{
+					subTable->setRowHeight(i, rowHeight / 2);
+					subTable->setColumnWidth(0, columnWidth);
+					QTableWidgetItem* item = new QTableWidgetItem;
+
+					//item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+					subTable->setItem(i, 0, item);
+				}
+
+				connect(subTable, &SubTableWidget::opOver, this, &CustomFlowEditWidget::adjustCellHeight);
+
+			}
+
+#endif
+
+#ifndef _USE_SPAN_
+
+			if (column == 2 || column == 3)
+			{
+				for (int c = 0; c < rightFlowTable->columnCount(); c++)
+				{
+					if (column == c)
+					{
+						continue;
+					}
+					rightFlowTable->setSpan(row, c, 2, 1);
+				}
+
+			}
+
+#endif // _USE_SPAN_
+
 			});
 
+		//向后插入
 		connect(backInsertCell, &QPushButton::clicked, this, [=]() {
-			rightFlowTable->insertRow(row +1);
-			for (int i = 0; i < rightFlowTable->columnCount(); i++)
+			
+			//使用单元格内置widget实现单元格插入和删除功能
+#ifdef _USE_TABLE_ENBLED_
+			if (column == 0 || column == 1)
 			{
-				rightFlowTable->setItem(row+1, i, new QTableWidgetItem);
+				rightFlowTable->insertRow(row + 1);
+
+			}
+			else
+			{
+				if (row==0)
+				{
+					return;
+				}
+				SubTableWidget* subTable = new SubTableWidget();
+		
+				//subTable->setEditTriggers(QAbstractItemView::CurrentChanged);
+				subTable->setRowCount(2);
+				subTable->setColumnCount(1);
+				subTable->horizontalHeader()->hide();
+				subTable->verticalHeader()->hide();
+				rightFlowTable->setCellWidget(row, column, subTable);
+				rightFlowTable->setRowHeight(row, rowHeight*subTable->rowCount()/2);
+				subTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+				subTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+				for (int i = 0; i < subTable->rowCount(); i++)
+				{
+					subTable->setRowHeight(i, rowHeight / 2);
+					subTable->setColumnWidth(0, columnWidth);
+					QTableWidgetItem* item = new QTableWidgetItem;
+					
+					//item->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+					subTable->setItem(i, 0, item);
+				}
+
+				connect(subTable, &SubTableWidget::opOver, this, &CustomFlowEditWidget::adjustCellHeight);
+
+			}
+			
+#endif
+			for(int i = 0; i < rightFlowTable->columnCount(); i++)
+			{
+				QTableWidgetItem* item = new QTableWidgetItem;
+				rightFlowTable->setItem(row + 1, i, item);
+
+			}
+
+			for (int r = 1; r < rightFlowTable->rowCount(); r++)
+			{
+				rightFlowTable->item(r, 0)->setText(QString::number(r));
 			}
 			widget->deleteLater();
+
+			//使用合并拆分单元格实现插入和删除功能
+#ifndef _USE_SPAN_
+			
+			if (column == 2 || column == 3 || column==4)
+			{
+				mergeCell[column].push_back(row);
+				mergeCell[column].push_back(row + 1);
+				rowInclude[row].push_back(row);
+				rowInclude[row].push_back(row + 1);
+				for (int c = 0; c < rightFlowTable->columnCount(); c++)
+				{
+					if (!mergeCell.keys().contains(c))
+					{
+						rightFlowTable->setSpan(row, c, 2, 1);
+					}
+
+				}
+
+			}
+			
+
+#endif // _USE_SPAN_
+			
 			});
 
 		connect(removeCell, &QPushButton::clicked, this, [=]() {
+			if (row==0)
+			{
+				return;
+			}
 			for (int i = 0; i < rightFlowTable->columnCount(); i++)
 			{
 				rightFlowTable->takeItem(row, i);
 			}
-			rightFlowTable->removeRow(row);
+			if(column==1)
+				rightFlowTable->removeRow(row);
+			//rightFlowTable->removeCellWidget(row, column);
+
+			for (int r = 1; r < rightFlowTable->rowCount(); r++)
+			{
+				if(rightFlowTable->item(r,0))
+					rightFlowTable->item(r, 0)->setText(QString::number(r));
+			}
 			widget->deleteLater();
 			});
 	}
 }
 
+void CustomFlowEditWidget::tableEditClick() {
+	rightFlowTable->setEditTriggers(QAbstractItemView::CurrentChanged);
+	for (int r=1;r<rightFlowTable->rowCount();r++)
+	{
+		for (int c=1;c<rightFlowTable->columnCount();c++)
+		{
+			rightFlowTable->item(r, c)->setFlags(Qt::ItemIsEditable|Qt::ItemIsEnabled|Qt::ItemIsSelectable);
+		}
+	}
+}
+
+void CustomFlowEditWidget::doubleClickTable(int row, int column) {
+	rightFlowTable->editItem(rightFlowTable->item(row, column));
+}
+
+
+void CustomFlowEditWidget::adjustCellHeight(QPoint p) {
+	auto row1 = rightFlowTable->currentRow();
+	auto column1 = rightFlowTable->currentColumn();
+	qDebug() << row1 << column1;
+	//验证整行
+	int maxEnbedRow = 1;
+	for (int c=1;c<rightFlowTable->columnCount();c++)
+	{
+		SubTableWidget* w1 = static_cast<SubTableWidget*>(rightFlowTable->cellWidget(row1, c));
+		if(w1==nullptr)
+			continue;
+		if (w1->rowCount() > maxEnbedRow)
+			maxEnbedRow = w1->rowCount();
+	}
+	
+	rightFlowTable->setRowHeight(row1, maxEnbedRow * rowHeight/2);
+}

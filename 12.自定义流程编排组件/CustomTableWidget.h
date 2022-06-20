@@ -18,6 +18,7 @@ namespace CUSTOM_TABLE_WIDGET {
 
 	protected:
 		void mousePressEvent(QMouseEvent* event);
+		void mouseDoubleClickEvent(QMouseEvent* event);
 
 	signals:
 		void mouseRightClicked(QPoint);
