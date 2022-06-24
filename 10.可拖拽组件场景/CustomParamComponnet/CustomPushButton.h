@@ -46,6 +46,7 @@ namespace CUSTOM_PUSHBUTTON {
 	private:
 		MY_PARENT_TYPE myParentType;
 		QString mBindingParam;
+		int mBindingParamIndex = 0;//Ä¬ÈÏ²»°ó¶¨
 
 		int buttonState;
 
@@ -89,6 +90,7 @@ namespace CUSTOM_PUSHBUTTON {
 		void setFontColor(QColor fontC);
 		void setBackGroundColor(QColor backGroundC);
 		void setLabelText(QString buttonT);
+		int getBindParamIndex();
 
 		QWidget attributeWidget;
 		QWidget* loadAttributeWidget();

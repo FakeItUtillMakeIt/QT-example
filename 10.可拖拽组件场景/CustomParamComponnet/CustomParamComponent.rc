@@ -50,11 +50,7 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\boat.png"
 
-IDB_PNG2                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\car.png"
-
-IDB_PNG3                PNG                     "E:\\VSProject\\QT\\CustomParamComponent\\img\\house.png"
 
 IDB_PNG4                PNG                     "img\\+hao.png"
 

@@ -68,6 +68,7 @@ namespace CUSTOM_LABEL {
 		void setFontColor(QColor fontC);
 		void setBackGroundColor(QColor backGroundC);
 		void setLabelText(QString labelT);
+		int getBindParamIndex();
 
 		QWidget* loadAttributeWidget();
 

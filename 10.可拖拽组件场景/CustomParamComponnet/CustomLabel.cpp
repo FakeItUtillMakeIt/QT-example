@@ -35,7 +35,7 @@ CustomLabel::CustomLabel(QString displayText,QWidget* parent):QLabel(parent) {
 	//默认不绑定参数
 	mBindingParamIndex = 0;
 
-
+	this->setObjectName("label");
 	if (parent->objectName()=="customGroupBox")
 	{
 		myParentType = MY_PARENT_TYPE::CUSTOM_GROUPBOX;
@@ -78,6 +78,10 @@ void CustomLabel::setBackGroundColor(QColor backGroundC) {
 void CustomLabel::setLabelText(QString labelT) {
 	mLabelText = labelT;
 	update();
+}
+
+int CustomLabel::getBindParamIndex() {
+	return mBindingParamIndex;
 }
 
 /**
@@ -158,6 +162,7 @@ QWidget* CustomLabel::loadAttributeWidget() {
 
 	}
 }
+
 
 /**
     @brief 根据数据库表名获取数据库参数表

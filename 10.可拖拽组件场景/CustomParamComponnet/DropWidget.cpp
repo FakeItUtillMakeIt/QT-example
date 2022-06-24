@@ -73,7 +73,7 @@ void DropWidget::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 /**
-    @brief 
+    @brief 重写当有控件拖入的时候的操作
     @param event - 
 **/
 void DropWidget::dropEvent(QDropEvent* event) {
@@ -158,7 +158,6 @@ void DropWidget::dropEvent(QDropEvent* event) {
         if (!dropObject)
 			{
             return;
-			
         }
 
         dropObject->move(event->pos() - offset);

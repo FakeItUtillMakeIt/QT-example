@@ -33,7 +33,7 @@ CustomPushButton::CustomPushButton(QString displayText,QWidget* parent):QPushBut
 
 	 this->setBaseSize(QSize(100, 20));
 	 //attributeWidget = nullptr;
-	 
+	 this->setObjectName("button");
 	 this->grabKeyboard();
 	 selectSelf = false;
 
@@ -81,6 +81,9 @@ void CustomPushButton::setLabelText(QString buttonT) {
 	update();
 }
 
+int CustomPushButton::getBindParamIndex() {
+	return mBindingParamIndex;
+}
 
 QWidget* CustomPushButton::loadAttributeWidget() {
 	{
@@ -142,6 +145,7 @@ QWidget* CustomPushButton::loadAttributeWidget() {
 			
 			mDisableBackGroundColor = comboBox1->itemData(comboBox1->currentIndex()).value<QColor>();
 			mBindingParam = comboBox2->currentText();
+			mBindingParamIndex = comboBox2->currentIndex();
 			mButtonText = lineEdit1->text();
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex())<<mBindingParam;
 			qDebug() << mDisableBackGroundColor;
@@ -240,11 +244,19 @@ void CustomPushButton::mousePressEvent(QMouseEvent* event) {
 	if (myParentType == MY_PARENT_TYPE::CUSTOM_LISTWIDGET)
 	{
 		//ÐÅºÅ²Û
+		if (!this->parent()->parent())
+		{
+			return;
+		}
 		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
 	}
 	else
 	{
 		//ÐÅºÅ²Û
+		if (!this->parent()->parent()->parent())
+		{
+			return;
+		}
 		connect(this, &CustomPushButton::displayAttribute, static_cast<CUSTOM_PARAM_COMPONENT::CustomParamComponent*>(this->parent()->parent()->parent()), &CUSTOM_PARAM_COMPONENT::CustomParamComponent::displayAttributeWindow);
 	}
 

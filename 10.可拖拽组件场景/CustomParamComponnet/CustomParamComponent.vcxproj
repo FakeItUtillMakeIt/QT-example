@@ -92,8 +92,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CustomAttributeWidget.cpp" />
-    <ClCompile Include="CustomCombinedWidget.cpp" />
     <ClCompile Include="CustomCurvePlot.cpp" />
     <ClCompile Include="CustomGroupBox.cpp" />
     <ClCompile Include="CustomGroupBoxWidget.cpp" />
@@ -113,11 +111,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomAttributeWidget.h" />
     <ClInclude Include="SingleDataController.h" />
     <QtMoc Include="CustomCurvePlot.h" />
     <QtMoc Include="CustomLabel.h" />
-    <QtMoc Include="CustomCombinedWidget.h" />
     <QtMoc Include="CustomGroupBox.h" />
     <ClInclude Include="CustomGroupBoxWidget.h" />
     <ClInclude Include="CustomListWidget.h" />
@@ -128,11 +124,6 @@
     <ClInclude Include="resource.h" />
     <QtMoc Include="WidgetHandle.h" />
     <QtMoc Include="qcustomplot.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="img\boat.png" />
-    <None Include="img\car.png" />
-    <None Include="img\house.png" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CustomParamComponent.rc" />

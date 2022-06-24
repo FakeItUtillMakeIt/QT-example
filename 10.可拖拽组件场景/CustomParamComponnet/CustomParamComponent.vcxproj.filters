@@ -88,12 +88,6 @@
     <ClCompile Include="DropWidget.cpp">
       <Filter>Source Files\DropArea</Filter>
     </ClCompile>
-    <ClCompile Include="CustomAttributeWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomCombinedWidget.cpp">
-      <Filter>Source Files\CustomComponent Files</Filter>
-    </ClCompile>
     <ClCompile Include="CustomGroupBoxWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -119,9 +113,6 @@
     </ClInclude>
     <ClInclude Include="DropWidget.h">
       <Filter>Header Files\DropArea</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomAttributeWidget.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CustomGroupBoxWidget.h">
       <Filter>Header Files</Filter>
@@ -149,26 +140,12 @@
     <QtMoc Include="CustomCurvePlot.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
-    <QtMoc Include="CustomCombinedWidget.h">
-      <Filter>Header Files\CustomComponent Header</Filter>
-    </QtMoc>
     <QtMoc Include="CustomGroupBox.h">
       <Filter>Header Files\CustomComponent Header</Filter>
     </QtMoc>
     <QtMoc Include="ParamUpdateThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="img\boat.png">
-      <Filter>Resource Files\img</Filter>
-    </None>
-    <None Include="img\car.png">
-      <Filter>Resource Files\img</Filter>
-    </None>
-    <None Include="img\house.png">
-      <Filter>Resource Files\img</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CustomParamComponent.rc">

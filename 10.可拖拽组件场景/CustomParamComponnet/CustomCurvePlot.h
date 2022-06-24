@@ -26,11 +26,14 @@ namespace CUSTOM_CURVE_PLOT {
 		CustomCurvePlot(QWidget* parent=nullptr);
 		~CustomCurvePlot();
 
+	public:
 		QWidget attributeWidget;
 		QWidget* loadAttributeWidget();
 
-	private:
+		QVector<int> getBindParamList();
 
+	private:
+		QVector<int> mBindingParamIndexList;
 		MY_PARENT_TYPE myParentType;
 		//存储项绑定参数与QListWidget中存留参数的关系，
 		//当选择一个索引时，下面项绑定窗口的配置能顺利配置到参数上

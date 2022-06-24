@@ -21,7 +21,15 @@ namespace MYSQL_OP {
 	{
 
 	private:
+		MysqlOP();
+		~MysqlOP();
+
+	private:
 		MYSQL mysql_connection;
+		static MysqlOP* instance;
+
+	public:
+		static MysqlOP* getInstance();
 
 	public:
 		/*连接*/
@@ -29,10 +37,10 @@ namespace MYSQL_OP {
 		/*读*/
 		int queryMysql(string sql_str,map<int,vector<string>>& contents);
 
+		bool writeMysql(string sql_str);
+
 		/*关闭数据库*/
 		void closeMysqlConnct();
-		
-
 
 	};
 

@@ -98,8 +98,7 @@ void CustomListWidget::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 void CustomListWidget::dragEnterEvent(QDragEnterEvent* event) {
-	
-	
+
 	event->acceptProposedAction();
 
 }

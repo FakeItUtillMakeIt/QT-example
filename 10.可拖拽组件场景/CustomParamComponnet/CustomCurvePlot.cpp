@@ -15,7 +15,7 @@ CustomCurvePlot::CustomCurvePlot(QWidget* parent) :QCustomPlot(parent) {
 	//attributeWidget = nullptr;
 	selectSelf = false;
 	mousePressed = false;
-
+	this->setObjectName("plot");
 	if (parent->objectName() == "customGroupBox")
 	{
 		myParentType = MY_PARENT_TYPE::CUSTOM_GROUPBOX;
@@ -37,6 +37,7 @@ CustomCurvePlot::~CustomCurvePlot() {
 
 /**
 	@brief 生成随机数据，供plot使用测试
+	单独一个参数的话，不需要线程,可以直接从数据库或者传感器获取
 **/
 void CustomCurvePlot::generateShuffleData() {
 
@@ -60,6 +61,10 @@ void CustomCurvePlot::generateShuffleData() {
 	qDebug() << xset << yset;
 	paramCurves[currentSelectParam]->setData(xset, yset);
 	replot();
+}
+
+QVector<int> CustomCurvePlot::getBindParamList() {
+	return mBindingParamIndexList;
 }
 
 /**
@@ -204,7 +209,7 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 			/*操作Curve*/
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
 			paramTimers[currentSelectParam]->start(100);
-			
+			mBindingParamIndexList=mBindingParam.keys().toVector();
 			//this->update();
 			});
 
@@ -254,20 +259,20 @@ void CustomCurvePlot::mousePressEvent(QMouseEvent* event) {
 	if (event->button() == Qt::LeftButton)
 	{
 		selectSelf = true;
-
 		m_point = event->globalPos();
-
 		m_pos = this->frameGeometry().topLeft();
-
 	}
 	mousePressed = true;
 	QWidget::mousePressEvent(event);
 
 	emit displayAttribute(attributeWidget);
-
 	this->grabKeyboard();
 }
 
+/**
+    @brief 鼠标离开时隐藏界面操作
+    @param event - 
+**/
 void CustomCurvePlot::leaveEvent(QEvent* event) {
 	this->releaseKeyboard();
 
@@ -275,9 +280,13 @@ void CustomCurvePlot::leaveEvent(QEvent* event) {
 	selection->removeWidget(this);
 }
 
+/**
+    @brief 重写鼠标点击移动事件
+    @param event - 
+**/
 void CustomCurvePlot::mouseMoveEvent(QMouseEvent* event) {
 
-	selection->clear();
+	//selection->clear();
 
 	if (this->parent()->objectName() == "customGroupBox")
 	{
@@ -287,12 +296,9 @@ void CustomCurvePlot::mouseMoveEvent(QMouseEvent* event) {
 	if ((event->buttons() == Qt::LeftButton) && mousePressed)
 	{
 		QPoint relativePos = event->globalPos() - m_point;
-
 		this->move(m_pos + relativePos);
-		
 	}
 
-	
 	QWidget::mouseMoveEvent(event);
 }
 
