@@ -10,7 +10,7 @@
 #include <QObject>
 
 #include "ui_CustomParamComponent.h"
-#include "CustomPlot.h"
+//#include "CustomPlot.h"
 #include "CustomCurvePlot.h"
 #include "CustomPushButton.h"
 #include "CustomLabel.h"
@@ -50,7 +50,7 @@ namespace CUSTOM_PARAM_COMPONENT {
         int selectElementIndex;
 
     public:
-        CUSTOM_PLOT::CustomPlot* customPlot;
+        //CUSTOM_PLOT::CustomPlot* customPlot;
         CUSTOM_PUSHBUTTON::CustomPushButton* customButton;
         CUSTOM_LABEL::CustomLabel* customLabel;
         CUSTOM_CURVE_PLOT::CustomCurvePlot* customCurvePlot;

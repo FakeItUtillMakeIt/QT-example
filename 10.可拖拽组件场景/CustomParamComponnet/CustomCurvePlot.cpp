@@ -26,6 +26,7 @@ CustomCurvePlot::CustomCurvePlot(QWidget* parent) :QCustomPlot(parent) {
 	}
 
 	xdata = 0;
+
 }
 
 
@@ -43,24 +44,27 @@ void CustomCurvePlot::generateShuffleData() {
 
 	if (xdata > 10000)
 		xdata = 1;
-
 	xset.resize(10);
 	xset = { 0,1,2,3,4,5,6,7,8,9 };
-	yset.resize(10);
-	std::default_random_engine rdGen;
-	rdGen.seed(xdata++);
-	std::uniform_int_distribution<int> dis(1, 10);
-	testPlotData = dis(rdGen);
-
-	if (yset.size() == 10)
+	for (int i=0;i<hasAddButNotNameParamNum;i++)
 	{
-		yset.pop_front();
+		xset.resize(10);
+		yyset[i].resize(10);
+		
+		std::default_random_engine rdGen;
+		rdGen.seed(xdata++);
+		std::uniform_int_distribution<int> dis(1, 10);
+		testPlotData = dis(rdGen);
+		if (yyset[i].size() == 10)
+		{
+			yyset[i].pop_front();
+		}
+		yyset[i] << testPlotData;
+		paramCurves[i]->setData(xset, yyset[i]);
+		replot();
 	}
 
-	yset << testPlotData;
-	qDebug() << xset << yset;
-	paramCurves[currentSelectParam]->setData(xset, yset);
-	replot();
+	
 }
 
 QVector<int> CustomCurvePlot::getBindParamList() {
@@ -86,39 +90,43 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		buttonSub->setIcon(QIcon(QPixmap("img/-hao.png")));
 
 		QListWidget* paramListWidget = new QListWidget;
-
+		QTimer* timer = new QTimer(this);
 		//添加按钮对应操作
 		connect(buttonAdd, &QPushButton::clicked, this, [=]() {
 			hasAddButNotNameParamNum++;
 			paramListWidget->addItem(QString::fromLocal8Bit("第%1个参数").arg(hasAddButNotNameParamNum));
 			paramCurves.push_back(this->addGraph());
-			QTimer* timer = new QTimer(this);
-			paramTimers.push_back(timer);
+			
+			//paramTimers.push_back(timer);
 
 			connect(timer, &QTimer::timeout, this, &CUSTOM_CURVE_PLOT::CustomCurvePlot::generateShuffleData);
+			
 			});
 
 		//删除按钮对应操作
 		connect(buttonSub, &QPushButton::clicked, this, [=]() {
 			if (hasAddButNotNameParamNum == 0)
-		{
+			{
+				timer->stop();
 				QMessageBox::warning(this, "Warning!!!", QString::fromLocal8Bit("参数个数为0!!!"));
 				return;
-		}
+			}
+			hasAddButNotNameParamNum--;
 			qDebug() << paramListWidget->currentIndex().row();
 			if (paramListWidget->currentIndex().row()!=-1)
 			{
 				auto item1=paramListWidget->takeItem(paramListWidget->currentRow());
 				item1->~QListWidgetItem();
-				
+				//timer->stop();
 				paramCurves[currentSelectParam]->setVisible(false);
 				paramCurves[currentSelectParam]->removeFromLegend();
 				
 				paramCurves.remove(currentSelectParam);
-				paramTimers[currentSelectParam]->stop();
-				paramTimers.remove(currentSelectParam);
+				/*paramTimers[currentSelectParam]->stop();
+				paramTimers.remove(currentSelectParam);*/
 
 				qDebug() << "paramCurveSize:" << paramCurves.size();
+			
 			}
 		});
 
@@ -179,6 +187,10 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		QPushButton* buttonParamOK = new QPushButton(QString::fromLocal8Bit("确认设置"));
 		/*点击参数设置按钮之后设置对应参数绑定，引入mBindingParam*/
 		connect(buttonParamOK, &QPushButton::clicked, this, [=]() {
+			if (hasAddButNotNameParamNum==0)
+			{
+				return;
+			}
 			mBindingParam[currentSelectParam] = "";
 			paramCurves[currentSelectParam]->setPen(QPen(comboBox1->itemData(comboBox1->currentIndex()).value<QColor>()));
 
@@ -206,9 +218,14 @@ QWidget* CustomCurvePlot::loadAttributeWidget() {
 		//处理属性编辑窗口配置
 		//全部配置完成之后保存至sql，并更新界面
 		connect(buttonOK, &QPushButton::clicked, this, [=]() {
+			if (hasAddButNotNameParamNum == 0)
+			{
+				return;
+			}
 			/*操作Curve*/
 			qDebug() << comboBox1->itemData(comboBox1->currentIndex());
-			paramTimers[currentSelectParam]->start(100);
+			//paramTimers[currentSelectParam]->start(100);
+			timer->start(100);
 			mBindingParamIndexList=mBindingParam.keys().toVector();
 			//this->update();
 			});

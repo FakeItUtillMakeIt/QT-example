@@ -58,6 +58,8 @@ namespace CUSTOM_CURVE_PLOT {
 		QCPGraph* graph1;
 		QVector<qreal> xset, yset;
 
+		QMap<int, QVector<qreal>> xxset, yyset;
+
 		void generateShuffleData();
 		
 

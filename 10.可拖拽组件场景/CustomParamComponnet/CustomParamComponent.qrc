@@ -1,4 +1,14 @@
 <RCC>
-    <qresource prefix="CustomParamComponent">
+    <qresource prefix="/CustomParamComponent">
+        <file>img/+hao.png</file>
+        <file>img/button.png</file>
+        <file>img/groupbox.png</file>
+        <file>img/-hao.png</file>
+        <file>img/hongyuanbutton.png</file>
+        <file>img/label.png</file>
+        <file>img/lvyuanbutton.png</file>
+        <file>img/OKbutton.png</file>
+        <file>img/plot.png</file>
+        <file>img/update.png</file>
     </qresource>
 </RCC>
