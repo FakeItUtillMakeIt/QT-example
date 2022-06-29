@@ -7,7 +7,6 @@ CustomFlowEditWidget::CustomFlowEditWidget(QWidget *parent)
 	: QWidget(parent)
 {
 
-	setStylize();
 
 	QGridLayout* leftLayout=new QGridLayout;
 	QHBoxLayout* leftTopLayout = new QHBoxLayout;
@@ -18,9 +17,9 @@ CustomFlowEditWidget::CustomFlowEditWidget(QWidget *parent)
 
 	leftSearchInput = new QLineEdit;
 	leftSearchButton = new QPushButton;
-	leftSearchButton->setIcon(QIcon("img/find.png"));
+	leftSearchButton->setIcon(QIcon(":/ControlMonitor/icon/find.png"));
 	leftAddFlowButton = new QPushButton;
-	leftAddFlowButton->setIcon(QIcon("img/+hao.png"));
+	leftAddFlowButton->setIcon(QIcon(":/ControlMonitor/icon/+hao.png"));
 
 	leftProjectFlowList = new QListWidget;
 	leftSearchInput->setMaximumWidth(80);
@@ -41,7 +40,7 @@ CustomFlowEditWidget::CustomFlowEditWidget(QWidget *parent)
 	rightFlowEditButton = new QPushButton(QString::fromLocal8Bit("编辑"));
 	rightFlowDeleteButton = new QPushButton(QString::fromLocal8Bit("删除"));
 	rightFlowUpdateButton = new QPushButton;
-	rightFlowUpdateButton->setIcon(QIcon("img/update.png"));
+	rightFlowUpdateButton->setIcon(QIcon(":/ControlMonitor/icon/update.png"));
 	rightFlowUpdateButton->setMaximumWidth(20);
 
 	rightFlowTable = new CustomTableWidget;
@@ -75,6 +74,7 @@ CustomFlowEditWidget::CustomFlowEditWidget(QWidget *parent)
 		<< QString::fromLocal8Bit("操作") << QString::fromLocal8Bit("回令")
 		<< QString::fromLocal8Bit("备注");
 
+	setStylize();
 }
 
 
@@ -84,7 +84,15 @@ CustomFlowEditWidget::~CustomFlowEditWidget()
 }
 
 void CustomFlowEditWidget::setStylize() {
-
+	leftSearchButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	leftAddFlowButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	rightFlowEditButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	rightFlowDeleteButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	rightFlowUpdateButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	bottomOKButton->setStyleSheet("background:rgb(30, 144, 255); ");
+	bottomCancleButton->setStyleSheet("color:red; ");
+	bottomCancleButton->hide();
+	bottomOKButton->hide();
 	this->setStyleSheet("* {background:rgb(245,245,245);}");
 }
 
@@ -105,8 +113,9 @@ void CustomFlowEditWidget::initConnection() {
 
 	connect(rightFlowTable, &CustomTableWidget::cellDoubleClicked, this, &CustomFlowEditWidget::doubleClickTable);
 
-	
+	connect(bottomOKButton, &QPushButton::clicked, this, &CustomFlowEditWidget::okButtonClick);
 
+	connect(bottomCancleButton, &QPushButton::clicked, this, &CustomFlowEditWidget::cancelButtonClick);
 }
 
 /**
@@ -130,18 +139,22 @@ void CustomFlowEditWidget::addNewFlow() {
 	newFlowName->show();
 
 	connect(okButton, &QPushButton::clicked, this, [=]() {
-
+		if (lineEdit->text().isEmpty())
+		{
+			newFlowName->deleteLater();
+			return;
+		}
 		leftProjectFlowList->addItem(new QListWidgetItem(lineEdit->text()));
 		newFlowName->deleteLater();
 
 		});
 
-	auto dingCheckExcel = new QXlsx::Document();
+	//auto dingCheckExcel = new QXlsx::Document();
 
 }
 
 /**
-    @brief 加载流程
+    @brief 加载已添加流程
 **/
 void CustomFlowEditWidget::loadFlowTable() {
 	rightFlowTable->horizontalHeader()->hide();
@@ -151,7 +164,7 @@ void CustomFlowEditWidget::loadFlowTable() {
 
 	rightFlowTable->setColumnCount(5);
 	rightFlowTable->setRowCount(1);
-	rowHeight = rightFlowTable->height() / 6;
+	//rowHeight = rightFlowTable->height() / 6;
 	rightFlowTable->setRowHeight(0, rightFlowTable->height() / 6);
 	
 	int i = 0;
@@ -216,7 +229,7 @@ void CustomFlowEditWidget::tableCellClick(int row,int column) {
 			if (column == 0 || column == 1)
 			{
 				rightFlowTable->insertRow(row);
-
+				rowMaxRowCount[row ] = 2;
 			}
 			else
 			{
@@ -229,12 +242,12 @@ void CustomFlowEditWidget::tableCellClick(int row,int column) {
 				subTable->horizontalHeader()->hide();
 				subTable->verticalHeader()->hide();
 				rightFlowTable->setCellWidget(row, column, subTable);
-				rightFlowTable->setRowHeight(row, rowHeight * subTable->rowCount() / 2);
+				rightFlowTable->setRowHeight(row, rowHeight * rowMaxRowCount[row] / 2);
 				subTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 				subTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 				for (int i = 0; i < subTable->rowCount(); i++)
 				{
-					subTable->setRowHeight(i, rowHeight / 2);
+					subTable->setRowHeight(i, rowHeight* rowMaxRowCount[row] / 2 / 2);
 					subTable->setColumnWidth(0, columnWidth);
 					QTableWidgetItem* item = new QTableWidgetItem;
 
@@ -275,7 +288,7 @@ void CustomFlowEditWidget::tableCellClick(int row,int column) {
 			if (column == 0 || column == 1)
 			{
 				rightFlowTable->insertRow(row + 1);
-
+				rowMaxRowCount[row + 1] = 2;
 			}
 			else
 			{
@@ -291,12 +304,12 @@ void CustomFlowEditWidget::tableCellClick(int row,int column) {
 				subTable->horizontalHeader()->hide();
 				subTable->verticalHeader()->hide();
 				rightFlowTable->setCellWidget(row, column, subTable);
-				rightFlowTable->setRowHeight(row, rowHeight*subTable->rowCount()/2);
+				rightFlowTable->setRowHeight(row, rowHeight* rowMaxRowCount[row] /2);
 				subTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 				subTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 				for (int i = 0; i < subTable->rowCount(); i++)
 				{
-					subTable->setRowHeight(i, rowHeight / 2);
+					subTable->setRowHeight(i, rowHeight* rowMaxRowCount[row] / 2 / 2);
 					subTable->setColumnWidth(0, columnWidth);
 					QTableWidgetItem* item = new QTableWidgetItem;
 					
@@ -401,5 +414,34 @@ void CustomFlowEditWidget::adjustCellHeight(QPoint p) {
 			maxEnbedRow = w1->rowCount();
 	}
 	
-	rightFlowTable->setRowHeight(row1, maxEnbedRow * rowHeight/2);
+	rowMaxRowCount[row1] = maxEnbedRow;
+	/*if (maxEnbedRow > rowMaxRowCount[row1])
+	{
+		rowMaxRowCount[row1] = maxEnbedRow;
+	}*/
+	rightFlowTable->setRowHeight(row1, rowMaxRowCount[row1] * rowHeight / 2);
+	for (int c = 1; c < rightFlowTable->columnCount(); c++)
+	{
+		SubTableWidget* w1 = static_cast<SubTableWidget*>(rightFlowTable->cellWidget(row1, c));
+		if (w1 == nullptr)
+			continue;
+		for (int subRowIndex = 0; subRowIndex < w1->rowCount(); subRowIndex++)
+		{
+			w1->setRowHeight(subRowIndex, rowMaxRowCount[row1] * rowHeight / w1->rowCount() / 2);
+		}
+	}
 }
+
+//OK时需要将添加的流程存储
+void CustomFlowEditWidget::okButtonClick() {
+
+
+	this->deleteLater();
+}
+
+//取消则关闭窗口
+void CustomFlowEditWidget::cancelButtonClick() {
+
+	this->deleteLater();
+}
+

@@ -1,5 +1,7 @@
 #include "SubTableWidget.h"
 
+using namespace SUB_TABLE_WIDGET;
+
 SubTableWidget::SubTableWidget() {
 
 	row = 0, column = 0;
@@ -28,6 +30,7 @@ SubTableWidget::SubTableWidget() {
 
 		this->setItem(row, 0, new QTableWidgetItem);
 		emit opOver(cursorPos);
+		popWidget->hide();
 		});
 
 
@@ -35,12 +38,14 @@ SubTableWidget::SubTableWidget() {
 		this->insertRow(row + 1);
 		this->setItem(row + 1, 0, new QTableWidgetItem);
 		emit opOver(cursorPos);
+		popWidget->hide();
 		});
 
 	connect(removeCell, &QPushButton::clicked, this, [=]() {
 
 		this->removeRow(row);
 		emit opOver(cursorPos);
+		popWidget->hide();
 		});
 }
 

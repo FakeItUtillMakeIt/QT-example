@@ -6,6 +6,10 @@
 #include <QtWidgets>
 #include <qtablewidget.h>
 
+/**
+    @namespace CUSTOM_TABLE_WIDGET
+    @brief     ×Ô¶¨ÒåTableWidget
+**/
 namespace CUSTOM_TABLE_WIDGET {
 	class CustomTableWidget :
 		public QTableWidget

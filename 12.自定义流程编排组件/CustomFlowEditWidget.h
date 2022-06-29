@@ -12,10 +12,16 @@
 #include "CustomTableWidget.h"
 #include "SubTableWidget.h"
 using namespace CUSTOM_TABLE_WIDGET;
+using namespace SUB_TABLE_WIDGET;
 
 #define _USE_SPAN_
 #define _USE_TABLE_ENBLED_
 
+
+/**
+    @namespace CUSTOM_FLOW_EDIT_WIDGET
+    @brief     自定义流程编辑窗口
+**/
 namespace CUSTOM_FLOW_EDIT_WIDGET {
 
 
@@ -50,17 +56,17 @@ namespace CUSTOM_FLOW_EDIT_WIDGET {
 	private:
 		int currentFlowIndex;
 		QPoint cursorPos;
-		int rowHeight;
+		int rowHeight=60;
 		int columnWidth;
 
 		QMap<int, QVector<int>> mergeCell;
 		QMap<int, QVector<int>> rowInclude;
-
+		QMap<int, int> rowMaxRowCount;
 	private:
 		void initConnection();
 		void setStylize();
 
-
+	
 
 	private slots:
 		void addNewFlow();
@@ -70,6 +76,9 @@ namespace CUSTOM_FLOW_EDIT_WIDGET {
 		void tableEditClick();
 		void doubleClickTable(int row, int column);
 		void adjustCellHeight(QPoint);
+
+		void okButtonClick();
+		void cancelButtonClick();
 	};
 
 

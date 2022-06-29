@@ -1,37 +1,47 @@
 #pragma once
+
+#ifndef SUB_TABLE_WIDGET_H
+#define SUB_TABLE_WIDGET_H
+
+
 #include <QtWidgets>
 #include <qtablewidget.h>
 
+namespace SUB_TABLE_WIDGET {
 
-class SubTableWidget :
-    public QTableWidget
-{
+	class SubTableWidget :
+		public QTableWidget
+	{
 
-    Q_OBJECT
-public:
-    SubTableWidget();
-    
-private:
-    QPoint cursorPos;
-    QWidget* popWidget;
+		Q_OBJECT
+	public:
+		SubTableWidget();
 
-    QPushButton* frontInsertCell;
-    QPushButton* backInsertCell;
-    QPushButton* removeCell;
+	private:
+		QPoint cursorPos;
+		QWidget* popWidget;
 
-    int row, column;
+		QPushButton* frontInsertCell;
+		QPushButton* backInsertCell;
+		QPushButton* removeCell;
 
-private:
-	void mousePressEvent(QMouseEvent* event);
-	void mouseDoubleClickEvent(QMouseEvent* event);
+		int row, column;
 
-private slots:
-    void rightButtonClicked(int row, int column);
-    void doubleClickTable(int row, int column);
+	private:
+		void mousePressEvent(QMouseEvent* event);
+		void mouseDoubleClickEvent(QMouseEvent* event);
 
-signals:
-	void mouseRightClicked(QPoint);
-    void opOver(QPoint);
+	private slots:
+		void rightButtonClicked(int row, int column);
+		void doubleClickTable(int row, int column);
 
-};
+	signals:
+		void mouseRightClicked(QPoint);
+		void opOver(QPoint);
 
+	};
+
+}
+
+
+#endif
