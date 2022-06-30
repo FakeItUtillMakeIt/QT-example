@@ -14,7 +14,6 @@ QT-example应用程序
 
 # 综控机测试软件 
 
-
         
   
   地址：https://github.com/FakeItUtillMakeIt/QT-example/tree/main/GeneralCTrlMacTest
@@ -44,7 +43,7 @@ Qt处理Excel文件  https://www.guyuehome.com/35399
 ## -------------------------------------
 C++模板
 
-
+## -------------------------------------
  **opencv模块** 
 
 - core 库：提供基础构建库
@@ -59,5 +58,8 @@ C++模板
 ## [opencv官方文档](https://docs.opencv.org/4.x/index.html)
 ## [opencv中文论坛](http://www.opencv.org.cn/forum/)
 ## [opencvGithub地址](https://github.com/opencv/)
+## -------------------------------------
+## [OPENGL学习](https://learnopengl-cn.github.io/)
+
 
 ## [opencv onnx模型地址](https://github.com/opencv/opencv_zoo/tree/master/models/face_recognition_sface)
