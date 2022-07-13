@@ -1,0 +1,36 @@
+        /*兵哥给的考勤表*/
+//        //统计当前月人员的上班时间所在行
+//        int columnBanci,columnDepartment,columnDate;
+//        for (int c=0;c<columnC;c++) {
+//            if(dingCheckExcel->read(1,c+1)==QString("班次"))
+//                columnBanci=c+1;
+//            if(dingCheckExcel->read(1,c+1)==QString("部门"))
+//                columnDepartment=c+1;
+//            if(dingCheckExcel->read(1,c+1)==QString("日期"))
+//                columnDate=c+1;
+//        }
+
+//        auto dateList=dingCheckExcel->read(4,columnDate).toString().split(QRegExp("-"));
+//        currentMonth=dateList[1].toInt();
+//        currentYear=dateList[0].toInt();
+//        qDebug()<<columnDate<<dateList<<currentMonth<<currentYear;
+
+//        for (int r=0;r<=rowC;r++) {
+//            QString content=dingCheckExcel->read(r+1,columnBanci).toString();
+//            //请假
+//            if(content.contains(vacateRegFormat))
+//                continue;
+//            //休息
+//            if(content.contains(breakDateRegFormat))
+//                continue;
+//            //空信息
+//            if(content.isNull())
+//                continue;
+//            //每个人
+//            if(dingCheckExcel->read(r+1,1).toString()==QString("姓名"))
+//                continue;
+//            if(dingCheckExcel->read(r+1,1).toString().isNull())
+//                continue;
+//            humanWorkdayRowInfo[dingCheckExcel->read(r+1,1).toString()].push_back(r+1);
+
+//        }
