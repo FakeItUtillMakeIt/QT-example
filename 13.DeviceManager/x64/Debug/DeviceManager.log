@@ -1,0 +1,10 @@
+﻿  moc ..\..\src\DeviceManager\UI\ParamInfoConfigWidget.h
+  DeviceCommonVaries.cpp
+  CenterOperate.cpp
+  DeviceManager.cpp
+  ParamInfoConfigWidget.cpp
+  ParamManageModule.cpp
+  main.cpp
+E:\VSProject\QT\SimulatedTraining_DEV\src\DeviceManager\UI\ParamInfoConfigWidget.cpp(178,2): error C2664: “QMetaObject::Connection QObject::connect(const QObject *,const char *,const QObject *,const char *,Qt::ConnectionType)”: 无法将参数 2 从“overloaded-function”转换为“const char *”
+E:\VSProject\QT\SimulatedTraining_DEV\src\DeviceManager\UI\ParamInfoConfigWidget.cpp(178,42): message : 上下文不允许消除重载函数的歧义
+D:\Qt\Qt5.7.1\5.7\msvc2015_64\include\QtCore\qobject.h(202,36): message : 参见“QObject::connect”的声明 (编译源文件 ..\..\src\DeviceManager\UI\ParamInfoConfigWidget.cpp)

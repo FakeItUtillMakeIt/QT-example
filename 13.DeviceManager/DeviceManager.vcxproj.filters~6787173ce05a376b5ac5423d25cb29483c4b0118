@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\src\DeviceManager\Controls\MyLogBox.cpp">
+      <Filter>Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\Controls\MyInfoTip.cpp">
+      <Filter>Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\Database\DeviceDAO.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\AppCache.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Public\log.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Public\tinyxml2.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\Software.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Public\DirOperation.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\Database\DeviceDBConfigInfo.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\DeviceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\WidgetStyleSheet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Model\Command.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Model\Device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\Net\DeviceNetManage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\CenterOperate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\InfoConfigWidget.cpp" />
+    <ClCompile Include="..\..\src\DeviceManager\Receiver\ReceiveCMDData.cpp">
+      <Filter>Receiver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\RocketTypeManageModule.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\CommandManageModule.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\DeviceManageModule.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DeviceManager\UI\ParamManageModule.cpp">
+      <Filter>Module</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\DeviceManager\Database\DeviceDAO.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DeviceManager\AppCache.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Public\log.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Public\tinyxml2.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Public\DirOperation.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DeviceManager\Database\DeviceDBConfigInfo.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Public\CRC.h">
+      <Filter>Public</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DeviceManager\UI\WidgetStyleSheet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Model\Device.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Model\Command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="..\..\src\DeviceManager\Controls\MyLogBox.h">
+      <Filter>Controls</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\Controls\MyInfoTip.h">
+      <Filter>Controls</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\DeviceManager.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\Software.h">
+      <Filter>Public</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\Net\DeviceNetManage.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\CenterOperate.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\InfoConfigWidget.h" />
+    <QtMoc Include="..\..\src\DeviceManager\Receiver\ReceiveCMDData.h">
+      <Filter>Receiver</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\RocketTypeManageModule.h">
+      <Filter>Module</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\ParamManageModule.h">
+      <Filter>Module</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\DeviceManageModule.h">
+      <Filter>Module</Filter>
+    </QtMoc>
+    <QtMoc Include="..\..\src\DeviceManager\UI\CommandManageModule.h">
+      <Filter>Module</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="..\..\src\DeviceManager\UI\CenterOperate.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+    <QtRcc Include="..\..\src\DeviceManager\UI\DeviceManager.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="..\..\src\DeviceManager\UI\CenterOperate.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="..\..\src\DeviceManager\UI\DeviceManager.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{b55d75ca-249c-4bc0-8dbd-7312b97385bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database">
+      <UniqueIdentifier>{e5539387-f13b-4dda-b48d-24c90dd872d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{df461d07-810d-4306-ac53-9e73546f8d26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{7a409478-27ec-4138-8122-d333e7e502a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model">
+      <UniqueIdentifier>{b12e3c06-d55b-4673-9179-90987a122b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Public">
+      <UniqueIdentifier>{2335b07c-3198-452b-8c10-6f018edc8eb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{9515c989-ec81-47f6-9008-ce2957ca4871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{2cd0f82b-ca15-4e2b-8369-800bc2827fcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Receiver">
+      <UniqueIdentifier>{1a1c877e-cf64-4871-9737-afa394eda3ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module">
+      <UniqueIdentifier>{f85850e7-63c9-4151-a70a-228ff7c83aad}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
