@@ -48,6 +48,7 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectBackCMD = new QComboBox;
 	configCommandName = new QLabel(QString("指令名称:"));
 	userInputCMDName = new QLineEdit;
+	userInputCMDName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
 	configCommandCode = new QLabel(QString("指令编码:"));;
 	userSelectCMDCode = new QComboBox;
@@ -64,6 +65,8 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectEmitCmdID = new QComboBox();
 	configParamName = new QLabel(QString("参数名称:"));
 	userInputParamName = new QLineEdit;
+	userInputParamName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+
 	configParamCode = new QLabel(QString("参数编码:"));
 	userSelectParamCode = new QComboBox();
 	configIndex = new QLabel(QString("索引:"));
@@ -77,7 +80,7 @@ void InfoConfigWidget::InitUILayout() {
 
 	commandParamInfoOKBtn = new QPushButton(QString("新增指令参数"));
 
-	updateCommandBtn = new QPushButton(QString("更新指令配置"));
+	updateCommandBtn = new QPushButton(QString("取消"));
 
 	QGridLayout* infoUILayout = new QGridLayout;
 	int rowCount = 40;
@@ -307,5 +310,7 @@ void InfoConfigWidget::clickCommandParamOKBtn() {
 }
 
 void InfoConfigWidget::clickUpateCommandBtn() {
+
+	this->close();
 
 }

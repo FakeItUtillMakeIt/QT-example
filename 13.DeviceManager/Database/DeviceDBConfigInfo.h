@@ -15,7 +15,7 @@ using namespace std;
 /**
 
 	@class   DeviceDBConfigInfo
-	@brief   设备管理器各个配置功能相关数据库操作
+	@brief   设备管理器各个配置功能相关数据库表的读写功能
 	@details ~
 
 **/

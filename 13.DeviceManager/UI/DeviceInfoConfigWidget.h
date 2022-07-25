@@ -90,6 +90,7 @@ namespace DeviceInfoConfig {
 		void setConfigHeader(QString);
 
 	private slots:
+		void selectFilePathOKBtn();
 
 		void clickDeviceOKBtn();
 		void clickStatusOKBtn();

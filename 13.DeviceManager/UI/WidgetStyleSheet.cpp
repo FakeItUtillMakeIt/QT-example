@@ -115,21 +115,21 @@ void WidgetStyleSheet::styleSheetInit() {
 			padding:10px; }\
 		";
 	insertButtonStyleSheet = "\
-		%1{ background-color:rgb(0,190,255); \
+		%1{ color:white;background-color:rgb(0,190,255); \
 			width:36px; \
 			height:12px; \
 			border-width:0px; \
 			border-radius:5px;\
-			font: 12px; \
+			//font: 12px; \
 			padding:10px; }\
 		";
 	deleteButtonStyleSheet = "\
-		%1{ background-color:rgb(245,245,245); \
+		%1{ color:red;background-color:rgb(245,245,245);\
 			width:36px; \
 			height:12px; \
 			border-width:0px; \
 			border-radius:5px;\
-			font: 12px; \
+			font:12px bold; \
 			padding:10px; }\
 		";
 

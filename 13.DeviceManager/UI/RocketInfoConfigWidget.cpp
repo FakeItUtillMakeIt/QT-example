@@ -44,6 +44,8 @@ void InfoConfigWidget::InitUILayout() {
 	//!< rocket_info
 	configRocketName = new QLabel(QString("火箭名称:"));
 	userInputRocketName = new QLineEdit;
+	userInputRocketName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+
 	configRocketType = new QLabel(QString("火箭型号:"));
 	userSelectRocketType = new QComboBox;
 
@@ -53,8 +55,12 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectRocketID = new QComboBox;
 	configCmdName = new QLabel(QString("指令名称:"));
 	userInputCmdName = new QLineEdit;
+	userInputCmdName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+
 	configCmdCode = new QLabel(QString("指令编码:"));
 	userInputCmdCode = new QLineEdit;
+	userInputCmdCode->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+
 	configCmdPrefix = new QLabel(QString("指令前缀:"));
 	userSelectCmdPrefix = new QComboBox;
 
@@ -66,14 +72,18 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectParamID = new QComboBox;
 	configIndex = new QLabel(QString("索引:"));
 	userSlctIndex = new QLineEdit;
+	userSlctIndex->setValidator(new QIntValidator(0, 3));
+
 	configParamLength = new QLabel(QString("参数字节长度:"));
 	userInputParamLength = new QLineEdit;
+	userInputParamLength->setValidator(new QIntValidator(1, 16));
+
 	configParamType = new QLabel(QString("参数类型"));
 	userSelectParamType = new QComboBox;
 
 	rocketParamInfOKBtn = new	QPushButton(QString("新增箭上参数"));
 
-	updateRocketInfoBtn = new QPushButton(QString("更新火箭配置"));
+	updateRocketInfoBtn = new QPushButton(QString("取消"));
 
 	QGridLayout* infoUILayout = new QGridLayout;
 	int rowCount = 40;
@@ -282,5 +292,6 @@ void InfoConfigWidget::clickRocketParamOKBtn() {
 
 
 void InfoConfigWidget::clickUpateRocketBtn() {
+	this->close();
 
 }

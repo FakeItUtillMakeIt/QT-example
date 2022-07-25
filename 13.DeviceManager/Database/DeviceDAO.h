@@ -10,6 +10,7 @@ using namespace std;
 
 #include "../AppCache.h"
 #include "../../Public/log.h"
+#include "../../Public/Utils.h" 
 #include "../../Model/Device.h"
 #include "mysql.h" 
 

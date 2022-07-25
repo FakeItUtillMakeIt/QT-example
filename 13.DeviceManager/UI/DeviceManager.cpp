@@ -6,6 +6,7 @@ DeviceManager::DeviceManager(QWidget* parent)
 	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_pDeviceDAO(nullptr)
+	, m_pCommandDAO(nullptr)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
@@ -62,8 +63,25 @@ void DeviceManager::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
+	displayStatuInfo("加载设备基础数据完毕！");
 
-	displayStatuInfo("加载用户数据完毕！");
+	m_pCommandDAO = new DataBase::CommandDAO(m_app->m_outputPath);
+	if (!m_pCommandDAO->getCommand())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载指令数据完毕！");
+	if (!m_pCommandDAO->getCommandParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载指令参数数据完毕！");
+
+	displayStatuInfo("加载基础数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 }
 

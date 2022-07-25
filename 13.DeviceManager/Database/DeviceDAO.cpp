@@ -59,7 +59,7 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql;
-		sql.append("select * from user_info;");
+		sql.append("select b.name as '火箭型号', a.* from device_info a left join rocket_info b on a.rocket_id = b.id ;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -71,10 +71,11 @@ namespace DataBase
 				while (sql_row = mysql_fetch_row(result))
 				{
 					Device* oneDevice = new Device();
-					int id = atoi(sql_row[0]);
-					oneDevice->m_id = id;
-					oneDevice->m_deviceName = sql_row[1];
-					oneDevice->m_deviceType = sql_row[2];
+					oneDevice->m_sRocketName = Utils::UTF8ToGBK(sql_row[0]);
+					oneDevice->m_id = atoi(sql_row[1]);
+					oneDevice->m_iRocketId = atoi(sql_row[2]);
+					oneDevice->m_deviceName = Utils::UTF8ToGBK(sql_row[3]);
+					oneDevice->isVirtual = atoi(sql_row[4]); 
 					m_app->m_allDevice.push_back(oneDevice);
 				}
 			}

@@ -46,6 +46,8 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectRocketType = new QComboBox;
 	configDeviceName = new QLabel(QString("设备名称:"));
 	userInputDeviceName = new QLineEdit;
+	userInputDeviceName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+
 	configDeviceType = new QLabel(QString("设备类型:"));
 	userSelectDeviceType = new QComboBox;
 
@@ -53,6 +55,7 @@ void InfoConfigWidget::InitUILayout() {
 	//!< 	开关量状态值
 	configStatusName = new QLabel(QString("设备状态名称:"));;
 	userInputStatusName = new QLineEdit;
+	userInputStatusName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
 	statusConfigOKBtn = new QPushButton(QString("新增状态"));
 	//!< 	开关量显示值
@@ -73,7 +76,7 @@ void InfoConfigWidget::InitUILayout() {
 
 	deviceParamInfoOKBtn = new QPushButton(QString("新增设备参数"));
 
-	updateDeviceInfoBtn = new QPushButton(QString("更新设备配置"));
+	updateDeviceInfoBtn = new QPushButton(QString("取消"));
 
 	QGridLayout* infoUILayout = new QGridLayout;
 	int rowCount = 40;
@@ -239,6 +242,7 @@ void InfoConfigWidget::widgetConfig() {
 }
 
 void InfoConfigWidget::initConnect() {
+	connect(userSelectPathBtn, &QPushButton::clicked, this, &InfoConfigWidget::selectFilePathOKBtn);
 
 	connect(deviceConfigOKBtn, &QPushButton::clicked, this, &InfoConfigWidget::clickDeviceOKBtn);
 
@@ -253,6 +257,16 @@ void InfoConfigWidget::initConnect() {
 
 void InfoConfigWidget::setConfigHeader(QString header) {
 
+}
+
+/**
+	@brief 选择文件
+**/
+void InfoConfigWidget::selectFilePathOKBtn() {
+	//过滤格式txt
+	QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
+
+	userSelectPath->setText(filepath1);
 }
 
 /**
@@ -303,4 +317,5 @@ void InfoConfigWidget::clickDeviceParamOKBtn() {
 
 void InfoConfigWidget::clickUpateDeviceBtn() {
 
+	this->close();
 }

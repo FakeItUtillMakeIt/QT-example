@@ -13,6 +13,7 @@
 #include <QCryptographicHash>
 using namespace std;
 #include "../Model/Device.h"
+#include "../Model/Command.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
 /**
@@ -62,6 +63,7 @@ public:
 	PeerInfo* m_responseSender; //测控回令发送端口
 	PeerInfo* m_yaoCeSender; //箭上数据发送端口
 	vector<Device*> m_allDevice;
+	map<int,Command*> m_allCommad;
 	int* argc;
 	char*** argv;
 	int m_status;//系统状态：0表示空闲，1表示数据回放中，2表示数据处理中，3表示实时试验中

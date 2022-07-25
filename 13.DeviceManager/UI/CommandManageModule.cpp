@@ -68,8 +68,8 @@ void CommandManageModule::InitUILayout() {
 
 	paramNameLabel->setStyleSheet(wss->labelStyleSheet.arg("QLabel"));
 	paramInputName->setStyleSheet(wss->lineEditStyleSheet.arg("QLineEdit"));
-	insertButton->setStyleSheet(wss->insertButtonStyleSheet.arg("QPushButton"));
-	deleteButton->setStyleSheet(wss->deleteButtonStyleSheet.arg("QPushButton"));
+	insertButton->setStyleSheet(QString("QPushButton{color:white;}") + wss->insertButtonStyleSheet.arg("QPushButton"));
+	deleteButton->setStyleSheet(QString("QPushButton{color:red;}") + wss->deleteButtonStyleSheet.arg("QPushButton"));
 	updateButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
 	settingButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
 	collapseButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
@@ -163,7 +163,7 @@ void CommandManageModule::insertOneRowData() {
 }
 
 /**
-	@brief 删除一行数据
+	@brief 删除一行数据  需同步数据库  此处涉及改动较大，暂时搁置
 **/
 void CommandManageModule::deleteOneRowData() {
 	if (selectedRowNum != -1)

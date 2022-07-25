@@ -8,6 +8,7 @@
 #include "CenterOperate.h"
 #include "../AppCache.h"
 #include "../Database/DeviceDAO.h"
+#include "../Database/CommandDAO.h"
 #include "../Controls/MyInfoTip.h"
 #include "../Controls/MyLogBox.h"
 
@@ -27,6 +28,7 @@ private:
     CenterOperate* m_pCenterOperate;
     void Init();
     DataBase::DeviceDAO* m_pDeviceDAO;
+    DataBase::CommandDAO* m_pCommandDAO; 
     MyLogBox* tb_show;
     MyInfoTip* m_myInfoTip;
 

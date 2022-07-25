@@ -45,6 +45,7 @@ void InfoConfigWidget::InitUILayout() {
 
 	configParamName = new QLabel(QString("参数名称:"));
 	userInputParamName = new QLineEdit;
+	userInputParamName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 	configParamType = new QLabel(QString("参数类型:"));
 	userSelectType = new QComboBox;
 	configParamUnit = new QLabel(QString("参数单位:"));
@@ -54,6 +55,7 @@ void InfoConfigWidget::InitUILayout() {
 	//!< 	开关量状态值
 	configSwitchValName = new QLabel(QString("开关量名称:"));;
 	userInputSwitchVal = new QLineEdit;
+	userInputSwitchVal->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 	//switchValCancelBtn = new QPushButton(QString("取消"));;
 	switchValOKBtn = new QPushButton(QString("新增开关量"));
 	//!< 	开关量显示值
@@ -68,7 +70,7 @@ void InfoConfigWidget::InitUILayout() {
 	//switchShowInfoCancelBtn = new QPushButton(QString("取消"));
 	switchShowInfoOKBtn = new QPushButton(QString("新增开关量显示值"));
 
-	updateParamInfoBtn = new QPushButton(QString("更新参数配置"));
+	updateParamInfoBtn = new QPushButton(QString("取消"));
 
 	QGridLayout* infoUILayout = new QGridLayout;
 	int rowCount = 40;
@@ -256,6 +258,6 @@ void InfoConfigWidget::clickSwitchShowInfoOKBtn() {
 **/
 void InfoConfigWidget::clickUpdateParamBtn() {
 
-
+	this->close();
 
 }

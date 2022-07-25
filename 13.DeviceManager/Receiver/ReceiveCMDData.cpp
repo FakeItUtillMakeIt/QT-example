@@ -20,7 +20,7 @@ void ReceiveCMDData::init()
     m_pCMDSocket = new QUdpSocket(this);
     m_pCMDSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
     //本地监听端口号为随意指定
-    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, m_app->m_cmdReceiver->m_iPort, QUdpSocket::ShareAddress)) {
+    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, m_app->m_cmdReceiver->m_iPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         return;
     }
     m_pCMDSocket->joinMulticastGroup(QHostAddress(m_app->m_cmdReceiver->m_strIP.c_str())); //加入组播
@@ -62,8 +62,16 @@ void ReceiveCMDData::receiveData()
         Command* command = new Command();
         command->m_iType = 1;
         command->m_iCode = 0;
-        command->m_iBackId = 5;
-        memcpy(&command->m_iCode, datagram.data() + 2 , 1); //测发指令code 
+        command->m_iBackId = 0;
+        memcpy(&command->m_iCode, datagram.data() + 2 , 1); //测发指令code  
+        for (auto it = m_app->m_allCommad.begin(); it != m_app->m_allCommad.end(); it++)
+        {
+            if (it->second->m_iCode == command->m_iCode)
+            {
+                command->m_iBackId = it->second->m_iBackId;
+                break;
+            }
+        } 
         QVariant temp;
         temp.setValue(command);
         emit receiverCMD(temp); 
