@@ -1,33 +1,27 @@
 ﻿#pragma once
 
-#ifndef DEVICE_DAO1_H
-#define DEVICE_DAO1_H
-
-
-#include <string>
+#include <vector>
 #include <unordered_map>
+#include <string>
 using namespace std;
 
 #include "../AppCache.h"
 #include "../../Public/log.h"
-#include "../../Public/Utils.h" 
-#include "../../Model/Device.h"
-#include "../../Model/DeviceParam.h"
+#include "../../Model/User.h"
 #include "mysql.h" 
 
 namespace DataBase
 {
-	class DeviceDAO
+	class UserDAO
 	{
 	public:
-		DeviceDAO(OutputPath* path);
-		~DeviceDAO();
+		UserDAO(OutputPath* path);
+		~UserDAO();
 		bool exec_sql(string sql);
 		bool connected();
 		bool connect();
 		bool test();
-		bool getDevice(); 
-		bool getDeviceParam();
+		bool getUser();
 		int queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents);
 	private:
 		OutputPath* m_path;
@@ -36,6 +30,3 @@ namespace DataBase
 		AppCache* m_app;
 	};
 }
-
-
-#endif

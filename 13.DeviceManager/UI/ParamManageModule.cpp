@@ -123,6 +123,8 @@ void ParamManageModule::InitUILayout() {
 		configInfoTable->setHorizontalHeaderItem(col, item);
 	}
 
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+
 	this->setLayout(mainUILay);
 
 	connect(insertButton, &QPushButton::clicked, this, &ParamManageModule::insertOneRowData);
@@ -138,8 +140,11 @@ void ParamManageModule::paintEvent(QPaintEvent* event) {
 
 	for (int columnIndex = 0; columnIndex < configInfoTable->columnCount(); columnIndex++)
 	{
-		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width()) / (configInfoTable->columnCount()));
+		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width() - 100) / (configInfoTable->columnCount()));
 	}
+
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+	configInfoTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 }
 
 /**

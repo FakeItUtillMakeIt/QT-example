@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RocketStructShow</class>
+ <widget class="QWidget" name="RocketStructShow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>795</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(232, 232, 232);</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>272</width>
+     <height>795</height>
+    </rect>
+   </property>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>272</width>
+      <height>234</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav1-2.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>234</y>
+      <width>272</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav2-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>424</y>
+      <width>272</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav3-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>614</y>
+      <width>272</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav4-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="widget_2" native="true">
+   <property name="geometry">
+    <rect>
+     <x>272</x>
+     <y>0</y>
+     <width>1648</width>
+     <height>794</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/p1.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_level1enginer">
+    <property name="geometry">
+     <rect>
+      <x>1260</x>
+      <y>130</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_weiduan">
+    <property name="geometry">
+     <rect>
+      <x>1440</x>
+      <y>210</y>
+      <width>131</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_all">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_level1enginer_2">
+    <property name="geometry">
+     <rect>
+      <x>1290</x>
+      <y>170</y>
+      <width>121</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_weiduan_2">
+    <property name="geometry">
+     <rect>
+      <x>1460</x>
+      <y>250</y>
+      <width>111</width>
+      <height>111</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lb_weiduan">
+    <property name="geometry">
+     <rect>
+      <x>309</x>
+      <y>65</y>
+      <width>1030</width>
+      <height>663</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/material/weiduan2.png</pixmap>
+    </property>
+   </widget>
+   <zorder>label</zorder>
+   <zorder>pb_all</zorder>
+   <zorder>pb_weiduan</zorder>
+   <zorder>pb_level1enginer</zorder>
+   <zorder>pb_level1enginer_2</zorder>
+   <zorder>pb_weiduan_2</zorder>
+   <zorder>lb_weiduan</zorder>
+  </widget>
+ </widget>
+ <resources>
+  <include location="RocketStructShow.qrc"/>
+ </resources>
+ <connections/>
+</ui>

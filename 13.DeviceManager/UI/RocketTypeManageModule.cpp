@@ -87,6 +87,8 @@ void RocketTypeManageModule::InitUILayout() {
 		configInfoTable->setHorizontalHeaderItem(col, item);
 	}
 
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+
 	this->setLayout(mainUILay);
 
 	connect(insertButton, &QPushButton::clicked, this, &RocketTypeManageModule::insertOneRowData);
@@ -136,8 +138,11 @@ void RocketTypeManageModule::paintEvent(QPaintEvent* event) {
 	for (int columnIndex = 0; columnIndex < configInfoTable->columnCount(); columnIndex++)
 	{
 		//displayWidget->setColumnWidth(columnIndex, (this->parentWidget()->width()) / (displayWidget->columnCount() + 1));
-		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width()) / (configInfoTable->columnCount()));
+		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width() - 100) / (configInfoTable->columnCount()));
 	}
+
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+	configInfoTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 }
 
 /**

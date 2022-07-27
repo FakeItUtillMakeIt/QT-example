@@ -65,6 +65,14 @@ void DeviceManager::Init()
 	}
 	displayStatuInfo("加载设备基础数据完毕！");
 
+	if (!m_pDeviceDAO->getDeviceParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载设备参数数据完毕！");
+	 
 	m_pCommandDAO = new DataBase::CommandDAO(m_app->m_outputPath);
 	if (!m_pCommandDAO->getCommand())
 	{

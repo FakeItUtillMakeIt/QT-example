@@ -1,17 +1,18 @@
 ﻿#pragma execution_character_set("utf-8")
-#include "DeviceDAO.h"
+#include "CommandDAO.h"
 #include <boost\lexical_cast.hpp>
+#include <stdlib.h>
 
 namespace DataBase
 {
-	DeviceDAO::DeviceDAO(OutputPath* path)
+	CommandDAO::CommandDAO(OutputPath* path)
 		: m_path(path)
 		, is_connected(false)
 	{
 		m_app = AppCache::instance();
 	}
 
-	DeviceDAO::~DeviceDAO()
+	CommandDAO::~CommandDAO()
 	{
 		if (is_connected)
 		{
@@ -20,7 +21,7 @@ namespace DataBase
 		}
 	}
 
-	bool DeviceDAO::connect()
+	bool CommandDAO::connect()
 	{
 		if (!is_connected)
 		{
@@ -42,12 +43,12 @@ namespace DataBase
 		}
 		return is_connected;
 	}
-	bool DeviceDAO::connected()
+	bool CommandDAO::connected()
 	{
 		return is_connected;
 	}
 
-	bool DeviceDAO::getDevice()
+	bool CommandDAO::getCommand()
 	{
 		if (!connected())
 		{
@@ -59,7 +60,7 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql;
-		sql.append("select b.name as '火箭型号', a.* from device_info a left join rocket_info b on a.rocket_id = b.id ;");
+		sql.append("select b.name as '火箭型号', a.* from command_info a left join rocket_info b on a.rocket_id = b.id ;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -67,16 +68,18 @@ namespace DataBase
 			result = mysql_store_result(&my_connection);
 			if (result)
 			{
-				m_app->m_allDevice.clear();
+				m_app->m_allCommad.clear();
 				while (sql_row = mysql_fetch_row(result))
 				{
-					Device* oneDevice = new Device();
-					oneDevice->m_sRocketName = Utils::UTF8ToGBK(sql_row[0]);
-					oneDevice->m_id = atoi(sql_row[1]);
-					oneDevice->m_iRocketId = atoi(sql_row[2]);
-					oneDevice->m_deviceName = Utils::UTF8ToGBK(sql_row[3]);
-					oneDevice->isVirtual = atoi(sql_row[4]); 
-					m_app->m_allDevice.push_back(oneDevice);
+					Command* oneCommnd = new Command();
+					oneCommnd->m_sRocketName = Utils::UTF8ToGBK(sql_row[0]);
+					oneCommnd->m_id = atoi(sql_row[1]);
+					oneCommnd->m_iRocketId = atoi(sql_row[2]);
+					oneCommnd->m_iBackId = atoi(sql_row[3]);
+					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[4]);
+					oneCommnd->m_iCode = atoi(sql_row[5]);
+					oneCommnd->m_iType = atoi(sql_row[6]);
+					m_app->m_allCommad.insert(pair<int, Command*>(oneCommnd->m_id, oneCommnd));
 				}
 			}
 			else
@@ -89,7 +92,11 @@ namespace DataBase
 		return true;
 	}
 
-	bool DeviceDAO::getDeviceParam()
+	/// <summary>
+	/// 查询指令参数
+	/// </summary>
+	/// <returns></returns>
+	bool CommandDAO::getCommandParam()
 	{
 		if (!connected())
 		{
@@ -100,26 +107,32 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		int res;
-		string sql; 
-		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
+		string sql;
+		sql.append("select * from command_param_info;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
 		{
 			result = mysql_store_result(&my_connection);
 			if (result)
-			{
-				m_app->m_allDeviceParam.clear();
+			{ 
 				while (sql_row = mysql_fetch_row(result))
 				{
-					DeviceParam* oneDeviceParam = new DeviceParam();
-					oneDeviceParam->m_id = atoi(sql_row[0]);
-					oneDeviceParam->m_deviceId = atoi(sql_row[1]);
-					oneDeviceParam->m_deviceName = Utils::UTF8ToGBK(sql_row[2]);
-					oneDeviceParam->m_subParameterId = atoi(sql_row[3]);
-					oneDeviceParam->m_subParameterName = Utils::UTF8ToGBK(sql_row[4]);
-					oneDeviceParam->m_unit = Utils::UTF8ToGBK(sql_row[5]);
-					m_app->m_allDeviceParam.insert(pair<int, DeviceParam*>(oneDeviceParam->m_id, oneDeviceParam));
+					CommandParam* oneCommnd = new CommandParam(); 
+					oneCommnd->m_id = atoi(sql_row[0]); 
+					oneCommnd->m_iCommand_id = atoi(sql_row[1]);
+					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[2]); 
+					oneCommnd->m_iCode = atoi(sql_row[3]); 
+					oneCommnd->m_iIndex = atoi(sql_row[4]); 
+					oneCommnd->m_iLength = atoi(sql_row[5]);
+					oneCommnd->m_sResultType = atoi(sql_row[6]); 
+					oneCommnd->m_dDefaultValue = atof(sql_row[7]); 
+					oneCommnd->m_val.val_f = 0;
+					if (m_app->m_allCommad.find(oneCommnd->m_iCommand_id) != m_app->m_allCommad.end())
+					{
+						Command* command = m_app->m_allCommad[oneCommnd->m_iCommand_id];
+						command->m_vCommandParam.push_back(oneCommnd);
+					} 
 				}
 			}
 			else
@@ -131,13 +144,12 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
-
-
+	 
 	///// <summary>
 	///// 获取所有帧
 	///// </summary>
 	///// <returns></returns>
-	//bool DeviceDAO::getAllFrame()
+	//bool CommandDAO::getAllFrame()
 	//{
 	//	if (!connected())
 	//	{
@@ -222,7 +234,7 @@ namespace DataBase
 	///// </summary>
 	///// <param name="name"></param>
 	///// <returns></returns>
-	//bool DeviceDAO::isSameName(string name)
+	//bool CommandDAO::isSameName(string name)
 	//{
 	//	if (!connected())
 	//	{
@@ -261,7 +273,7 @@ namespace DataBase
 	///// </summary>
 	///// <param name="fameInfo"></param>
 	///// <returns></returns>
-	//bool DeviceDAO::add(FrameInfo* fameInfo)
+	//bool CommandDAO::add(FrameInfo* fameInfo)
 	//{
 	//	if (!connected())
 	//	{
@@ -314,13 +326,13 @@ namespace DataBase
 	//	}
 	//	else
 	//	{
-	//		LOG(INFO) << "DeviceDAO[frame_info]:"<< "插入数据库失败!" << sql;
+	//		LOG(INFO) << "CommandDAO[frame_info]:"<< "插入数据库失败!" << sql;
 	//		return false;
 	//	}
 	//	return false;
 	//}
 
-	bool DeviceDAO::test()
+	bool CommandDAO::test()
 	{
 		if (!connected())
 		{
@@ -358,7 +370,7 @@ namespace DataBase
 		return true;
 	}
 
-	bool DeviceDAO::exec_sql(string  sql)
+	bool CommandDAO::exec_sql(string  sql)
 	{
 		if (!connected())
 		{
@@ -377,59 +389,7 @@ namespace DataBase
 			return false;
 		}
 	}
-
-	/**
-	@brief  获取数据
-	@param  sql_str -
-	@retval         -
-**/
-	int DeviceDAO::queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents) {
-
-		mysql_query(&my_connection, "set names utf8");
-
-		int ret = mysql_query(&my_connection, sql_str.c_str());
-		if (ret)
-		{
-			LOG(INFO) << "无法读取数据：" << mysql_error(&my_connection);
-		}
-		MYSQL_RES* res;
-		MYSQL_ROW row;
-		unsigned int num_feilds;
-		unsigned int num_rows;
-
-		res = mysql_store_result(&my_connection);
-		if (res) {
-			num_feilds = mysql_num_fields(res);
-		}
-		else
-		{
-			if (mysql_field_count(&my_connection) == 0) {
-				num_rows = mysql_affected_rows(&my_connection);
-			}
-			else
-			{
-				LOG(INFO) << "error:" << mysql_error(&my_connection);
-				return 0;
-			}
-			return 0;
-		}
-
-		int counts = 0;
-		while ((row = mysql_fetch_row(res)))
-		{
-			unsigned long* lengths;
-			lengths = mysql_fetch_lengths(res);
-			//不需要读创建时间和修改时间
-			for (int i = 0; i < num_feilds - 2; i++)
-			{
-				LOG(INFO) << (int)lengths[i] << (row[i] ? row[i] : "NULL ");
-				contents[(int)(row[0])].push_back(string(row[i]));
-			}
-			counts++;
-		}
-
-		return counts;
-	}
+	 
 }
 
 

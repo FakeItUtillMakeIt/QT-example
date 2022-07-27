@@ -1,17 +1,17 @@
 ﻿#pragma execution_character_set("utf-8")
-#include "DeviceDAO.h"
+#include "UserDAO.h"
 #include <boost\lexical_cast.hpp>
 
 namespace DataBase
 {
-	DeviceDAO::DeviceDAO(OutputPath* path)
+	UserDAO::UserDAO(OutputPath* path)
 		: m_path(path)
 		, is_connected(false)
 	{
 		m_app = AppCache::instance();
 	}
 
-	DeviceDAO::~DeviceDAO()
+	UserDAO::~UserDAO()
 	{
 		if (is_connected)
 		{
@@ -20,7 +20,7 @@ namespace DataBase
 		}
 	}
 
-	bool DeviceDAO::connect()
+	bool UserDAO::connect()
 	{
 		if (!is_connected)
 		{
@@ -42,12 +42,12 @@ namespace DataBase
 		}
 		return is_connected;
 	}
-	bool DeviceDAO::connected()
+	bool UserDAO::connected()
 	{
 		return is_connected;
 	}
 
-	bool DeviceDAO::getDevice()
+	bool UserDAO::getUser()
 	{
 		if (!connected())
 		{
@@ -59,7 +59,7 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql;
-		sql.append("select b.name as '火箭型号', a.* from device_info a left join rocket_info b on a.rocket_id = b.id ;");
+		sql.append("select * from user_info;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -67,59 +67,15 @@ namespace DataBase
 			result = mysql_store_result(&my_connection);
 			if (result)
 			{
-				m_app->m_allDevice.clear();
+				m_app->m_allUser.clear();
 				while (sql_row = mysql_fetch_row(result))
 				{
-					Device* oneDevice = new Device();
-					oneDevice->m_sRocketName = Utils::UTF8ToGBK(sql_row[0]);
-					oneDevice->m_id = atoi(sql_row[1]);
-					oneDevice->m_iRocketId = atoi(sql_row[2]);
-					oneDevice->m_deviceName = Utils::UTF8ToGBK(sql_row[3]);
-					oneDevice->isVirtual = atoi(sql_row[4]); 
-					m_app->m_allDevice.push_back(oneDevice);
-				}
-			}
-			else
-				LOG(INFO) << "获取数据失败";
-		}
-		else
-			LOG(INFO) << "获取数据失败";
-		if (result)
-			mysql_free_result(result);//释放结果资源  
-		return true;
-	}
-
-	bool DeviceDAO::getDeviceParam()
-	{
-		if (!connected())
-		{
-			LOG(INFO) << "创建数据库连接";
-			if (!connect())
-				return false;
-		}
-		MYSQL_RES* result = nullptr;
-		MYSQL_ROW sql_row;
-		int res;
-		string sql; 
-		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
-		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
-		res = mysql_query(&my_connection, sql.c_str());//查询
-		if (!res)
-		{
-			result = mysql_store_result(&my_connection);
-			if (result)
-			{
-				m_app->m_allDeviceParam.clear();
-				while (sql_row = mysql_fetch_row(result))
-				{
-					DeviceParam* oneDeviceParam = new DeviceParam();
-					oneDeviceParam->m_id = atoi(sql_row[0]);
-					oneDeviceParam->m_deviceId = atoi(sql_row[1]);
-					oneDeviceParam->m_deviceName = Utils::UTF8ToGBK(sql_row[2]);
-					oneDeviceParam->m_subParameterId = atoi(sql_row[3]);
-					oneDeviceParam->m_subParameterName = Utils::UTF8ToGBK(sql_row[4]);
-					oneDeviceParam->m_unit = Utils::UTF8ToGBK(sql_row[5]);
-					m_app->m_allDeviceParam.insert(pair<int, DeviceParam*>(oneDeviceParam->m_id, oneDeviceParam));
+					User* oneUser = new User();
+					int id = atoi(sql_row[0]);
+					oneUser->m_id = id;
+					oneUser->m_userName = sql_row[1];
+					oneUser->m_password = sql_row[2];
+					m_app->m_allUser.push_back(oneUser);
 				}
 			}
 			else
@@ -137,7 +93,7 @@ namespace DataBase
 	///// 获取所有帧
 	///// </summary>
 	///// <returns></returns>
-	//bool DeviceDAO::getAllFrame()
+	//bool UserDAO::getAllFrame()
 	//{
 	//	if (!connected())
 	//	{
@@ -222,7 +178,7 @@ namespace DataBase
 	///// </summary>
 	///// <param name="name"></param>
 	///// <returns></returns>
-	//bool DeviceDAO::isSameName(string name)
+	//bool UserDAO::isSameName(string name)
 	//{
 	//	if (!connected())
 	//	{
@@ -261,7 +217,7 @@ namespace DataBase
 	///// </summary>
 	///// <param name="fameInfo"></param>
 	///// <returns></returns>
-	//bool DeviceDAO::add(FrameInfo* fameInfo)
+	//bool UserDAO::add(FrameInfo* fameInfo)
 	//{
 	//	if (!connected())
 	//	{
@@ -314,76 +270,18 @@ namespace DataBase
 	//	}
 	//	else
 	//	{
-	//		LOG(INFO) << "DeviceDAO[frame_info]:"<< "插入数据库失败!" << sql;
+	//		LOG(INFO) << "UserDAO[frame_info]:"<< "插入数据库失败!" << sql;
 	//		return false;
 	//	}
 	//	return false;
 	//}
-
-	bool DeviceDAO::test()
-	{
-		if (!connected())
-		{
-			LOG(INFO) << "创建数据库连接";
-			if (!connect())
-				return false;
-		}
-		MYSQL_RES* result = nullptr;
-		MYSQL_ROW sql_row;
-		int res;
-		string sql;
-		sql.append("select * from user_info;");
-		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
-		res = mysql_query(&my_connection, sql.c_str());//查询
-		if (!res)
-		{
-			result = mysql_store_result(&my_connection);
-			if (result)
-			{
-				while (sql_row = mysql_fetch_row(result))
-				{
-					int id = atoi(sql_row[0]);
-					string name = sql_row[1];
-					string pwd = sql_row[2];
-				}
-
-			}
-			else
-				LOG(INFO) << "获取数据失败";
-		}
-		else
-			LOG(INFO) << "获取数据失败";
-		if (result)
-			mysql_free_result(result);//释放结果资源  
-		return true;
-	}
-
-	bool DeviceDAO::exec_sql(string  sql)
-	{
-		if (!connected())
-		{
-			LOG(INFO) << "创建数据库连接";
-			if (!connect())
-				return false;
-		}
-		int res;
-		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
-		res = mysql_query(&my_connection, sql.c_str());
-		if (!res)
-			return true;
-		else
-		{
-			//LOG(ERROR) << "SQL执行失败，错误："<< mysql_errno(&my_connection) << "，错误信息：" << mysql_error(&my_connection);
-			return false;
-		}
-	}
 
 	/**
 	@brief  获取数据
 	@param  sql_str -
 	@retval         -
 **/
-	int DeviceDAO::queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents) {
+	int UserDAO::queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents) {
 
 		mysql_query(&my_connection, "set names utf8");
 
@@ -430,6 +328,62 @@ namespace DataBase
 
 		return counts;
 	}
+
+	bool UserDAO::test()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select * from user_info;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				while (sql_row = mysql_fetch_row(result))
+				{
+					int id = atoi(sql_row[0]);
+					string name = sql_row[1];
+					string pwd = sql_row[2];
+				}
+
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else
+			LOG(INFO) << "获取数据失败";
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
+
+	bool UserDAO::exec_sql(string  sql)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		int res;
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+			return true;
+		else
+		{
+			//LOG(ERROR) << "SQL执行失败，错误："<< mysql_errno(&my_connection) << "，错误信息：" << mysql_error(&my_connection);
+			return false;
+		}
+	}
 }
-
-

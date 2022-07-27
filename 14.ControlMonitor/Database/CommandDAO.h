@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#ifndef DEVICE_DAO1_H
-#define DEVICE_DAO1_H
+#ifndef COMMAND_DAO_H
+#define COMMAND_DAO_H
 
 
 #include <string>
@@ -11,24 +11,22 @@ using namespace std;
 #include "../AppCache.h"
 #include "../../Public/log.h"
 #include "../../Public/Utils.h" 
-#include "../../Model/Device.h"
-#include "../../Model/DeviceParam.h"
+#include "../../Model/Command.h"
 #include "mysql.h" 
 
 namespace DataBase
 {
-	class DeviceDAO
+	class CommandDAO
 	{
 	public:
-		DeviceDAO(OutputPath* path);
-		~DeviceDAO();
+		CommandDAO(OutputPath* path);
+		~CommandDAO();
 		bool exec_sql(string sql);
 		bool connected();
 		bool connect();
 		bool test();
-		bool getDevice(); 
-		bool getDeviceParam();
-		int queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents);
+		bool getCommand(); 
+		bool getCommandParam();
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

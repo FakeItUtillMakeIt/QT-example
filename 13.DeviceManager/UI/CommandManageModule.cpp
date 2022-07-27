@@ -85,6 +85,8 @@ void CommandManageModule::InitUILayout() {
 		configInfoTable->setHorizontalHeaderItem(col, item);
 	}
 
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+
 	this->setLayout(mainUILay);
 
 	connect(insertButton, &QPushButton::clicked, this, &CommandManageModule::insertOneRowData);
@@ -144,8 +146,11 @@ void CommandManageModule::paintEvent(QPaintEvent* event) {
 
 	for (int columnIndex = 0; columnIndex < configInfoTable->columnCount(); columnIndex++)
 	{
-		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width()) / (configInfoTable->columnCount()));
+		configInfoTable->setColumnWidth(columnIndex, (configInfoTable->width() - 100) / (configInfoTable->columnCount()));
 	}
+
+	configInfoTable->horizontalHeader()->setStretchLastSection(true);
+	configInfoTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 }
 
 /**
