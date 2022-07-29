@@ -63,3 +63,5 @@ C++模板
 
 
 ## [opencv onnx模型地址](https://github.com/opencv/opencv_zoo/tree/master/models/face_recognition_sface)
+
+## [2022/07/29更新,添加模训系统]
