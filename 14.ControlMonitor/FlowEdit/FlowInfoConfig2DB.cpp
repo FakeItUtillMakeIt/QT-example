@@ -61,6 +61,17 @@ void FlowInfoConfig2DB::readSubFlowDB2FlowEdit() {
 
 }
 
+/**
+	@brief 联合查询函数 查询主流程索引和子流程mainID对应时主流程对应的指令集
+	三个参数分别对应 index mainID commandID
+**/
+void FlowInfoConfig2DB::readUnionSearchDB2FlowEdit(QString RocketID) {
+	QString qSqlString = "SELECT a.`index` as 'index',b.id as 'mainID',b.command_id,a.id from sub_flow_info b left join main_flow_info a on main_id=a.id WHERE a.rocket_id=%1;";
+	qSqlString = qSqlString.arg(RocketID);
+	string sqlString = qSqlString.toStdString();
+	unionSearchInfo.clear();
+	flowInfoDBOp->unionQueryMysql(sqlString, unionSearchInfo);
+}
 
 /**
 	@brief 存储主流程信息
@@ -98,5 +109,40 @@ void FlowInfoConfig2DB::subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QStrin
 	{
 		qDebug() << "往sub_flow_info数据库写入失败!!!";
 	}
+
+}
+
+
+void FlowInfoConfig2DB::clearMainFlowDB() {
+	readMainFlowDB2FlowEdit();
+
+	for (auto ele = mainFlowInfo.begin(); ele != mainFlowInfo.end(); ele++)
+	{
+		QString qSqlString = "DELETE FROM `simulatedtraining`.`main_flow_info` WHERE `id` = %1;";
+		qSqlString = qSqlString.arg(QString::fromStdString(ele->second[0]).toInt());
+		auto ret = flowInfoDBOp->exec_sql(qSqlString.toStdString());
+		if (!ret)
+		{
+			qDebug() << "往sub_flow_info数据库写入失败!!!";
+		}
+	}
+
+
+}
+
+void FlowInfoConfig2DB::clearSubFlowDB() {
+	readSubFlowDB2FlowEdit();
+
+	for (auto ele = subFlowInfo.begin(); ele != subFlowInfo.end(); ele++)
+	{
+		QString qSqlString = "DELETE FROM `simulatedtraining`.`sub_flow_info` WHERE `id` = %1;";
+		qSqlString = qSqlString.arg(QString::fromStdString(ele->second[0]).toInt());
+		auto ret = flowInfoDBOp->exec_sql(qSqlString.toStdString());
+		if (!ret)
+		{
+			qDebug() << "往sub_flow_info数据库写入失败!!!";
+		}
+	}
+
 
 }

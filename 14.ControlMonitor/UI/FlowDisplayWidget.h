@@ -16,7 +16,7 @@ class FlowDisplayWidget : public QWidget
 	Q_OBJECT
 
 public:
-	FlowDisplayWidget(QWidget* parent = nullptr);
+	FlowDisplayWidget(QWidget* parent = nullptr, QString rocketCode = "", int rocketID = -1);
 	~FlowDisplayWidget();
 
 	void setRocketType(QString, int);

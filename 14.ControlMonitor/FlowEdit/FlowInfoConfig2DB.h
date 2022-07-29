@@ -53,6 +53,8 @@ public:
 	//!< 	  关联命令和火箭信息
 	unordered_map<int, vector<string>> commandInfo;
 	unordered_map<int, vector<string>> rocketInfo;
+	//!< 	  联合查询结果
+	unordered_map<int, vector<int> > unionSearchInfo;
 
 public:
 	void readCommandDB2FlowEdit();
@@ -60,8 +62,16 @@ public:
 	void readMainFlowDB2FlowEdit();
 	void readSubFlowDB2FlowEdit();
 
+
+	//@brief 联合查询函数
+	void readUnionSearchDB2FlowEdit(QString RocketID);
+
 	void mainFlowConfigOp2DB(int rocketTypeID, QString mainFlowName, QString mainFlowIndex, QString backCmdInfo, QString otherInfo);
 	void subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString otherInfo);
+
+	//删除数据库
+	void clearMainFlowDB();
+	void clearSubFlowDB();
 
 private:
 	DataBase::UserDAO* flowInfoDBOp;

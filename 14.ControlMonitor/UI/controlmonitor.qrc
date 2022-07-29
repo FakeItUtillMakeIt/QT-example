@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/ControlMonitor">
+    <file>images/Flow/bg.png</file>
     <file>images/Flow/add.png</file>
     <file>images/Flow/find.png</file>
     <file>images/Flow/flow.png</file>
@@ -29,13 +30,17 @@
     <file>images/中间件@1x.png</file>
     <file alias="rectleft">images/左边装饰@1x.png</file>
     <file>word/word.ttf</file>
-    <file alias="barleft">images/left@2x.png</file>
-    <file alias="barright">images/right@2x.png</file>
     <file alias="lightbg">images/测发监测C31软件／主页／指示灯／未执行@2x.png</file>
     <file alias="light">images/测发监测C31软件／主页／指示灯／已执行@2x.png</file>
-    <file alias="barbg">images/Shape 23备份@2x.png</file>
+    <file alias="dibian">images/指示灯底板@1x.png</file>
+    <file alias="leftbar">images/left.png</file>
+    <file alias="rightbar">images/right.png</file>
+    <file>images/center.png</file>
   </qresource>
-  <qresource prefix="flowload">
+  <qresource prefix="/flowload">
+    <file>images/Flow/button_cancel.png</file>
+    <file>images/Flow/button_OK.png</file>
+    <file>images/Flow/Edit_circleplus.png</file>
     <file>images/Flow/icon.png</file>
     <file>images/Flow/icon@2x.png</file>
     <file>images/Flow/白底20%透明.png</file>

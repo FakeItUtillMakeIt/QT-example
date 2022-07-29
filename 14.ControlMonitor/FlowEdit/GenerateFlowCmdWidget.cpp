@@ -40,27 +40,26 @@ void GenerateFlowCmdWidget::InitLayout() {
 	commandListWidget = new QListWidget;
 	backCmdListWidget = new QListWidget;
 
-	execProgramTitle = new QLabel(QString::fromLocal8Bit("     执行程序列表"));
-	commandTitle = new QLabel(QString::fromLocal8Bit("     指令列表"));
-	backCmdTitle = new QLabel(QString::fromLocal8Bit("     回令列表"));
+	execProgramTitle = new QLabel(QString::fromLocal8Bit("       执行程序列表"));
+	commandTitle = new QLabel(QString::fromLocal8Bit("       指令列表"));
+	backCmdTitle = new QLabel(QString::fromLocal8Bit("       回令列表"));
 
 	auto aa = QString::fromLocal8Bit("QLabel{border-image:url(%1);font:bold;}").arg(imageCmdException);
 
-	execProgramTitle->setStyleSheet(QString::fromLocal8Bit("QLabel{border-image:url(%1);image:url(%2);font:bold;min-height:24px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
-	commandTitle->setStyleSheet(QString::fromLocal8Bit("QLabel{border-image:url(%1);image:url(%2);font:bold;min-height:24px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
-	backCmdTitle->setStyleSheet(QString::fromLocal8Bit("QLabel{border-image:url(%1);image:url(%2);font:bold;min-height:24px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
+	execProgramTitle->setStyleSheet(QString::fromLocal8Bit("*{border-image:url(%1);image:url(%2);font:bold 12px 微软雅黑;min-height:30px;margin-top:0px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
+	commandTitle->setStyleSheet(QString::fromLocal8Bit("*{border-image:url(%1);image:url(%2);font:bold 12px 微软雅黑;min-height:30px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
+	backCmdTitle->setStyleSheet(QString::fromLocal8Bit("*{border-image:url(%1);image:url(%2);font:bold 12px 微软雅黑;min-height:30px;image-position: left;}").arg(imageCmdTitle).arg(imageIcon));
 
 	execProgramListWidget->setFocusPolicy(Qt::NoFocus);
 	commandListWidget->setFocusPolicy(Qt::NoFocus);
 	backCmdListWidget->setFocusPolicy(Qt::NoFocus);
 
 	QString listStyle = QString("\
-				QListWidget::item{ border-image:url(%5);text-align: righ;;min-height:40px;}\
-				QListWidget::item:hover{ border-image:url(%1);padding-top:-2px;padding-bottom:-1px;} \
-				QListWidget::item:active{ border-image:url(%2);padding-top:-2px;padding-bottom:-1px;} \
-				QListWidget::item:selected{ border-image:url(%3);color:black;padding-top:-2px;padding-bottom:-1px;padding-right:20px;} \
-				QListWidget{font:14px;text-align: right;border:0;border-image:url(%4);background-image:url(%4);};\
-		").arg(imageCmdFloat).arg(imageCmdClick).arg(imageCmdExeSuccess).arg(imageWhiteBg).arg(imageCmdUsualNoClk);
+				QListWidget{background-color:rgba(255,255,255,0.2);border:0;}\
+				QListWidget::item{border-image:url(%1);min-height:40px;font: 12px 微软雅黑;margin:0px 20px 20px 0px;}\
+				QListWidget::item:hover{ border-image:url(%2);padding-top:-2px;padding-bottom:-1px;min-height:40px;} \
+				QListWidget::item:selected{ border-image:url(%3);color:black;padding-top:-2px;padding-bottom:-1px;padding-right:20px;min-height:40px;} \
+		").arg(imageCmdUsualNoClk).arg(imageCmdFloat).arg(imageCmdExeSuccess);
 
 	execProgramListWidget->setStyleSheet(listStyle);
 	commandListWidget->setStyleSheet(listStyle);
@@ -73,6 +72,8 @@ void GenerateFlowCmdWidget::InitLayout() {
 	execProgramLayout->addWidget(execProgramTitle);
 	execProgramLayout->addWidget(execProgramListWidget);
 
+	//execProgramLayout->setMargin(0);
+
 	commandLayout->addWidget(commandTitle);
 	commandLayout->addWidget(commandListWidget);
 
@@ -82,6 +83,8 @@ void GenerateFlowCmdWidget::InitLayout() {
 	hboxLayout->addLayout(execProgramLayout);
 	hboxLayout->addLayout(commandLayout);
 	hboxLayout->addLayout(backCmdLayout);
+
+	hboxLayout->setContentsMargins(0, 0, 0, 0);
 
 	this->setLayout(hboxLayout);
 

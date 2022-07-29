@@ -1,4 +1,4 @@
- #include "controlmonitor.h" 
+#include "controlmonitor.h" 
 #include <qmath.h>
 #include <QDateTime>
 #include<QFontDatabase>
@@ -14,6 +14,7 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_pUserDAO(nullptr)
+	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
@@ -31,34 +32,34 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
 	font.setFamily(s[0]);
 
-	testnum=0;
+	testnum = 0;
 	Init();
 
 	//指示灯测试用代码 
-		light_info.append(new Light_info(1, "控制箭上配电", 0));
-		light_info.append(new Light_info(2, "测量箭上配电", 0));
-		light_info.append(new Light_info(3, "惯组配电", 0));
-		light_info.append(new Light_info(4, "瞄准配电", 0));
-		light_info.append(new Light_info(5, "火箭起竖", 0));
-		light_info.append(new Light_info(6, "舵机配电", 0));
-		light_info.append(new Light_info(7, "瞄准", 0));
-		light_info.append(new Light_info(8, "瞄准断电", 0));
-		light_info.append(new Light_info(9, "上传诸元数据", 0));
-		light_info.append(new Light_info(10, "上传瞄准角", 0));
-		light_info.append(new Light_info(11, "收星检查", 0));
-		light_info.append(new Light_info(12, "天基参数装订", 0));
-		light_info.append(new Light_info(13, "电瓷瓶配电", 0));
-		light_info.append(new Light_info(14, "人员撤离", 0));
-		light_info.append(new Light_info(15, "测量开始记录", 0));
-		light_info.append(new Light_info(16, "启动发射程序", 0));
-		light_info.append(new Light_info(17, "安全转工作", 0));
-		light_info.append(new Light_info(18, "气路阀起爆", 0));
-		light_info.append(new Light_info(19, "液路阀起爆", 0));
-		light_info.append(new Light_info(20, "电池激活", 0));
-		light_info.append(new Light_info(21, "发射", 0));
-	    QTimer* test = new QTimer(this);
-	    connect(test, SIGNAL(timeout()), this, SLOT(test()));
-	    test->start(6000);
+	light_info.append(new Light_info(1, "控制箭上配电", 0));
+	light_info.append(new Light_info(2, "测量箭上配电", 0));
+	light_info.append(new Light_info(3, "惯组配电", 0));
+	light_info.append(new Light_info(4, "瞄准配电", 0));
+	light_info.append(new Light_info(5, "火箭起竖", 0));
+	light_info.append(new Light_info(6, "舵机配电", 0));
+	light_info.append(new Light_info(7, "瞄准", 0));
+	light_info.append(new Light_info(8, "瞄准断电", 0));
+	light_info.append(new Light_info(9, "上传诸元数据", 0));
+	light_info.append(new Light_info(10, "上传瞄准角", 0));
+	light_info.append(new Light_info(11, "收星检查", 0));
+	light_info.append(new Light_info(12, "天基参数装订", 0));
+	light_info.append(new Light_info(13, "电瓷瓶配电", 0));
+	light_info.append(new Light_info(14, "人员撤离", 0));
+	light_info.append(new Light_info(15, "测量开始记录", 0));
+	light_info.append(new Light_info(16, "启动发射程序", 0));
+	light_info.append(new Light_info(17, "安全转工作", 0));
+	light_info.append(new Light_info(18, "气路阀起爆", 0));
+	light_info.append(new Light_info(19, "液路阀起爆", 0));
+	light_info.append(new Light_info(20, "电池激活", 0));
+	light_info.append(new Light_info(21, "发射", 0));
+	QTimer* test = new QTimer(this);
+	connect(test, SIGNAL(timeout()), this, SLOT(test()));
+	test->start(6000);
 
 
 
@@ -67,28 +68,41 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 
 
 
-	
-		
-		light_load();
+
+
+	light_load();
 }
 //测试函数
 void ControlMonitor::test()
 {
 	if (testnum < light_info.size())
 	{
-	light_info[testnum]->status =true;
-	testnum++;
+		light_info[testnum]->status = true;
+		testnum++;
 	}
-	
+
 }
 
 void ControlMonitor::Init()
-{  
+{
 	//请把主控发射流程页放在ui.page1 中
 	m_pCenterOperate = new CenterOperate(ui.page2);
 	//这里放入主控发射流程展示页，父窗口为ui.page1
+	/************************************************************************/
+	/* 这里不能删除2022/07/29  如需修改默认显示，将zhukongclick注释就行                                                                     */
+	/************************************************************************/
+	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString("灵龙"), 1);
 
+	flowDisplayWidget->setGeometry(0, 0, 1920, 768);
 
+	ui.center_wgt->setObjectName("mainControlWidget");
+	ui.center_wgt->setStyleSheet(QString("#mainControlWidget{border-image:url(%1);}").arg(":/ControlMonitor/images/Flow/bg.png"));
+	ui.page1->setStyleSheet("background-image:url(:/flowload/images/Flow/白底20%透明@2x.png);");
+	//默认显示流程
+	zhukongclick();
+	/************************************************************************/
+	/* 2022/07/29修改结束                                                                     */
+	/************************************************************************/
 
 	connect(ui.pb_close, &QPushButton::clicked, this, &ControlMonitor::CloseWindow);
 	connect(ui.pb_min, &QPushButton::clicked, this, &ControlMonitor::ShowMinimized);
@@ -101,7 +115,7 @@ void ControlMonitor::Init()
 	inspect = new QTimer(this);
 	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
 	inspect->start(1000);
-	flush = new QTimer(this);	
+	flush = new QTimer(this);
 	connect(flush, SIGNAL(timeout()), this, SLOT(light_flash()));
 
 
@@ -157,6 +171,23 @@ void ControlMonitor::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
+	//设备数据
+	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
+	if (!m_pDeviceDAO->getDevice())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载设备基础数据完毕！");
+
+	if (!m_pDeviceDAO->getDeviceParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载设备参数数据完毕！");
 
 	m_pCommandDAO = new DataBase::CommandDAO(m_app->m_outputPath);
 	if (!m_pCommandDAO->getCommand())
@@ -240,7 +271,7 @@ void ControlMonitor::light_load()
 //指示灯状态检查
 void ControlMonitor::light_inspect()
 {
-	
+
 	if (lightnumber < light_info.size())
 	{
 		if (light_info[lightnumber]->status == true)
@@ -248,10 +279,10 @@ void ControlMonitor::light_inspect()
 			flush->stop();
 			QString s = "light";
 			QString t = "word";
-			QString wstr= t.append(QString::number(lightnumber));
+			QString wstr = t.append(QString::number(lightnumber));
 			QString str = s.append(QString::number(lightnumber));
 			QLabel* curlabel = ui.dengtiao->findChild<QLabel*>(str);
-			QLabel* curword=ui.lightbar->findChild<QLabel*>(wstr);
+			QLabel* curword = ui.lightbar->findChild<QLabel*>(wstr);
 			curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
 			curword->setStyleSheet("color:white");
 			if (lightnumber < light_info.size())
@@ -269,8 +300,8 @@ void ControlMonitor::light_inspect()
 
 	}
 
-		
-	
+
+
 }
 //指示灯闪烁
 void ControlMonitor::light_flash() {
@@ -305,11 +336,12 @@ void ControlMonitor::zhukongclick()
 		ui.page2->hide();
 		ui.page1->setStyleSheet("background-color:rgb(245,245,245);");
 		//ui.page1->setStyleSheet("background-image:url(:/flowload/images/Flow/白底20%透明@2x.png);");
-		flowDisplayWidget = new FlowDisplayWidget(ui.page1);
+		//进来就自动先加载流程
+		flowDisplayWidget = new FlowDisplayWidget(ui.page1, "Ling", 1);
 		flowDisplayWidget->setMinimumWidth(ui.page1->width());
 		flowDisplayWidget->setMinimumHeight(ui.page1->height());
 
-		flowDisplayWidget->setRocketType("Ling", 1);
+		//flowDisplayWidget->setRocketType("Ling", 1);
 	}
 
 	flowDisplayWidget->show();

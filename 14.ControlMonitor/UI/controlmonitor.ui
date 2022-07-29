@@ -856,7 +856,7 @@ QPushButton {
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap resource="controlmonitor.qrc">:/ControlMonitor/images/left@2x.png</pixmap>
+             <pixmap resource="controlmonitor.qrc">:/ControlMonitor/leftbar</pixmap>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -932,7 +932,7 @@ QPushButton {
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap resource="controlmonitor.qrc">:/ControlMonitor/images/right@2x.png</pixmap>
+             <pixmap resource="controlmonitor.qrc">:/ControlMonitor/rightbar</pixmap>
             </property>
            </widget>
           </item>
@@ -964,7 +964,7 @@ QPushButton {
     <item>
      <widget class="QWidget" name="center_wgt" native="true">
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(170, 170, 255);</string>
+       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
@@ -984,11 +984,22 @@ QPushButton {
        </property>
        <item>
         <widget class="QStackedWidget" name="tabwgt">
-         <property name="currentIndex">
-          <number>0</number>
+         <property name="styleSheet">
+          <string notr="true"/>
          </property>
-         <widget class="QWidget" name="page1"/>
-         <widget class="QWidget" name="page2"/>
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="page1">
+          <property name="styleSheet">
+           <string notr="true">#page1{border-image:url(&quot;:/ControlMonitor/images/center.png&quot;)}</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="page2">
+          <property name="styleSheet">
+           <string notr="true">#page2{border-image:url(&quot;:/ControlMonitor/images/center.png&quot;)}</string>
+          </property>
+         </widget>
         </widget>
        </item>
        <item>

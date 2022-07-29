@@ -2,9 +2,6 @@
     <qresource prefix="/">
         <file>images/RocketStruct/click1.png</file>
         <file>images/RocketStruct/click2.png</file>
-        <file>images/RocketStruct/nav1-1.png</file>
-        <file>images/RocketStruct/nav1-2.png</file>
-        <file>images/RocketStruct/nav2-1.png</file>
         <file>images/RocketStruct/nav2-2.png</file>
         <file>images/RocketStruct/nav3-1.png</file>
         <file>images/RocketStruct/nav3-2.png</file>
@@ -16,5 +13,15 @@
         <file>images/RocketStruct/p4.png</file>
         <file>images/RocketStruct/material/weiduan1.png</file>
         <file>images/RocketStruct/material/weiduan2.png</file>
+        <file>images/RocketStruct/nav.png</file>
+        <file>images/RocketStruct/nav2-1.png</file>
+        <file>images/RocketStruct/nav1-1.png</file>
+        <file>images/RocketStruct/nav1-2.png</file>
+        <file>images/RocketStruct/material/upgesture.png</file>
+        <file>images/RocketStruct/click3.png</file>
+        <file>images/RocketStruct/click4.png</file>
+        <file>images/RocketStruct/click5.png</file>
+        <file>images/RocketStruct/material/control.png</file>
+        <file>images/RocketStruct/material/receiver.png</file>
     </qresource>
 </RCC>

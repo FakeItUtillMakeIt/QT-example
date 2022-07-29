@@ -22,7 +22,7 @@ FlowEditWidget::~FlowEditWidget()
 	@brief 初始化界面布局
 **/
 void FlowEditWidget::InitLayout() {
-
+	this->setWindowTitle(QString("流程编辑"));
 	this->setWindowFlags(Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
 
 	leftFlowItemList = new QListWidget;
@@ -34,12 +34,12 @@ void FlowEditWidget::InitLayout() {
 	leftTopInput->setMaximumHeight(25);
 	leftTopAdd->setMaximumWidth(25);
 
-	leftTopInput->setStyleSheet("QLineEdit{background-color:rgb(255,255,255);border-radius:2px;}");
-	leftTopAdd->setIcon(QIcon(":/ControlMonitor/images/Flow/add.png"));
+	leftTopInput->setStyleSheet("QLineEdit{background-color:rgb(255,255,255);border-radius:2px;font: 12px 微软雅黑;}");
+	leftTopAdd->setIcon(QIcon(":/flowload/images/Flow/Edit_circleplus.png"));
 	leftFlowItemList->horizontalScrollBar()->hide();
 	leftFlowItemList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	leftFlowItemList->setStyleSheet("\
-				QListWidget::item{ background-color:rgb(232,232,232);}\
+				QListWidget::item{ background-color:rgb(232,232,232);font: 12px 微软雅黑;}\
 				QListWidget::item:hover{ background-color:rgb(80,170,255);padding-top:-2px;padding-bottom:-1px;} \
 				QListWidget::item:selected{ background:rgb(80,170,255);color:black;padding-top:-2px;padding-bottom:-1px;padding-right:20px;} \
 				QListWidget{background:rgb(232,232,232);border:0};\
@@ -65,14 +65,17 @@ void FlowEditWidget::InitLayout() {
 	rightTable->horizontalHeader()->show();
 
 
-	rightBottomBtnCancel = new QPushButton(QString("取消"));
-	rightBottomBtnOK = new QPushButton(QString("确定"));
+	rightBottomBtnCancel = new QPushButton(QString(""));
+	rightBottomBtnOK = new QPushButton(QString(""));
+
+	rightBottomBtnOK->setStyleSheet("*{border:none;width:66px;height:34px;background-image:url(:/flowload/images/Flow/button_OK.png);font: 12px 微软雅黑;}");
+	rightBottomBtnCancel->setStyleSheet("*{border:none;width:66px;height:34px;background-image:url(:/flowload/images/Flow/button_cancel.png);font: 12px 微软雅黑;}");
 
 	rightTable->setMinimumWidth(600);
 	rightTable->setMinimumHeight(400);
 
-	rightBottomBtnCancel->setMaximumHeight(20);
-	rightBottomBtnOK->setMaximumHeight(20);
+	//rightBottomBtnCancel->setMaximumHeight(20);
+	//rightBottomBtnOK->setMaximumHeight(20);
 
 	QGridLayout* leftLayout = new QGridLayout;
 	QHBoxLayout* leftTopLayout = new QHBoxLayout;
@@ -85,6 +88,10 @@ void FlowEditWidget::InitLayout() {
 
 	leftLayout->addLayout(leftTopLayout, 0, 0);
 	leftLayout->addWidget(leftFlowItemList, 1, 0);
+
+	leftTopInput->hide();
+	leftTopAdd->hide();
+	leftFlowItemList->hide();
 
 	rightLayout->addWidget(rightTopFlowName, 0, 0, 1, 4);
 	rightLayout->addWidget(rightTopD1, 0, 4, 1, 1);
@@ -107,7 +114,7 @@ void FlowEditWidget::InitLayout() {
 	this->setLayout(totalLayout);
 
 
-
+	//初始化时从数据库加载现有流程
 
 }
 
@@ -129,12 +136,109 @@ void FlowEditWidget::initConnection() {
 	connect(rightBottomBtnCancel, &QPushButton::clicked, this, &FlowEditWidget::clickCancelButton);
 }
 
+void FlowEditWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlowInfo) {
+	mainFlowInfo_.clear();
+
+	mainFlowInfo_ = mainFlowInfo;
+
+
+}
+void FlowEditWidget::setSubFlowInfo(QMap<int, QVector<QString>> subFlowInfo) {
+	subFlowInfo_.clear();
+	//commandListWidget->clear();
+
+	subFlowInfo_ = subFlowInfo;
+}
+void FlowEditWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
+	subFlowCmdID_.clear();
+	//backCmdListWidget->clear();
+
+	subFlowCmdID_ = subFlowCmdID;
+	loadFlowDisplayFlow();
+}
 
 /**
-	@brief 添加新流程
+	@brief 加载FlowDisplayWidget显示流程以编辑
+**/
+void FlowEditWidget::loadFlowDisplayFlow() {
+	rightTopFlowName->setText(rocketType);
+
+	rightTable->setColumnCount(tableColumnName.size());
+
+	for (int i = 0; i < tableColumnName.size(); i++)
+	{
+		QTableWidgetItem* item1 = new QTableWidgetItem(tableColumnName[i]);
+		item1->setTextAlignment(Qt::AlignCenter);
+		rightTable->setHorizontalHeaderItem(i, item1);
+		rightTable->setColumnWidth(i, rightTable->width() / 5);
+	}
+	rightTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+	rightTable->setRowCount(mainFlowInfo_.size());
+
+	/************************************************************************/
+	/*                                                                      */
+	/************************************************************************/
+	//获取数据表指令信息
+	auto flowInfoOp = FlowInfoConfig2DB::getInstance();
+	flowInfoOp->commandInfo.clear();
+	flowInfoOp->readCommandDB2FlowEdit();
+
+
+	for (int i = 1; i <= mainFlowInfo_.size(); i++)
+	{
+		int c = 0;
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(QString::number(i)));
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][0]));
+		//操作
+		QWidget* newWidget = new QWidget;
+		newWidget->setMouseTracking(false);
+		QVBoxLayout* newVbox = new QVBoxLayout;
+		auto cmdInfoList = subFlowInfo_[mainFlowInfo_[i][3].toInt()];
+
+		for (auto cmdInfo : cmdInfoList)
+		{
+			QComboBox* combo1 = new QComboBox;
+			for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
+			{
+				combo1->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+			}
+			combo1->setCurrentText(cmdInfo);
+			newVbox->addWidget(combo1);
+		}
+
+		newWidget->setLayout(newVbox);
+		rightTable->setCellWidget(i - 1, c, newWidget);
+
+
+		c++;
+
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][1]));
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][2]));
+
+		rightTable->setRowHeight(i - 1, 40 * cmdInfoList.size());
+
+
+	}
+
+
+}
+
+/**
+	@brief 默认加载数据库中已有的流程 显示至左部list中
+**/
+void FlowEditWidget::loadDBSavedFlow() {
+	//加载主页显示流程  以编辑
+	auto rocketFlowInfo = FlowInfoConfig2DB::getInstance();
+
+
+}
+
+/**
+	@brief 添加新流程  暂时屏蔽添加流程
 **/
 void FlowEditWidget::addNewFlow() {
-
+	return;
 
 	if (leftTopInput->text().isEmpty())
 	{
@@ -211,12 +315,15 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 		QPushButton* frontInsertCell = new QPushButton(QString("向前插入") + tableColumnName[column]);
 		QPushButton* backInsertCell = new QPushButton(QString("向后插入") + tableColumnName[column]);
 		QPushButton* removeCell = new QPushButton(QString("删除") + tableColumnName[column]);
-		frontInsertCell->setStyleSheet("* {color:black;border:none;}");
-		backInsertCell->setStyleSheet("* {color:black;border:none;}");
-		removeCell->setStyleSheet("* {color:red;border:none;}");
+		frontInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
+		backInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
+		removeCell->setStyleSheet("* {color:red;border:none;font: 12px 微软雅黑;}");
 		boxLayout->addWidget(frontInsertCell);
 		boxLayout->addWidget(backInsertCell);
 		boxLayout->addWidget(removeCell);
+
+
+		widget->setStyleSheet(QString("*{background-color:white;border: 1px  gray;}"));
 
 		widget->setLayout(boxLayout);
 
@@ -243,9 +350,7 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 					rightTable->insertRow(row);
 					for (int i = 0; i < tableColumnName.size(); i++)
 					{
-
 						rightTable->setItem(row, i, new QTableWidgetItem);
-
 					}
 				}
 				else
@@ -348,6 +453,7 @@ void FlowEditWidget::doubleClickCell(int row, int column) {
 
 /**
 	@brief 存储信息入数据库
+			这里需要根据是现有流程还是新建流程进行区分，现有流程则修改数据库，新建流程则加入数据库
 **/
 void FlowEditWidget::clickOKButton() {
 
@@ -364,6 +470,10 @@ void FlowEditWidget::clickOKButton() {
 	}
 
 	auto flowInfoOP = FlowInfoConfig2DB::getInstance();
+	//先将流程数据库清除
+	flowInfoOP->clearMainFlowDB();
+	flowInfoOP->clearSubFlowDB();
+
 
 	for (int r = 0; r < rightTable->rowCount(); r++)
 	{
@@ -382,9 +492,11 @@ void FlowEditWidget::clickOKButton() {
 		backInfo = rightTable->item(r, 3)->text();
 		remark = rightTable->item(r, 4)->text();
 
+		//将主流程信息写入数据库
 		flowInfoOP->mainFlowConfigOp2DB(rocketID, mainFlowName, mainFlowIndex, backInfo, remark);
 
 		flowInfoOP->readMainFlowDB2FlowEdit();
+
 		for (auto ele = flowInfoOP->mainFlowInfo.begin(); ele != flowInfoOP->mainFlowInfo.end(); ele++)
 		{
 
@@ -403,14 +515,16 @@ void FlowEditWidget::clickOKButton() {
 
 			cmdName = obj->currentText();
 			cmdID = obj->currentData().toInt();
-
+			//将子流程信息写入
 			flowInfoOP->subFlowConfigOp2DB(mainFlowID, cmdID, cmdName, remark);
 		}
-
 	}
+
+	emit updateDisPlayFlow();
 
 	this->close();
 }
 void FlowEditWidget::clickCancelButton() {
+
 	this->close();
 }

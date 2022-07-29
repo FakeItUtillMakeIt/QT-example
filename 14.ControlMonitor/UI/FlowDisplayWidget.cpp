@@ -1,5 +1,4 @@
-#ifndef FLOW_DISPLAY_WIDGET_H
-#define FLOW_DISPLAY_WIDGET_H
+
 
 
 #include "FlowDisplayWidget.h"
@@ -10,15 +9,17 @@
 	@param  parent -
 	@retval        -
 **/
-FlowDisplayWidget::FlowDisplayWidget(QWidget* parent)
-	: QWidget(parent)
+FlowDisplayWidget::FlowDisplayWidget(QWidget* parent, QString rocketCode, int rocketID)
+	: QWidget(parent), flowName(rocketCode), rocketID(rocketID)
 {
+
+	this->setAutoFillBackground(true);
 
 	flowEditWidget = nullptr;
 	rowHeader << QString("序号") << QString("口令") << QString("操作") << QString("回令") << QString("备注");
 
 	InitLayout();
-
+	loadSavedFlow();
 }
 
 FlowDisplayWidget::~FlowDisplayWidget()
@@ -41,17 +42,23 @@ void FlowDisplayWidget::setRocketType(QString title, int id) {
 **/
 void FlowDisplayWidget::InitLayout() {
 	this->setAutoFillBackground(true);
-	this->setStyleSheet("background-color:rgb(245,245,245);");
+	this->setStyleSheet("background-color:rgb(245,245,245);font: 14px 微软雅黑;");
 
+	QWidget* flowLeftTopWidget = new QWidget;
+	QHBoxLayout* flowLeftTopWLayout = new QHBoxLayout;
 	flowIcon = new QLabel();
 	flowLabel = new QLabel(QString("xxx-发射流程"));
-	addFlow = new QPushButton(QString("新建流程"));
+	addFlow = new QPushButton(QString("编辑"));
 	loadFlow = new QPushButton(QString("加载流程"));
 
-	flowIcon->setPixmap(QPixmap(":/ControlMonitor/images/Flow/flow.png"));
-	flowIcon->setFixedHeight(20);
-	addFlow->setStyleSheet("height:30px;background-color:rgb(30,144,255);color:white;border:1px solid rgb(130,144,255);border-radius:4px;");
+	flowLeftTopWidget->setStyleSheet("*{background-color:white;max-height:30px;}");
+	flowIcon->setPixmap(QPixmap(":/flowload/images/Flow/icon.png"));
+	//flowIcon->setFixedHeight(20);
+	flowIcon->setContentsMargins(0, 0, 0, 0);
+	flowLabel->setStyleSheet("font: 14px 微软雅黑;");
+	addFlow->setStyleSheet("height:30px;background-color:white;;color:black;border-radius:4px;font: 14px 微软雅黑;");
 	loadFlow->setStyleSheet("height:30px;background-color:rgb(30,144,255);color:white;border:1px solid rgb(130,144,255);border-radius:4px;");
+	loadFlow->hide();
 	/*QString labelStyle = QString("QPushButton {font:bold;border-image:url(%1);background-image:url(%1);}").arg(QString::fromLocal8Bit(":/flowload/images/Flow/指令_参数标题.png"));
 	addFlow->setStyleSheet(labelStyle);
 	loadFlow->setStyleSheet(labelStyle);*/
@@ -61,7 +68,7 @@ void FlowDisplayWidget::InitLayout() {
 	flowTable->setHorizontalHeaderLabels(rowHeader);
 	flowTable->verticalHeader()->hide();
 
-	int columnWidth = (this->parentWidget()->width() / 2 - 100) / rowHeader.size();
+	int columnWidth = (this->parentWidget()->width()) / rowHeader.size();
 
 	for (int i = 0; i < rowHeader.size(); i++)
 	{
@@ -69,7 +76,7 @@ void FlowDisplayWidget::InitLayout() {
 	}
 
 	flowTable->horizontalHeader()->setMinimumHeight(40);
-	flowTable->horizontalHeader()->setStyleSheet("font:bold;");
+	flowTable->horizontalHeader()->setStyleSheet("font: 14px 微软雅黑 bold;");
 	flowTable->horizontalHeader()->setStretchLastSection(true);
 	flowTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
 
@@ -78,11 +85,21 @@ void FlowDisplayWidget::InitLayout() {
 	int columnCount = 8;
 	int rowCount = 10;
 
-	layout->addWidget(flowIcon, 0, 0, 1, 1);
+	/*layout->addWidget(flowIcon, 0, 0, 1, 1);
 	layout->addWidget(flowLabel, 0, 1, 1, 1);
+
 	layout->setColumnStretch(1, 7);
 	layout->addWidget(addFlow, 0, columnCount - 2, 1, 1);
-	layout->addWidget(loadFlow, 0, columnCount - 1, 1, 1);
+	layout->addWidget(loadFlow, 0, columnCount - 1, 1, 1);*/
+
+	flowLeftTopWLayout->addWidget(flowIcon, Qt::LeftToRight);
+	flowLeftTopWLayout->addWidget(flowLabel);
+	flowLeftTopWLayout->addStretch(columnCount);
+	flowLeftTopWLayout->addWidget(addFlow, Qt::RightToLeft);
+
+	flowLeftTopWidget->setLayout(flowLeftTopWLayout);
+
+	layout->addWidget(flowLeftTopWidget, 0, 0, 1, columnCount);
 	layout->addWidget(flowTable, 1, 0, rowCount - 1, columnCount);
 
 	//流程生成界面
@@ -90,10 +107,14 @@ void FlowDisplayWidget::InitLayout() {
 
 	layout->addWidget(generateFlowWidget, 0, 8, 10, 8);;
 
+	layout->setContentsMargins(20, 10, 20, 15);
+
 	this->setLayout(layout);
 
 	connect(addFlow, &QPushButton::clicked, this, &FlowDisplayWidget::addNewFlow);
 	connect(loadFlow, &QPushButton::clicked, this, &FlowDisplayWidget::loadSavedFlow);
+
+
 
 }
 
@@ -108,9 +129,16 @@ void FlowDisplayWidget::addNewFlow() {
 		flowEditWidget->setRocketType(QString("Ling"));
 	}
 
+	flowEditWidget->setRocketType(flowLabel->text());
+	flowEditWidget->setMainFlowInfo(mainFlowInfo);
+	flowEditWidget->setSubFlowInfo(subFlowInfo);
+	flowEditWidget->setFlowCmdID(subFlowCmdID);
+
 	flowEditWidget->setFixedSize(QSize(this->width() / 2, this->width() * 0.3));
 	flowEditWidget->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::WindowCloseButtonHint);
 	flowEditWidget->show();
+
+	connect(flowEditWidget, &FlowEditWidget::updateDisPlayFlow, this, &FlowDisplayWidget::loadSavedFlow);
 
 }
 
@@ -118,6 +146,8 @@ void FlowDisplayWidget::addNewFlow() {
 	@brief 加载已有流程  显示到flowDisplay->flowTable上
 **/
 void FlowDisplayWidget::loadSavedFlow() {
+
+	//FlowInfoConfig2DB::getInstance()->readUnionSearchDB2FlowEdit(QString::number(rocketID));
 
 	flowTable->clearContents();
 	mainFlowInfo.clear();
@@ -133,7 +163,16 @@ void FlowDisplayWidget::loadSavedFlow() {
 	flowInfoOp->readMainFlowDB2FlowEdit();
 	flowInfoOp->readSubFlowDB2FlowEdit();
 
+	//flowInfoOp->readUnionSearchDB2FlowEdit(QString::number(rocketID));
+	////index  subflow_id
+	//flowTable->setRowCount(flowInfoOp->unionSearchInfo.size());
+	//for (auto ele = flowInfoOp->unionSearchInfo.begin(); ele != flowInfoOp->unionSearchInfo.end(); ele++)
+	//{
+	//	int index1 = ele->first;
+	//	flowTable->setItem(index1 - 1, 0, new QTableWidgetItem(QString::number(ele->first)));
+	//	//flowTable->setItem(index1 - 1, 1, new QTableWidgetItem(QString()));
 
+	//}
 
 	// 属于同一火箭ID  索引先后  mainFlowInfo:键：索引  值：流程名  返令信息  备注  main_ID
 	for (auto ele = flowInfoOp->mainFlowInfo.begin(); ele != flowInfoOp->mainFlowInfo.end(); ele++)
@@ -195,5 +234,3 @@ void FlowDisplayWidget::loadSavedFlow() {
 	generateFlowWidget->setFlowCmdID(subFlowCmdID);
 
 }
-
-#endif

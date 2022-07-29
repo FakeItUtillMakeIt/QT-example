@@ -45,6 +45,9 @@ public:
 	}
 
 	void setRocketType(QString rocketTypeCode);
+	void setMainFlowInfo(QMap<int, QVector<QString>> mainFlowInfo);
+	void setSubFlowInfo(QMap<int, QVector<QString>> subFlowInfo);
+	void setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID);
 
 private:
 	QListWidget* leftFlowItemList;
@@ -68,9 +71,17 @@ private:
 	QString rocketCode;
 	int rocketID = -1;
 
+	QMap<int, QVector<QString>> mainFlowInfo_;
+	QMap<int, QVector<QString>> subFlowInfo_;
+	QMap<int, QVector<int>> subFlowCmdID_;
+
+
 private:
 	void InitLayout();
 	void initConnection();
+
+	void loadDBSavedFlow();
+	void loadFlowDisplayFlow();
 
 private slots:
 	void addNewFlow();
@@ -82,6 +93,9 @@ private slots:
 
 	void clickOKButton();
 	void clickCancelButton();
+
+signals:
+	void updateDisPlayFlow();
 
 };
 

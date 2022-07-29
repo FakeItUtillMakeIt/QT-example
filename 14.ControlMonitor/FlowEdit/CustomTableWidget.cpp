@@ -37,5 +37,9 @@ void CustomTableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
 	if (!a.isValid())
 		return;
 	auto b = this->itemFromIndex(a);
+	if (b == nullptr)
+	{
+		return;
+	}
 	emit cellDoubleClicked(b->row(), b->column());
 }
