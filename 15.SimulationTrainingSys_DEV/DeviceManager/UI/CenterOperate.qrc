@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>icon/circled-right.png</file>
+        <file>icon/+hao.png</file>
+        <file>icon/-hao.png</file>
+        <file>icon/OKbutton.png</file>
+        <file>icon/collapse.png</file>
+        <file>icon/expand.png</file>
+        <file>icon/setting.png</file>
+        <file>icon/update.png</file>
+        <file>icon/squareBl.png</file>
+        <file>icon/squareWl.png</file>
+    </qresource>
+</RCC>

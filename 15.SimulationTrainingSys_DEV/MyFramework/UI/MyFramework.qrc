@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/MyFramework">
+        <file>images/icon_info.png</file>
+        <file>images/logo4.png</file>
+        <file>images/放大-点击.png</file>
+        <file>images/放大-默认.png</file>
+        <file>images/放大-悬浮.png</file>
+        <file>images/关闭-点击.png</file>
+        <file>images/关闭-默认.png</file>
+        <file>images/关闭-悬浮.png</file>
+        <file>images/缩小-点击.png</file>
+        <file>images/缩小-默认.png</file>
+        <file>images/缩小-悬浮.png</file>
+        <file>images/用户.png</file>
+        <file>images/用户1.png</file>
+        <file>images/最小化-点击.png</file>
+        <file>images/最小化-默认.png</file>
+        <file>images/最小化-悬浮.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/EquivalentSoft">
+        <file>images/放大-点击.png</file>
+        <file>images/放大-默认.png</file>
+        <file>images/放大-悬浮.png</file>
+        <file>images/关闭-点击.png</file>
+        <file>images/关闭-默认.png</file>
+        <file>images/关闭-悬浮.png</file>
+        <file>images/缩小-点击.png</file>
+        <file>images/缩小-默认.png</file>
+        <file>images/缩小-悬浮.png</file>
+        <file>images/最小化-点击.png</file>
+        <file>images/最小化-默认.png</file>
+        <file>images/最小化-悬浮.png</file>
+        <file>images/用户1.png</file>
+        <file>images/logo4.png</file>
+        <file>images/icon_info.png</file>
+        <file alias="cbg">images/center.png</file>
+        <file alias="topbar">images/topbar.png</file>
+        <file>word/word.ttf</file>
+        <file alias="rectright">images/右边装饰@1x.png</file>
+        <file>images/中间件@1x.png</file>
+        <file alias="rectleft">images/左边装饰@1x.png</file>
+        <file alias="edit">images/编辑icon@1x.png</file>
+        <file alias="xiala">images/xiala.png</file>
+        <file>images/adddxq.png</file>
+        <file>images/deletedxq.png</file>
+        <file>images/selectarr.png</file>
+    </qresource>
+</RCC>

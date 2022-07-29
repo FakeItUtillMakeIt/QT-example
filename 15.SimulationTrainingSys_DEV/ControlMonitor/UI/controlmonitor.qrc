@@ -1,0 +1,63 @@
+<RCC>
+  <qresource prefix="/ControlMonitor">
+    <file>images/Flow/bg.png</file>
+    <file>images/Flow/add.png</file>
+    <file>images/Flow/find.png</file>
+    <file>images/Flow/flow.png</file>
+    <file>images/Flow/sort.png</file>
+    <file>images/Flow/squareBl.png</file>
+    <file>images/Flow/squareWl.png</file>
+    <file>images/Flow/update.png</file>
+    <file>images/icon_info.png</file>
+    <file>images/logo4.png</file>
+    <file>images/放大-点击.png</file>
+    <file>images/放大-默认.png</file>
+    <file>images/放大-悬浮.png</file>
+    <file>images/关闭-点击.png</file>
+    <file>images/关闭-默认.png</file>
+    <file>images/关闭-悬浮.png</file>
+    <file>images/缩小-点击.png</file>
+    <file>images/缩小-默认.png</file>
+    <file>images/缩小-悬浮.png</file>
+    <file>images/用户.png</file>
+    <file>images/用户1.png</file>
+    <file>images/最小化-点击.png</file>
+    <file>images/最小化-默认.png</file>
+    <file>images/最小化-悬浮.png</file>
+    <file alias="topbar">images/topbar.png</file>
+    <file alias="xiala">images/xiala.png</file>
+    <file alias="rectright">images/右边装饰@1x.png</file>
+    <file>images/中间件@1x.png</file>
+    <file alias="rectleft">images/左边装饰@1x.png</file>
+    <file>word/word.ttf</file>
+    <file alias="lightbg">images/测发监测C31软件／主页／指示灯／未执行@2x.png</file>
+    <file alias="light">images/测发监测C31软件／主页／指示灯／已执行@2x.png</file>
+    <file alias="dibian">images/指示灯底板@1x.png</file>
+    <file alias="leftbar">images/left.png</file>
+    <file alias="rightbar">images/right.png</file>
+    <file>images/center.png</file>
+  </qresource>
+  <qresource prefix="/flowload">
+    <file>images/Flow/button_cancel.png</file>
+    <file>images/Flow/button_OK.png</file>
+    <file>images/Flow/Edit_circleplus.png</file>
+    <file>images/Flow/icon.png</file>
+    <file>images/Flow/icon@2x.png</file>
+    <file>images/Flow/白底20%透明.png</file>
+    <file>images/Flow/白底20%透明@2x.png</file>
+    <file>images/Flow/指令_参数标题.png</file>
+    <file>images/Flow/指令_参数标题@2x.png</file>
+    <file>images/Flow/指令_点击.png</file>
+    <file>images/Flow/指令_点击@2x.png</file>
+    <file>images/Flow/指令_禁用.png</file>
+    <file>images/Flow/指令_禁用@2x.png</file>
+    <file>images/Flow/指令_悬浮.png</file>
+    <file>images/Flow/指令_悬浮@2x.png</file>
+    <file>images/Flow/指令_异常.png</file>
+    <file>images/Flow/指令_异常@2x.png</file>
+    <file>images/Flow/指令_正常未点击.png</file>
+    <file>images/Flow/指令_正常未点击@2x.png</file>
+    <file>images/Flow/指令_执行成功.png</file>
+    <file>images/Flow/指令_执行成功@2x.png</file>
+  </qresource>
+</RCC>

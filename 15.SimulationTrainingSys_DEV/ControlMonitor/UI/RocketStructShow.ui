@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>RocketStructShow</class>
+ <widget class="QWidget" name="RocketStructShow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>795</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(232, 232, 232);</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>272</width>
+     <height>795</height>
+    </rect>
+   </property>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>44</y>
+      <width>272</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav1-2.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>234</y>
+      <width>272</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav2-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>424</y>
+      <width>272</width>
+      <height>190</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav3-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>614</y>
+      <width>272</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav4-1.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_0">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>272</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color:transparent;
+	background-image: url(:/images/RocketStruct/nav.png);
+    border:0px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="widget_3" native="true">
+   <property name="geometry">
+    <rect>
+     <x>272</x>
+     <y>0</y>
+     <width>1648</width>
+     <height>794</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="three" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="label_three">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/click5.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_receiver">
+     <property name="geometry">
+      <rect>
+       <x>1180</x>
+       <y>270</y>
+       <width>181</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_control">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>490</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_all_three">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_receiver_2">
+     <property name="geometry">
+      <rect>
+       <x>1240</x>
+       <y>310</y>
+       <width>121</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_control_2">
+     <property name="geometry">
+      <rect>
+       <x>520</x>
+       <y>530</y>
+       <width>111</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_control">
+     <property name="geometry">
+      <rect>
+       <x>309</x>
+       <y>65</y>
+       <width>1030</width>
+       <height>663</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/material/control.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_receiver">
+     <property name="geometry">
+      <rect>
+       <x>309</x>
+       <y>65</y>
+       <width>1030</width>
+       <height>663</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/material/receiver.png</pixmap>
+     </property>
+    </widget>
+    <zorder>label_three</zorder>
+    <zorder>pb_all_three</zorder>
+    <zorder>pb_control</zorder>
+    <zorder>pb_receiver</zorder>
+    <zorder>pb_receiver_2</zorder>
+    <zorder>pb_control_2</zorder>
+    <zorder>lb_control</zorder>
+    <zorder>lb_receiver</zorder>
+   </widget>
+   <widget class="QWidget" name="one" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/p1.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_level1enginer">
+     <property name="geometry">
+      <rect>
+       <x>1260</x>
+       <y>130</y>
+       <width>151</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_weiduan">
+     <property name="geometry">
+      <rect>
+       <x>1440</x>
+       <y>210</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_all">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_level1enginer_2">
+     <property name="geometry">
+      <rect>
+       <x>1290</x>
+       <y>170</y>
+       <width>121</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_weiduan_2">
+     <property name="geometry">
+      <rect>
+       <x>1460</x>
+       <y>250</y>
+       <width>111</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_weiduan">
+     <property name="geometry">
+      <rect>
+       <x>309</x>
+       <y>65</y>
+       <width>1030</width>
+       <height>663</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/material/weiduan2.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_up">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>60</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lb_up">
+     <property name="geometry">
+      <rect>
+       <x>309</x>
+       <y>65</y>
+       <width>1030</width>
+       <height>663</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/material/upgesture.png</pixmap>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_up_2">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>100</y>
+       <width>111</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_s_up">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>315</y>
+       <width>221</width>
+       <height>85</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_s_control">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>315</y>
+       <width>81</width>
+       <height>85</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pb_s_weiduan">
+     <property name="geometry">
+      <rect>
+       <x>1420</x>
+       <y>300</y>
+       <width>81</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color:transparent; 
+    border:0px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <zorder>label</zorder>
+    <zorder>pb_all</zorder>
+    <zorder>lb_weiduan</zorder>
+    <zorder>pb_up</zorder>
+    <zorder>lb_up</zorder>
+    <zorder>pb_up_2</zorder>
+    <zorder>pb_s_up</zorder>
+    <zorder>pb_s_control</zorder>
+    <zorder>pb_s_weiduan</zorder>
+    <zorder>pb_level1enginer</zorder>
+    <zorder>pb_level1enginer_2</zorder>
+    <zorder>pb_weiduan</zorder>
+    <zorder>pb_weiduan_2</zorder>
+   </widget>
+   <widget class="QWidget" name="two" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="label_two">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/p2.png</pixmap>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="four" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1648</width>
+      <height>794</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="label_four">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>1648</width>
+       <height>794</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="RocketStructShow.qrc">:/images/RocketStruct/p4.png</pixmap>
+     </property>
+    </widget>
+   </widget>
+   <zorder>three</zorder>
+   <zorder>two</zorder>
+   <zorder>four</zorder>
+   <zorder>one</zorder>
+  </widget>
+ </widget>
+ <resources>
+  <include location="RocketStructShow.qrc"/>
+ </resources>
+ <connections/>
+</ui>
