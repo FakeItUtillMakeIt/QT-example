@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FaultInjectionLoginClass</class>
+ <widget class="QWidget" name="FaultInjectionLoginClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1321</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1321</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1321</width>
+    <height>700</height>
+   </size>
+  </property>
+  <property name="font">
+   <font>
+    <family>Arial Black</family>
+    <pointsize>25</pointsize>
+    <weight>75</weight>
+    <italic>true</italic>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>FaultInjectionLogin</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#Labelbac{
+	
+	border-image: url(:/FaultInjection/images/login_back.png);
+
+}
+#CloseBt{
+border:none;
+background-image: url(:/FaultInjection/images/close_normal.png);
+}
+#CloseBt:hover{
+border:none;
+background-image: url(:/FaultInjection/images/close_hover.png);
+}
+#CloseBt:pressed{
+border:none;
+background-image: url(:/FaultInjection/images/close_active.png);
+}
+#SoftTypeLable
+{
+height: 60px;
+font-size: 40px;
+font-family: YouSheBiaoTiHei;
+color: #020026;
+line-height: 60px; 
+}
+#TypeSelectLable
+{
+width: 80px;
+height: 20px;
+font-size: 20px;
+font-family: STHeitiSC-Light, STHeitiSC;
+font-weight: 300;
+color: #171717;
+line-height: 21px;
+}
+QComboBox
+{ width: 400px;
+height: 44px;
+background-color: rgb(192, 204, 229);
+border-radius: 4px;
+padding:1px 18px 1px 16px;
+font-size: 20px;
+font-family: STHeitiSC-Medium, STHeitiSC;
+font-weight: 500;
+color: #171717;
+line-height: 24px;
+}
+QComboBox:hover
+{
+background-color: rgb(217, 217, 217);
+}
+QComboBox QAbstractItemView{
+background:rgba(255,255,255,0.1);
+border:1px solid rgba(228,228,228,1);
+border-radius:0px 0px 5px 5px;
+font-size:20px;
+outline: 0px; 
+}
+QComboBox QAbstractItemView::item{
+height:36px;
+color:rgba(255,255,255,0.1);
+padding-left:9px;
+background-color:#FFFFFF;
+}
+QComboBox QAbstractItemView::item:hover{ 
+background-color:#409CE1;
+color:#ffffff;
+}
+QComboBox QAbstractItemView::item:selected{
+background-color: rgb(192, 204, 229);
+color:#ffffff;
+}
+QComboBox::drop-down {
+min-width: 20px;
+border:none;
+}
+QComboBox::down-arrow {
+min-width: 20px;
+background-image: url(:/FaultInjection/images/comboxDropDown.png);
+}
+#LoginBt
+{
+	width: 400px;
+	height: 54px;
+	background: #1969F1;
+	box-shadow: 0px 2px 4px 0px rgba(25,105,241,0.1700);
+	border-radius: 4px;
+	font-size:20px;
+	color:#ffffff;
+	font-family: STHeitiSC-Medium, STHeitiSC;
+}
+#LoginBt:hover
+{
+	
+	background-color: rgb(56, 125, 243);
+}
+#LoginBt:focus
+{
+	background-color: rgb(34,96,203);
+}</string>
+  </property>
+  <widget class="QLabel" name="SoftTypeLable">
+   <property name="geometry">
+    <rect>
+     <x>960</x>
+     <y>68</y>
+     <width>255</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>255</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>255</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>YouSheBiaoTiHei</family>
+     <pointsize>-1</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>故障注入软件</string>
+   </property>
+   <property name="textFormat">
+    <enum>Qt::AutoText</enum>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QWidget" name="leftwidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>280</y>
+     <width>120</width>
+     <height>80</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QWidget" name="rigtwidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>290</y>
+     <width>120</width>
+     <height>80</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="TypeSelectLab">
+   <property name="geometry">
+    <rect>
+     <x>871</x>
+     <y>237</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>80</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>80</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>型号选择</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="TypeComboBox">
+   <property name="geometry">
+    <rect>
+     <x>871</x>
+     <y>273</y>
+     <width>400</width>
+     <height>44</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>44</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>44</height>
+    </size>
+   </property>
+   <property name="font">
+    <font>
+     <family>STHeitiSC-Medium,STHeitiSC</family>
+     <pointsize>-1</pointsize>
+     <weight>62</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <item>
+    <property name="text">
+     <string>灵龙</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QPushButton" name="LoginBt">
+   <property name="geometry">
+    <rect>
+     <x>871</x>
+     <y>514</y>
+     <width>400</width>
+     <height>54</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>54</height>
+    </size>
+   </property>
+   <property name="sizeIncrement">
+    <size>
+     <width>400</width>
+     <height>54</height>
+    </size>
+   </property>
+   <property name="text">
+    <string notr="true">登录</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Labelbac">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1321</width>
+     <height>700</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>1321</width>
+     <height>700</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>1321</width>
+     <height>700</height>
+    </size>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="CloseBt">
+   <property name="geometry">
+    <rect>
+     <x>1291</x>
+     <y>0</y>
+     <width>30</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>Labelbac</zorder>
+  <zorder>SoftTypeLable</zorder>
+  <zorder>leftwidget</zorder>
+  <zorder>rigtwidget</zorder>
+  <zorder>TypeSelectLab</zorder>
+  <zorder>TypeComboBox</zorder>
+  <zorder>LoginBt</zorder>
+  <zorder>CloseBt</zorder>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="FaultInjection.qrc"/>
+ </resources>
+ <connections/>
+</ui>

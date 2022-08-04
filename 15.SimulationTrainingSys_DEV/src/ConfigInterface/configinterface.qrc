@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/">
+        <file>rc/background.png</file>
+        <file>rc/delete_normal.png</file>
+        <file>rc/delete_pressed.png</file>
+        <file>rc/error.png</file>
+        <file>rc/forbit.png</file>
+        <file>rc/grouptitle.png</file>
+        <file>rc/hover.png</file>
+        <file>rc/icon.png</file>
+        <file>rc/normal.png</file>
+        <file>rc/nValueError.png</file>
+        <file>rc/nValueNormal.png</file>
+        <file>rc/pressed.png</file>
+        <file>rc/sucess.png</file>
+        <file>rc/vValueError.png</file>
+        <file>rc/vValuenormal.png</file>
+        <file>rc/tablehover.png</file>
+        <file>rc/tableselected.png</file>
+        <file>rc/tabnormal.png</file>
+        <file>rc/edit.png</file>
+        <file>rc/quit.png</file>
+        <file>rc/stylemanage.png</file>
+        <file>rc/save.png</file>
+        <file>rc/curve.png</file>
+        <file>rc/add.png</file>
+        <file>rc/button.png</file>
+        <file>rc/group.png</file>
+        <file>rc/label.png</file>
+        <file>rc/return.png</file>
+		<file>rc/search.png</file>
+	</qresource>
+</RCC>
