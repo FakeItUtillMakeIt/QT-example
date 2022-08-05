@@ -65,3 +65,9 @@ C++模板
 ## [opencv onnx模型地址](https://github.com/opencv/opencv_zoo/tree/master/models/face_recognition_sface)
 
 ## [2022/07/29更新,添加模训系统]
+
+
+## [C++高效处理]
+1.explicit 禁止隐式转换
+2.std::move 移动,避免左值右值复制
+3.rederence 引用
