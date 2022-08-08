@@ -85,7 +85,6 @@ void MyFaultParameters::addItem(ItemStruct inItem, int itemNumber)
 
 	item.m_deviceID = inItem.deviceID;
 
-	item.m_deviceID = inItem.deviceID;
 	item.createTime = inItem.createTime;
 	item.lastUpdateTime = inItem.lastUpdateTime;
 
@@ -189,7 +188,7 @@ void MyFaultParameters::onClick(QObject* obj)
 
 			//告诉已选参数列表，最新的操作
 			m_clickButtonname = item.tab->getName();
-			emit onFaultClick(m_clickButtonname, item.code, selected);
+			emit onFaultClick(m_clickButtonname, item.code, item.type);
 
 			//item.is_selected = selected;
 			//item.tab->selectItem(selected);

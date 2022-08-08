@@ -19,12 +19,25 @@ ConfigNameSpaceStart
 ConfigInterface::ConfigInterface(QWidget *parent) :
     QMainWindow(parent)
 {
-   // firstinit();
-   // setStyleSheet("QMainWindow{background-color:rgb(250,0,0)}");
- //  setStyleSheet("background-color:rgb(250,0,0)");
-    //centralWidget()->setStyleSheet("background-color:rgb(250,0,0)");
+    startTimer(100);
+}
+
+
+void ConfigInterface::timerEvent(QTimerEvent* event)
+{
+    if (!ConfigGlobal::m_allDeviceParamPtr) return;
+    if (!ConfigGlobal::dataupdated) return;
+    ConfigNameSpace::ConfigGlobal::dataupdated = false;
+    for (auto it = ConfigGlobal::m_allDeviceParamPtr->begin(); it != ConfigGlobal::m_allDeviceParamPtr->end(); it++)
+    {
+        DeviceParam* param = it->second;
+        ConfigGlobal::updateControlValue(param->m_deviceId, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);
+        ConfigGlobal::updateDefaultState();
+    }
 
 }
+
+
 void  ConfigInterface::firstinitFromOut(QList<QPushButton*> btnlist)
 {
         connect(ConfigNameSpace::ConfigGlobal::gstylemanager,&StyleManager::Return,this,&ConfigInterface::Return);
@@ -71,7 +84,7 @@ void  ConfigInterface::firstinitFromOut(QList<QPushButton*> btnlist)
         //    labelselector->setSelectorInfo(cConfigLabel,"单独标签");
         //    labelselector->setGeometry(230,10,100,30);
         ConfigElementSelector* pairlabelselector = (ConfigElementSelector*)btnlist[4];
-        pairlabelselector->setSelectorInfo(cConfigPairLabel,"标签");
+        pairlabelselector->setSelectorInfo(cConfigPairLabel,"参数标签");
 
         ConfigElementSelector* curveselector = (ConfigElementSelector*)btnlist[3];
         curveselector->setSelectorInfo(cConfigCurve,"曲线");

@@ -14,6 +14,9 @@ public:
 private:
 	Ui::ControlMonitorLoginClass ui;
 	ControlMonitor* controlMonitor;
+	void Init();
+	AppCache* m_app;
+	DataBase::DeviceDAO* m_pDeviceDAO;
 public slots:
 	void LoginSlot();
 	void CloseSlot();

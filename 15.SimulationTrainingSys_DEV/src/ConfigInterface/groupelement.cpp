@@ -365,7 +365,16 @@ QString  GroupElement::getStyleId()
 {
     return  m_valueSetMap["样式配置"].valuelist[GroupElement::eStyleInfo]->getStrValue();
 }
-
+void GroupElement::moveToCenterPos(QPoint centerpos)
+{
+    int curxpos = centerpos.x() - m_width / 2;
+    int curypos = centerpos.y() - m_height / 2;
+    if (curypos < 0)
+        curypos = 0;
+    if (curxpos < 0)
+        curxpos = 0;
+     move(curxpos, curypos);
+}
 void GroupElement::copyProperty(QString styleid,QMap<int,int>&  propertylist)
 {
     m_valueSetMap["样式配置"].valuelist[GroupElement::eStyleInfo]->SetWidthStrValue(styleid);
@@ -381,6 +390,7 @@ void GroupElement::copyProperty(QString styleid,QMap<int,int>&  propertylist)
     m_rightmargin = propertylist[eRightMargin];
     m_topmagin = propertylist[eTopMargin];
     m_titleheight = propertylist[eTitleHeight];
+    resize(m_width, m_height);
     resetLaoutFromData();
     UpdateStyleByStyleId(m_styleID);
     update();

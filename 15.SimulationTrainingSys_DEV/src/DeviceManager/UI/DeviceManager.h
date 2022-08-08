@@ -13,6 +13,7 @@
 #include "../AppCache.h"
 #include "../Database/DeviceDAO.h"
 #include "../Database/CommandDAO.h"
+#include "../Database/RocketDataDAO.h"
 #include "../Controls/MyInfoTip.h"
 #include "../Controls/MyLogBox.h"
 #include "../Helper/DeviceHelper.h"
@@ -25,14 +26,15 @@ class DeviceManager : public QMainWindow
 public:
 	DeviceManager(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
+	void Init();
 private:
 	Ui::DeviceManagerClass ui;
 	AppCache* m_app;
 	bool m_isMax;
 	CenterOperate* m_pCenterOperate;
-	void Init();
 	DataBase::DeviceDAO* m_pDeviceDAO;
 	DataBase::CommandDAO* m_pCommandDAO;
+	DataBase::RocketDataDAO* m_pRocketDataDAO; 
 	MyLogBox* tb_show;
 	MyInfoTip* m_myInfoTip;
 

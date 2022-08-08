@@ -24,6 +24,12 @@ public:
 
 	FrameHead& head(); 
 	vector<RocketDataParam>& params();
+	bool sortParams();
+	string m_rocketName;
+	int m_id;
+	int m_rocketId;
+	string m_frameName;
+	int m_code;
 
 	/**
 	* @brief 将信息头、信息字中的内容序列化到pData缓冲区
@@ -49,7 +55,9 @@ public:
 	*/
 	unsigned short Size(); 
   
-private: 
+private:  
+
+
 	///信息头
 	FrameHead m_Head;
 	/// 参数 

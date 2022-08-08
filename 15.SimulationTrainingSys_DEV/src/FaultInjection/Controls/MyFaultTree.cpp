@@ -60,7 +60,7 @@ void MyFaultTree::selectItem(QString text)
 		{
 			//选中
 			selected = true; //取反
-			emit onFaultNodeClick(item.tab->getName());
+			emit onFaultNodeClick(item.tab->getName(), item.m_deviceID);
 		}
 		else
 		{
@@ -134,8 +134,6 @@ void MyFaultTree::addItem(ItemStruct oneFault)
 	item.deviceParamInfoID = oneFault.deviceParamInfoID;
 
 	item.m_deviceID = oneFault.deviceID;
-
-	item.m_deviceID = oneFault.deviceID;
 	item.createTime = oneFault.createTime;
 	item.lastUpdateTime = oneFault.lastUpdateTime;
 
@@ -158,7 +156,7 @@ void MyFaultTree::onClick(QObject* obj)
 		{
 			//选中
 			selected = true; //取反
-			emit onFaultNodeClick(item.tab->getName());
+			emit onFaultNodeClick(item.tab->getName(), item.m_deviceID);
 		}
 		else
 		{

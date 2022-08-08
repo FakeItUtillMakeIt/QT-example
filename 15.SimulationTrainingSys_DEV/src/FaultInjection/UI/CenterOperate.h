@@ -18,6 +18,9 @@ class CenterOperate : public QWidget
 public:
     CenterOperate(QWidget *parent = Q_NULLPTR);
 
+protected:
+    virtual void timerEvent(QTimerEvent* event);//定时器检测事件
+
 private:
     Ui::CenterOperate ui;
 
@@ -51,6 +54,8 @@ private:
     ReceiveCMDData* m_pReceiveCMDData; //接收测发指令
     QUdpSocket* m_pSocket;
 
+    int m_TimerID;//1s定时器超时id
+
 private:
 
     void Init();
@@ -64,11 +69,11 @@ private:
     void EditFaultItem(vector<AddOneFaultInfo> editFaults);
     void DelFaultItem(vector<AddOneFaultInfo> delFaults);
 
-    void isEnabledFault(QString name, int code, bool isSave);
+    void isEnabledFault(QString name, int code, int type);
 
 
 public slots:
-    void sendCMD(int cmd_id);
+    void sendCMD(int cmd_id, int type);
     void receiverCMD(QByteArray oneCommand);
 
 signals:

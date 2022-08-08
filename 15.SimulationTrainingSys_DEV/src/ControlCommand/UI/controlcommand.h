@@ -9,8 +9,11 @@
 #include "../Database/DeviceDAO.h"
 #include "../Database/UserDAO.h"
 #include "../Database/CommandDAO.h"
+#include "../Database/RocketDataDAO.h"
 #include "../Controls/MyInfoTip.h"
 #include "../Controls/MyLogBox.h" 
+#include "../Receiver/ReceiveRocketData.h" 
+
 #include<QTime>
 class ControlCommand : public QMainWindow
 {
@@ -19,6 +22,7 @@ class ControlCommand : public QMainWindow
 public:
     ControlCommand(QWidget *parent = Q_NULLPTR);
     void displayStatuInfo(QString info, bool is_alarm = false);
+    void InitFrame(); 
 private:
     Ui::ControlCommandClass ui;
     AppCache* m_app;
@@ -29,10 +33,15 @@ private:
     DataBase::UserDAO* m_pUserDAO;
     DataBase::DeviceDAO* m_pDeviceDAO;
     DataBase::CommandDAO* m_pCommandDAO;
+    DataBase::RocketDataDAO* m_pRocketDataDAO;
     MyLogBox* tb_show;
     MyInfoTip* m_myInfoTip;
     QTime baseTime;
+    ReceiveRocketData* m_pReceiveRocketData; //接收测发指令 
+
     void changeResize();
+    map<int, DeviceParam*> m_allDeviceParam;//设备参数
+
 protected:
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);

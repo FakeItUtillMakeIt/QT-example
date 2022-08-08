@@ -96,7 +96,45 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
-
+	bool DeviceDAO::getRocketType()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("SELECT * FROM rocket_info");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				m_app->m_allDeviceParam.clear();
+				while (sql_row = mysql_fetch_row(result))
+				{
+					RocketType* oneDeviceParam = new RocketType();
+					oneDeviceParam->m_id = atoi(sql_row[0]);
+					oneDeviceParam->m_name = Utils::UTF8ToGBK(sql_row[1]);
+					oneDeviceParam->m_code = Utils::UTF8ToGBK(sql_row[2]);
+					m_app->m_allRocketType.insert(pair<int, RocketType*>(oneDeviceParam->m_id, oneDeviceParam));
+				}
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else
+			LOG(INFO) << "获取数据失败";
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
 	/// <summary>
 	/// 获取device_info信息
 	/// </summary>
@@ -133,6 +171,11 @@ namespace DataBase
 					oneFrame->m_createTime = sql_row[4];
 					oneFrame->m_lastUpdateTime = sql_row[5];
 
+					//对应到火箭型号
+					if (oneFrame->m_rocketID != m_app->m_rockedType)
+					{
+						continue;
+					}
 					m_app->m_FaultDeviceInfoFrames.insert(pair<int, FaultDeviceInfo*>(id, oneFrame));
 				}
 			}
@@ -176,8 +219,8 @@ namespace DataBase
 					FaultDeviceParamInfo* oneFrame = new FaultDeviceParamInfo();
 					int id = atoi(sql_row[0]);
 					oneFrame->m_id = id;
-					oneFrame->m_deviceID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[2]);
-					oneFrame->m_parameterID = (sql_row[2] == nullptr) ? -1 : atoi(sql_row[3]);
+					oneFrame->m_deviceID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
+					oneFrame->m_parameterID = (sql_row[2] == nullptr) ? -1 : atoi(sql_row[2]);
 					oneFrame->m_createTime = sql_row[3];
 					oneFrame->m_lastUpdateTime = sql_row[4];
 
@@ -219,7 +262,7 @@ namespace DataBase
 			result = mysql_store_result(&my_connection);
 			if (result)
 			{
-				m_app->m_FaultDeviceParamInfoFrames.clear();
+				m_app->m_DeviceIDParamID.clear();
 				while (sql_row = mysql_fetch_row(result))
 				{
 					int deviceId = atoi(sql_row[0]);
@@ -298,4 +341,51 @@ namespace DataBase
 			return false;
 		}
 	} 
+	int DeviceDAO::queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents) {
+
+		mysql_query(&my_connection, "set names utf8");
+
+		int ret = mysql_query(&my_connection, sql_str.c_str());
+		if (ret)
+		{
+			LOG(INFO) << "无法读取数据：" << mysql_error(&my_connection);
+		}
+		MYSQL_RES* res;
+		MYSQL_ROW row;
+		unsigned int num_feilds;
+		unsigned int num_rows;
+
+		res = mysql_store_result(&my_connection);
+		if (res) {
+			num_feilds = mysql_num_fields(res);
+		}
+		else
+		{
+			if (mysql_field_count(&my_connection) == 0) {
+				num_rows = mysql_affected_rows(&my_connection);
+			}
+			else
+			{
+				LOG(INFO) << "error:" << mysql_error(&my_connection);
+				return 0;
+			}
+			return 0;
+		}
+
+		int counts = 0;
+		while ((row = mysql_fetch_row(res)))
+		{
+			unsigned long* lengths;
+			lengths = mysql_fetch_lengths(res);
+			//不需要读创建时间和修改时间
+			for (int i = 0; i < num_feilds - 2; i++)
+			{
+				LOG(INFO) << (int)lengths[i] << (row[i] ? row[i] : "NULL ");
+				contents[(int)(row[0])].push_back(string(row[i]));
+			}
+			counts++;
+		}
+
+		return counts;
+	}
 }

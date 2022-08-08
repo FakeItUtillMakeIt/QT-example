@@ -3,6 +3,8 @@
 #include <QWidget>
 #include "ui_FaultInjectionLogin.h"
 #include "FaultInjection.h"
+#include "../AppCache.h"
+#include "../Database/DeviceDAO.h"
 class FaultInjectionLogin : public QWidget
 {
 	Q_OBJECT
@@ -18,4 +20,7 @@ signals:
 private:
 	Ui::FaultInjectionLoginClass ui;
 	FaultInjection* faultInjection;
+	void Init();
+	AppCache* m_app;
+	DataBase::DeviceDAO* m_pDeviceDAO;
 };

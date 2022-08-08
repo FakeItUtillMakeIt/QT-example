@@ -14,6 +14,8 @@ using namespace std;
 #include "../Model/Device.h"
 #include "../Model/DeviceParam.h"
 #include "../Model/Command.h"
+#include "../Model/RocketType.h"
+#include "../Protocol/RocketDataFrame.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
 /**
@@ -59,11 +61,16 @@ public:
 	Software* m_soft;
 	LogInfo* m_logInfo; 
 	OutputPath* m_outputPath;
-	PeerInfo* m_cmdSender; //处理命令接收
+	PeerInfo* m_cmdSender; //命令发送
+	PeerInfo* m_yaoCeReceiver; //箭上数据接收端口
 	vector<User*> m_allUser;
 	vector<Device*> m_allDevice;
 	map<int, Command*> m_allCommad;//测发指令
 	map<int, DeviceParam*> m_allDeviceParam;//设备参数
+	map<int, RocketType*> m_allRocketType;//火箭型号
+	RocketType* m_CurrentRocketType;//当前火箭型号 
+	map<int, RocketDataFrame*> m_RocketDataFrame;
+	RocketDataFrame* m_CurrentRocketDataFrame;//当前火箭数据协议帧
 	int* argc;
 	char*** argv;
 	int m_status;//系统状态：0表示空闲，1表示数据回放中，2表示数据处理中，3表示实时试验中
@@ -101,5 +108,5 @@ private:
 	bool GetLogConfig();
 	bool GetBaseInfo(); 
 	bool GetOutputPath();
-	bool GetCmdSender(); 
+	bool GetNetworkPeer();
 };

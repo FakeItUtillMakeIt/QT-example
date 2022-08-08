@@ -32,6 +32,7 @@ public:
 
     bool SelectStyle(StyleButton *&istyleinfo);
     void UpdatePropertyByStyle();
+    void setState(RunState state);
 
     int m_width = 0;
     int m_height = 0;
@@ -53,7 +54,6 @@ public:
     bool UpdateStyleByStyleId(QString styleid);
     void InitFromDefaultStyle();
     void InitFromDefineStyle(QString istyleid);
-
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseMoveEvent(QMouseEvent *e);
@@ -77,6 +77,7 @@ private:
     void DefaultUiInit();
 private slots:
     void showListMenu(const QPoint& point);
+    void handleEvent();
 };
 ConfigNameSpaceEnd
 #endif // CONFIGBUTTON_H

@@ -178,7 +178,7 @@ public slots:
 	void backonFaultClick(bool isOK);
 
 signals:
-	void onFaultClick(QString name, int code, bool isSave);
+	void onFaultClick(QString name, int code, int type);
 };
 
 

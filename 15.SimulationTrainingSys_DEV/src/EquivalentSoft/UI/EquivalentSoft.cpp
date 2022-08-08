@@ -13,6 +13,7 @@
 #include "../../ConfigInterface/configinterface.h"
 #include "../../ConfigInterface/xmlstore.h"
 #include "../../ConfigInterface/configglobal.h"
+
 #define LABEL_LEFT(name) leftlabel##name
 #define LABEL_RIGHT(name) rightlabel##name
 #define DXQ_CLOSE(name) dxqclose##name
@@ -20,15 +21,32 @@
 #define SINGLE_NAME(name) singledxq##name
 #define HO_NAME(name) inner_ho##name
 using namespace std;
+
+
+static CenterOperate* gCenterOperate = nullptr;
+
+void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
+{
+	if (!gCenterOperate)
+	{
+		QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
+		return;
+	}
+//	gCenterOperate->sendCMDFromInterface(cmd, btn);
+}
+
+
 EquivalentSoft::EquivalentSoft(QWidget* parent)
     : QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_pUserDAO(nullptr)
 	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
+	, m_pRocketDataDAO(nullptr)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
+	, m_pReceiveRocketData(nullptr)
 {
     ui.setupUi(this);
 	m_app = AppCache::instance();
@@ -53,7 +71,8 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 		functionBtnList.push_back(ui.configgroup);
 		functionBtnList.push_back(ui.configdelete);
 
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
+		m_allDeviceParam = m_app->m_allDeviceParam;
+		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_allDeviceParam;
 		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
 
 		ConfigNameSpace::XmlStore::InitSceneFile();
@@ -80,15 +99,22 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 		hlayout->setMargin(0);
 
 	}
-
-	
-	
+	 
 }
+
+void EquivalentSoft::InitFrame()
+{
+	//设置协议帧
+	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[1];//m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_pReceiveRocketData = new ReceiveRocketData(); 
+}
+ 
 
 void EquivalentSoft::Init()
 {  
-
    // m_pCenterOperate = new CenterOperate(ui.center_wgt); 
+	gCenterOperate = m_pCenterOperate;
+	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
     connect(ui.pb_close, &QPushButton::clicked, this, &EquivalentSoft::CloseWindow);
     connect(ui.pb_min, &QPushButton::clicked, this, &EquivalentSoft::ShowMinimized);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &EquivalentSoft::changeResize);
@@ -202,8 +228,30 @@ void EquivalentSoft::Init()
 		return;
 	}
 	displayStatuInfo("加载指令参数数据完毕！");
-
+	 
+	m_pRocketDataDAO = new DataBase::RocketDataDAO(m_app->m_outputPath);
+	if (!m_pRocketDataDAO->getRocketData())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载箭上遥测数据帧协议数据完毕！");
+	if (!m_pRocketDataDAO->getRocketParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载帧协议参数数据完毕！"); 
+	//协议帧排序
+	for (auto item : m_app->m_RocketDataFrame)
+	{
+		item.second->sortParams();
+	}
+	InitFrame();
 	displayStatuInfo("系统启动完毕！");
+
 }
 //添加等效器弹框界面
 void EquivalentSoft::adddxq()
@@ -597,7 +645,7 @@ void EquivalentSoft::changeResize()
 		ui.vl_UI->setContentsMargins(0, 0, 0, 0); //去掉软件界面边界
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
-		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 223, ui.center_wgt->width() - 12, 300));
+		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 158, ui.center_wgt->width() - 12, 300));
  
 	}
 	else

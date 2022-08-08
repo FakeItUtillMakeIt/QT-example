@@ -261,14 +261,14 @@ void ConfigScene::CopyElement(ControlType  ctrltype, QPoint pos,QString copyedid
     {
         GroupElement* groupElement = new GroupElement(this);
         groupElement->InitFromDefaultStyle();
-        groupElement->resize(500, 200);
-        groupElement->move(pos);
-        groupElement->show();
+       
         groupElement->updateGeometryData();
         QMap<int, int> propertylist;
         QString outinput = copyedid;
         GetSrcElementProperty(outinput, ctrltype, propertylist);
         groupElement->copyProperty(outinput,propertylist);
+        groupElement->moveToCenterPos(pos);
+        groupElement->show();
         sceneGroupList.push_back(groupElement);
     }
   /*  else if (ctrltype == cConfigButton)

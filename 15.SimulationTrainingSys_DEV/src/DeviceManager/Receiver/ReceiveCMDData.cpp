@@ -68,13 +68,12 @@ void ReceiveCMDData::receiveData()
 		{
 			if (it->second->m_iCode == command->m_iCode)
 			{
+				command->m_iType = it->second->m_iType;
 				command->m_iBackId = it->second->m_iBackId;
+				command->m_id = it->second->m_id;
 				break;
 			}
 		}
-
-
-
 		QVariant temp;
 		temp.setValue(command);
 		emit receiverCMD(temp);

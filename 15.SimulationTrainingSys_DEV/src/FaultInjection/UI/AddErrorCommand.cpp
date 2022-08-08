@@ -32,7 +32,6 @@ void AddErrorCommand::Init()
 
     //添加设备类型
     int indexDevice = 0;
-    ui.cb_deciveType->addItem("", 0);
     for (auto item : m_app->m_FaultDeviceInfoFrames)
     {
         if (item.second->m_rocketID == m_app->m_rockedType)//根据火箭类型筛选
@@ -213,14 +212,14 @@ void AddErrorCommand::AddFault()
 
     m_tempParamId.clear();
     m_tempCommandId.clear();
-    ShowParamsTable(0);
+    ShowParamsTable(0,0);//参数故障，在进行设备筛选
 }
 
 /// <summary>
 /// 点击故障树响应函数
 /// </summary>
 /// <param name="name"></param>
-void AddErrorCommand::OnFaultNode(QString name)
+void AddErrorCommand::OnFaultNode(QString name, int deviceid)
 {
     //根据传入的faultItems和name比较，显示出当前故障的信息数据
 
@@ -237,17 +236,19 @@ void AddErrorCommand::OnFaultNode(QString name)
         {
             //故障名称
             ui.le_errorName->setText(name);
+            m_currentComandId = item.FaultCommandID;//记录当前故障指令的id
 
             //故障类型
             if (item.type == 1)
             {
                 m_tempParamId = item.deviceParamInfoID;//参数故障
-
+                
                 for (auto item2 : m_indexDevice)
                 {
                     if (item2.second == item.deviceID)
                     {
                         ui.cb_deciveType->setCurrentIndex(item2.first);//设备类型
+                        break;
                     }
                 }
             }
@@ -259,7 +260,7 @@ void AddErrorCommand::OnFaultNode(QString name)
             ui.cb_faultType->setCurrentIndex(item.type - 1);
 
             //表格显示
-            FlashParamTable(name);
+            FlashParamTable(name,deviceid);
         }
     }
 }
@@ -275,6 +276,7 @@ void AddErrorCommand::DelFault()
         QMessageBox::information(this, tr("提示"), "请选择需要删除的故障！");
         return;
     }
+
 
     QString qstr = "是否删除：" + ui.le_errorName->text() + "？";
     if (QMessageBox::Cancel == QMessageBox::warning(this, tr("警告"), qstr, QMessageBox::Cancel | QMessageBox::Ok))
@@ -335,8 +337,7 @@ void AddErrorCommand::EditFault()
 
         IsEnable(true);
 
-        int index = ui.cb_faultType->currentIndex();
-        ShowParamsTable(index);//表格中全显示
+        ShowParamsTable(ui.cb_faultType->currentIndex(),ui.cb_deciveType->currentIndex());//表格中全显示
 
     }
     else
@@ -376,6 +377,7 @@ void AddErrorCommand::EditFault()
             ItemStruct editFault;
             editFault.Name = ui.le_errorName->text();
             editFault.deviceID = m_indexDevice[ui.cb_deciveType->currentIndex()];//TODO设备id，获取设备类型
+            editFault.FaultCommandID = m_currentComandId;
             editFault.deviceParamInfoID = m_tempParamId;
             editFault.responseCommandID = m_tempCommandId;
             editFault.type = ui.cb_faultType->currentIndex() + 1;
@@ -429,7 +431,7 @@ void AddErrorCommand::onFaultTypeChanged(QString tempName)
         ui.cb_deciveType->setVisible(true);
         ui.lb_device->setVisible(true);
 
-        ShowParamsTable(0);
+        ShowParamsTable(0,ui.cb_deciveType->currentIndex());
     }
     else if (tempName == "指令故障")
     {
@@ -488,20 +490,16 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
         for (auto item : m_app->m_FaultParameterInfoFrames)
         {
             //判断是否进行设备筛选
-            if (deviceIndex != 0)
+            dParams = m_app->m_DeviceIDParamID[m_indexDevice[deviceIndex]];
+            for (auto item2 : m_app->m_DeviceIDParamID)
             {
-                //一个设备id对应多个参数id
-                dParams = m_app->m_DeviceIDParamID[m_indexDevice[deviceIndex - 1]];
-                for (auto item2 : m_app->m_DeviceIDParamID)
+                if (std::find(dParams.begin(), dParams.end(), item.second->m_id) != dParams.end())
                 {
-                    if (std::find(dParams.begin(), dParams.end(), item.second->m_id) != dParams.end())
-                    {
-                        isshow = true;
-                        break;
-                    }
+                    isshow = true;
+                    break;
                 }
-                if (isshow == false) continue;
-            }  
+            }
+            if (isshow == false) continue;
 
             isshow = false;
             isexit = false;
@@ -520,13 +518,21 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
             ui.tv_paramInfo->setIndexWidget(m_tableModel->index(temp, 5), m_chooseBtn);
 
             //对之前已经绑定的参数进行标识
-            for (int k = 0; k < m_tempParamId.size(); k++)
+            for (auto itemd : m_app->m_FaultDeviceParamInfoFrames)
             {
-                if (m_tempParamId[k] == item.second->m_id)
+                if ((itemd.second->m_deviceID == m_indexDevice[deviceIndex]) && (item.first == itemd.second->m_parameterID))
                 {
-                    isexit = true;
+                    for (int k = 0; k < m_tempParamId.size(); k++)
+                    {
+                        if (m_tempParamId[k] == itemd.second->m_id)
+                        {
+                            isexit = true;
+                            break;
+                        }
+                    }
                     break;
                 }
+                if (isexit == true) break;
             }
 
             if (isexit)
@@ -624,17 +630,10 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
 /// 刷新参数表格
 /// </summary>
 /// <param name="tempName"></param>
-void AddErrorCommand::FlashParamTable(QString tempName)
+void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
 {
     m_tempCommandId.clear();
     m_tempParamId.clear();
-
-    //int rowNum = m_tableModel->rowCount();
-    //for (int i = 0; i < rowNum; i++)
-    //{
-    //    m_tableModel->removeRow(i);
-    //}
-    //ui.tv_paramInfo->setModel(m_tableModel);
 
     ui.tv_paramInfo->setMinimumSize(700, 500);
     ui.tv_paramInfo->verticalHeader()->hide(); //隐藏头
@@ -663,20 +662,31 @@ void AddErrorCommand::FlashParamTable(QString tempName)
                 m_tableModel->setItem(i, tableitem++, new QStandardItem(QString("%1").arg(i)));
                 m_tableModel->setItem(i, tableitem++, new QStandardItem(QString("%1").arg(m_faultItems[j].deviceParamInfoID[i])));//表格第i行，第0列添加一项内容
 
-                for (auto item : m_app->m_FaultParameterInfoFrames)
+                bool isfind = false;
+                for (auto item : m_app->m_FaultDeviceParamInfoFrames) ///m_app->m_FaultParameterInfoFrames
                 {
-                    if (item.first == m_faultItems[j].deviceParamInfoID[i])
+                    if ((item.first == m_faultItems[j].deviceParamInfoID[i]) && (item.second->m_deviceID == deviceid))//参数故障绑定的id相同  且设备相同
                     {
-                        m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_name)));
-                        m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_createTime)));
-                        m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_lastUpdateTime)));
+                        //根据参数id显示参数信息
+                        for (auto itemP : m_app->m_FaultParameterInfoFrames)
+                        {
+                            if (itemP.first == item.second->m_parameterID)
+                            {
+                                m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_name)));
+                                m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_createTime)));
+                                m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_lastUpdateTime)));                  
+                                m_tableModel->setItem(i, tableitem++, new QStandardItem("选择"));
 
-                        m_tempParamId.push_back(item.first);
-                        break;
+                                m_tempParamId.push_back(item.first);//获取device_param_info id
+
+                                isfind = true;
+                                break;
+                            }
+                        }
                     }
+                    if (isfind) break;
                 }
 
-                m_tableModel->setItem(i, tableitem++, new QStandardItem("选择"));
                 ui.tv_paramInfo->setModel(m_tableModel);
 
                 //添加处理控件
@@ -767,18 +777,23 @@ void AddErrorCommand::IsChooseParam()
     //获取当前参数的id
     QAbstractItemModel* model = ui.tv_paramInfo->model();
     index = model->index(row, 1);
-    int id = model->data(index).toInt();
+    int paramId = model->data(index).toInt();//注意参数故障和指令故障绑定的影响id表不一样
 
-    QString name = ui.le_errorName->text();//获取当前故障名称
-
-    if (m_isAddFault == false)
-    {
-
-    }
     vector<int>* tempIDs = nullptr;
     if (ui.cb_faultType->currentIndex() == 0)
     {
         tempIDs = &m_tempParamId;//参数故障
+
+        //（当时参数指令的时候，指令和）根据选择的设备和参数来共同确定 device_param_info
+        int deviceid = m_indexDevice[ui.cb_deciveType->currentIndex()];
+        for (auto item: m_app->m_FaultDeviceParamInfoFrames)
+        {
+            if ((item.second->m_deviceID == deviceid) && (item.second->m_parameterID == paramId))
+            {
+                paramId = item.second->m_id;//获取device_param_info id
+                break;
+            }
+        }
     }
     else
     {
@@ -787,7 +802,7 @@ void AddErrorCommand::IsChooseParam()
 
     for (vector<int>::iterator iter = tempIDs->begin(); iter != tempIDs->end(); iter++)
     {
-        if (*iter == id)
+        if (*iter == paramId)
         {
             isChoose = false;
             break;
@@ -796,7 +811,7 @@ void AddErrorCommand::IsChooseParam()
 
     if (isChoose)
     {
-        tempIDs->push_back(id);
+        tempIDs->push_back(paramId);
         senderObj->setStyleSheet("image:url(:/FaultInjection/images/CheckboxOn.png);border:0px;");
     }
     else
@@ -804,7 +819,7 @@ void AddErrorCommand::IsChooseParam()
         //从vector中删除指定元素 
         for (vector<int>::iterator iter = tempIDs->begin(); iter != tempIDs->end(); iter++)
         {
-            if (*iter == id) {
+            if (*iter == paramId) {
                 tempIDs->erase(iter);
                 break;
             }

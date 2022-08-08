@@ -22,6 +22,7 @@ using namespace std;
 #include "../Model/Status.h"
 #include "../Model/Command.h"
 #include "../Model/RocketType.h"
+#include "../Protocol/RocketDataFrame.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
 /**
@@ -82,7 +83,9 @@ public:
 	map<int, vector<int>> m_dev2DeviceParamID;//设备ID和设备参数的对应关系
 	map<int, vector<int>> m_dev2DeviceStatusID;//设备ID和设备状态的对应关系
 	map<int, RocketType*> m_allRocketType;//火箭型号
-	RocketType* m_CurrentRocketType;//当前火箭型号
+	RocketType* m_CurrentRocketType;//当前火箭型号 
+	map<int, RocketDataFrame*> m_RocketDataFrame;
+	RocketDataFrame* m_CurrentRocketDataFrame;//当前火箭数据协议帧
 
 	int* argc;
 	char*** argv;

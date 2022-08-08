@@ -49,5 +49,5 @@ void DeviceParam::timerUpdateParam() {
 		curIndex = 0;
 
 	}
-	qDebug() << curIndex << m_iCurValue << timer->timerId();
+	qDebug() << curIndex << m_iCurValue << timer->timerId() << m_subParameterId;
 }

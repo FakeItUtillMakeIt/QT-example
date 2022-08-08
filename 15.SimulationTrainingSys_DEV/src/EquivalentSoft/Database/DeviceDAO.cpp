@@ -131,7 +131,45 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
-
+	bool DeviceDAO::getRocketType()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("SELECT * FROM rocket_info");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				m_app->m_allDeviceParam.clear();
+				while (sql_row = mysql_fetch_row(result))
+				{
+					RocketType* oneDeviceParam = new RocketType();
+					oneDeviceParam->m_id = atoi(sql_row[0]);
+					oneDeviceParam->m_name = Utils::UTF8ToGBK(sql_row[1]);
+					oneDeviceParam->m_code = Utils::UTF8ToGBK(sql_row[2]);
+					m_app->m_allRocketType.insert(pair<int, RocketType*>(oneDeviceParam->m_id, oneDeviceParam));
+				}
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else
+			LOG(INFO) << "获取数据失败";
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
 
 	///// <summary>
 	///// 获取所有帧

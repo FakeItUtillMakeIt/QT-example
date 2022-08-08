@@ -11,7 +11,7 @@ using namespace std;
 
 ///信息头长度
 #define FRAMEHEAD_SYNC_1	0x55
-#define FRAMEHEAD_SYNC_2	0xAA
+#define FRAMEHEAD_SYNC_2	0xCC
 #define FRAMEHEAD_LENGTH	26
 
 ///确认帧中确认值的位置（1序）
@@ -45,6 +45,8 @@ public:
 	static void GetSuccessConfirmFrame(unsigned char* const buff);
 	///返回帧头长度
 	static int Size();
+
+	void UpdateTime();
 
 	unsigned char FrameSync1() const		{ return m_iFrameSync1; }
 	unsigned char FrameSync2() const		{ return m_iFrameSync2; } 

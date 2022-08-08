@@ -64,6 +64,9 @@ public:
 	//!<	指令设备状态关联表
 	unordered_map<int, vector<string>> commandDeviceStatInfo;
 	unordered_map<int, vector<string>> device2Param;
+	//!<  故障指令影响的设备参数信息
+	unordered_map<int, vector<string>> customReadInfoMap;
+
 public:
 	//参数、设备、指令、火箭型号  数据库写操作
 	void paramConfigOp2DB(QString paramName, int paramType, QString paramUnit);
@@ -75,8 +78,10 @@ public:
 	void deviceStatusInfo2DB(int deviceID, int statusID, QString dataPath);
 	void deviceParamInfo2DB(int deviceID, int parameterID);
 
+
 	void commandConfigOp2DB(QString cmdName, int rocketID, int backCmdID, int cmdCode, int cmdType, int cmdPrefix);
 	void commandParamInfo2DB(int cmdID, QString paramName, int paramCode, int index, int length, QString resultType, float defaultVal);
+	void commandDeviceStatInfo2DB(int cmdID, int deviceStatID);
 
 	void rocketConfigOp2DB(QString rocketName, int rocketTypeCode);
 	void rocketDataInfo2DB(int rocketID, QString cmdName, int cmdCode, int cmdPrefix);
@@ -101,11 +106,19 @@ public:
 	//读指令设备状态表
 	void readCMDDeviceStatDB2UI();
 	void readDevice2ParamInfo();
+
+
 	//更新数据表信息
 	void updateParamInfo2DB(int paramID, QString paramName, int paramType, QString paramUnit);
 	void updateDeviceInfo2DB(int paramID, int rocketType, QString deviceName, int virtualDev);
 	void updateCommandInfo2DB(int paramID, QString cmdName, int rocketID, int backCmdID, int cmdCode, int cmdType, int cmdPrefix);
 	void updateRocketInfo2DB(int paramID, QString rocketName, int rocketTypeCode);
+
+	//自定义执行语句
+	void customRunSql(QString qSqlString);
+	//自定义读
+	void customReadTableInfo(QString qSqlString);
+
 private:
 	DataBase::DeviceDAO* deviceManageDBOp;
 

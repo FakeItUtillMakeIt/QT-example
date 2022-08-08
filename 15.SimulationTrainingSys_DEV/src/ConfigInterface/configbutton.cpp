@@ -18,9 +18,38 @@ ConfigButton::ConfigButton(const QString &text, QWidget *parent):
   //  DefaultUiInit();
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showListMenu(const QPoint&)));
-
     m_uuid = get_uuid();
     init_value_set();
+    connect(this,&QPushButton::clicked,this,&ConfigButton::handleEvent);
+}
+void ConfigButton::handleEvent()
+{
+    if (ConfigGlobal::isEditing) return;
+    QString datasourceid = m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    if (ConfigGlobal::VerifyNumber(datasourceid) && ConfigNameSpace::ConfigGlobal::cmdhandler)
+    {
+        ConfigNameSpace::ConfigGlobal::cmdhandler(datasourceid.toInt(), this);
+    }
+}
+
+void ConfigButton::setState(RunState state)
+{
+    switch (state)
+    {
+    case ConfigNameSpace::StateNormal:
+        setStyleSheet(normalstyle);
+        break;
+    case ConfigNameSpace::StateSuccess:
+        setStyleSheet(successstyle);
+
+        break;
+    case ConfigNameSpace::StateFailed:
+        setStyleSheet(failedstyle);
+        break;
+    default:
+        break;
+    }
+    
 }
 
 void ConfigButton::showListMenu(const QPoint& point) {
@@ -43,7 +72,7 @@ void ConfigButton::showListMenu(const QPoint& point) {
             QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allCommadPrt)[paramid]->m_sName.c_str());
             setText(paramname);
             ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
-
+             ConfigGlobal::updateButtonMap(paramid, this);
         }
   });
     cmenu->exec(QCursor::pos());  // 当前鼠标位置
@@ -58,8 +87,8 @@ void ConfigButton::DefaultUiInit()
     normalstyle = commstylesheet + hoverstylesheet+ pressedstylesheet + disabledstylesheet;
     setStyleSheet(normalstyle);
 
-    successstyle  = QString("QPushButton:pressed{ border-image: url(:/rc/forbit.png);}");
-    failedstyle = QString("QPushButton:pressed{ border-image: url(:/rc/error.png);}");
+    successstyle  = QString("QPushButton{ border-image: url(:/rc/forbit.png);}");
+    failedstyle = QString("QPushButton{ border-image: url(:/rc/error.png);}");
 }
 void ConfigButton::InitFromDefaultStyle()
 {
@@ -69,6 +98,7 @@ void ConfigButton::InitFromDefaultStyle()
        DefaultUiInit();
    }
 }
+
 void ConfigButton::InitFromDefineStyle(QString istyleid)
 {
     if (UpdateStyleByStyleId(istyleid) == false)
@@ -80,6 +110,9 @@ void ConfigButton::InitFromDefineStyle(QString istyleid)
 
 void ConfigButton::updateDataSource(QString datasourceid, QString datasourcename, int  addordelete)
 {
+    QString paramid =  m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    if (ConfigGlobal::VerifyNumber(paramid))
+        ConfigGlobal::updateButtonMap(paramid.toInt(), this);
     setText(datasourcename);
 }
 
@@ -149,6 +182,7 @@ void ConfigButton::InitFromXmlInfo(QMap<QString, QString> &buttoninfo)
     {
         if ((*ConfigGlobal::m_allCommadPrt).find(datasourceid.toInt()) != (*ConfigGlobal::m_allCommadPrt).end())
         {
+            ConfigGlobal::updateButtonMap(datasourceid.toInt(),this);
             string showtext = (*ConfigGlobal::m_allCommadPrt)[datasourceid.toInt()]->m_sName;
             datasourceid = QString::fromLocal8Bit(showtext.c_str());
             setText(datasourceid);
@@ -318,6 +352,10 @@ void ConfigButton::UpdatePropertyByStyle()
     QString disabledstylesheet =  QString( "QPushButton:disabled{ border-image: url(%1);}").arg(disabledstyle);
 
     normalstyle = commstylesheet + hoverstylesheet+ pressedstylesheet+ disabledstylesheet;
+
+    successstyle = QString("QPushButton{ border-image: url(%1);%2}").arg(successstyle).arg(stylecolor);
+    failedstyle = QString("QPushButton{ border-image: url(%1);%2}").arg(failedstyle).arg(stylecolor);
+
     setStyleSheet(normalstyle);
     setFont(m_textfont);
 

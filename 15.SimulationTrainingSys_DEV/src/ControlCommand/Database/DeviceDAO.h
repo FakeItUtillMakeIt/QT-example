@@ -14,7 +14,7 @@ using namespace std;
 #include "../../Model/Device.h"
 #include "../../Model/DeviceParam.h"
 #include "mysql.h" 
-
+#include "../../Model/RocketType.h"
 namespace DataBase
 {
 	class DeviceDAO
@@ -26,6 +26,7 @@ namespace DataBase
 		bool connected();
 		bool connect();
 		bool test();
+		bool getRocketType();
 		bool getDevice(); 
 		bool getDeviceParam();
 		int queryMysql(std::string sql_str, unordered_map<int, vector<string>>& contents);

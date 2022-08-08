@@ -33,6 +33,9 @@ private:
 	void InitUILayout();
 	void insertOneRow(int insertRow, QVector<QString> rowData);
 
+	void removeOneRow(int removeRow);
+	void editOneRow(int paramID, QString paramName, int  paramType, QString paramUnit);
+
 private:
 	void paintEvent(QPaintEvent* event) override;
 

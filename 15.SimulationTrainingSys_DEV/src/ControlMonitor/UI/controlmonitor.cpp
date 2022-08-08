@@ -431,7 +431,7 @@ void ControlMonitor::changeResize()
 		//ui.vl_UI->setContentsMargins(0, 0, 0, 0); //去掉软件界面边界
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
-		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 223, ui.center_wgt->width() - 12, 300));
+		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 73, ui.center_wgt->width() - 12, 300));
 
 	}
 	else

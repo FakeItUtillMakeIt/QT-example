@@ -3,7 +3,7 @@
 
 #ifndef CENTER_OPERATE_H
 #define CENTER_OPERATE_H
-
+#define FRAMEMAXLENGTH 65535
 
 #include<QObject>
 #include <QtWidgets>
@@ -29,7 +29,6 @@
 // ------------------------------------- !< 样式------------------------------------
 #include "WidgetStyleSheet.h"
 
-
 class CenterOperate : public QWidget
 {
 	Q_OBJECT
@@ -42,8 +41,10 @@ public slots:
 	void sendRocketData(); //发送箭上数据
 	void switchDeviceStatus(Command* command);//切换设备状态
 	void dealDeviceParams(Command* command);//处理设备参数
-	void receiverCMD(QVariant oneCommand);
 
+	void dealFaultCmd(Command* command);//处理故障指令影响的设备参数
+	void receiverCMD(QVariant oneCommand);
+	void InitFrame();
 private:
 	QVector<QString> configOperateName;
 
@@ -67,11 +68,9 @@ private:
 
 	void Init();
 	void InitUILayout();
-
+	QByteArray m_pBuff;
 private:
 	//void paintEvent(QPaintEvent* event) override;
-
-
 signals:
 
 

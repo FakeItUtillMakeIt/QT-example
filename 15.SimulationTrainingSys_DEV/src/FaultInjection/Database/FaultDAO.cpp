@@ -227,6 +227,11 @@ namespace DataBase
 					oneFrame->m_createTime = sql_row[7];
 					oneFrame->m_lastUpdateTime = sql_row[8];
 				 
+					//对应到火箭型号
+					if (oneFrame->m_rocketID != m_app->m_rockedType)
+					{
+						continue;
+					}
 					m_app->m_CommandInfoframes.insert(pair<int, FaultCommandInfo*>(id, oneFrame));
 				}
 			}

@@ -1,5 +1,5 @@
 ﻿#include "RocketDataFrame.h"
-
+#include <algorithm>
 RocketDataFrame::RocketDataFrame(QObject* parent)
 	: m_Head(FrameHead())
 	, m_error_info("")
@@ -42,7 +42,14 @@ vector<RocketDataParam>& RocketDataFrame::params()
 	return m_vParams;
 }
 
-
+bool RocketDataFrame::sortParams()
+{
+	std::sort(m_vParams.begin(), m_vParams.end(), [](const RocketDataParam& A, const RocketDataParam& B) -> bool
+	{ 
+		return A.m_index < B.m_index; // Sample sort condition 
+	});
+	return true;
+}
 unsigned short RocketDataFrame::Size()
 {
 	return (unsigned short)(FRAMEHEAD_LENGTH + m_vParams.size() * PARAM_LENGTH);
@@ -96,9 +103,11 @@ bool RocketDataFrame::DeSerialize(unsigned char* pData, int iLength)
 	int cycle_times = (RocketDataFrameLength - FRAMEHEAD_LENGTH) / PARAM_LENGTH;
 	for (int i = 0; i < cycle_times; i++)
 	{
-		RocketDataParam word;
-		word.DeSerialize(pData + FRAMEHEAD_LENGTH + i * PARAM_LENGTH);
-		m_vParams.push_back(word);
+		//RocketDataParam word;
+		//word.DeSerialize(pData + FRAMEHEAD_LENGTH + i * PARAM_LENGTH);
+		//m_vParams.push_back(word);
+		m_vParams[i].DeSerialize(pData + FRAMEHEAD_LENGTH + i * PARAM_LENGTH);
+		m_vParams[i].m_deviceParam->m_time = m_Head.Time();
 	}
 
 	//计算校验和

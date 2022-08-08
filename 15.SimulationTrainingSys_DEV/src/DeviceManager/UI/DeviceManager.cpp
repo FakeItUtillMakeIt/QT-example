@@ -7,6 +7,7 @@ DeviceManager::DeviceManager(QWidget* parent)
 	, m_pCenterOperate(nullptr)
 	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
+	, m_pRocketDataDAO(nullptr)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
@@ -17,7 +18,7 @@ DeviceManager::DeviceManager(QWidget* parent)
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	Init();
+	//Init();
 
 
 	/**
@@ -37,10 +38,10 @@ DeviceManager::DeviceManager(QWidget* parent)
 
 	connect(ui.ceshiCommand2, &QPushButton::clicked, this, [=]() {
 		Command* command = new Command();
-		command->m_iType = 1;
-		command->m_iCode = 0;
-		command->m_iBackId = 0;
-		command->m_id = 2;
+		command->m_iType = 3;
+		command->m_iCode = 8;
+		command->m_iBackId = 13;
+		command->m_id = 8;
 
 		QVariant temp;
 		temp.setValue(command);
@@ -57,8 +58,6 @@ void DeviceManager::Init()
 	//m_centeralWidget = new CenterOperate(ui.center_wgt);
 	connect(ui.pb_close, &QPushButton::clicked, this, &DeviceManager::CloseWindow);
 	connect(ui.pb_min, &QPushButton::clicked, this, &DeviceManager::ShowMinimized);
-	//connect(ui.pb_resize, &QPushButton::clicked, this, &DeviceManager::changeResize);
-
 
 	int id = QFontDatabase::addApplicationFont(":/DeviceManager/word/word.ttf");
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
@@ -86,7 +85,8 @@ void DeviceManager::Init()
 	tb_show->hide();
 	changeResize();
 
-	//加载基础数据
+#pragma region 加载基础数据
+
 	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
 	if (!m_pDeviceDAO->getStatus())
 	{
@@ -137,11 +137,31 @@ void DeviceManager::Init()
 	}
 	displayStatuInfo("加载指令参数数据完毕！");
 
+	m_pRocketDataDAO = new DataBase::RocketDataDAO(m_app->m_outputPath);
+	if (!m_pRocketDataDAO->getRocketData())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载箭上遥测数据帧协议数据完毕！");
+	if (!m_pRocketDataDAO->getRocketParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载帧协议参数数据完毕！");
+	//协议帧排序
+	for (auto item : m_app->m_RocketDataFrame)
+	{
+		item.second->sortParams();
+	}
+
 	displayStatuInfo("加载基础数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 	InitDevice();
 
-	//将CenterOperate设置为DeviceManager的主界面
 	m_centeralWidget = new CenterOperate(ui.center_wgt);
 }
 
@@ -216,8 +236,29 @@ void DeviceManager::InitDevice()
 				}
 				for (int i = 0; i < paramNameList.size(); i++)
 				{
-					//tempData[paramNameList[i].toStdString().c_str()].push_back(lineDataList[i].toDouble());
+
 					tempData[Utils::UTF8ToGBK(paramNameList[i].toStdString().c_str())].push_back(lineDataList[i].toDouble());
+					//引入异常
+					//try
+					//{
+					//	if (lineDataList.size() < paramNameList.size())
+					//	{
+					//		//throw - 1;
+					//		throw QException();
+					//	}
+					//	else
+					//	{
+					//		tempData[Utils::UTF8ToGBK(paramNameList[i].toStdString().c_str())].push_back(lineDataList[i].toDouble());
+					//	}
+
+					//}
+					//catch (QException ex) {
+					//	qDebug() << ex.what();
+					//}
+					//catch (...) {
+
+					//}
+
 
 				}
 			}
@@ -266,7 +307,7 @@ void DeviceManager::changeResize()
 		ui.vl_UI->setContentsMargins(0, 0, 0, 0); //去掉软件界面边界
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
-		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 223, ui.center_wgt->width() - 12, 300));
+		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 183, ui.center_wgt->width() - 12, 300));
 
 	}
 	else

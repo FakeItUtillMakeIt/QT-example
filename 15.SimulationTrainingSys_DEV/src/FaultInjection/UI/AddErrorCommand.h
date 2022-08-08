@@ -30,13 +30,13 @@ private:
 	void AddFault();
 	void DelFault();
 	void EditFault();
-	void OnFaultNode(QString name);
+	void OnFaultNode(QString name, int deviceid = 0);
 	void IsEnable(bool isOk);
 	void onFaultTypeChanged(QString tempName);
 	
 	void onDeciveTypeChanged(QString tempName);
 	void InitTable();
-	void FlashParamTable(QString tempName);
+	void FlashParamTable(QString tempName, int deviceid);
 	void IsChooseParam();
 	
 	void SearchFaults();
@@ -59,7 +59,7 @@ private:
 
 	//SearchFault* m_searchFaultwgt;
 
-	
+	int m_currentComandId;//当前编辑项的id
 
 protected:
 
@@ -83,8 +83,8 @@ private:
 	vector<AddOneFaultInfo> m_delFaults;//存储所有需要删除的故障
 	vector<AddOneFaultInfo> m_editFaults;//存储所有需要修改的故障
 
-	vector<int> m_tempCommandId;//故障对应当前参数故障关联的参数  
-	vector<int> m_tempParamId;//故障对应当前指令故障关联的参数 
+	vector<int> m_tempCommandId;//故障对应当前指令故障关联的参数  
+	vector<int> m_tempParamId;//故障对应当前(参数和设备绑定的id)故障关联的参数 
 
 signals:
 	

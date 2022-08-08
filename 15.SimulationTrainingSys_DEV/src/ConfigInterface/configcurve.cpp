@@ -51,7 +51,15 @@ void ConfigCurve::InitFromXmlInfo(QMap<QString, QString> & curveinfo)
     QString  istyleid =  m_valueSetMap["样式配置"].valuelist[ConfigCurve::eStyleInfo]->getStrValue();
     UpdatePropertyByStyle();
     ConfigGlobal::gstylemanager->RegisterCurveByStyleId(istyleid,this);
+    ConfigGlobal::updateCurveMap(dataSourceList, this);
+
 }
+
+void ConfigCurve::updateCurveToGlobalInterface()
+{
+   ConfigGlobal::updateCurveMap(dataSourceList,this);
+}
+
 void ConfigCurve::initDataSourcesFromXmlData()
 {
     for (auto paramid : dataSourceList)
@@ -131,11 +139,72 @@ void ConfigCurve::updateCurve(QString datasourceid,QString datasourcename,int  a
         curvelist.remove(datasourceid);
         removeGraph(graph);
     }
-
+   ConfigGlobal::updateCurveMap(dataSourceList,this);
    replot();
 }
+void ConfigCurve::updateValue(int ikey,double itime,double ivalue)
+{   
+    QString strkey = QString::number(ikey);
+    if (!curvelist.contains(strkey))
+        return;
 
+     curvelist[strkey]->addData(itime, ivalue);
+     if (!firstinit)
+     {
+         firstinit = true;
+         xvalueMax = xvalueMin = itime;
+         yvalueMax = yvalueMin = ivalue;
+         return;
+     }
+     double  newXValue = itime;
+     double  newYValue = ivalue;
+     if (newXValue < xvalueMin)
+     {
+         xvalueMin = newXValue;
+     }
+     else if (newXValue > xvalueMax)
+     {
+         xvalueMax = newXValue;
+     }
+     if (newYValue < yvalueMin)
+     {
+         yvalueMin = newYValue;
+     }
+     else if (newYValue > yvalueMax)
+     {
+         yvalueMax = newYValue;
+     }
+     update_customplot_range();
+     replot(QCustomPlot::rpQueuedReplot);
 
+}
+void ConfigCurve::update_customplot_range()
+{
+    if (!firstinit)
+        return;   
+    if (xvalueMin == xvalueMax)
+    {
+        xAxis->setRange(xvalueMin, xvalueMax + 0.1);
+    }
+    else
+    {
+        double offset = xvalueMax - xvalueMin;
+        if (xrool)
+            xAxis->setRange(xvalueMax - xrange, xvalueMax + 1);
+        else
+            xAxis->setRange(xvalueMin, xvalueMax + 1);
+
+    }
+    if (yvalueMin == yvalueMax)
+    {
+        yAxis->setRange(yvalueMin - 0.1, yvalueMax + 0.1);
+    }
+    else
+    {
+        double offset = yvalueMax - yvalueMin;
+        yAxis->setRange(yvalueMin - offset * 0.1, yvalueMax + offset * 0.1);
+    }
+}
 void ConfigCurve::UpdatePropertyByStyle()
 {
     QMap<int,QPair<bool,QString>>  m_infomap;

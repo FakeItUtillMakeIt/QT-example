@@ -100,6 +100,13 @@ struct SceneInfo
 };
 
 
+enum  RunState
+{
+    StateNormal,
+    StateSuccess,
+    StateFailed
+};
+
 
 ConfigNameSpaceEnd
 #endif // CONFIGDEFINE_H

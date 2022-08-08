@@ -141,24 +141,47 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 
 	QWidget* w1 = new QWidget;
 	QHBoxLayout* hbox = new QHBoxLayout;
-	hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));
+	QPushButton* opEditBtn = new QPushButton(QString("编辑"));
+	opEditBtn->setProperty("row", insertRow);
+	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
+	opDeleteBtn->setProperty("row", insertRow);
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opDeleteBtn);
+	/*hbox->addWidget(new QPushButton(QString("编辑")));
+	hbox->addWidget(new QPushButton(QString("删除")));*/
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
 
-	connect(w1->findChild<QPushButton*>("编辑"), &QPushButton::clicked, this, [=]() {
-		int curRow = configInfoTable->currentRow();
-		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 0)->text().toInt());
-		});
-
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+
+		int curRow = opEditBtn->property("row").toInt();
+		qDebug() << curRow;
+		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text().toInt());
+
+		});
+	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
+		removeOneRow(opDeleteBtn->property("row").toInt());
+		});
+
 }
 
 /**
 	@brief 删除一行
 **/
 void DeviceManageModule::removeOneRow(int removeRow) {
+	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	if (ret == 0)
+	{
+		return;
+	}
+	int curDeviceID = configInfoTable->item(removeRow, 0)->text().toInt();
+	//删除数据
+
+	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`device_info` WHERE `id` = %1").arg(curDeviceID);
+	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
 	configInfoTable->removeRow(removeRow);
 }
 
@@ -176,7 +199,8 @@ void DeviceManageModule::editOneRow(int paramID, int rocketType, QString deviceN
 **/
 void DeviceManageModule::InitDisplayData() {
 
-
+	configInfoTable->clearContents();
+	configInfoTable->setRowCount(0);
 	DeviceDBConfigInfo* deviceInfoDB = DeviceDBConfigInfo::getInstance();
 	deviceInfoDB->readDeviceDB2UI();
 	//configInfoTable->setRowCount(deviceInfoDB->deviceInfo.size());
@@ -194,7 +218,10 @@ void DeviceManageModule::InitDisplayData() {
 	}
 }
 
-
+/**
+	@brief
+	@param event -
+**/
 void DeviceManageModule::paintEvent(QPaintEvent* event) {
 
 	for (int columnIndex = 0; columnIndex < configInfoTable->columnCount(); columnIndex++)
@@ -223,6 +250,12 @@ void DeviceManageModule::insertOneRowData() {
 	@brief 删除一行数据 需同步数据库 此处涉及改动较大，暂时搁置
 **/
 void DeviceManageModule::deleteOneRowData() {
+
+	int curDeviceID = configInfoTable->item(selectedRowNum, 0)->text().toInt();
+	//删除数据
+
+	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`device_info` WHERE `id` = %1").arg(curDeviceID);
+	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
 	if (selectedRowNum != -1)
 	{
 		configInfoTable->removeRow(selectedRowNum);

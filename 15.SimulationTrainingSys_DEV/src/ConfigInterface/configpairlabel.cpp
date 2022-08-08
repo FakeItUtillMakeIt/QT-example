@@ -60,7 +60,7 @@ void ConfigPairLabel::showListMenu(const QPoint& point) {
             paramnamelabel->setText(paramname);
             paramvaluelabel->setText("");    
             ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
-
+            ConfigGlobal::updateLabelMap(paramid,this);
         }
        
     });
@@ -110,6 +110,13 @@ void ConfigPairLabel::InitFromXmlInfo(QMap<QString, QString> &pairlabelinfo)
     updataDataFromTool();
    QString  istyleid =  m_valueSetMap["样式配置"].valuelist[ConfigPairLabel::eStyleInfo]->getStrValue();
    InitFromDefineStyle(istyleid);
+
+   QString  datasourceid = m_valueSetMap["数据源配置"].valuelist[ConfigPairLabel::eDataSource]->getStrValue();
+   if (datasourceid == "未设置")
+   {
+       return;
+   }
+   ConfigGlobal::updateLabelMap(datasourceid.toInt(),this);
 }
 
 void ConfigPairLabel::InitFromDefaultStyle()
@@ -205,11 +212,32 @@ void ConfigPairLabel::updataDataFromTool()
             string showtext = (*ConfigGlobal::m_allDeviceParamPtr)[datasourceid.toInt()]->m_subParameterName;
             paramnamelabel->setText(QString::fromLocal8Bit(showtext.c_str()));
             paramvaluelabel->setText("");
+            ConfigGlobal::updateLabelMap(datasourceid.toInt(),this);
         }
     }
-
    updataGeometryFromData();
 }
+void ConfigPairLabel::updateValue(double value,int error)
+{
+    if (ConfigGlobal::isEditing) return;
+    if((error == 3)&&(errorstate != error))
+    {
+        QString stylecolor = QString("color:rgb(%1,%2,%3);").arg(m_textcolor.red()).arg(m_textcolor.green()).arg(m_textcolor.blue());
+        paramnamelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_error_namelabelstyle).arg(stylecolor));
+        paramvaluelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_error_valuelabelstyle).arg(stylecolor));
+        errorstate = error;
+    }
+    else if ((error != 3) && (errorstate != error))
+    {
+        QString stylecolor = QString("color:rgb(%1,%2,%3);").arg(m_textcolor.red()).arg(m_textcolor.green()).arg(m_textcolor.blue());
+        paramnamelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_namelabelstyle).arg(stylecolor));
+        paramvaluelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_valuelabelstyle).arg(stylecolor));
+        errorstate = error;
+    }
+    paramvaluelabel->setText(QString::number(value, 'f', 3));
+}
+
+
 bool ConfigPairLabel::SelectStyle(StylePairLabel *& istyleinfo)
 {
     QList<StylePairLabel *>& stylepairlabel  =   ConfigGlobal::gstylemanager->getPairLabelStyle();

@@ -16,6 +16,7 @@ using namespace std;
 #include "../Model/Command.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
+#include "../Model/RocketType.h"
 /**
 * @brief 应用程序的全局缓冲区 \n
 * 单例类。保存配置文件中的所有数据信息
@@ -66,6 +67,8 @@ public:
 	vector<Device*> m_allDevice;
 	map<int, Command*> m_allCommad;//测发指令
 	map<int, DeviceParam*> m_allDeviceParam;//设备参数
+	map<int, RocketType*> m_allRocketType;//火箭型号
+	RocketType* m_CurrentRocketType;//当前火箭型号
 	int* argc;
 	char*** argv;
 	int m_status;//系统状态：0表示空闲，1表示数据回放中，2表示数据处理中，3表示实时试验中

@@ -81,6 +81,13 @@ namespace CommandInfoConfig {
 
 		QPushButton* commandParamInfoOKBtn;
 
+		QLabel* configCmdDevID;
+		QComboBox* userSelectCmdDevID;
+		QLabel* configDevID;
+		QComboBox* userSelectDevStatID;
+
+		QPushButton* commandDeviceInfoOKBtn;
+
 		QPushButton* updateCommandBtn;
 
 	private:
@@ -95,6 +102,7 @@ namespace CommandInfoConfig {
 	private slots:
 		void clickCommandOKBtn();
 		void clickCommandParamOKBtn();
+		void clickCommandDeviceStatOKBtn();
 
 		void clickUpateCommandBtn();
 

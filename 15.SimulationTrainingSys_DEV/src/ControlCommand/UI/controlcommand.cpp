@@ -5,15 +5,31 @@
 #include<Qtimer>
 #include "../../ConfigInterface/configinterface.h"
 #include "../../ConfigInterface/xmlstore.h"
+
+
+static CenterOperate* gCenterOperate = nullptr;
+
+void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
+{
+    if (!gCenterOperate)
+    {
+        QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
+        return;
+    }
+	gCenterOperate->sendCMDFromInterface(cmd, btn);
+}
+
 ControlCommand::ControlCommand(QWidget* parent)
 	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_pUserDAO(nullptr)
 	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
+	, m_pRocketDataDAO(nullptr)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
+	, m_pReceiveRocketData(nullptr)
 {
 	ui.setupUi(this);
 	m_app = AppCache::instance();
@@ -21,14 +37,17 @@ ControlCommand::ControlCommand(QWidget* parent)
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	Init();
+	Init();	
 	CreatConfigInterface();
 }
 void ControlCommand::CreatConfigInterface()
 {
-
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
+	    gCenterOperate = m_pCenterOperate;
+		ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
+		m_allDeviceParam = m_app->m_allDeviceParam;
+		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_allDeviceParam;
 		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
+		ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
 
 		ConfigNameSpace::XmlStore::InitSceneFile();
 		ConfigNameSpace::XmlStore::InitStylePath();
@@ -52,9 +71,19 @@ void ControlCommand::CreatConfigInterface()
 
 }
 
+
+void ControlCommand::InitFrame()
+{ 
+	//设置协议帧
+	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[1];//m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_pReceiveRocketData = new ReceiveRocketData();
+}
+
 void ControlCommand::Init()
 {   
-	//m_pCenterOperate = new CenterOperate(ui.page1);
+	QWidget* tmpwidget = new QWidget();
+	m_pCenterOperate = new CenterOperate(tmpwidget);
+	tmpwidget->hide();
 	connect(ui.pb_close, &QPushButton::clicked, this, &ControlCommand::CloseWindow);
 	connect(ui.pb_min, &QPushButton::clicked, this, &ControlCommand::ShowMinimized);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlCommand::changeResize);
@@ -141,8 +170,36 @@ void ControlCommand::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
-	displayStatuInfo("加载指令参数数据完毕！");
-	 
+	displayStatuInfo("加载指令参数数据完毕！"); 
+	if (!m_pCommandDAO->getFaultCommand())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载帧协议参数数据完毕！");
+
+	m_pRocketDataDAO = new DataBase::RocketDataDAO(m_app->m_outputPath);
+	if (!m_pRocketDataDAO->getRocketData())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载箭上遥测数据帧协议数据完毕！");
+	if (!m_pRocketDataDAO->getRocketParam())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载帧协议参数数据完毕！");
+	//协议帧排序
+	for (auto item : m_app->m_RocketDataFrame)
+	{
+		item.second->sortParams();
+	}
+	InitFrame();
 	displayStatuInfo("加载用户数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 }
@@ -203,7 +260,7 @@ void ControlCommand::changeResize()
 		ui.vl_UI->setContentsMargins(0, 0, 0, 0); //去掉软件界面边界
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
-		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 223, ui.center_wgt->width() - 12, 300));
+		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 183, ui.center_wgt->width() - 12, 300));
 
 	}
 	else

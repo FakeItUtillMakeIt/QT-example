@@ -221,12 +221,31 @@ bool AppCache::GetLogConfig()
 /// <returns></returns>
 bool AppCache::GetCmdSender()
 {
+	//指令故障指令发送端口
 	tinyxml2::XMLElement* publishElement = doc.RootElement()->FirstChildElement("software")
 															->FirstChildElement("cmdSender");
 	m_cmdSender = new PeerInfo();
 	m_cmdSender->m_strNetworkType = publishElement->Attribute("network_type");
 	m_cmdSender->m_strIP = publishElement->Attribute("ServerIP");
 	m_cmdSender->m_iPort = publishElement->IntAttribute("port");
+
+
+	//参数故障指令发送端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("paramSender");
+	m_paramSender = new PeerInfo();
+	m_paramSender->m_strNetworkType = publishElement->Attribute("network_type");
+	m_paramSender->m_strIP = publishElement->Attribute("ServerIP");
+	m_paramSender->m_iPort = publishElement->IntAttribute("port");
+
+	//参数故障回令接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("responseReceiver");
+	m_responseReceiver = new PeerInfo();
+	m_responseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_responseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_responseReceiver->m_iPort = publishElement->IntAttribute("port");
+
 	return true;
 }
 

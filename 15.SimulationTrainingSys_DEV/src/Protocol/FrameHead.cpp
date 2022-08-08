@@ -63,6 +63,20 @@ FrameHead::~FrameHead()
 {
 }
 
+void FrameHead::UpdateTime()
+{
+	//获取当前时间
+	using namespace boost::posix_time;
+	ptime now = microsec_clock::local_time();
+	tm t = to_tm(now);
+	m_iYear = t.tm_year + 1900;
+	m_iMonth = t.tm_mon + 1;
+	m_iDay = t.tm_mday;
+	//当天的纳秒数
+	time_duration td = now.time_of_day();
+	m_ullTime = (unsigned long long)td.total_milliseconds() * 1000;
+}
+
 bool FrameHead::DeSerialize(unsigned char* const buff)
 {
     //校验帧头

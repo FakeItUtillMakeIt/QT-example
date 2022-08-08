@@ -14,6 +14,9 @@ public:
 private:
 	Ui::ControlCommandLoginClass ui;
 	ControlCommand* controlCommand;
+	void Init();
+	AppCache* m_app;
+	DataBase::DeviceDAO* m_pDeviceDAO;
 public slots:
 	void LoginSlot();
 	void CloseSlot();

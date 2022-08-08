@@ -14,7 +14,9 @@
 #include "../Public/tinyxml2.h" 
 #include "Database/FaultFrameInfo.h"
 #include "../Model/Command.h"
-
+#include "../Model/Device.h"
+#include "../Model/DeviceParam.h"
+#include "../Model/RocketType.h"
 using namespace std;
 using namespace DataBase;
 /**
@@ -60,7 +62,10 @@ public:
 	Software* m_soft;
 	LogInfo* m_logInfo; 
 	OutputPath* m_outputPath;
-	PeerInfo* m_cmdSender; //处理命令接收
+
+	PeerInfo* m_cmdSender; //命令发送
+	PeerInfo* m_paramSender;//参数发送
+	PeerInfo* m_responseReceiver;//处理命令接收
 	vector<Fault*> m_allFault;
 	int* argc;
 	char*** argv;
@@ -84,7 +89,9 @@ public:
 	map<int, FaultDeviceInfo*> m_FaultDeviceInfoFrames;//device_info表格的id和对应项
 	map<int, FaultDeviceParamInfo*> m_FaultDeviceParamInfoFrames;//device_param_info表格的id和对应项
 	map<int, vector<int>> m_DeviceIDParamID;//设备id和参数id对应项
-
+	map<int, DeviceParam*> m_allDeviceParam;//设备参数
+	map<int, RocketType*> m_allRocketType;//火箭型号
+	RocketType* m_CurrentRocketType;//当前火箭型号
 
 #pragma endregion
 

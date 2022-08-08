@@ -1,6 +1,10 @@
 #include "CenterOperate.h"
 
 #define FRAMELENGTH 10
+#define FAULT_NAME "故障"
+#define FAULT_ID 3
+
+
 CenterOperate::CenterOperate(QWidget* parent)
 	: QWidget(parent)
 {
@@ -34,24 +38,33 @@ void CenterOperate::Init()
 	m_pReceiveCMDData = new ReceiveCMDData();
 	connect(m_pReceiveCMDData, &ReceiveCMDData::receiverCMD, this, &CenterOperate::receiverCMD);
 
-	m_pYcTimer = new QTimer();
-	connect(m_pYcTimer, &QTimer::timeout, this, &CenterOperate::sendRocketData);//发送箭上数据
-	m_pYcTimer->start(50);
-
 	configOperateName << QString("参数管理") << QString("设备管理") << QString("指令管理") << QString("火箭型号管理");
 	//添加设备管理器界面布局
 	InitUILayout();
-
-
+	InitFrame();
 }
 
 void CenterOperate::receiverCMD(QVariant oneCommand)
 {
 	Command* command = oneCommand.value<Command*>();
-	//设备状态切换
-	switchDeviceStatus(command);
-	//处理设备参数
-	dealDeviceParams(command);
+
+
+	//根据接收指令的类型  测发指令还是故障指令进行不同操作 
+	// 故障指令直接影响设备参数，不影响设备状态，需要从fault_param_info表
+	// 测发指令影响设备状态和设备参数
+	if (command->m_iType == 3)
+	{
+		//故障指令
+		dealFaultCmd(command);
+	}
+	else {
+		//测发指令
+		//设备状态切换
+		switchDeviceStatus(command);
+		//处理设备参数
+		dealDeviceParams(command);
+	}
+
 	//发送回令
 	sendCMDResponse(command->m_iBackId, command->m_iCode);
 	QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), QString("设备管理软件收到测发指令,code等于%1！").arg(command->m_iCode));
@@ -66,13 +79,31 @@ void CenterOperate::switchDeviceStatus(Command* command)
 	//2.根据指令编码进行设备状态切换
 	DeviceDBConfigInfo::getInstance()->readCMDDeviceStatDB2UI();
 	auto a = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo;
-	auto deviceId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][1];
-	auto dStatusId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][3];
+	int deviceId = 0, dStatusId = 0;
+
+	try
+	{
+		if (a[command->m_id].size() == 0)
+		{
+			throw "联合查询没有查询到改指令对应的设备状态";
+		}
+		else
+		{
+			deviceId = atoi(a[command->m_id][1].c_str());
+			dStatusId = atoi(a[command->m_id][3].c_str());
+		}
+
+	}
+	catch (const char* msg)
+	{
+		qDebug() << msg;
+		return;
+	}
 
 	//从设备管理器中得到指令影响的设备
-	Device* dev = m_app->m_allDeviceCopy[atoi(deviceId.c_str())];
+	Device* dev = m_app->m_allDeviceCopy[deviceId];
 	//根据指令编码进行设备状态切换
-	dev->m_sCurStatus = m_app->m_allDeviceStatus[atoi(dStatusId.c_str())]->m_statusName;
+	dev->m_sCurStatus = m_app->m_allDeviceStatus[dStatusId]->m_statusName;
 
 }
 
@@ -83,18 +114,105 @@ void CenterOperate::switchDeviceStatus(Command* command)
 void CenterOperate::dealDeviceParams(Command* command) {
 	//获取设备到参数的对应关系
 	DeviceDBConfigInfo::getInstance()->readCMDDeviceStatDB2UI();
-	auto deviceId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][1];
-	auto dStatusId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][3];
 
-	auto paramV = m_app->m_dev2DeviceParamID[atoi(deviceId.c_str())];
+	auto a = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo;
+	int deviceId = 0, dStatusId = 0;
+
+	try
+	{
+		if (a[command->m_id].size() == 0)
+		{
+			throw "联合查询没有查询到改指令对应的设备状态";
+		}
+		else
+		{
+			deviceId = atoi(a[command->m_id][1].c_str());
+			dStatusId = atoi(a[command->m_id][3].c_str());
+		}
+
+	}
+	catch (const char* msg)
+	{
+		qDebug() << msg;
+		return;
+	}
+
+	//auto deviceId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][1];
+	//auto dStatusId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][3];
+
+	auto paramV = m_app->m_dev2DeviceParamID[deviceId];
 
 	for (auto eachParam : paramV)
 	{
 		DeviceParam* deviceParam = m_app->m_allDeviceParam[eachParam];
 		//参数状态和设备状态保持一致
-		deviceParam->m_status = m_app->m_allDeviceStatus[atoi(dStatusId.c_str())]->m_statusName;
+		deviceParam->m_status = m_app->m_allDeviceStatus[dStatusId]->m_statusName;
 		deviceParam->updateParamRealVal();
+		deviceParam->m_curStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
+		deviceParam->m_curStatus.m_name = deviceParam->m_status;
 		//deviceParam->timer->start(1000);
+	}
+
+}
+
+/// <summary>
+/// 处理故障指令影响的设备参数 根据fault_param_info得到
+/// </summary>
+/// <param name="command"></param>
+void CenterOperate::dealFaultCmd(Command* command) {
+	//获取指令ID到故障参数表的数据
+	QString qSqlString = "SELECT\
+		device_param_info.device_id,\
+		device_param_info.parameter_id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		fault_param_info\
+		INNER JOIN device_param_info ON fault_param_info.device_param_info_id = device_param_info.id\
+		WHERE\
+		fault_param_info.command_id = %1;";
+	qSqlString = qSqlString.arg(command->m_id);
+
+
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	//auto b = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+
+
+	//得到故障指令影响的所有设备和对应参数
+	map<int, vector<int>> fault2DeviceParam;
+
+	for (auto ele = DeviceDBConfigInfo::getInstance()->customReadInfoMap.begin(); ele != DeviceDBConfigInfo::getInstance()->customReadInfoMap.end(); ele++)
+	{
+		for (auto i = 1; i < ele->second.size(); i += 2)
+		{
+			fault2DeviceParam[ele->first].push_back(atoi(ele->second[i].c_str()));
+		}
+
+	}
+
+	//受影响的设备
+	for (auto eleDev = fault2DeviceParam.begin(); eleDev != fault2DeviceParam.end(); eleDev++)
+	{
+		//得到当前设备拥有的所有  设备参数  的id
+		auto curDevParamV = m_app->m_dev2DeviceParamID[eleDev->first];
+		//在所有设备参数的参数id中假如有故障影响的设备参数，则修改状态
+		for (auto eleDevParam : curDevParamV)
+		{
+			for (auto eleParamID : eleDev->second)
+			{
+				//设备参数中参数ID等于故障指令中影响的设备参数ID
+				if (m_app->m_allDeviceParam[eleDevParam]->m_subParameterId == eleParamID) {
+					DeviceParam* deviceParam = m_app->m_allDeviceParam[eleDevParam];
+					//参数状态和设备状态保持一致
+
+
+					deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
+					deviceParam->updateParamRealVal();
+					deviceParam->m_curStatus.m_id = FAULT_ID;
+					deviceParam->m_curStatus.m_name = deviceParam->m_status;
+				}
+			}
+		}
 	}
 
 }
@@ -113,9 +231,9 @@ void CenterOperate::sendCMDResponse(int cmd_id, int sendCmd_code)
 	QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
 	m_pBuff[0] = 0x55;
 	m_pBuff[1] = 0xBB;
-	m_pBuff[2] = command->m_iCode; //测发回令code
-	m_pBuff[3] = 0x01; //参数，执行成功  目前固定
-	m_pBuff[4] = sendCmd_code;//发送方指令code  判断是那条指令
+	m_pBuff[2] = command->m_iCode; //测发回令指令code
+	m_pBuff[3] = 0x01; //参数，执行成功
+	m_pBuff[4] = 0x00;
 	m_pBuff[5] = 0x00;
 	m_pBuff[6] = 0x00;
 	m_pBuff[7] = 0x00;
@@ -131,29 +249,20 @@ void CenterOperate::sendCMDResponse(int cmd_id, int sendCmd_code)
 	m_pResponseSenderSocket->writeDatagram(m_pBuff, QHostAddress(m_app->m_responseSender->m_strIP.c_str()), m_app->m_responseSender->m_iPort);
 }
 
-
 /// <summary>
 /// 发送箭上数据
 /// </summary>
 void CenterOperate::sendRocketData()
 {
-	QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
-	m_pBuff[0] = 0x55;
-	m_pBuff[1] = 0xAA;
-	m_pBuff[3] = 0x02; //测发指令code
-	m_pBuff[4] = 0x00;
-	m_pBuff[5] = 0x00;
-	unsigned char vdata1[FRAMELENGTH];
-	for (int i = 0; i < FRAMELENGTH; i++)
+	if (m_app->m_CurrentRocketDataFrame == nullptr) return;
+	RocketDataFrame* pFrame = m_app->m_CurrentRocketDataFrame;
+	pFrame->head().UpdateTime();
+	if (!pFrame->Serialize((unsigned char*)m_pBuff.constData(), FRAMEMAXLENGTH))
 	{
-		vdata1[i] = (unsigned char)m_pBuff[i];
+		return;
 	}
-	unsigned short checksum = CRC::CalCRC16(vdata1 + 2, FRAMELENGTH - 4);
-	memcpy(m_pBuff.data() + FRAMELENGTH - 2, &checksum, 2);
 	m_pYaoCeSenderSocket->writeDatagram(m_pBuff, QHostAddress(m_app->m_yaoCeSender->m_strIP.c_str()), m_app->m_yaoCeSender->m_iPort);
 }
-
-
 
 /**
 	@brief 管理器软件主界面布局
@@ -266,7 +375,24 @@ void CenterOperate::InitUILayout() {
 
 }
 
+/// <summary>
+/// 初始化帧
+/// </summary>
+void CenterOperate::InitFrame()
+{
+	//设置协议帧
+	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id];
+	RocketDataFrame* pFrame = m_app->m_CurrentRocketDataFrame;
+	pFrame->head().setFrameCount(1);
+	pFrame->head().setFrameLen(pFrame->params().size() * PARAM_LENGTH + FRAMEHEAD_LENGTH);
+	pFrame->head().setFrameType(FRAME_TYPE_YC_PARAMETER);
+	pFrame->head().setParamCount(pFrame->params().size());
+	m_pBuff.resize(pFrame->Size());
 
+	m_pYcTimer = new QTimer();
+	connect(m_pYcTimer, &QTimer::timeout, this, &CenterOperate::sendRocketData);//发送箭上数据
+	m_pYcTimer->start(50);
+}
 
 //void CenterOperate::paintEvent(QPaintEvent* event) {
 //	qDebug() << ui.widget->width();

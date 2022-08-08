@@ -144,7 +144,57 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
-	 
+	
+	/// <summary>
+	/// 指令故障
+	/// </summary>
+	/// <returns></returns>
+	bool CommandDAO::getFaultCommand()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select * from fault_command_info;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				m_app->m_allFaults.clear();
+				while (sql_row = mysql_fetch_row(result))
+				{  
+					int fault_command_id = atoi(sql_row[3]);
+					int response_command_id = atoi(sql_row[4]); 
+					if (m_app->m_allCommad.find(fault_command_id) == m_app->m_allCommad.end() ||
+						m_app->m_allCommad.find(response_command_id) == m_app->m_allCommad.end())
+					{
+						continue;
+					}  
+					Command* command = m_app->m_allCommad[response_command_id];
+					m_app->m_allFaults[fault_command_id].push_back(command); 
+				}
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else
+			LOG(INFO) << "获取数据失败";
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
+
+
+
 	///// <summary>
 	///// 获取所有帧
 	///// </summary>

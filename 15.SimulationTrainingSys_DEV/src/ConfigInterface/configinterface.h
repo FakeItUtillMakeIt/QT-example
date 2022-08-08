@@ -9,7 +9,7 @@
 #include "stylemanager.h"
 #include <QDockWidget>
 #include <QMainWindow>
-
+#include <QTimerEvent>
 ConfigNameSpaceStart
 class ConfigElementSelector;
 class ConfigInterface : public QMainWindow
@@ -30,7 +30,7 @@ public:
     void firstinit();
     void firstinitFromOut(QList<QPushButton*> btnlist);
     void AddSceneEntry();
-
+    void timerEvent(QTimerEvent* event);
 private:
     void _addDockWidget();
     QDockWidget* propertydock = nullptr;

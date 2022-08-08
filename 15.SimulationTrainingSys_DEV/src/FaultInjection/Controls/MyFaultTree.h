@@ -133,5 +133,5 @@ private:
 	void onClick(QObject* obj); 
 	void setHeight();
 signals:
-	void onFaultNodeClick(QString name); 
+	void onFaultNodeClick(QString name,int deviceid); 
 };

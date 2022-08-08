@@ -22,10 +22,10 @@ void ReceiveCMDData::init()
     m_pCMDSocket = new QUdpSocket(this);
     m_pCMDSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
     //本地监听端口号为随意指定
-    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, m_app->m_cmdSender->m_iPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
+    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, m_app->m_responseReceiver->m_iPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         return;
     }
-    m_pCMDSocket->joinMulticastGroup(QHostAddress(m_app->m_cmdSender->m_strIP.c_str())); //加入组播
+    m_pCMDSocket->joinMulticastGroup(QHostAddress(m_app->m_responseReceiver->m_strIP.c_str())); //加入组播
     connect(m_pCMDSocket, &QUdpSocket::readyRead, this, &ReceiveCMDData::receiveData); 
 }
 

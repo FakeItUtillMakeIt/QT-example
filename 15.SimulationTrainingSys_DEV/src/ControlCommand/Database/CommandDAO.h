@@ -26,7 +26,8 @@ namespace DataBase
 		bool connect();
 		bool test();
 		bool getCommand(); 
-		bool getCommandParam();
+		bool getCommandParam(); 
+		bool getFaultCommand();
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

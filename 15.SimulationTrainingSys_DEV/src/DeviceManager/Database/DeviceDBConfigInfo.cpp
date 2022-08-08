@@ -173,6 +173,23 @@ void DeviceDBConfigInfo::commandParamInfo2DB(int cmdID, QString paramName, int p
 }
 
 /**
+	@brief 操作commandDeviceStat_info表
+	@param cmdID        -
+	@param deviceStatID -
+**/
+void DeviceDBConfigInfo::commandDeviceStatInfo2DB(int cmdID, int deviceStatID) {
+	QString qSqlString = "INSERT INTO `simulatedtraining`.`command_devicestatus_info`(`command_id`, `deviceStatus_id`)  VALUES (%1, %2);";
+	qSqlString = qSqlString.arg(cmdID).arg(deviceStatID);
+	string sqlString = qSqlString.toStdString();
+	bool opRet = deviceManageDBOp->exec_sql(sqlString);
+	if (!opRet)
+	{
+		qDebug() << "往commandDeviceStat_info表写入失败!!!";
+	}
+}
+
+
+/**
 	@brief 操作rocket_info
 	@param rocketName     -
 	@param rocketTypeCode -
@@ -483,4 +500,31 @@ void DeviceDBConfigInfo::updateRocketInfo2DB(int paramID, QString rocketName, in
 		qDebug() << "更新写入火箭表失败!!!";
 	}
 
+}
+
+/**
+	@brief	  自定义执行语句
+	@param qSqlString -
+**/
+void DeviceDBConfigInfo::customRunSql(QString qSqlString) {
+	string sqlString = qSqlString.toStdString();
+	bool opRet = deviceManageDBOp->exec_sql(sqlString);
+	if (!opRet)
+	{
+		qDebug() << "删除表数据失败!!!";
+	}
+}
+
+/**
+	@brief 自定义读取
+	@param qSqlString -
+**/
+void DeviceDBConfigInfo::customReadTableInfo(QString qSqlString) {
+	string sqlString = qSqlString.toStdString();
+	customReadInfoMap.clear();
+	bool opRet = deviceManageDBOp->queryMysql(sqlString, customReadInfoMap);
+	if (!opRet)
+	{
+		qDebug() << "获取自定义数据失败!!!";
+	}
 }

@@ -78,6 +78,8 @@ public:
     void InitFromDefaultStyle();
     void InitFromDefineStyle(QString istyleid);
     void copyProperty(QString styleid, QMap<int, int>& propertylist);
+    void moveToCenterPos(QPoint centerpos);
+
     QMap<int, int> & getPropertyList();
     QString getStyleId();
 private:

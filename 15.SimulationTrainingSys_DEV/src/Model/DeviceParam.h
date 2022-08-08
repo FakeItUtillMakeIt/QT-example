@@ -28,6 +28,7 @@ public:
 	string m_subParameterName;
 	string m_unit;//单位 
 
+	double m_time;//遥测时间,相对于当日零时的纳秒数
 	//下面的需要根据设备状态进行赋值
 	double m_iCurValue;//连续量实时值
 	string m_iCurStr;//开关量文本值
@@ -39,7 +40,7 @@ public:
 	//unordered_map<int, unordered_map<string, vector<double>>> m_statusVal;//状态id对应的实时值列表
 	QTimer* timer;
 
-	void setStatus(int id) { int i = id; }
+	void setStatus(int id) { m_curStatus.m_id = id; }
 
 private:
 	int curIndex;

@@ -144,21 +144,66 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 	QWidget* w1 = new QWidget;
 	QHBoxLayout* hbox = new QHBoxLayout;
-	hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));
+	QPushButton* opEditBtn = new QPushButton(QString("编辑"));
+	opEditBtn->setProperty("row", insertRow);
+	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
+	opDeleteBtn->setProperty("row", insertRow);
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opDeleteBtn);
+	/*hbox->addWidget(new QPushButton(QString("编辑")));
+	hbox->addWidget(new QPushButton(QString("删除")));*/
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
 
+
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+
+		int curRow = opEditBtn->property("row").toInt();
+		qDebug() << curRow;
+		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt());
+
+		});
+	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
+		removeOneRow(opDeleteBtn->property("row").toInt());
+		});
 }
 
+
+/**
+	@brief 删除一行
+**/
+void RocketTypeManageModule::removeOneRow(int removeRow) {
+	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	if (ret == 0)
+	{
+		return;
+	}
+	int curRocketID = configInfoTable->item(removeRow, 0)->text().toInt();
+	//删除数据
+
+	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`rocket_info` WHERE `id` = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+	configInfoTable->removeRow(removeRow);
+}
+
+/**
+	@brief 编辑数据
+	@param  -编辑后的数据
+**/
+void RocketTypeManageModule::editOneRow(int rocketID, QString rocketName, int  rocketCode) {
+	//这里需要更新数据库
+	DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(rocketID, rocketName, rocketCode);
+}
 
 /**
 	@brief 初始化显示数据
 **/
 void RocketTypeManageModule::InitDisplayData() {
 
-
+	configInfoTable->clearContents();
+	configInfoTable->setRowCount(0);
 	DeviceDBConfigInfo* rocketInfoDB = DeviceDBConfigInfo::getInstance();
 	rocketInfoDB->readRocketDB2UI();
 	//configInfoTable->setRowCount(rocketInfoDB->rocketInfo.size());

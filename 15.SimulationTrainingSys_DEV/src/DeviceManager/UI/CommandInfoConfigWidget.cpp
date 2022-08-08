@@ -80,6 +80,13 @@ void InfoConfigWidget::InitUILayout() {
 
 	commandParamInfoOKBtn = new QPushButton(QString("新增指令参数"));
 
+	configCmdDevID = new QLabel(QString("测发指令ID:"));
+	userSelectCmdDevID = new QComboBox;
+	configDevID = new QLabel(QString("设备状态ID:"));
+	userSelectDevStatID = new QComboBox;
+
+	commandDeviceInfoOKBtn = new QPushButton(QString("新增指令设备"));
+
 	updateCommandBtn = new QPushButton(QString("取消"));
 
 	QGridLayout* infoUILayout = new QGridLayout;
@@ -146,6 +153,20 @@ void InfoConfigWidget::InitUILayout() {
 	frameSpace0->setFrameShape(QFrame::Box);
 	infoUILayout->addWidget(frameSpace1, row++, 0);
 	frameSpace0->setLineWidth(0);
+
+	infoUILayout->addWidget(new QLabel(QString("指令设备配置")), row++, 0);
+	QFrame* hframe2 = new QFrame;
+	hframe2->setFrameShape(QFrame::HLine);
+	infoUILayout->addWidget(hframe2, row++, 0, 1, columnCount);
+
+	column = 0;
+	infoUILayout->addWidget(configCmdDevID, row % rowCount, column++ % columnCount, 1, 1);
+	infoUILayout->addWidget(userSelectCmdDevID, row % rowCount, column++ % columnCount, 1, 1);
+	infoUILayout->addWidget(configDevID, row % rowCount, column++ % columnCount, 1, 1);
+	infoUILayout->addWidget(userSelectDevStatID, row++ % rowCount, column++ % columnCount, 1, 1);
+
+
+	infoUILayout->addWidget(commandDeviceInfoOKBtn, row++ % rowCount, 0, 1, 1);
 
 
 	infoUILayout->addWidget(updateCommandBtn, row++ % rowCount, columnCount - 1, 1, 1);
@@ -258,6 +279,29 @@ void InfoConfigWidget::widgetConfig() {
 	{
 		userSelectParamDefualtVal->addItem(QString(ele->first.c_str()), ele->second);
 	}
+
+	//测发指令ID
+	//这里需要筛选类型为测发指令的
+	userSelectCmdDevID->clear();
+	for (auto ele = deviceManageDbOp->commandInfo.begin(); ele != deviceManageDbOp->commandInfo.end(); ele++)
+	{
+		auto a = QString(ele->second[5].c_str()).toInt();
+		auto b = commonVaries->commandType["测发指令"];
+		if (QString(ele->second[5].c_str()).toInt() == 1)//类型为1为测发指令
+		{
+			userSelectCmdDevID->addItem(QString(ele->second[3].c_str()), QString(ele->second[0].c_str()).toInt());
+		}
+	}
+	//设备状态ID
+	userSelectDevStatID->clear();
+	deviceManageDbOp->deviceStatusInfo.clear();
+	deviceManageDbOp->readDeviceStatusDB2UI();
+
+	for (auto ele = deviceManageDbOp->deviceStatusInfo.begin(); ele != deviceManageDbOp->deviceStatusInfo.end(); ele++)
+	{
+		userSelectDevStatID->addItem(QString(ele->second[0].c_str()), QString(ele->second[0].c_str()).toInt());
+	}
+
 }
 
 void InfoConfigWidget::initConnect() {
@@ -265,6 +309,8 @@ void InfoConfigWidget::initConnect() {
 	connect(commandInfoOKBtn, &QPushButton::clicked, this, &InfoConfigWidget::clickCommandOKBtn);
 
 	connect(commandParamInfoOKBtn, &QPushButton::clicked, this, &InfoConfigWidget::clickCommandParamOKBtn);
+
+	connect(commandDeviceInfoOKBtn, &QPushButton::clicked, this, &InfoConfigWidget::clickCommandDeviceStatOKBtn);
 
 	connect(updateCommandBtn, &QPushButton::clicked, this, &InfoConfigWidget::clickUpateCommandBtn);
 
@@ -316,6 +362,19 @@ void InfoConfigWidget::clickCommandParamOKBtn() {
 	QString paramType1 = userSelectParamType->currentText();
 	float paramDefaultVal = userSelectParamDefualtVal->currentData().toFloat();
 	DeviceDBConfigInfo::getInstance()->commandParamInfo2DB(cmdID, paramName1, paramCode1, index1, paramLength1, paramType1, paramDefaultVal);
+	widgetConfig();
+}
+
+/**
+	@brief 指令设备
+**/
+void InfoConfigWidget::clickCommandDeviceStatOKBtn() {
+
+	int cmdID = userSelectCmdDevID->currentData().toInt();
+	int devStatusID = userSelectDevStatID->currentData().toInt();
+
+	DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo2DB(cmdID, devStatusID);
+
 	widgetConfig();
 }
 

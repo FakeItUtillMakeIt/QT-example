@@ -31,6 +31,9 @@ private:
 	void InitDisplayData();
 	void insertOneRow(int insertRow, QVector<QString> rowData);
 
+	void removeOneRow(int removeRow);
+	void editOneRow(int rocketID, QString rocketName, int  rocketCode);
+
 private:
 	void paintEvent(QPaintEvent* event) override;
 

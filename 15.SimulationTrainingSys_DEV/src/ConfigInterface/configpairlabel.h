@@ -40,6 +40,8 @@ public:
     void updateDataSource(QString datasourceid, QString datasourcename, int  addordelete);
     void InitFromDefaultStyle();
     void InitFromDefineStyle(QString istyleid);
+    void updateValue(double value, int error = 0);
+
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *e);
@@ -56,7 +58,7 @@ private:
     int m_yPos;
     char m_StyleID[MaximumPathLength];
     char m_ParamSourceID[MaximumPathLength];
-
+    int errorstate = 0;
     QString m_styleinfoId = "";
     QString m_styleinfoname = "";
 

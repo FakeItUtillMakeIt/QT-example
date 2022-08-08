@@ -17,6 +17,7 @@ void DeviceManagerLogin::LoginSlot()
 	int typeId = ui.TypeComboBox->currentData().toUInt();
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
 	this->close();
+	deviceManager->Init();
 	deviceManager->show();
 	//ControlComPage.show();
 }

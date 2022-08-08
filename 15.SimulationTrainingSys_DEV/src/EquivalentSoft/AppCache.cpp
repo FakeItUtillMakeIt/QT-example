@@ -178,7 +178,7 @@ bool AppCache::ReadConfig()
 		LOG(INFO) << "读取基础信息相关内容时出错,请确认配置文件内容是否正确";
 		return false;
 	} 
-	if (!GetCmdSender()) {
+	if (!GetNetworkPeer()) {
 		LOG(INFO) << "读取网络配置项相关内容时出错,请确认CmdSender配置文件内容是否正确";
 		return false;
 	}
@@ -219,14 +219,24 @@ bool AppCache::GetLogConfig()
 /// 解析节点cmdReceiver
 /// </summary>
 /// <returns></returns>
-bool AppCache::GetCmdSender()
+bool AppCache::GetNetworkPeer()
 {
+	//处理命令接收
 	tinyxml2::XMLElement* publishElement = doc.RootElement()->FirstChildElement("software")
 															->FirstChildElement("cmdSender");
 	m_cmdSender = new PeerInfo();
 	m_cmdSender->m_strNetworkType = publishElement->Attribute("network_type");
 	m_cmdSender->m_strIP = publishElement->Attribute("ServerIP");
 	m_cmdSender->m_iPort = publishElement->IntAttribute("port");
+	 
+	//箭上数据接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("yaoCeReceiver");
+	m_yaoCeReceiver = new PeerInfo();
+	m_yaoCeReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_yaoCeReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_yaoCeReceiver->m_iPort = publishElement->IntAttribute("port");
+	 
 	return true;
 }
 
