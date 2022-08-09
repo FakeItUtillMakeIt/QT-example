@@ -42,6 +42,9 @@ public:
     void InitFromXmlInfo(QMap<QString, QString> &curveinfo);
     void updateCurve(QString datasourceid, QString datasourcename, int addordelete);
     void updateValue(int ikey, double itime, double ivalue);
+    void updateGraph0Value(int ikey, double itime, double ivalue);
+
+    void setBaseTime(double basetime);
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
@@ -63,7 +66,7 @@ private:
     void AddTitle(QString title);
     QList<QColor>  colorlist;
     QMap<QString,QCPGraph*>  curvelist; //key 是  参数索引
-
+   // void timerEvent(QTimerEvent* event);
 
     //记录范围
     double xvalueMax;
@@ -72,6 +75,7 @@ private:
     double yvalueMin;
     bool firstinit = false;
     double xrange = -1;
+    double m_base_time;
 
 };
 ConfigNameSpaceEnd

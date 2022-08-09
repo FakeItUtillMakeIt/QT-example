@@ -57,8 +57,9 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 	ui.comboBox->setView(new  QListView());
 	
     Init();
-	count = 0;
-	
+	count = 0;	
+	m_app->m_allDeviceParam;
+#if  1
 	//likai
 	{
 		QList<QPushButton* >  functionBtnList;
@@ -71,8 +72,8 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 		functionBtnList.push_back(ui.configgroup);
 		functionBtnList.push_back(ui.configdelete);
 
-		m_allDeviceParam = m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_allDeviceParam;
+	//	m_allDeviceParam = m_app->m_allDeviceParam;
+		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
 		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
 
 		ConfigNameSpace::XmlStore::InitSceneFile();
@@ -99,6 +100,7 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 		hlayout->setMargin(0);
 
 	}
+#endif
 	 
 }
 
@@ -706,6 +708,7 @@ void EquivalentSoft::mousePressEvent(QMouseEvent* event)
 		qDebug() << "~~EquivalentSoft offset outrange" <<  " event->globalPos()" << event->globalPos() << " screnn:" << event->screenPos() << " windowspos:" << event->windowPos() << " mLastMousePosition" << mLastMousePosition;;;
 
 		mMoving = true;
+		
 		mLastMousePosition = event->globalPos();
 	}
 }

@@ -14,6 +14,7 @@
 #include "stylemanager.h"
 #include "configcurve.h"
 #include "paramselect.h"
+#include "../EquivalentSoft/AppCache.h"
 ConfigNameSpaceStart
 PropertySet::PropertySet(QWidget *parent) :
     QToolBox(parent)
@@ -360,6 +361,7 @@ void PropertySet::addDataSource(QVBoxLayout *vlayout,ConfigValue* configvalue )
 
     connect(btnsel,&QPushButton::clicked,[=](int){       
         ParamSelect  paramselect;
+      //  AppCache::instance()->m_allDeviceParam;
         paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr);
         if (paramselect.exec() == QDialog::Rejected)
             return;

@@ -150,6 +150,9 @@ void CenterOperate::dealDeviceParams(Command* command) {
 		deviceParam->updateParamRealVal();
 		deviceParam->m_curStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
 		deviceParam->m_curStatus.m_name = deviceParam->m_status;
+
+		deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
+		deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
 		//deviceParam->timer->start(1000);
 	}
 
@@ -204,12 +207,31 @@ void CenterOperate::dealFaultCmd(Command* command) {
 				if (m_app->m_allDeviceParam[eleDevParam]->m_subParameterId == eleParamID) {
 					DeviceParam* deviceParam = m_app->m_allDeviceParam[eleDevParam];
 					//参数状态和设备状态保持一致
-
-
-					deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
-					deviceParam->updateParamRealVal();
-					deviceParam->m_curStatus.m_id = FAULT_ID;
-					deviceParam->m_curStatus.m_name = deviceParam->m_status;
+					//第二次点击故障
+					if (deviceParam->m_curStatus.m_id == FAULT_ID)
+					{
+						//恢复为前置状态
+						deviceParam->m_status = deviceParam->m_preStatus.m_name;
+						deviceParam->updateParamRealVal();
+						auto curID = deviceParam->m_curStatus.m_id;
+						auto curName = deviceParam->m_curStatus.m_name;
+						deviceParam->m_curStatus.m_id = deviceParam->m_preStatus.m_id;
+						deviceParam->m_curStatus.m_name = deviceParam->m_preStatus.m_name;
+						//更换前置状态
+						deviceParam->m_preStatus.m_id = curID;
+						deviceParam->m_preStatus.m_name = curName;
+					}
+					else
+					{
+						//记录前置状态
+						deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
+						deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+						//第一次点击故障
+						deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
+						deviceParam->updateParamRealVal();
+						deviceParam->m_curStatus.m_id = FAULT_ID;
+						deviceParam->m_curStatus.m_name = deviceParam->m_status; 
+					} 
 				}
 			}
 		}
@@ -233,7 +255,7 @@ void CenterOperate::sendCMDResponse(int cmd_id, int sendCmd_code)
 	m_pBuff[1] = 0xBB;
 	m_pBuff[2] = command->m_iCode; //测发回令指令code
 	m_pBuff[3] = 0x01; //参数，执行成功
-	m_pBuff[4] = 0x00;
+	m_pBuff[4] = sendCmd_code;
 	m_pBuff[5] = 0x00;
 	m_pBuff[6] = 0x00;
 	m_pBuff[7] = 0x00;

@@ -67,11 +67,15 @@ bool  ConfigGlobal::VerifyNumber(QString str)
 }
 void   ConfigGlobal::updateControlValue(int key,double itime,double value,int error)
 {
+    if (key == 0x13)
+    {
+        qDebug() << "value:" << value;
+    }
     if (labelmap.contains(key))
     {
         for (auto label : labelmap[key])
         {
-            label->updateValue(value);
+            label->updateValue(value, error);
         }
     }
     if (curvemap.contains(key))
@@ -85,6 +89,7 @@ void   ConfigGlobal::updateControlValue(int key,double itime,double value,int er
 void   ConfigGlobal::updateDefaultState()
 {
     if (m_allFaultCommnd == nullptr) return;
+    if (isEditing)  return;
     for (auto key : buttonmap.keys())
     {
         if (m_allFaultCommnd->find(key) != m_allFaultCommnd->end())

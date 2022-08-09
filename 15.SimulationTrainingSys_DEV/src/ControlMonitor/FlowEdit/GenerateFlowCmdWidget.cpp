@@ -24,10 +24,42 @@ GenerateFlowCmdWidget::GenerateFlowCmdWidget(QWidget* parent)
 	imageIcon2x = QString::fromLocal8Bit(":/flowload/images/Flow/icon@2x.png");
 
 	InitLayout();
+
+
+	execProgramListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+	commandListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
+	backCmdListWidget->setSelectionMode(QAbstractItemView::NoSelection);
+
+	//禁用用户鼠标点击
+	execProgramListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
+	commandListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
+	backCmdListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
+
+	execProgramListWidget->installEventFilter(this);
+	commandListWidget->installEventFilter(this);
+	backCmdListWidget->installEventFilter(this);
 }
 
 GenerateFlowCmdWidget::~GenerateFlowCmdWidget()
 {}
+
+/**
+	@brief  过滤鼠标点击事件
+	@param  watched -
+	@param  event   -
+	@retval         -
+**/
+bool GenerateFlowCmdWidget::eventFilter(QObject* watched, QEvent* event) {
+	if (watched == execProgramListWidget || watched == commandListWidget || watched == backCmdListWidget)
+	{
+		if (event->type() == QEvent::MouseButtonPress)
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
 
 /**
 	@brief 初始化布局
@@ -88,7 +120,7 @@ void GenerateFlowCmdWidget::InitLayout() {
 
 	this->setLayout(hboxLayout);
 
-	connect(execProgramListWidget, &QListWidget::itemClicked, this, &GenerateFlowCmdWidget::clickExeProgramItem);
+	//connect(execProgramListWidget, &QListWidget::itemClicked, this, &GenerateFlowCmdWidget::clickExeProgramItem);
 }
 
 /**
@@ -174,6 +206,8 @@ void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
 		commandListWidget->addItem(newCmdItem);
 	}
 
+
+
 }
 
 /**
@@ -196,13 +230,41 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 		}
 	}
 
-	backCmdListWidget->addItem(new QListWidgetItem(backCmdInfo));
+	QListWidgetItem* backInfoItem = new QListWidgetItem(curRunCmdName + QString::fromLocal8Bit("已收到"));
+	backInfoItem->setTextAlignment(Qt::AlignCenter);
+
+	backCmdListWidget->addItem(backInfoItem);
 
 	//保留已经接收到的信息
 	hadRunExeProgram.push_back(mainFlowInfo_[mainFlowIndex][0]);
 	hadRunCmd.push_back(curRunCmdName);
-	hadRecievedBackInfo.push_back(backCmdInfo);
+	hadRecievedBackInfo.push_back(curRunCmdName + QString::fromLocal8Bit("已收到"));
 
-	//将已经接收道德信息进行展示
+
+	//检索主流程信息
+	int currentSelectMainID = -1;
+	for (int i = 1; i <= mainFlowInfo_.size(); i++)
+	{
+		//流程名
+		if (mainFlowInfo_[i][0] == exeItem->text()) {
+			currentSelectMainID = mainFlowInfo_[i][3].toInt();
+			break;
+		}
+	}
+
+	auto cmdInfoList = subFlowInfo_[currentSelectMainID];
+	if (cmdInfoList.size() == 0)
+	{
+		return;
+	}
+	//直到收到 当前子流程中的最后一个指令时才将主流程回令信息显示
+	if (cmdInfoList[cmdInfoList.size() - 1] == curRunCmdName)
+	{
+		hadRecievedBackInfo.push_back(backCmdInfo);
+		QListWidgetItem* backInfoItem1 = new QListWidgetItem(backCmdInfo);
+		backInfoItem1->setTextAlignment(Qt::AlignCenter);
+		backCmdListWidget->addItem(backInfoItem1);
+	}
+
 
 }

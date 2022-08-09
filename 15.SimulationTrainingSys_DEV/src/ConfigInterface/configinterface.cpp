@@ -25,14 +25,16 @@ ConfigInterface::ConfigInterface(QWidget *parent) :
 
 void ConfigInterface::timerEvent(QTimerEvent* event)
 {
+    ConfigGlobal::updateDefaultState();
+
     if (!ConfigGlobal::m_allDeviceParamPtr) return;
+
     if (!ConfigGlobal::dataupdated) return;
     ConfigNameSpace::ConfigGlobal::dataupdated = false;
     for (auto it = ConfigGlobal::m_allDeviceParamPtr->begin(); it != ConfigGlobal::m_allDeviceParamPtr->end(); it++)
     {
         DeviceParam* param = it->second;
-        ConfigGlobal::updateControlValue(param->m_deviceId, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);
-        ConfigGlobal::updateDefaultState();
+        ConfigGlobal::updateControlValue(param->m_id, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);
     }
 
 }

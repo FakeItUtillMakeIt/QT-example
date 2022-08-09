@@ -41,10 +41,13 @@ void CenterOperate::receiverFault(QVariant oneCommand)
 {
     Command* command = oneCommand.value<Command*>();
     if (m_app->m_allFaults.find(command->m_id) == m_app->m_allFaults.end()) return;
-
+     
     for (auto item : m_app->m_allFaults[command->m_id])
     {
-        if (m_app->m_allFaultCommnd.find(item->m_id) != m_app->m_allFaultCommnd.end()) continue;
+        if (m_app->m_allFaultCommnd.find(item->m_id) != m_app->m_allFaultCommnd.end()) {
+            m_app->m_allFaultCommnd.erase(item->m_id);
+            continue;
+        };
         m_app->m_allFaultCommnd.insert(pair<int, Command*>(item->m_id, item));
     }
      

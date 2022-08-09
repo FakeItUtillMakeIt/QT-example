@@ -152,7 +152,7 @@ namespace DataBase
 			result = mysql_store_result(&my_connection);
 			if (result)
 			{
-				m_app->m_allDeviceParam.clear();
+				m_app->m_allRocketType.clear();
 				while (sql_row = mysql_fetch_row(result))
 				{
 					RocketType* oneDeviceParam = new RocketType();

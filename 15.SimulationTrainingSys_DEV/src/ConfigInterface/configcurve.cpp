@@ -6,6 +6,7 @@
 #include "stylemanager.h"
 #include "moveableframe.h"
 #include "configtypeselector.h"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 ConfigNameSpaceStart
 
@@ -26,7 +27,39 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
 
     colorlist << QColor(250,0,0) <<QColor(0,250,0) <<QColor(0,0,250);
 
+ //   addGraph();
+
+    //曲线测试
+  //  startTimer(1000);
 }
+
+//void ConfigCurve::timerEvent(QTimerEvent* event)
+//{
+//    unsigned short m_iYear;
+//    ///月
+//    unsigned char m_iMonth;
+//    ///日
+//    unsigned char m_iDay;
+//    ///时间，相对于当日零时的纳秒数
+//    unsigned long long m_ullTime;
+//    ///帧计数
+//    using namespace boost::posix_time;
+//    ptime now = microsec_clock::local_time();
+//    tm t = to_tm(now);
+//    m_iYear = t.tm_year + 1900;
+//    m_iMonth = t.tm_mon + 1;
+//    m_iDay = t.tm_mday;
+//    //当天的纳秒数
+//    time_duration td = now.time_of_day();
+//    double itime = (unsigned long long)td.total_milliseconds() * 1000;
+//    QTime  st;
+//    st = QTime::currentTime();
+//    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+//    double ivalue = qrand()%50;
+//    updateGraph0Value(1, itime, ivalue);
+//}
+
+
 void ConfigCurve::AddTitle(QString title)
 {
     plotLayout()->insertRow(0);     // pCurveWidget、curveWidget为在ui中定义的QCustomPlot对象指针
@@ -142,22 +175,65 @@ void ConfigCurve::updateCurve(QString datasourceid,QString datasourcename,int  a
    ConfigGlobal::updateCurveMap(dataSourceList,this);
    replot();
 }
+void ConfigCurve::setBaseTime(double basetime)
+{
+    m_base_time = basetime;
+}
+void ConfigCurve::updateGraph0Value(int ikey, double itime, double ivalue)
+{
+  
+    if (!firstinit)
+    {
+        m_base_time = itime;
+        firstinit = true;
+        xvalueMax = xvalueMin = 0;
+        yvalueMax = yvalueMin = ivalue;
+        graph(0)->addData(0, ivalue);
+        return;
+    }
+    double  newXValue = (itime - m_base_time) / 1000000;
+    double  newYValue = ivalue;
+   graph(0)->addData(newXValue, newYValue);
+
+    if (newXValue < xvalueMin)
+    {
+        xvalueMin = newXValue;
+    }
+    else if (newXValue > xvalueMax)
+    {
+        xvalueMax = newXValue;
+    }
+    if (newYValue < yvalueMin)
+    {
+        yvalueMin = newYValue;
+    }
+    else if (newYValue > yvalueMax)
+    {
+        yvalueMax = newYValue;
+    }
+    update_customplot_range();
+    replot(QCustomPlot::rpQueuedReplot);
+
+}
 void ConfigCurve::updateValue(int ikey,double itime,double ivalue)
 {   
     QString strkey = QString::number(ikey);
     if (!curvelist.contains(strkey))
         return;
 
-     curvelist[strkey]->addData(itime, ivalue);
      if (!firstinit)
      {
+         m_base_time = itime;
          firstinit = true;
-         xvalueMax = xvalueMin = itime;
+         xvalueMax = xvalueMin = 0;
          yvalueMax = yvalueMin = ivalue;
+         curvelist[strkey]->addData(0, ivalue);
          return;
      }
-     double  newXValue = itime;
+     double  newXValue = (itime - m_base_time)/1000000;
      double  newYValue = ivalue;
+     curvelist[strkey]->addData(newXValue, newYValue);
+
      if (newXValue < xvalueMin)
      {
          xvalueMin = newXValue;

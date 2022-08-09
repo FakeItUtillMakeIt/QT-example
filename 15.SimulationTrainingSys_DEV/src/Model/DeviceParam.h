@@ -36,6 +36,9 @@ public:
 	Status m_curStatus;//当前状态
 	string m_status;//参数状态
 
+	Status m_preStatus;//上一个状态
+
+
 	map<string, vector<double>> m_statusRealData;//每个状态对应的实时值列表
 	//unordered_map<int, unordered_map<string, vector<double>>> m_statusVal;//状态id对应的实时值列表
 	QTimer* timer;

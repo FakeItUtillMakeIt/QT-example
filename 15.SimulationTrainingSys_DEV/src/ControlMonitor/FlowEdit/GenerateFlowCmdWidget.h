@@ -73,6 +73,9 @@ public slots:
 	void clickExeProgramItem(QListWidgetItem*);
 	void responseRecieveCmd(int mainFlowIndex, QString curRunCmdName, QString backCmdInfo);
 
+protected:
+	bool eventFilter(QObject* watched, QEvent* event);
+
 };
 
 

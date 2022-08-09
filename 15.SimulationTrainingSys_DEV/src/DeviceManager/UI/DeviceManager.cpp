@@ -29,7 +29,7 @@ DeviceManager::DeviceManager(QWidget* parent)
 		command->m_iType = 1;
 		command->m_iCode = 2;
 		command->m_iBackId = 3;
-		command->m_id = 1;
+		command->m_id = 2;
 
 		QVariant temp;
 		temp.setValue(command);
@@ -38,10 +38,10 @@ DeviceManager::DeviceManager(QWidget* parent)
 
 	connect(ui.ceshiCommand2, &QPushButton::clicked, this, [=]() {
 		Command* command = new Command();
-		command->m_iType = 3;
-		command->m_iCode = 8;
-		command->m_iBackId = 13;
-		command->m_id = 8;
+		command->m_iType = 1;
+		command->m_iCode = 1;
+		command->m_iBackId = 3;
+		command->m_id = 1;
 
 		QVariant temp;
 		temp.setValue(command);

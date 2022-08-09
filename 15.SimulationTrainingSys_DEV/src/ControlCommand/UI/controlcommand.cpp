@@ -44,8 +44,8 @@ void ControlCommand::CreatConfigInterface()
 {
 	    gCenterOperate = m_pCenterOperate;
 		ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
-		m_allDeviceParam = m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_allDeviceParam;
+		//m_allDeviceParam = m_app->m_allDeviceParam;
+		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
 		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
 		ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
 

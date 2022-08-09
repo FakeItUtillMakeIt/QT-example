@@ -330,9 +330,9 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 		return;
 	}
 	//根据发送指令ID得到子流程当前执行指令name 主流程的索引
-	QString curRunCmdName;
-	int mainFlowIndex;
-	int subFlowID;
+	QString curRunCmdName = "";
+	int mainFlowIndex = -1;
+	int subFlowID = -1;
 	QString backCmdInfo;
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
 	{
@@ -344,7 +344,11 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 			backCmdInfo = QString::fromStdString(ele->second[3].c_str());
 		}
 	}
-
+	if (mainFlowIndex == -1 && curRunCmdName == "")
+	{
+		QMessageBox::warning(this, "warning", "流程中无此指令");
+		return;
+	}
 	emit updateMainFlowAndSubFlow(mainFlowIndex, curRunCmdName, backCmdInfo);
 
 }
