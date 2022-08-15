@@ -56,7 +56,6 @@ void ReceiveRocketData::receiveData()
         { 
             break;
         }
-        ConfigNameSpace::ConfigGlobal::dataupdated = true;
-        int s = 0;
+        ConfigNameSpace::ConfigGlobal::dataupdated = true; 
     }
 } 

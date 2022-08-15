@@ -320,8 +320,8 @@ namespace DataBase
 			//不需要读创建时间和修改时间
 			for (int i = 0; i < num_feilds; i++)
 			{
-				LOG(INFO) << (int)lengths[i] << (row[i] ? row[i] : "NULL ");
-				contents[(atoi)(row[0])].push_back(string(row[i]));
+				//LOG(INFO) << (int)lengths[i] << (row[i] ? row[i] : "NULL ");
+				contents[(atoi)(row[0])].push_back(string(row[i] ? row[i] : ""));
 			}
 			counts++;
 		}

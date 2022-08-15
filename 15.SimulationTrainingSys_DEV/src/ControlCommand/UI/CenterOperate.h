@@ -23,6 +23,7 @@ public:
     ConfigNameSpace::ConfigButton* btnfrominterface = nullptr;
 public slots:
     void sendCMD(int cmd_id);
+    void sendCMD(int cmd_id, int sendCode);
     void receiverCMD(QVariant oneCommand);
     void receiverFault(QVariant oneCommand);
     

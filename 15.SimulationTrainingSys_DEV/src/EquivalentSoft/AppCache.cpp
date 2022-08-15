@@ -221,14 +221,22 @@ bool AppCache::GetLogConfig()
 /// <returns></returns>
 bool AppCache::GetNetworkPeer()
 {
-	//处理命令接收
+	//测控指令发送端口
 	tinyxml2::XMLElement* publishElement = doc.RootElement()->FirstChildElement("software")
 															->FirstChildElement("cmdSender");
 	m_cmdSender = new PeerInfo();
 	m_cmdSender->m_strNetworkType = publishElement->Attribute("network_type");
 	m_cmdSender->m_strIP = publishElement->Attribute("ServerIP");
 	m_cmdSender->m_iPort = publishElement->IntAttribute("port");
-	 
+
+	//测控回令接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("responseReceiver");
+	m_responseReceiver = new PeerInfo();
+	m_responseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_responseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_responseReceiver->m_iPort = publishElement->IntAttribute("port");
+
 	//箭上数据接收端口
 	publishElement = doc.RootElement()->FirstChildElement("software")
 		->FirstChildElement("yaoCeReceiver");
@@ -237,6 +245,24 @@ bool AppCache::GetNetworkPeer()
 	m_yaoCeReceiver->m_strIP = publishElement->Attribute("ServerIP");
 	m_yaoCeReceiver->m_iPort = publishElement->IntAttribute("port");
 	 
+
+	//故障指令（指令型故障）接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("faultReceiver");
+	m_faultReceiver = new PeerInfo();
+	m_faultReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_faultReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_faultReceiver->m_iPort = publishElement->IntAttribute("port");
+
+	//故障指令（指令型故障）接收端口m_faultSender
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("responsefaultSender");
+	m_faultSender = new PeerInfo();
+	m_faultSender->m_strNetworkType = publishElement->Attribute("network_type");
+	m_faultSender->m_strIP = publishElement->Attribute("ServerIP");
+	m_faultSender->m_iPort = publishElement->IntAttribute("port");
+
+
 	return true;
 }
 

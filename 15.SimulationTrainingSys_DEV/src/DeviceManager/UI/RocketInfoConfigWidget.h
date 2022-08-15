@@ -52,7 +52,8 @@ namespace RocketInfoConfig {
 		QLabel* configRocketName;
 		QLineEdit* userInputRocketName;
 		QLabel* configRocketType;
-		QComboBox* userSelectRocketType;
+		QLineEdit* userInputRocketDescript;
+
 
 		QPushButton* rocketInfoOKBtn;
 		//!< rocke_data_info

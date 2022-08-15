@@ -86,6 +86,18 @@ bool FlowInfoConfig2DB::customDBQuery(QString qSqlString) {
 }
 
 /**
+	@brief 自定义查询语句
+	@param qSqlString -
+**/
+bool FlowInfoConfig2DB::customDBQuery1(QString qSqlString) {
+	customSearchInfo1.clear();
+
+	string sqlString = qSqlString.toStdString();
+	return flowInfoDBOp->queryMysql(sqlString, customSearchInfo1);
+
+}
+
+/**
 	@brief 存储主流程信息
 	@param rocketTypeID  -
 	@param mainFlowName  -
@@ -112,9 +124,9 @@ void FlowInfoConfig2DB::mainFlowConfigOp2DB(int rocketTypeID, QString mainFlowNa
 	@param subFlowName -
 	@param otherInfo   -
 **/
-void FlowInfoConfig2DB::subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString otherInfo) {
-	QString qSqlString = "INSERT INTO `simulatedtraining`.`sub_flow_info`(`main_id`, `command_id`, `name`, `remark`)  VALUES (%1, %2, '%3', '%4');";
-	qSqlString = qSqlString.arg(mainFlowID).arg(emitCmdID).arg(subFlowName).arg(otherInfo);
+void FlowInfoConfig2DB::subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString subBackInfo, QString otherInfo) {
+	QString qSqlString = "INSERT INTO `simulatedtraining`.`sub_flow_info`(`main_id`, `command_id`, `name`, `backInfo`, `remark`)  VALUES (%1, %2, '%3', '%4', '%5');";
+	qSqlString = qSqlString.arg(mainFlowID).arg(emitCmdID).arg(subFlowName).arg(subBackInfo).arg(otherInfo);
 	string sqlString = qSqlString.toStdString();
 	bool opRet = flowInfoDBOp->exec_sql(sqlString);
 	if (!opRet)

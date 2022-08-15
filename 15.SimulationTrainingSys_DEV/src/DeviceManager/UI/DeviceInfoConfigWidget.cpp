@@ -9,7 +9,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 {
 
 	this->setWindowTitle(QString("添加设备"));
-	this->setWindowIcon(QIcon(":/icon/icon/squareBl.png"));
+	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
 
@@ -21,6 +21,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	this->setAutoFillBackground(true);
 
 	this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+	//this->setWindowFlags(Qt::FramelessWindowHint | Qt::Window);
 
 	InitUILayout();
 
@@ -42,6 +43,7 @@ void InfoConfigWidget::InitUILayout() {
 	wss = WidgetStyleSheet::getInstace();
 
 
+
 	configRocketType = new QLabel(QString("火箭类型:"));
 	userSelectRocketType = new QComboBox;
 	configDeviceName = new QLabel(QString("设备名称:"));
@@ -59,9 +61,9 @@ void InfoConfigWidget::InitUILayout() {
 
 	statusConfigOKBtn = new QPushButton(QString("新增状态"));
 	//!< 	开关量显示值
-	configDeviceID = new QLabel(QString("设备ID:"));
+	configDeviceID = new QLabel(QString("设备:"));
 	userSelectDeviceID = new QComboBox;
-	configStatusID = new QLabel(QString("状态ID:"));
+	configStatusID = new QLabel(QString("状态:"));
 	userSelectStatusID = new QComboBox;
 	configDataPath = new QLabel(QString("状态文件:"));
 	userSelectPath = new QLabel();
@@ -69,9 +71,9 @@ void InfoConfigWidget::InitUILayout() {
 
 	deviceStatusOKBtn = new QPushButton(QString("新增设备状态信息"));
 	//!< 	device_param_info
-	configDeviceParamID = new QLabel(QString("设备ID:"));
+	configDeviceParamID = new QLabel(QString("设备:"));
 	userSelectDeviceParamID = new	QComboBox;
-	configParamID = new QLabel(QString("参数ID:"));
+	configParamID = new QLabel(QString("参数:"));
 	userSelectParamID = new QComboBox;
 
 	deviceParamInfoOKBtn = new QPushButton(QString("新增设备参数"));
@@ -169,7 +171,7 @@ void InfoConfigWidget::InitUILayout() {
 
 
 	QString qss = wss->infoConfigLabelStyleSheet.arg("QLabel") + wss->infoConfigLineEditStyleSheet.arg("QLineEdit")
-		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
+		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton1") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
 
 	this->setStyleSheet(qss);
 	this->setLayout(infoUILayout);
@@ -266,6 +268,8 @@ void InfoConfigWidget::selectFilePathOKBtn() {
 	//过滤格式txt
 	QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
 
+	filepath1 = filepath1.split("/device/")[1];
+	userSelectPath->setWordWrap(true);
 	userSelectPath->setText(filepath1);
 }
 
@@ -327,6 +331,29 @@ void InfoConfigWidget::clickDeviceParamOKBtn() {
 
 	int deviceID2 = userSelectDeviceParamID->currentData().toInt();
 	int paramID2 = userSelectParamID->currentData().toInt();
+	//同一设备参数信息唯一
+
+	QString qSqlString = QString("SELECT\
+		device_param_info.id,\
+		device_param_info.device_id,\
+		device_param_info.parameter_id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		device_param_info\
+		WHERE\
+		device_param_info.device_id = %1;");
+	qSqlString = qSqlString.arg(deviceID2);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	for each (auto var in DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		if (atoi(var.second[2].c_str()) == paramID2)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("同一设备参数重复，请重新选择！"));
+			return;
+		}
+	}
+
 	DeviceDBConfigInfo::getInstance()->deviceParamInfo2DB(deviceID2, paramID2);
 	widgetConfig();
 }

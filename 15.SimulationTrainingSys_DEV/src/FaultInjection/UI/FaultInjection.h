@@ -20,10 +20,13 @@ class FaultInjection : public QMainWindow
 public:
     FaultInjection(QWidget *parent = Q_NULLPTR);
     void displayStatuInfo(QString info, bool is_alarm = false);
+
+    void DataLoading();
 private:
     Ui::FaultInjectionClass ui;
     AppCache* m_app;
     bool m_isMax;
+   
     void Init();
     DataBase::FaultDAO* m_pFaultDAO;
     DataBase::FaultParamDAO* m_pFaultParamDAO;

@@ -1,4 +1,5 @@
 #include "ParamManageModule.h"
+#include "DeviceManager.h"
 
 ParamManageModule::ParamManageModule(QWidget* parent)
 	: QWidget(parent)
@@ -9,6 +10,13 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 
 	InitUILayout();
 	InitDisplayData();
+
+	configInfoTable->setColumnHidden(0, true);
+
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
+		InitDisplayData();
+		});
 }
 
 ParamManageModule::~ParamManageModule()
@@ -25,6 +33,7 @@ void ParamManageModule::InitDisplayData() {
 
 	DeviceDBConfigInfo* paramInfoDB = DeviceDBConfigInfo::getInstance();
 	paramInfoDB->readParamDB2UI();
+
 	//configInfoTable->setRowCount(paramInfoDB->paramInfo.size());
 	int row = 0;
 	for (auto ele = paramInfoDB->paramInfo.begin(); ele != paramInfoDB->paramInfo.end(); ele++)
@@ -34,7 +43,7 @@ void ParamManageModule::InitDisplayData() {
 		QVector<QString> rowData;
 		rowData.push_back(QString::fromStdString(ele->second[0]));
 		rowData.push_back(QString::fromStdString(ele->second[1]));
-		rowData.push_back(QString::fromStdString(ele->second[2]));
+		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele->second[2].c_str())].c_str()));
 		rowData.push_back(QString::fromStdString(ele->second[3]));
 		insertOneRow(row++, rowData);
 
@@ -152,7 +161,7 @@ void ParamManageModule::InitUILayout() {
 				QVector<QString> rowData;
 				rowData.push_back(QString::fromStdString(ele->second[0]));
 				rowData.push_back(QString::fromStdString(ele->second[1]));
-				rowData.push_back(QString::fromStdString(ele->second[2]));
+				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele->second[2].c_str())].c_str()));
 				rowData.push_back(QString::fromStdString(ele->second[3]));
 				insertOneRow(searchRow++, rowData);
 			}
@@ -179,8 +188,15 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("É¾³ý"));
 	opDeleteBtn->setProperty("row", insertRow);
+	QPushButton* opCfgSwitchBtn = new QPushButton(QString("ÅäÖÃ¿ª¹ØÁ¿"));
+	opCfgSwitchBtn->setProperty("row", insertRow);
+
+	opCfgSwitchBtn->hide();
+
 	hbox->addWidget(opEditBtn);
 	hbox->addWidget(opDeleteBtn);
+	hbox->addWidget(opCfgSwitchBtn);
+
 	/*hbox->addWidget(new QPushButton(QString("±à¼­")));
 	hbox->addWidget(new QPushButton(QString("É¾³ý")));*/
 	w1->setLayout(hbox);

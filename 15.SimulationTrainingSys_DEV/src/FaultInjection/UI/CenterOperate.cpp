@@ -2,10 +2,11 @@
 #pragma execution_character_set("utf-8")//解决 qt中如何设置显示中文乱码问题
 
 #define FRAMELENGTH 10
-CenterOperate::CenterOperate(QWidget *parent)
+CenterOperate::CenterOperate(QWidget* parent)
     : QWidget(parent)
     , m_pFaultParamDAO2(nullptr)
     , m_pFaultDAO2(nullptr)
+    , m_isSendOne(false)
 {
     ui.setupUi(this);
     setAttribute(Qt::WA_StyledBackground, true);
@@ -24,12 +25,10 @@ CenterOperate::CenterOperate(QWidget *parent)
 void CenterOperate::timerEvent(QTimerEvent* event)
 {
     bool isOK = true;
-    QString qstr = "";
-
     if (event->timerId() == m_TimerID)
     {
         //emit backOnFaultClick(false);//故障设定失败
-        QMessageBox::warning(this, tr("提示"), tr("接收故障回令超时！"));
+        QMessageBox::warning(nullptr, QString("提示"), "接收故障回令超时！","确定");
         killTimer(m_TimerID);//关闭定时器
     }
 }
@@ -37,10 +36,13 @@ void CenterOperate::timerEvent(QTimerEvent* event)
 
 void CenterOperate::Init()
 { 
-    //网络绑定
-    m_pReceiveCMDData = new ReceiveCMDData();
-    connect(m_pReceiveCMDData, &ReceiveCMDData::receiverCMD, this, &CenterOperate::receiverCMD);
-    //connect(ui.pushButton, &QPushButton::clicked, this, &CenterOperate::sendCMD);
+    //指令故障回令
+    m_pReceiveCmdData = new ReceiveCMDData(m_app->m_cmdResponseReceiver->m_strIP, m_app->m_cmdResponseReceiver->m_iPort);
+    connect(m_pReceiveCmdData, &ReceiveCMDData::receiverCMD, this, &CenterOperate::receiverCMD);
+
+    //参数故障回令
+    m_pReceiveParamData = new ReceiveCMDData(m_app->m_paramResponseReceiver->m_strIP, m_app->m_paramResponseReceiver->m_iPort);
+    connect(m_pReceiveParamData, &ReceiveCMDData::receiverCMD, this, &CenterOperate::receiverCMD);
 
 
     connect(ui.pb_addControlFault, &QPushButton::clicked, this, &CenterOperate::AddControlFaultClicked);
@@ -318,6 +320,7 @@ void CenterOperate::AddFaultItem(vector<AddOneFaultInfo> addFaults)
             {
                 FaultFaultParamInfo* oneControlFault = new FaultFaultParamInfo();
                 oneControlFault->m_name = addFaults[i].m_name;
+                oneControlFault ->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
                 oneControlFault->m_FaultCommandID = commandID;//addFaults[i].m_FaultCommandID;
                 oneControlFault->m_deviceParamInfoID = item;
@@ -331,6 +334,7 @@ void CenterOperate::AddFaultItem(vector<AddOneFaultInfo> addFaults)
             {
                 FaultFaultCommandInfo* oneCommanFault = new FaultFaultCommandInfo();
                 oneCommanFault->m_name = addFaults[i].m_name;
+                oneCommanFault->m_rocketID = m_app->m_rockedType;
                 oneCommanFault->m_faultType = m_systemIndex;//控制、测量、动力分类
                 oneCommanFault->m_FaultCommandID = commandID;//addFaults[i].m_FaultCommandID;
                 oneCommanFault->m_responseCommandID = item;
@@ -397,6 +401,7 @@ void CenterOperate::EditFaultItem(vector<AddOneFaultInfo> editFaults)
                 //写入
                 FaultFaultParamInfo* oneControlFault = new FaultFaultParamInfo();
                 oneControlFault->m_name = editFaults[i].m_name;
+                oneControlFault->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
                 oneControlFault->m_FaultCommandID = editFaults[i].m_FaultCommandID;
                 oneControlFault->m_deviceParamInfoID = item;
@@ -418,6 +423,7 @@ void CenterOperate::EditFaultItem(vector<AddOneFaultInfo> editFaults)
                 //写入
                 FaultFaultCommandInfo* oneControlFault = new FaultFaultCommandInfo();
                 oneControlFault->m_name = editFaults[i].m_name;
+                oneControlFault->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
                 oneControlFault->m_FaultCommandID = editFaults[i].m_FaultCommandID;
                 oneControlFault->m_responseCommandID = item;
@@ -470,19 +476,21 @@ void CenterOperate::DelFaultItem(vector<AddOneFaultInfo> delFaults)
 /// <param name="oneCommand"></param>
 void CenterOperate::receiverCMD(QByteArray oneCommand)
 {
-    //测试
-    //emit backOnFaultClick(false);
-    //return;
+    //防止一发多收，似的注入状态未变的情况
+    if (m_isSendOne == false)
+        return;
+    if (oneCommand.at(2) != m_BackCode)
+        return;
+    if (oneCommand.at(4) != m_sendCode)
+        return;
 
-    if (oneCommand.at(2) != m_BackCode) return;
-    if (oneCommand.at(4) != m_sendCode) return;
-
-    killTimer(m_TimerID);//关闭定时器
-
-    if (oneCommand.at(3) != 0x01)
+    if (oneCommand.at(3) == 0x01)
         emit backOnFaultClick(true);//故障设定成功
     else
         emit backOnFaultClick(false);//故障设定失败
+
+    m_isSendOne = false;
+    killTimer(m_TimerID);//关闭定时器
 }
 
 /// <summary>
@@ -496,19 +504,22 @@ void CenterOperate::sendCMD(int cmd_id, int type)
         return;
     }
 
+    FaultCommandInfo* command = nullptr;
     PeerInfo* sendPeerInfo = nullptr;
     char headType = 0x55;//参数故障
     if (type == 1)
     {
         sendPeerInfo = m_app->m_paramSender;
+        command = m_app->m_CommandInfoframes[cmd_id];
     }
     else
     {
         headType = 0x66;//指令故障
         sendPeerInfo = m_app->m_cmdSender;
+        command = m_app->m_CommandInfoframes[cmd_id];
     }
 
-    FaultCommandInfo* command = m_app->m_CommandInfoframes[cmd_id];
+    //FaultCommandInfo* command = m_app->m_CommandInfoframes[cmd_id];
     QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
     m_pBuff[0] = headType;//帧头2字节
     m_pBuff[1] = 0xAA;
@@ -545,6 +556,8 @@ void CenterOperate::sendCMD(int cmd_id, int type)
         QMessageBox::warning(this, tr("提示"), tr("故障指令发送失败！"));
         return;
     }
+
+    m_isSendOne = true;
     m_TimerID = this->startTimer(5000);//3秒没有收到，就是设置失败
     
     //测试

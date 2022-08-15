@@ -19,8 +19,10 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
+	, mainflow_finish(false)
 {
 	ui.setupUi(this);
+
 	m_app = AppCache::instance();
 	//ui.lb_title->setText(m_app->m_soft->GetName());
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
@@ -31,12 +33,13 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	int id = QFontDatabase::addApplicationFont(":/ControlMonitor/word/word.ttf");
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
 	font.setFamily(s[0]);
+	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
+	m_pmainFlowDao->getMainflow();
 
-	testnum = 0;
 	Init();
 
 	//指示灯测试用代码 
-	light_info.append(new Light_info(1, "控制箭上配电", 0));
+	/*light_info.append(new Light_info(1, "控制箭上配电", 0));
 	light_info.append(new Light_info(2, "测量箭上配电", 0));
 	light_info.append(new Light_info(3, "惯组配电", 0));
 	light_info.append(new Light_info(4, "瞄准配电", 0));
@@ -59,7 +62,7 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	light_info.append(new Light_info(21, "发射", 0));
 	QTimer* test = new QTimer(this);
 	connect(test, SIGNAL(timeout()), this, SLOT(test()));
-	test->start(6000);
+	test->start(6000);*/
 
 
 
@@ -70,23 +73,17 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 
 
 
-	light_load();
-}
-//测试函数
-void ControlMonitor::test()
-{
-	if (testnum < light_info.size())
-	{
-		light_info[testnum]->status = true;
-		testnum++;
-	}
 
 }
+
 
 void ControlMonitor::Init()
 {
 	//请把主控发射流程页放在ui.page1 中
-	m_pCenterOperate = new CenterOperate(ui.page2);
+	//m_pCenterOperate = new CenterOperate(ui.page1);
+
+
+	new twoDdisplay(ui.page2);
 	//这里放入主控发射流程展示页，父窗口为ui.page1
 	/************************************************************************/
 	/* 这里不能删除2022/07/29  如需修改默认显示，将zhukongclick注释就行                                                                     */
@@ -125,18 +122,21 @@ void ControlMonitor::Init()
 	connect(ui.pb_min, &QPushButton::clicked, this, &ControlMonitor::ShowMinimized);
 
 	connect(m_pCenterOperate, &CenterOperate::curRunCmd, flowDisplayWidget, &FlowDisplayWidget::updateFlowStat);
+	connect(flowDisplayWidget, &FlowDisplayWidget::sendMainFlowInfo, this, &ControlMonitor::recvMainFlow);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlMonitor::changeResize);
 
 
-	//指示灯检查
-	lightnumber = 0;
+	//指示灯初始化
+	lightnumber =1;
 	lightflag = true;
-	inspect = new QTimer(this);
-	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
-	inspect->start(1000);
+	//inspect = new QTimer(this);
+//	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
+	//inspect->start(1000);
 	flush = new QTimer(this);
 	connect(flush, SIGNAL(timeout()), this, SLOT(light_flash()));
-
+	light_load();
+	flash_load();
+	//lighttest();
 
 	//加载字体
 	ui.softwarename->setFont(font);
@@ -146,7 +146,8 @@ void ControlMonitor::Init()
 	ui.rokect_type->setFont(font);
 	ui.curtime->setFont(font);
 	ui.time->setFont(font);
-	ui.rokect_type->setText(m_app->m_soft->GetType());
+	m_app->rokecttype = ui.rokect_type;
+	//ui.rokect_type->setText(m_app->m_soft->GetType());
 
 	//加载时间
 	QTimer* timer = new QTimer(this);
@@ -230,12 +231,12 @@ void ControlMonitor::Init()
 //指示灯加载
 void ControlMonitor::light_load()
 {
-	int width = (int)1840 / light_info.size();
+	int width = (int)1840 / m_app->mainflowlist.size();
 	int margin = (int)((width - 36) / 2);
 	int setvalue = 0;
 	int word_setvalue = 0;
 	font.setPixelSize(16);
-	for (int i = 0; i < light_info.size(); i++)
+	for (int i = 0; i < m_app->mainflowlist.size(); i++)
 	{
 		setvalue = margin + i * width;
 		QLabel* LIGHT(i) = new QLabel(ui.dengtiao);
@@ -248,10 +249,7 @@ void ControlMonitor::light_load()
 		LIGHT(i)->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
 		LIGHT(i)->setScaledContents(true);
 		LIGHT(i)->show();
-		if (light_info[i]->status == 1)
-		{
-			LIGHT(i)->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-		}
+
 
 		if (i % 2 == 0)
 		{
@@ -260,7 +258,7 @@ void ControlMonitor::light_load()
 			QString str0 = "word";
 			QString count_str0 = QString::number(i);
 			WORD(i)->setObjectName(str0.append(count_str0));
-			WORD(i)->setText(light_info[i]->name);
+			WORD(i)->setText(m_app->mainflowlist[i]);
 			WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
 			WORD(i)->setAlignment(Qt::AlignCenter);
 			WORD(i)->setWordWrap(true);
@@ -274,7 +272,7 @@ void ControlMonitor::light_load()
 			QString str1 = "word";;
 			QString count_str1 = QString::number(i);
 			WORD(i)->setObjectName(str1.append(count_str1));
-			WORD(i)->setText(light_info[i]->name);
+			WORD(i)->setText(m_app->mainflowlist[i]);
 			WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
 			WORD(i)->setAlignment(Qt::AlignCenter);
 			WORD(i)->setWordWrap(true);
@@ -288,37 +286,74 @@ void ControlMonitor::light_load()
 
 }
 //指示灯状态检查
-void ControlMonitor::light_inspect()
+//void ControlMonitor::light_inspect()
+//{
+//
+//	if (lightnumber < light_info.size())
+//	{
+//		if (light_info[lightnumber]->status == true)
+//		{
+//			flush->stop();
+//			QString s = "light";
+//			QString t = "word";
+//			QString wstr = t.append(QString::number(lightnumber));
+//			QString str = s.append(QString::number(lightnumber));
+//			QLabel* curlabel = ui.dengtiao->findChild<QLabel*>(str);
+//			QLabel* curword = ui.lightbar->findChild<QLabel*>(wstr);
+//			curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+//			curword->setStyleSheet("color:white");
+//			if (lightnumber < light_info.size())
+//			{
+//				lightnumber++;
+//			}
+//			else {
+//				inspect->stop();
+//			}
+//
+//		}
+//		else {
+//			flush->start(500);
+//		}
+//
+//	}
+//
+//
+//
+//}
+// 指示灯收到指令装载
+void ControlMonitor::flash_load()
 {
+	QLabel* label;
+	QLabel* wordlabel;
 
-	if (lightnumber < light_info.size())
+	for (int i = 0; i < lightnumber; i++)
 	{
-		if (light_info[lightnumber]->status == true)
-		{
-			flush->stop();
-			QString s = "light";
-			QString t = "word";
-			QString wstr = t.append(QString::number(lightnumber));
-			QString str = s.append(QString::number(lightnumber));
-			QLabel* curlabel = ui.dengtiao->findChild<QLabel*>(str);
-			QLabel* curword = ui.lightbar->findChild<QLabel*>(wstr);
-			curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-			curword->setStyleSheet("color:white");
-			if (lightnumber < light_info.size())
-			{
-				lightnumber++;
-			}
-			else {
-				inspect->stop();
-			}
-
-		}
-		else {
-			flush->start(500);
-		}
-
+		QString s = "light";
+		QString w = "word";
+		QString word = w.append(QString::number(i));
+		QString str = s.append(QString::number(i));
+		label = ui.dengtiao->findChild<QLabel*>(str);
+		wordlabel = ui.lightbar->findChild<QLabel*>(word);
+		label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+		wordlabel->setStyleSheet("color:white;");
 	}
 
+	if (mainflow_finish)
+	{
+		
+		QString s = "light";
+		QString w = "word";
+		QString word = w.append(QString::number(lightnumber));
+		QString str = s.append(QString::number(lightnumber));
+		label = ui.dengtiao->findChild<QLabel*>(str);
+		wordlabel = ui.lightbar->findChild<QLabel*>(word);
+		label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+		wordlabel->setStyleSheet("color:white;");
+	}else
+	{
+	
+		flush->start(700);
+	}
 
 
 }
@@ -326,7 +361,8 @@ void ControlMonitor::light_inspect()
 void ControlMonitor::light_flash() {
 	QString s = "light";
 	QString str = s.append(QString::number(lightnumber));
-	QLabel* curlabel = ui.dengtiao->findChild<QLabel*>(str);
+	curlabel = ui.dengtiao->findChild<QLabel*>(str);
+
 	if (lightflag == true)
 	{
 		lightflag = false;
@@ -337,8 +373,30 @@ void ControlMonitor::light_flash() {
 		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
 	}
 
+}
+//测试函数
+void ControlMonitor::lighttest()
+{
+	QTimer* test = new QTimer(this);
 
 
+	connect(test, &QTimer::timeout, this, [this]() {
+		if (lightnumber < 4)
+		{
+			lightnumber++;
+			if (mainflow_finish)
+			{
+				mainflow_finish = false;
+			}
+			else {
+				mainflow_finish = true;
+			}
+		}
+
+		flash_load();
+		});
+
+	test->start(3000);
 
 
 }
@@ -517,4 +575,13 @@ void ControlMonitor::mouseDoubleClickEvent(QMouseEvent* event) {
 	//if (Qt::LeftButton == event->button())
 	//	changeResize();//此处调用最大化/还原按钮点击槽
 	//event->ignore();
+}
+
+
+void ControlMonitor::recvMainFlow(int mainFlowIndex, bool curFlowFlag) {
+
+	lightnumber = mainFlowIndex - 1;
+	mainflow_finish = curFlowFlag;
+	flash_load();
+
 }

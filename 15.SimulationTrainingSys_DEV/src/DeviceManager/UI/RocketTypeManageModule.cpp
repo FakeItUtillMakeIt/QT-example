@@ -1,5 +1,5 @@
 #include "RocketTypeManageModule.h"
-
+#include "DeviceManager.h"
 
 RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
@@ -11,6 +11,14 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	InitUILayout();
 
 	InitDisplayData();
+
+	configInfoTable->setColumnHidden(0, true);
+
+	//更改ui.comboBox时更新窗口内容
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
+		InitDisplayData();
+		});
 }
 
 RocketTypeManageModule::~RocketTypeManageModule()
@@ -21,6 +29,8 @@ RocketTypeManageModule::~RocketTypeManageModule()
 **/
 void RocketTypeManageModule::InitUILayout() {
 	//和底部状态栏颜色保持一致
+
+
 	WidgetStyleSheet* wss = WidgetStyleSheet::getInstace();
 
 	QGridLayout* mainUILay = new QGridLayout;
@@ -148,16 +158,23 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
 	opDeleteBtn->setProperty("row", insertRow);
+	QPushButton* opCfgDataBtn = new QPushButton(QString("配置"));
+	opCfgDataBtn->setProperty("row", insertRow);
+
+	opCfgDataBtn->hide();
+
 	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opCfgDataBtn);
 	hbox->addWidget(opDeleteBtn);
-	/*hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));*/
+
+
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
 
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
 
+	//编辑时呼出窗口  infoConfigWidget窗口，将当前行信息传至窗口，编辑
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
 		int curRow = opEditBtn->property("row").toInt();
@@ -168,6 +185,20 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
+
+	connect(opCfgDataBtn, &QPushButton::clicked, this, [=]() {
+		//获取当前火箭型号
+		int curRocketID = AppCache::instance()->m_CurrentRocketType->m_id;
+		QString curRocketName = QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str());
+
+		RocketDataCfgW* dataCfgW = new RocketDataCfgW;
+		dataCfgW->show();
+
+		(opDeleteBtn->property("row").toInt());
+
+		});
+
+
 }
 
 
@@ -198,7 +229,7 @@ void RocketTypeManageModule::editOneRow(int rocketID, QString rocketName, int  r
 }
 
 /**
-	@brief 初始化显示数据
+	@brief 初始化显示数据  初始化显示时  仅显示和当前选择火箭相关的条目
 **/
 void RocketTypeManageModule::InitDisplayData() {
 
@@ -211,13 +242,15 @@ void RocketTypeManageModule::InitDisplayData() {
 	for (auto ele = rocketInfoDB->rocketInfo.begin(); ele != rocketInfoDB->rocketInfo.end(); ele++)
 	{
 
-
 		QVector<QString> rowData;
 		rowData.push_back(QString::fromStdString(ele->second[0]));
 		rowData.push_back(QString::fromStdString(ele->second[1]));
 		rowData.push_back(QString::fromStdString(ele->second[2]));
+		if (QString::fromStdString(ele->second[1]) == QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()))
+		{
+			insertOneRow(row++, rowData);
 
-		insertOneRow(row++, rowData);
+		}
 
 	}
 }
@@ -241,6 +274,9 @@ void RocketTypeManageModule::paintEvent(QPaintEvent* event) {
 **/
 void RocketTypeManageModule::insertOneRowData() {
 
+	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->show();
+
 	RocketInfoConfig::InfoConfigWidget* infoConfigWidget = RocketInfoConfig::InfoConfigWidget::getInstance();
 	infoConfigWidget->show();
 	connect(infoConfigWidget, &RocketInfoConfig::InfoConfigWidget::updateRocketInfo, this, [=]() {
@@ -258,5 +294,210 @@ void RocketTypeManageModule::deleteOneRowData() {
 	{
 		configInfoTable->removeRow(selectedRowNum);
 
+	}
+}
+
+
+/**
+	@brief	   火箭数据配置窗口
+	@retval  -
+**/
+RocketDataCfgW::RocketDataCfgW() {
+
+
+
+	scrollArea = new QTableWidget;
+
+	QVBoxLayout* vlayout = new QVBoxLayout;
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	QHBoxLayout* bottomHlayout = new QHBoxLayout;
+
+	scrollArea->setColumnCount(3);
+
+	scrollArea->setHorizontalHeaderItem(0, new QTableWidgetItem(QString("指令名称")));
+	scrollArea->setHorizontalHeaderItem(1, new QTableWidgetItem(QString("指令编码")));
+	scrollArea->setHorizontalHeaderItem(2, new QTableWidgetItem(QString("指令前缀")));
+
+	scrollArea->horizontalHeader()->setStretchLastSection(true);
+	scrollArea->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
+
+
+	int cmdIndex = 0;
+	for each (auto var in AppCache::instance()->m_allCommad)
+	{
+
+		scrollArea->insertRow(cmdIndex);
+
+		QWidget* firstColumnW = new QWidget;
+		QHBoxLayout* firstLayout = new QHBoxLayout;
+		firstLayout->addWidget(new QCheckBox);
+		firstLayout->addWidget(new QLabel(QString::fromLocal8Bit(var.second->m_sName.c_str())));
+		firstColumnW->setLayout(firstLayout);
+
+		scrollArea->setCellWidget(cmdIndex, 0, firstColumnW);
+
+		scrollArea->setCellWidget(cmdIndex, 1, new QLineEdit);
+		scrollArea->setCellWidget(cmdIndex, 2, new QLineEdit);
+		scrollArea->setRowHeight(cmdIndex, 40);
+		cmdIndex++;
+
+	}
+
+
+
+	QPushButton* rOKBtn = new QPushButton(QString("添加"));
+	QPushButton* rCancelBtn = new QPushButton(QString("取消"));
+
+
+	scrollArea->setFixedSize(480, 500);
+	vlayout->addWidget(scrollArea);
+
+	bottomHlayout->addStretch(4);
+	bottomHlayout->addWidget(rCancelBtn);
+	bottomHlayout->addWidget(rOKBtn);
+	vlayout->addLayout(bottomHlayout);
+
+	this->setLayout(vlayout);
+	this->setFixedSize(500, 580);
+	this->setWindowTitle(QString("火箭数据信息配置"));
+	this->setWindowFlags(Qt::WindowStaysOnTopHint);
+
+
+}
+
+/**
+	@brief 获取table中选中的所有指令信息
+**/
+void RocketDataCfgW::getDataInfoCfgData() {
+
+}
+
+/**
+	@brief
+	@retval  -
+**/
+RocketParamCfgW::RocketParamCfgW() {
+
+	tableArea = new QTableWidget;
+
+
+}
+
+
+/**
+	@brief  火箭参数配置
+	@retval  -
+**/
+RocketParamCfgW1::RocketParamCfgW1() {
+
+	paramIndex = new QLabel(QString("参数索引:"));
+	paramLength = new QLabel(QString("参数字节长度:"));
+	paramType = new QLabel(QString("参数类型:"));
+	userInputParamLength = new QLineEdit;
+	userInputParamIndex = new QLineEdit;
+	userSlectParamType = new QComboBox;
+
+	cancelCfgBtn = new QPushButton(QString("取消"));
+	okCfgBtn = new QPushButton(QString("确定"));
+
+	paramInfoL = new QGridLayout;
+	QVBoxLayout* vlayout = new QVBoxLayout;
+	QHBoxLayout* hbox = new QHBoxLayout;
+	paramInfoL->addWidget(paramIndex, 0, 0);
+	paramInfoL->addWidget(paramLength, 1, 0);
+	paramInfoL->addWidget(paramType, 2, 0);
+	paramInfoL->addWidget(userInputParamIndex, 0, 1);
+	paramInfoL->addWidget(userInputParamLength, 1, 1);
+	paramInfoL->addWidget(userSlectParamType, 2, 1);
+
+	hbox->addWidget(cancelCfgBtn);
+	hbox->addWidget(okCfgBtn);
+
+	vlayout->addLayout(paramInfoL);
+	vlayout->addSpacing(440);
+	vlayout->addLayout(hbox);
+
+	treeArea = new QTreeWidget;
+
+	QStringList headerLabels;
+	headerLabels << QString("箭上返回指令") << QString("参数名称");
+	treeArea->setColumnCount(headerLabels.count());
+	treeArea->setHeaderLabels(headerLabels);
+
+	DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
+	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+	for each (auto var in DeviceDBConfigInfo::getInstance()->commandInfo)
+	{
+		QTreeWidgetItem* root = new QTreeWidgetItem;
+		root->setCheckState(0, Qt::Unchecked);
+		root->setText(0, QString::fromStdString(var.second[3].c_str()));
+		for each (auto var1 in DeviceDBConfigInfo::getInstance()->paramInfo)
+		{
+			QTreeWidgetItem* subItem = new QTreeWidgetItem;
+			subItem->setCheckState(1, Qt::Unchecked);
+			subItem->setText(1, QString::fromStdString(var1.second[1].c_str()));
+
+			root->addChild(subItem);
+
+		}
+		treeArea->addTopLevelItem(root);
+
+	}
+
+
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	hlayout->addWidget(treeArea);
+	hlayout->addLayout(vlayout);
+
+	this->setLayout(hlayout);
+	this->setFixedSize(480, 600);
+	this->setWindowFlags(Qt::WindowStaysOnTopHint);
+	displayParamInfo(false);
+
+	connect(treeArea, &QTreeWidget::itemClicked, this, &RocketParamCfgW1::resClickParam);
+
+	connect(okCfgBtn, &QPushButton::clicked, this, [=]() {
+
+		});
+}
+
+/**
+	@brief
+**/
+void RocketParamCfgW1::displayParamInfo(bool dis) {
+	if (dis == true)
+	{
+		paramIndex->show();
+		paramLength->show();
+		paramType->show();
+		userInputParamIndex->show();
+		userInputParamLength->show();
+		userSlectParamType->show();
+	}
+	else
+	{
+		paramIndex->hide();
+		paramLength->hide();
+		paramType->hide();
+		userInputParamIndex->hide();
+		userInputParamLength->hide();
+		userSlectParamType->hide();
+	}
+}
+
+/**
+	@brief 响应参数点击信号
+	@param item   -
+	@param column -
+**/
+void RocketParamCfgW1::resClickParam(QTreeWidgetItem* item, int column) {
+
+	if (item->isSelected() && column == 1)
+	{
+		displayParamInfo(true);
+	}
+	else
+	{
+		displayParamInfo(false);
 	}
 }

@@ -30,6 +30,7 @@ private:
 	void AddFault();
 	void DelFault();
 	void EditFault();
+	bool AddFaultValidity();
 	void OnFaultNode(QString name, int deviceid = 0);
 	void IsEnable(bool isOk);
 	void onFaultTypeChanged(QString tempName);
@@ -91,6 +92,4 @@ signals:
 	void AddFaultItem(vector<AddOneFaultInfo> addFaults);
 	void DelFaultItem(vector<AddOneFaultInfo> delFaults);
 	void EditFaultItem(vector<AddOneFaultInfo> editFaults);
-	
-
 };

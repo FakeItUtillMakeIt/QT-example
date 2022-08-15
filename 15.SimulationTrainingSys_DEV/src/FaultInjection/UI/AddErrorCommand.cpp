@@ -277,12 +277,13 @@ void AddErrorCommand::DelFault()
         return;
     }
 
-
-    QString qstr = "是否删除：" + ui.le_errorName->text() + "？";
-    if (QMessageBox::Cancel == QMessageBox::warning(this, tr("警告"), qstr, QMessageBox::Cancel | QMessageBox::Ok))
+    QString qstr = "确认删除：" + ui.le_errorName->text() + "吗？";
+    int ret = QMessageBox::warning(this, QString("警告"), qstr, "取消", "确定");
+    if (ret == 0)
     {
         return;
     }
+    //if (QMessageBox::Cancel == QMessageBox::warning(this, tr("警告"), qstr, QMessageBox::Cancel | QMessageBox::Ok)) return;
 
     //删除界面对应项
     ItemStruct delFault;
@@ -319,6 +320,8 @@ void AddErrorCommand::DelFault()
 /// </summary>
 void AddErrorCommand::EditFault()
 {
+    m_isAddFault = false;
+
     if (ui.le_errorName->text() == "")
     {
         QMessageBox::information(this, tr("提示"), "请输入故障名称！");
@@ -338,18 +341,34 @@ void AddErrorCommand::EditFault()
         IsEnable(true);
 
         ShowParamsTable(ui.cb_faultType->currentIndex(),ui.cb_deciveType->currentIndex());//表格中全显示
-
     }
     else
     {
-        ui.pb_edit->setText("编辑");
-
-        //不能编辑，失能，只显示关联的参数
-        IsEnable(false);
+        //TODO  目前不支持即影响参数故障又影响指令故障。如果需要则需要判断是参数故障还是指令故障，如果是修改且需要判断之前是什么故障，更要注意数据库的增删该查
+        if (ui.cb_faultType->currentIndex() == 0)
+        {
+            if (m_tempParamId.size() <= 0)
+            {
+                QMessageBox::information(this, tr("提示"), "故障至少影响一个参数！");
+                return;
+            }
+        }
+        else
+        {
+            if (m_tempCommandId.size() <= 0)
+            {
+                QMessageBox::information(this, tr("提示"), "故障至少影响一个指令！");
+                return;
+            }
+        }
+       
 
         //添加故障  TODO注意指令故障和参数故障同时存在的情况（要考虑两个表的故障名称是否重名，一个故障信息对两个表进行同时操作）
         if (m_isAddFault == true)
         {
+            //添加故障有效性判断
+            if (AddFaultValidity() == false) return;
+
             //加入界面
             ItemStruct addFault;
             addFault.Name = ui.le_errorName->text();
@@ -404,8 +423,10 @@ void AddErrorCommand::EditFault()
 
             m_editFaults.push_back(oneFault);
         }
-
+     
+        IsEnable(false);
         m_isAddFault = false;
+        ui.pb_edit->setText("编辑");
     }
 
 
@@ -417,6 +438,24 @@ void AddErrorCommand::EditFault()
     m_scrollAreaFault->setGeometry(0, 0, 261, 786);
     ui.wgt_fualtList->setGeometry(QRect(0, 0, width, height));
     ui.wgt_fualtList->setMinimumSize(QSize(width, height));
+}
+
+/// <summary>
+/// 添加故障有效性判断
+/// </summary>
+bool AddErrorCommand::AddFaultValidity()
+{
+    string faultName = ui.le_errorName->text().toStdString() + "指令";
+
+    for (auto item: m_app->m_CommandInfoframes)
+    {
+        if (item.second->m_name == faultName)
+        {
+            QMessageBox::information(this, tr("提示"), "该故障名称已存在！");
+            return false;
+        }
+    }
+    return true;
 }
 
 
@@ -762,8 +801,13 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
 /// </summary>
 void AddErrorCommand::IsChooseParam()
 {
-    bool isChoose = true;
+    if (ui.pb_edit->text() == "编辑")
+    {
+        QMessageBox::information(this, tr("提示"), "请进入编辑模式！");
+        return;
+    }
 
+    bool isChoose = true;
     QModelIndex index;
     QToolButton* senderObj = qobject_cast<QToolButton*>(sender());
     if (senderObj == nullptr)
@@ -829,13 +873,30 @@ void AddErrorCommand::IsChooseParam()
 }
 
 
+/// <summary>
+/// 使能控制
+/// </summary>
+/// <param name="isOk"></param>
 void AddErrorCommand::IsEnable(bool isOk)
 {
     ui.cb_faultType->setEnabled(isOk);
     ui.cb_deciveType->setEnabled(isOk);
+
+    //除了添加故障的时候，其他不可以修改故障类型
+    if (m_isAddFault == false)
+    {
+        ui.cb_faultType->setEnabled(false);
+    }
+    else
+    {
+        ui.cb_faultType->setEnabled(true);
+    }
+    
 }
 
-
+/// <summary>
+/// 确定编辑响应函数
+/// </summary>
 void AddErrorCommand::AddErrorOK()
 {
     //数据入库，界面添加故障按钮

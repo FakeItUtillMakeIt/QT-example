@@ -77,6 +77,7 @@ namespace DataBase
 		~FaultFaultParamInfo() {};
 
 		int m_id;
+		int m_rocketID;
 		string m_name;
 		int m_faultType;//1:控制、2:测量、3:动力
 		int m_FaultCommandID; //command_info中 故障指令的id
@@ -98,6 +99,7 @@ namespace DataBase
 		~FaultFaultCommandInfo() {};
 
 		int m_id;
+		int m_rocketID;
 		string m_name;
 		int m_faultType;//1:控制、2:测量、3:动力
 		int m_FaultCommandID;//command_info中 故障指令的id

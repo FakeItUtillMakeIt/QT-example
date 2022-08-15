@@ -36,8 +36,14 @@ private:
 	int rocketID = -1;
 
 	QMap<int, QVector<QString>> mainFlowInfo;
-	//主流程ID到指令信息
+
+	//主流程ID到指令信息（名称）
 	QMap<int, QVector<QString>> subFlowInfo;
+	//主流程ID到指令信息（回令）
+	QMap<int, QVector<QString>> subFlowInfo1;
+	//主流程ID到指令信息（备注）
+	QMap<int, QVector<QString>> subFlowInfo2;
+
 	//主流程ID到指令
 	QMap<int, QVector<int>> subFlowCmdID;
 	//主流程ID到子流程ID对应关系
@@ -58,6 +64,7 @@ private slots:
 
 signals:
 	void updateMainFlowAndSubFlow(int mainIndex, QString curRunCmdName, QString backCmdInfo);
+	void sendMainFlowInfo(int mainFlowIndex, bool curFlowFlag);
 
 };
 

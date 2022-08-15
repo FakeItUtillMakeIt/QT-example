@@ -33,7 +33,7 @@ class PeerInfo
 public:  
     string m_strNetworkType;
     string m_strIP;
-    unsigned short m_iPort;
+    unsigned int m_iPort;
     string m_name; 
 };
 

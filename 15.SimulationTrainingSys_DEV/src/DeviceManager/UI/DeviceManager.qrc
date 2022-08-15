@@ -1,30 +1,36 @@
 <RCC>
-    <qresource prefix="/DeviceManager">
-        <file>images/icon_info.png</file>
-        <file>images/logo4.png</file>
-        <file>images/放大-点击.png</file>
-        <file>images/放大-默认.png</file>
-        <file>images/放大-悬浮.png</file>
-        <file>images/关闭-点击.png</file>
-        <file>images/关闭-默认.png</file>
-        <file>images/关闭-悬浮.png</file>
-        <file>images/缩小-点击.png</file>
-        <file>images/缩小-默认.png</file>
-        <file>images/缩小-悬浮.png</file>
-        <file>images/用户.png</file>
-        <file>images/用户1.png</file>
-        <file>images/最小化-点击.png</file>
-        <file>images/最小化-默认.png</file>
-        <file>images/最小化-悬浮.png</file>
-        <file alias="center">images/center.png</file>
-        <file alias="topbar">images/topbar.png</file>
-        <file>word/word.ttf</file>
-        <file alias="xiala">images/xiala.png</file>
-        <file>images/close_active.png</file>
-        <file>images/close_hover.png</file>
-        <file>images/close_normal.png</file>
-        <file>images/comboxDropDown.png</file>
-        <file>images/login_back.png</file>
-        <file>word/YouSheBiaoTiHei-2.ttf</file>
-    </qresource>
+  <qresource prefix="/DeviceManager">
+    <file>bt_disable.png</file>
+    <file>bt_normal.png</file>
+    <file>bt_suspension.png</file>
+    <file>icon/loading2.gif</file>
+    <file>icon/loading1.gif</file>
+    <file>icon/loading.gif</file>
+    <file>images/icon_info.png</file>
+    <file>images/logo4.png</file>
+    <file>images/放大-点击.png</file>
+    <file>images/放大-默认.png</file>
+    <file>images/放大-悬浮.png</file>
+    <file>images/关闭-点击.png</file>
+    <file>images/关闭-默认.png</file>
+    <file>images/关闭-悬浮.png</file>
+    <file>images/缩小-点击.png</file>
+    <file>images/缩小-默认.png</file>
+    <file>images/缩小-悬浮.png</file>
+    <file>images/用户.png</file>
+    <file>images/用户1.png</file>
+    <file>images/最小化-点击.png</file>
+    <file>images/最小化-默认.png</file>
+    <file>images/最小化-悬浮.png</file>
+    <file alias="center">images/center.png</file>
+    <file alias="topbar">images/topbar.png</file>
+    <file>word/word.ttf</file>
+    <file alias="xiala">images/xiala.png</file>
+    <file>images/close_active.png</file>
+    <file>images/close_hover.png</file>
+    <file>images/close_normal.png</file>
+    <file>images/comboxDropDown.png</file>
+    <file>images/login_back.png</file>
+    <file>word/YouSheBiaoTiHei-2.ttf</file>
+  </qresource>
 </RCC>

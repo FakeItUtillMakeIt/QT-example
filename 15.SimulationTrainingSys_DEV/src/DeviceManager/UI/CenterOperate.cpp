@@ -14,6 +14,7 @@ CenterOperate::CenterOperate(QWidget* parent)
 	m_pResponseSenderSocket = new QUdpSocket(this);
 	m_pYaoCeSenderSocket = new QUdpSocket(this);
 
+
 	Init();
 }
 CenterOperate::~CenterOperate()
@@ -38,7 +39,7 @@ void CenterOperate::Init()
 	m_pReceiveCMDData = new ReceiveCMDData();
 	connect(m_pReceiveCMDData, &ReceiveCMDData::receiverCMD, this, &CenterOperate::receiverCMD);
 
-	configOperateName << QString("参数管理") << QString("设备管理") << QString("指令管理") << QString("火箭型号管理");
+	configOperateName << QString("火箭型号管理") << QString("设备管理") << QString("指令管理") << QString("参数管理");
 	//添加设备管理器界面布局
 	InitUILayout();
 	InitFrame();
@@ -67,7 +68,7 @@ void CenterOperate::receiverCMD(QVariant oneCommand)
 
 	//发送回令
 	sendCMDResponse(command->m_iBackId, command->m_iCode);
-	QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), QString("设备管理软件收到测发指令,code等于%1！").arg(command->m_iCode));
+	//QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), QString("设备管理软件收到测发指令,code等于%1！").arg(command->m_iCode));
 }
 
 /// <summary>
@@ -230,8 +231,8 @@ void CenterOperate::dealFaultCmd(Command* command) {
 						deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
 						deviceParam->updateParamRealVal();
 						deviceParam->m_curStatus.m_id = FAULT_ID;
-						deviceParam->m_curStatus.m_name = deviceParam->m_status; 
-					} 
+						deviceParam->m_curStatus.m_name = deviceParam->m_status;
+					}
 				}
 			}
 		}
@@ -297,39 +298,32 @@ void CenterOperate::InitUILayout() {
 	font.setBold(true);
 	font.setPixelSize(16);
 	QIcon icon(":/icon/icon/circled-right.png");
-	QIcon iconClick(":/icon/icon/squareWl.png");
-	QIcon iconRelease(":/icon/icon/squareBl.png");
+	QIcon iconClick(":/icon/icon/ww.png");
+	QIcon iconRelease(":/icon/icon/bb.png");
 	for each (QString configName in configOperateName)
 	{
 		QListWidgetItem* item = new QListWidgetItem(configName);
-		item->setBackgroundColor(QColor(85, 170, 255));
-		item->setSizeHint(QSize(ui.listWidget->width(), 50));
-		item->setIcon(iconRelease);
-		item->setTextAlignment(Qt::AlignCenter);
-		item->setFont(font);
 
 		ui.listWidget->addItem(item);
 	}
 	ui.listWidget->setFocusPolicy(Qt::NoFocus);
 
-	QString widgetStyleSheet = wss->listStyleSheet.arg(QString("QListWidget"));
-	QString itemStyleSheet = wss->listItemStyleSheet.arg(QString("QListWidget"));
-	QString listStyleSheet = widgetStyleSheet + itemStyleSheet;
+	QString ss = wss->deviceManageListSS.arg(":/icon/icon/ww.png").arg(":/icon/icon/bb.png");
 
-	ui.listWidget->setStyleSheet(listStyleSheet);
-	ui.listWidget->setContentsMargins(0, 0, 0, 0);
+	ui.listWidget->setStyleSheet(ss);
+	//ui.listWidget->setContentsMargins(10, 10, 10, 10);
 
 	ui.listWidget->setLayoutDirection(Qt::LeftToRight);
 	ui.listWidget->horizontalScrollBar()->hide();
 	ui.listWidget->verticalScrollBar()->hide();
 
-	paramManageUI = new ParamManageModule();
+	paramManageUI = new ParamManageModule(this);
 	ui.gridLayout->addWidget(paramManageUI, 0, 1);
-	deviceManageUI = new DeviceManageModule();
+	deviceManageUI = new DeviceManageModule(this);
 	ui.gridLayout->addWidget(deviceManageUI, 0, 2);
-	commandManageUI = new CommandManageModule();
+	commandManageUI = new CommandManageModule(this);
 	ui.gridLayout->addWidget(commandManageUI, 0, 3);
-	rocketManageUI = new RocketTypeManageModule();
+	rocketManageUI = new RocketTypeManageModule(this);
 	ui.gridLayout->addWidget(rocketManageUI, 0, 4);
 	paramManageUI->hide();
 	deviceManageUI->hide();
@@ -349,7 +343,7 @@ void CenterOperate::InitUILayout() {
 
 		switch (ui.listWidget->currentRow())
 		{
-		case 0:
+		case 3:
 			//呼出对应属性窗口
 
 			paramManageUI->show();
@@ -371,7 +365,7 @@ void CenterOperate::InitUILayout() {
 			commandManageUI->show();
 			rocketManageUI->hide();
 			break;
-		case 3:
+		case 0:
 			paramManageUI->hide();
 			deviceManageUI->hide();
 			commandManageUI->hide();
@@ -381,17 +375,14 @@ void CenterOperate::InitUILayout() {
 			break;
 		}
 
-
 		});
-
-
 
 	connect(paramManageUI, &ParamManageModule::changed, this, []() {
 		qDebug() << "param changed";
 		});
 
 	//默认显示
-	ui.listWidget->setCurrentItem(ui.listWidget->item(1));
+	ui.listWidget->setCurrentItem(ui.listWidget->item(0));
 
 	emit ui.listWidget->itemPressed(ui.listWidget->currentItem());
 
@@ -404,6 +395,7 @@ void CenterOperate::InitFrame()
 {
 	//设置协议帧
 	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id];
+	if (m_app->m_CurrentRocketDataFrame == nullptr) return;
 	RocketDataFrame* pFrame = m_app->m_CurrentRocketDataFrame;
 	pFrame->head().setFrameCount(1);
 	pFrame->head().setFrameLen(pFrame->params().size() * PARAM_LENGTH + FRAMEHEAD_LENGTH);

@@ -16,7 +16,7 @@ FlowDisplayWidget::FlowDisplayWidget(QWidget* parent, QString rocketCode, int ro
 	this->setAutoFillBackground(true);
 
 	flowEditWidget = nullptr;
-	rowHeader << QString("序号") << QString("口令") << QString("操作") << QString("回令") << QString("备注");
+	rowHeader << QString("序号") << QString("阶段") << QString("口令") << QString("回令") << QString("备注");
 
 	InitLayout();
 	loadSavedFlow();
@@ -68,12 +68,17 @@ void FlowDisplayWidget::InitLayout() {
 	flowTable->setHorizontalHeaderLabels(rowHeader);
 	flowTable->verticalHeader()->hide();
 
-	int columnWidth = (this->parentWidget()->width()) / rowHeader.size();
+	//int columnWidth = (this->parentWidget()->width()) / rowHeader.size();
 
-	for (int i = 0; i < rowHeader.size(); i++)
-	{
-		flowTable->setColumnWidth(i, columnWidth);
-	}
+	//for (int i = 0; i < rowHeader.size(); i++)
+	//{
+	//	flowTable->setColumnWidth(i, columnWidth);
+	//}
+	flowTable->setColumnWidth(0, 50);
+	flowTable->setColumnWidth(1, 200);
+	flowTable->setColumnWidth(2, 200);
+	flowTable->setColumnWidth(3, 200);
+	flowTable->setColumnWidth(4, 200);
 
 	flowTable->horizontalHeader()->setMinimumHeight(40);
 	flowTable->horizontalHeader()->setStyleSheet("font: 14px 微软雅黑 bold;");
@@ -83,15 +88,7 @@ void FlowDisplayWidget::InitLayout() {
 	QGridLayout* layout = new QGridLayout;
 
 	int columnCount = 8;
-	int rowCount = 10;
-
-	/*layout->addWidget(flowIcon, 0, 0, 1, 1);
-	layout->addWidget(flowLabel, 0, 1, 1, 1);
-
-	layout->setColumnStretch(1, 7);
-	layout->addWidget(addFlow, 0, columnCount - 2, 1, 1);
-	layout->addWidget(loadFlow, 0, columnCount - 1, 1, 1);*/
-
+	int rowCount = 10; 
 	flowLeftTopWLayout->addWidget(flowIcon, Qt::LeftToRight);
 	flowLeftTopWLayout->addWidget(flowLabel);
 	flowLeftTopWLayout->addStretch(columnCount);
@@ -132,6 +129,8 @@ void FlowDisplayWidget::addNewFlow() {
 
 	flowEditWidget->setMainFlowInfo(mainFlowInfo);
 	flowEditWidget->setSubFlowInfo(subFlowInfo);
+	flowEditWidget->setSubFlowInfo1(subFlowInfo1);
+	flowEditWidget->setSubFlowInfo2(subFlowInfo2);
 	flowEditWidget->setFlowCmdID(subFlowCmdID);
 
 	flowEditWidget->setFixedSize(QSize(this->width() / 2, this->width() * 0.3));
@@ -145,56 +144,43 @@ void FlowDisplayWidget::addNewFlow() {
 /**
 	@brief 加载已有流程  显示到flowDisplay->flowTable上
 **/
-void FlowDisplayWidget::loadSavedFlow() {
-
-	//FlowInfoConfig2DB::getInstance()->readUnionSearchDB2FlowEdit(QString::number(rocketID));
-
+void FlowDisplayWidget::loadSavedFlow() 
+{ 
 	flowTable->clearContents();
 	mainFlowInfo.clear();
 	subFlowInfo.clear();
-	subFlowCmdID.clear();
-
-	flowLabel->setText(QString("%1-发射流程").arg(flowName));
-
+	subFlowCmdID.clear(); 
+	flowLabel->setText(QString("%1-发射流程").arg(flowName)); 
 	flowTable->setHorizontalHeaderLabels(rowHeader);
 	//从数据库中加载流程
-	auto flowInfoOp = FlowInfoConfig2DB::getInstance();
-
-	//flowInfoOp->readMainFlowDB2FlowEdit();
-	//flowInfoOp->readSubFlowDB2FlowEdit();
-
-
-	//// 属于同一火箭ID  索引先后  mainFlowInfo:键：索引  值：流程名  返令信息  备注  main_ID
-	//for (auto ele = flowInfoOp->mainFlowInfo.begin(); ele != flowInfoOp->mainFlowInfo.end(); ele++)
-	//{
-	//	if (QString::fromStdString(ele->second[1]).toInt() != rocketID)
-	//		continue;
-	//	mainFlowInfo[QString::fromStdString(ele->second[3]).toInt()].push_back(QString::fromStdString(ele->second[2]));
-	//	mainFlowInfo[QString::fromStdString(ele->second[3]).toInt()].push_back(QString::fromStdString(ele->second[4]));
-	//	mainFlowInfo[QString::fromStdString(ele->second[3]).toInt()].push_back(QString::fromStdString(ele->second[5]));
-	//	mainFlowInfo[QString::fromStdString(ele->second[3]).toInt()].push_back(QString::fromStdString(ele->second[0]));
-	//}
-
-	////根据main_ID  subFlowInfo键：main_ID  值:指令名称 
-	////subFlowCmdID  键:main_ID  值:指令ID
-	//for (auto ele = flowInfoOp->subFlowInfo.begin(); ele != flowInfoOp->subFlowInfo.end(); ele++)
-	//{
-
-	//	subFlowInfo[QString::fromStdString(ele->second[1]).toInt()].push_back(QString::fromStdString(ele->second[3]));
-	//	subFlowCmdID[QString::fromStdString(ele->second[1]).toInt()].push_back(QString::fromStdString(ele->second[2]).toInt());
-	//}
-
+	//auto flowInfoOp = FlowInfoConfig2DB::getInstance(); 
 
 	//查询主流程对应子流程信息
-	QString qSqlString = "SELECT\
+	QString qSqlString = "SELECT * FROM main_flow_info WHERE rocket_id = %1; ";
+	qSqlString = qSqlString.arg(rocketID);
+	auto flowDBOp = FlowInfoConfig2DB::getInstance(); 
+	flowDBOp->customDBQuery1(qSqlString);
+	mainFlowInfo.clear(); 
+	for (auto ele = flowDBOp->customSearchInfo1.begin(); ele != flowDBOp->customSearchInfo1.end(); ele++)
+	{
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[2]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[4]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[5]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[0]));
+	}
+	 
+	//查询主流程对应子流程信息
+	qSqlString = "SELECT\
 		sub_flow_info.id,\
 		main_flow_info.`name`,\
 		main_flow_info.`index`,\
 		main_flow_info.backInfo,\
 		main_flow_info.remark,\
 		sub_flow_info.main_id,\
-		sub_flow_info.`name`,\
-		sub_flow_info.command_id\
+		sub_flow_info.`name` as sub_name,\
+		sub_flow_info.command_id,\
+        sub_flow_info.backInfo as sub_backInfo,\
+		sub_flow_info.remark as sub_remark\
 		FROM\
 		main_flow_info\
 		INNER JOIN sub_flow_info ON sub_flow_info.main_id = main_flow_info.id\
@@ -202,44 +188,54 @@ void FlowDisplayWidget::loadSavedFlow() {
 		main_flow_info.rocket_id = %1; ";
 
 	qSqlString = qSqlString.arg(rocketID);
-	auto flowDBOp = FlowInfoConfig2DB::getInstance();
 	flowDBOp->customDBQuery(qSqlString);
-	mainFlowInfo.clear();
 	subFlowInfo.clear();
+	subFlowInfo1.clear();
+	subFlowInfo2.clear();
 	subFlowCmdID.clear();
 
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
-	{
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
+	{ 
+		QString tt1 = QString::fromStdString(ele->second[1]);
+		QString tt2 = QString::fromStdString(ele->second[3]);
+		QString tt3 = QString::fromStdString(ele->second[4]);
+		QString tt4 = QString::fromStdString(ele->second[5]);
 		//主流程索引到子流程ID
 		mainID2SubID[atoi(ele->second[2].c_str())].push_back(atoi(ele->second[0].c_str()));
 		//主流程ID到子流程名称
 		subFlowInfo[atoi(ele->second[5].c_str())].push_back(ele->second[6].c_str());
-		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
-	}
+		subFlowInfo1[atoi(ele->second[5].c_str())].push_back(ele->second[8].c_str());
+		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str());
 
+		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
+		//if (mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt1) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt2) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt3) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt4))
+		//{
+		//	continue;
+		//}
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
+	}
+	 
 	/*!
 	 *  Loads the saved flow.加载至流程显示
 	 */
 	flowTable->setRowCount(mainFlowInfo.size());
 	for (int i = 1; i <= mainFlowInfo.size(); i++)
-	{
-		//flowTable->insertRow(i - 1);
+	{ 
 		int column1 = 0;
 		//索引
 		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(QString::number(i)));
 		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(mainFlowInfo[i][0]));
 		int mainID = mainFlowInfo[i][3].toInt();
 
-		auto valueV = subFlowInfo.value(mainID);
+		//子流程口令 
 		QWidget* cellWidg = new QWidget;
 		QVBoxLayout* boxLayout = new QVBoxLayout;
 		int cmdCount = 1;
-		for (auto val : valueV)
+		for (auto val : subFlowInfo.value(mainID))
 		{
 			cmdCount++;
 			boxLayout->addWidget(new QLabel(val));
@@ -248,8 +244,29 @@ void FlowDisplayWidget::loadSavedFlow() {
 		cellWidg->setLayout(boxLayout);
 		flowTable->setRowHeight(i - 1, cmdCount * 40);
 		flowTable->setCellWidget(i - 1, column1++, cellWidg);
-		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(mainFlowInfo[i][1]));
-		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(mainFlowInfo[i][2]));
+
+		//子流程回令 
+		cellWidg = new QWidget;
+		boxLayout = new QVBoxLayout;
+		for (auto val : subFlowInfo1.value(mainID))
+		{
+			boxLayout->addWidget(new QLabel(val));
+		}
+
+		cellWidg->setLayout(boxLayout);
+		flowTable->setRowHeight(i - 1, cmdCount * 40);
+		flowTable->setCellWidget(i - 1, column1++, cellWidg);
+
+		//子流程备注 
+		cellWidg = new QWidget;
+		boxLayout = new QVBoxLayout;
+		for (auto val : subFlowInfo2.value(mainID))
+		{
+			boxLayout->addWidget(new QLabel(val));
+		} 
+		cellWidg->setLayout(boxLayout);
+		flowTable->setRowHeight(i - 1, cmdCount * 40);
+		flowTable->setCellWidget(i - 1, column1++, cellWidg); 
 	}
 
 	if (generateFlowWidget == nullptr)
@@ -298,15 +315,24 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
 	{
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
+		QString tt1 = QString::fromStdString(ele->second[1]);
+		QString tt2 = QString::fromStdString(ele->second[3]);
+		QString tt3 = QString::fromStdString(ele->second[4]);
+		QString tt4 = QString::fromStdString(ele->second[5]);
 		//主流程索引到子流程ID
 		mainID2SubID[atoi(ele->second[2].c_str())].push_back(atoi(ele->second[0].c_str()));
 		//主流程ID到子流程名称
 		subFlowInfo[atoi(ele->second[5].c_str())].push_back(ele->second[6].c_str());
 		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
+		if (mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt1) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt2) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt3) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt4))
+		{
+			continue;
+		}
+		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
+		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
+		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
+		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
+
 	}
 
 
@@ -349,6 +375,23 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 		QMessageBox::warning(this, "warning", "流程中无此指令");
 		return;
 	}
+
+	//判断当前执行指令是否是主流程中的最后一个指令
+	bool lastCmdFlag = false;
+	//检索主流程信息
+
+	auto cmdInfoList = subFlowInfo[mainFlowInfo[mainFlowIndex][3].toInt()];
+	if (cmdInfoList.size() == 0)
+	{
+		return;
+	}
+	//直到收到 当前子流程中的最后一个指令时才将主流程回令信息显示
+	if (cmdInfoList[cmdInfoList.size() - 1] == curRunCmdName)
+	{
+		lastCmdFlag = true;
+	}
+
+	emit sendMainFlowInfo(mainFlowIndex, lastCmdFlag);
 	emit updateMainFlowAndSubFlow(mainFlowIndex, curRunCmdName, backCmdInfo);
 
 }

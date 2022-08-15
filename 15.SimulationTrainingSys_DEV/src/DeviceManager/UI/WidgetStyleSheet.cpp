@@ -144,6 +144,13 @@ void WidgetStyleSheet::styleSheetInit() {
 			padding-top:-2px;padding-bottom:-1px;padding-right:20px;} \
 		";
 
+	deviceManageListSS = QString("\
+				QListWidget{background-color:rgba(249,249,249,1);border:0;margin:10px 4px 4px 10px;}\
+				QListWidget::item{ image:url(%1);min-height:36px;image-position: left ;font: 14px Î¢ÈíÑÅºÚ;background-color:rgba(249,249,249,1);color:black;margin:10px 4px 4px 0px;}\
+				QListWidget::item:hover{ image:url(%2);min-height:36px;image-position: left;background-color:rgba(73,136,250,1);color:white;padding-top:-2px;padding-bottom:-1px;} \
+				QListWidget::item:selected{ image:url(%2);min-height:36px;image-position: left;background-color:rgba(73,136,250,1);color:white;;padding-top:-2px;padding-bottom:-1px;padding-right:20px;} \
+		");
+
 	lineEditStyleSheet = "\
 		%1{ background-color:gainsboro; \
 			width:150px; \

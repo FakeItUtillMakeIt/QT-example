@@ -29,4 +29,7 @@ private:
 
 signals:
 	void curRunCmd(int m_iCode, int sendICode);
+
+	void sendMainFlow(int mainIndex, QString curRunCmdName, QString backCmdInfo);
+
 };

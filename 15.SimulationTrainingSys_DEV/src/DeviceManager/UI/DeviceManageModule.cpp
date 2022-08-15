@@ -1,14 +1,24 @@
 #include "DeviceManageModule.h"
+#include "DeviceManager.h"
 
 DeviceManageModule::DeviceManageModule(QWidget* parent)
 	: QWidget(parent)
 {
 
 	selectedRowNum = -1;
-	columnNameList << QString("设备ID") << QString("火箭型号ID") << QString("名称") << QString("类型") << QString("操作");
+	columnNameList << QString("设备ID") << QString("火箭型号") << QString("名称") << QString("类型") << QString("操作");
+
 	InitUILayout();
 
 	InitDisplayData();
+
+	//隐藏ID列
+	configInfoTable->setColumnHidden(0, true);
+
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
+		InitDisplayData();
+		});
 }
 
 DeviceManageModule::~DeviceManageModule()
@@ -111,6 +121,7 @@ void DeviceManageModule::InitUILayout() {
 		configInfoTable->clearContents();
 		configInfoTable->setRowCount(0);
 		DeviceDBConfigInfo::getInstance()->readDeviceDB2UI();
+		DeviceDBConfigInfo::getInstance()->readRocketDB2UI();
 		int searchRow = 0;
 		for (auto ele = DeviceDBConfigInfo::getInstance()->deviceInfo.begin(); ele != DeviceDBConfigInfo::getInstance()->deviceInfo.end(); ele++)
 		{
@@ -118,9 +129,24 @@ void DeviceManageModule::InitUILayout() {
 			{
 				QVector<QString> rowData;
 				rowData.push_back(QString::fromStdString(ele->second[0]));
-				rowData.push_back(QString::fromStdString(ele->second[1]));
+
+				QString tmpp1, tmpp2;
+
+				if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())].size() < 3)
+				{
+					tmpp1 = QString::fromStdString(ele->second[1]);
+
+				}
+				else
+				{
+					tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())][1]);
+
+				}
+				rowData.push_back(tmpp1);
+				tmpp2 = QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->deviceIndex2Type[atoi(ele->second[3].c_str())].c_str());
+				//rowData.push_back(QString::fromStdString(ele->second[1]));
 				rowData.push_back(QString::fromStdString(ele->second[2]));
-				rowData.push_back(QString::fromStdString(ele->second[3]));
+				rowData.push_back(tmpp2);
 				insertOneRow(searchRow++, rowData);
 			}
 		}
@@ -145,8 +171,18 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
 	opDeleteBtn->setProperty("row", insertRow);
+	QPushButton* opCfgDevStatBtn = new QPushButton(QString("配置设备状态"));
+	opCfgDevStatBtn->setProperty("row", insertRow);
+	QPushButton* opCfgDevParamBtn = new QPushButton(QString("配置设备参数"));
+	opCfgDevParamBtn->setProperty("row", insertRow);
+
+	opCfgDevParamBtn->hide();
+	opCfgDevStatBtn->hide();
+
 	hbox->addWidget(opEditBtn);
 	hbox->addWidget(opDeleteBtn);
+	hbox->addWidget(opCfgDevStatBtn);
+	hbox->addWidget(opCfgDevParamBtn);
 	/*hbox->addWidget(new QPushButton(QString("编辑")));
 	hbox->addWidget(new QPushButton(QString("删除")));*/
 	w1->setLayout(hbox);
@@ -166,6 +202,14 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
 
+	connect(opCfgDevStatBtn, &QPushButton::clicked, this, [=]() {
+		//
+		opDeleteBtn->property("row").toInt();
+		});
+
+	connect(opCfgDevParamBtn, &QPushButton::clicked, this, [=]() {
+		(opDeleteBtn->property("row").toInt());
+		});
 }
 
 /**
@@ -203,6 +247,8 @@ void DeviceManageModule::InitDisplayData() {
 	configInfoTable->setRowCount(0);
 	DeviceDBConfigInfo* deviceInfoDB = DeviceDBConfigInfo::getInstance();
 	deviceInfoDB->readDeviceDB2UI();
+	deviceInfoDB->readRocketDB2UI();
+	deviceInfoDB->readStatusInfoDB2UI();
 	//configInfoTable->setRowCount(deviceInfoDB->deviceInfo.size());
 	int row = 0;
 	for (auto ele = deviceInfoDB->deviceInfo.begin(); ele != deviceInfoDB->deviceInfo.end(); ele++)
@@ -210,11 +256,29 @@ void DeviceManageModule::InitDisplayData() {
 
 		QVector<QString> rowData;
 		rowData.push_back(QString::fromStdString(ele->second[0]));
-		rowData.push_back(QString::fromStdString(ele->second[1]));
-		rowData.push_back(QString::fromStdString(ele->second[2]));
-		rowData.push_back(QString::fromStdString(ele->second[3]));
-		insertOneRow(row++, rowData);
+		QString tmpp1, tmpp2;
 
+		if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())].size() < 3)
+		{
+			tmpp1 = QString::fromStdString(ele->second[1]);
+
+		}
+		else
+		{
+			tmpp1 = QString::fromStdString(deviceInfoDB->rocketInfo[atoi(ele->second[1].c_str())][1]);
+
+		}
+		rowData.push_back(tmpp1);
+		tmpp2 = QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->deviceIndex2Type[atoi(ele->second[3].c_str())].c_str());
+		//rowData.push_back(QString::fromStdString(ele->second[1]));
+		rowData.push_back(QString::fromStdString(ele->second[2]));
+		rowData.push_back(tmpp2);
+
+		if (tmpp1 == QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()))
+		{
+			insertOneRow(row++, rowData);
+
+		}
 	}
 }
 

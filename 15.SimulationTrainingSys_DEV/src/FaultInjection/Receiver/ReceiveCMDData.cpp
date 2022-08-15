@@ -4,28 +4,28 @@
 
 
 #define FRAMELENGTH 10
-ReceiveCMDData::ReceiveCMDData(QObject* parent)
+ReceiveCMDData::ReceiveCMDData(string IP, unsigned int Port,QObject* parent)
 	: QObject(parent),
 	m_pCMDSocket(nullptr),
 	m_isRun(true)
 {
     m_app = AppCache::instance();
-    init();
+    init(IP, Port);
 }
 
 ReceiveCMDData::~ReceiveCMDData()
 { 
 }
 
-void ReceiveCMDData::init()
+void ReceiveCMDData::init(string strIP, unsigned int iPort)
 {
     m_pCMDSocket = new QUdpSocket(this);
     m_pCMDSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
     //本地监听端口号为随意指定
-    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, m_app->m_responseReceiver->m_iPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
+    if (!m_pCMDSocket->bind(QHostAddress::AnyIPv4, iPort, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint)) {
         return;
     }
-    m_pCMDSocket->joinMulticastGroup(QHostAddress(m_app->m_responseReceiver->m_strIP.c_str())); //加入组播
+    m_pCMDSocket->joinMulticastGroup(QHostAddress(strIP.c_str())); //加入组播
     connect(m_pCMDSocket, &QUdpSocket::readyRead, this, &ReceiveCMDData::receiveData); 
 }
 

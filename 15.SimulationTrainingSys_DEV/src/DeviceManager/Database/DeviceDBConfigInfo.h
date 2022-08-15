@@ -83,7 +83,7 @@ public:
 	void commandParamInfo2DB(int cmdID, QString paramName, int paramCode, int index, int length, QString resultType, float defaultVal);
 	void commandDeviceStatInfo2DB(int cmdID, int deviceStatID);
 
-	void rocketConfigOp2DB(QString rocketName, int rocketTypeCode);
+	void rocketConfigOp2DB(QString rocketName, QString rocketDescript);
 	void rocketDataInfo2DB(int rocketID, QString cmdName, int cmdCode, int cmdPrefix);
 	void rocketParamInfo2DB(int rocketDataID, int parameterID, int index, int length, int resultType);
 

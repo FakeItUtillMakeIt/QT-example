@@ -75,7 +75,7 @@ void ControlCommand::CreatConfigInterface()
 void ControlCommand::InitFrame()
 { 
 	//设置协议帧
-	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[1];//m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
 	m_pReceiveRocketData = new ReceiveRocketData();
 }
 
@@ -100,7 +100,9 @@ void ControlCommand::Init()
 	ui.rokect_type->setFont(f);
 	ui.curtime->setFont(f);
 	ui.time->setFont(f);
-	ui.rokect_type->setText(m_app->m_soft->GetType());
+	m_app->rokecttype = ui.rokect_type;
+
+	//ui.rokect_type->setText(m_app->m_soft->GetType());
 
 	//加载时间
 	QTimer* timer = new QTimer(this);
@@ -177,7 +179,7 @@ void ControlCommand::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
-	displayStatuInfo("加载帧协议参数数据完毕！");
+	displayStatuInfo("加载故障信息数据完毕！");
 
 	m_pRocketDataDAO = new DataBase::RocketDataDAO(m_app->m_outputPath);
 	if (!m_pRocketDataDAO->getRocketData())
@@ -199,7 +201,7 @@ void ControlCommand::Init()
 	{
 		item.second->sortParams();
 	}
-	InitFrame();
+	//InitFrame();
 	displayStatuInfo("加载用户数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 }

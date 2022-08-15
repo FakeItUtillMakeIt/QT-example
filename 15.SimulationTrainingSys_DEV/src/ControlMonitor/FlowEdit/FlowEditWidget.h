@@ -47,6 +47,9 @@ public:
 	void setRocketType(QString rocketTypeCode, int rocketId);
 	void setMainFlowInfo(QMap<int, QVector<QString>> mainFlowInfo);
 	void setSubFlowInfo(QMap<int, QVector<QString>> subFlowInfo);
+	void setSubFlowInfo1(QMap<int, QVector<QString>> subFlowInfo1);
+	void setSubFlowInfo2(QMap<int, QVector<QString>> subFlowInfo2);
+
 	void setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID);
 
 private:
@@ -72,9 +75,16 @@ private:
 	int rocketID = -1;
 
 	QMap<int, QVector<QString>> mainFlowInfo_;
-	QMap<int, QVector<QString>> subFlowInfo_;
+	QMap<int, QVector<QString>> subFlowInfo_;//子流程口令
+	QMap<int, QVector<QString>> subFlowInfo1_;//子流程回令
+	QMap<int, QVector<QString>> subFlowInfo2_;//子流程备注
+
 	QMap<int, QVector<int>> subFlowCmdID_;
 
+	QVector<QString> hadUsedCmdList;
+	QVector<QString> unUsedCmdList;
+
+	QVector<QComboBox*> cmdComboBoxList;//存储所有流程编辑界面的combox
 
 private:
 	void InitLayout();
@@ -93,6 +103,8 @@ private slots:
 
 	void clickOKButton();
 	void clickCancelButton();
+
+	//void changedComboBoxContent(QString text1);
 
 signals:
 	void updateDisPlayFlow();

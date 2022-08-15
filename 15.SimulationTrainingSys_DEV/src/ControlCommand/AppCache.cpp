@@ -254,6 +254,14 @@ bool AppCache::GetNetworkPeer()
 	m_faultReceiver->m_strIP = publishElement->Attribute("ServerIP");
 	m_faultReceiver->m_iPort = publishElement->IntAttribute("port");
 
+	//故障指令（指令型故障）接收端口m_faultSender
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("responsefaultSender");
+	m_faultSender = new PeerInfo();
+	m_faultSender->m_strNetworkType = publishElement->Attribute("network_type");
+	m_faultSender->m_strIP = publishElement->Attribute("ServerIP");
+	m_faultSender->m_iPort = publishElement->IntAttribute("port");
+
 	return true;
 }
 

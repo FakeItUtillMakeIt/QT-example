@@ -18,6 +18,7 @@
 #include "../Controls/MyLogBox.h"
 #include "../Helper/DeviceHelper.h"
 #include "CenterOperate.h"
+#include "../MutliThread/MutliThreadOp.h"
 
 class DeviceManager : public QMainWindow
 {
@@ -27,6 +28,7 @@ public:
 	DeviceManager(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
 	void Init();
+	void ShowMinimized();
 private:
 	Ui::DeviceManagerClass ui;
 	AppCache* m_app;
@@ -34,13 +36,16 @@ private:
 	CenterOperate* m_pCenterOperate;
 	DataBase::DeviceDAO* m_pDeviceDAO;
 	DataBase::CommandDAO* m_pCommandDAO;
-	DataBase::RocketDataDAO* m_pRocketDataDAO; 
+	DataBase::RocketDataDAO* m_pRocketDataDAO;
 	MyLogBox* tb_show;
 	MyInfoTip* m_myInfoTip;
 
 	CenterOperate* m_centeralWidget;
 	void InitDevice();
 	void changeResize();
+
+
+
 protected:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
@@ -53,7 +58,15 @@ protected:
 
 private slots:
 	void CloseWindow();
-	void ShowMinimized();
+
+
+	void timeUpdate();
+
+signals:
+	void rocketTypeChanged();
+
+	void deviceLoadOver();
+
 };
 
 

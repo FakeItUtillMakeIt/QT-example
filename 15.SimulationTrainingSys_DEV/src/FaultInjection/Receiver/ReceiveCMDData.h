@@ -13,11 +13,11 @@ class ReceiveCMDData : public QObject
 {
 	Q_OBJECT
 public:
-	ReceiveCMDData(QObject* parent = Q_NULLPTR);
+	ReceiveCMDData(string strIP, unsigned int iPort,QObject* parent = Q_NULLPTR);
 	~ReceiveCMDData();  
 public slots: 
 	void receiveData();
-	void init();
+	void init(string strIP,unsigned int iPort);
 private:
 	bool m_isRun; 
 	QUdpSocket* m_pCMDSocket; 

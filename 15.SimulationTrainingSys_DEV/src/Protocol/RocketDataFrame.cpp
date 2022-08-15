@@ -101,6 +101,11 @@ bool RocketDataFrame::DeSerialize(unsigned char* pData, int iLength)
 		return false;
 	}
 	int cycle_times = (RocketDataFrameLength - FRAMEHEAD_LENGTH) / PARAM_LENGTH;
+	if (cycle_times != m_vParams.size())
+	{
+		m_error_info = "解析数据失败，参数个数与协议不符";
+		return false;
+	}
 	for (int i = 0; i < cycle_times; i++)
 	{
 		//RocketDataParam word;

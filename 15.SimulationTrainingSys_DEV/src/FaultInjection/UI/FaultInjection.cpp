@@ -15,7 +15,6 @@ FaultInjection::FaultInjection(QWidget* parent)
 {
 	ui.setupUi(this);
 	m_app = AppCache::instance();
-	m_app->m_rockedType = 2;//选择火箭类型,TODO需要修改，后面可以在界面上进行选择。
 
 	ui.rocket_type->setText(m_app->m_soft->GetType());
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
@@ -50,7 +49,8 @@ void FaultInjection::Init()
 	ui.rocket_type->setFont(f);
 	ui.curtime->setFont(f);
 	ui.test_time->setFont(f);
-	ui.rocket_type->setText(m_app->m_soft->GetType());
+	m_app->rokecttype = ui.rocket_type;
+	//ui.rocket_type->setText(m_app->m_soft->GetType());
 	//初始化调试信息显示区
 	m_myInfoTip = new MyInfoTip(ui.wgt_status_left);
 	//ui.wgt_status_left->setStyleSheet("background-color:red");
@@ -69,6 +69,14 @@ void FaultInjection::Init()
 		});
 	tb_show->hide();
 	changeResize();
+}
+
+/// <summary>
+/// 获取数据
+/// </summary>
+void FaultInjection::DataLoading()
+{
+	m_app->m_rockedType = m_app->m_CurrentRocketType->m_id;//选择火箭类型
 
 	//加载基础数据
 	m_pFaultDAO = new DataBase::FaultDAO(m_app->m_outputPath);
@@ -138,7 +146,7 @@ void FaultInjection::Init()
 		//return;
 	}
 
-	
+
 	//获取故障参数device_param_info表信息
 	if (!m_pDeviceDAO->GetAllDeviceParamInfoFrames())
 	{
@@ -154,6 +162,7 @@ void FaultInjection::Init()
 		//return;
 	}
 
+
 	QHBoxLayout* hlayout = new QHBoxLayout;
 	m_centerOperate = new CenterOperate();
 	hlayout->addWidget(m_centerOperate);
@@ -162,6 +171,8 @@ void FaultInjection::Init()
 	displayStatuInfo("加载故障数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 }
+
+
 void FaultInjection::timeupdate()
 {
 

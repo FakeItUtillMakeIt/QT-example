@@ -97,7 +97,6 @@ public:
 	void UpdateSysDeviceInfo();
 #pragma endregion
 
-
 private:
 	AppCache();
 	static QMutex m;

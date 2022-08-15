@@ -16,7 +16,9 @@ void FaultInjectionLogin::LoginSlot()
 {
 	int typeId = ui.TypeComboBox->currentData().toUInt();
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
+	m_app->rokecttype->setText(ui.TypeComboBox->currentText());
 	this->close();
+	faultInjection->DataLoading();
 	faultInjection->show();
 	//ControlComPage.show();
 }

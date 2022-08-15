@@ -58,6 +58,7 @@ public:
 
 	unordered_map<int, vector<string>> customSearchInfo;
 
+	unordered_map<int, vector<string>> customSearchInfo1;
 public:
 	void readCommandDB2FlowEdit();
 	void readRocketDB2FlowEdit();
@@ -69,10 +70,10 @@ public:
 	void readUnionSearchDB2FlowEdit(QString RocketID);
 
 	void mainFlowConfigOp2DB(int rocketTypeID, QString mainFlowName, QString mainFlowIndex, QString backCmdInfo, QString otherInfo);
-	void subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString otherInfo);
+	void subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString subBackInfo, QString otherInfo);
 
 	bool customDBQuery(QString qSqlString);
-
+	bool customDBQuery1(QString qSqlString);
 	//É¾³ýÊý¾Ý¿â
 	void clearMainFlowDB(int rocketID);
 	void clearSubFlowDB(vector<int> v);

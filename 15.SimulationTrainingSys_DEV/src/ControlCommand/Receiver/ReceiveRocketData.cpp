@@ -1,6 +1,7 @@
 #include "ReceiveRocketData.h"
 #include <QDateTime>
 #include "../../Public/CRC.h"
+#include "../../ConfigInterface/configglobal.h"
 #define FRAMELENGTH 10
 ReceiveRocketData::ReceiveRocketData(QObject* parent)
 	: QObject(parent),
@@ -54,7 +55,7 @@ void ReceiveRocketData::receiveData()
         if (!m_app->m_CurrentRocketDataFrame->DeSerialize((unsigned char*)datagram.data(), frameLength))
         { 
             break;
-        } 
-        int s = 0;
+        }
+        ConfigNameSpace::ConfigGlobal::dataupdated = true;
     }
 } 

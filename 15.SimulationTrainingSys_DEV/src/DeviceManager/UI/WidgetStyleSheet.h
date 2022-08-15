@@ -55,6 +55,8 @@ public:
 	QString infoConfigComboBoxStyleSheet;
 	QString infoConfigFrameStyleSheet;
 
+	QString deviceManageListSS;
+
 
 	void styleSheetInit();
 

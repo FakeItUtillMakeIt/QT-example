@@ -8,7 +8,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	: QWidget(parent)
 {
 	this->setWindowTitle(QString("Ìí¼Ó²ÎÊý"));
-	this->setWindowIcon(QIcon(":/icon/icon/squareBl.png"));
+	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
 
@@ -148,7 +148,7 @@ void InfoConfigWidget::InitUILayout() {
 
 
 	QString qss = wss->infoConfigLabelStyleSheet.arg("QLabel") + wss->infoConfigLineEditStyleSheet.arg("QLineEdit")
-		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
+		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton1") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
 
 	this->setStyleSheet(qss);
 	this->setLayout(infoUILayout);

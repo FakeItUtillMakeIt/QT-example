@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QtWidgets/QApplication>
 #include "Software.h" // Software.h
+#include <QLabel>
 #include <string>
 #include <map> 
 #include <vector>
@@ -57,12 +58,15 @@ public:
 	bool AppCache::ReadConfig();
 	QString m_xmlPath;
 	static QMutex mData;
-
+	QLabel* rokecttype;
 	Software* m_soft;
 	LogInfo* m_logInfo; 
 	OutputPath* m_outputPath;
-	PeerInfo* m_cmdSender; //命令发送
+	PeerInfo* m_cmdSender; //测控指令发送端口
+	PeerInfo* m_responseReceiver; //测控回令接收端口
 	PeerInfo* m_yaoCeReceiver; //箭上数据接收端口
+	PeerInfo* m_faultReceiver; //故障指令（指令型故障）接收端口
+	PeerInfo* m_faultSender; //故障回令（指令型故障）发送端口
 	vector<User*> m_allUser;
 	vector<Device*> m_allDevice;
 	map<int, Command*> m_allCommad;//测发指令
@@ -71,6 +75,8 @@ public:
 	RocketType* m_CurrentRocketType;//当前火箭型号 
 	map<int, RocketDataFrame*> m_RocketDataFrame;
 	RocketDataFrame* m_CurrentRocketDataFrame;//当前火箭数据协议帧
+	map<int, Command*> m_allFaultCommnd;//当前处在故障状态下所有的测发指令
+	map<int, vector<Command*>> m_allFaults;//所有的故障指令(指令型故障)
 	int* argc;
 	char*** argv;
 	int m_status;//系统状态：0表示空闲，1表示数据回放中，2表示数据处理中，3表示实时试验中

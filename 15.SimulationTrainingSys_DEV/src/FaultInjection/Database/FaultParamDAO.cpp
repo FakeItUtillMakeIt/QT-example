@@ -79,14 +79,18 @@ namespace DataBase
 					FaultFaultParamInfo* oneFrame = new FaultFaultParamInfo();
 					int id = atoi(sql_row[0]);
 					oneFrame->m_id = id;
-					oneFrame->m_name = sql_row[1];
-					oneFrame->m_faultType = (sql_row[2] == nullptr) ? -1 : atoi(sql_row[2]);
-					oneFrame->m_FaultCommandID = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_deviceParamInfoID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
-					oneFrame->m_createTime = sql_row[5];
-					oneFrame->m_lastUpdateTime = sql_row[6];
+					oneFrame->m_rocketID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
+					oneFrame->m_name = sql_row[2];
+					oneFrame->m_faultType = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
+					oneFrame->m_FaultCommandID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_deviceParamInfoID = (sql_row[5] == nullptr) ? -1 : atoi(sql_row[5]);
+					oneFrame->m_createTime = sql_row[6];
+					oneFrame->m_lastUpdateTime = sql_row[7];
 
-					m_app->m_FaultParamInfoFrames.insert(pair<int, FaultFaultParamInfo*>(id, oneFrame));
+					if (oneFrame->m_rocketID == m_app->m_rockedType)
+					{
+						m_app->m_FaultParamInfoFrames.insert(pair<int, FaultFaultParamInfo*>(id, oneFrame));
+					}
 				}
 			}
 			else
@@ -114,8 +118,9 @@ namespace DataBase
 				return false;
 		}
 		stringstream ss;
-		ss << "insert into fault_param_info(name,fault_type,command_id,device_param_info_id) values ('";
+		ss << "insert into fault_param_info(name,rocketID,fault_type,command_id,device_param_info_id) values ('";
 		ss << boost::lexical_cast<string>(fameInfo->m_name) + "','";
+		ss << boost::lexical_cast<string>(fameInfo->m_rocketID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_faultType) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_deviceParamInfoID) + "')";
@@ -260,14 +265,19 @@ namespace DataBase
 					FaultFaultCommandInfo* oneFrame = new FaultFaultCommandInfo();
 					int id = atoi(sql_row[0]);
 					oneFrame->m_id = id;
-					oneFrame->m_name = sql_row[1];
-					oneFrame->m_faultType = (sql_row[2] == nullptr) ? -1 : atoi(sql_row[2]);
-					oneFrame->m_FaultCommandID = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_responseCommandID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
-					oneFrame->m_createTime = sql_row[5];
-					oneFrame->m_lastUpdateTime = sql_row[5];
+					oneFrame->m_rocketID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
+					oneFrame->m_name = sql_row[2];
+					oneFrame->m_faultType = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
+					oneFrame->m_FaultCommandID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_responseCommandID = (sql_row[5] == nullptr) ? -1 : atoi(sql_row[5]);
+					oneFrame->m_createTime = sql_row[6];
+					oneFrame->m_lastUpdateTime = sql_row[6];
 
-					m_app->m_FaultCommandInfoFrames.insert(pair<int, FaultFaultCommandInfo*>(id, oneFrame));
+					if (oneFrame->m_rocketID == m_app->m_rockedType)
+					{
+						m_app->m_FaultCommandInfoFrames.insert(pair<int, FaultFaultCommandInfo*>(id, oneFrame));
+					}
+					
 				}
 			}
 			else
@@ -295,8 +305,9 @@ namespace DataBase
 				return false;
 		}
 		stringstream ss;
-		ss << "insert into fault_command_info(name,fault_type,fault_command_id,response_command_id) values ('";
+		ss << "insert into fault_command_info(name,rocketID,fault_type,fault_command_id,response_command_id) values ('";
 		ss << boost::lexical_cast<string>(fameInfo->m_name) + "','";
+		ss << boost::lexical_cast<string>(fameInfo->m_rocketID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_faultType) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_responseCommandID) + "')";

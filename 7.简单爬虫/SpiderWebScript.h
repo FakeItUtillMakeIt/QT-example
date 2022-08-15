@@ -1,4 +1,6 @@
 #pragma once
+
+#include <WinSock2.h>
 #include <QtWidgets>
 #include<iostream>
 #include<string>
@@ -8,7 +10,7 @@
 
 #include<time.h>
 #include<unordered_set>
-#include <WinSock2.h>
+
 
 #pragma warning(disable:4996)
 #pragma comment(lib, "ws2_32.lib")  

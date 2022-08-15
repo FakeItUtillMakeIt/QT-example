@@ -21,39 +21,16 @@ DeviceManager::DeviceManager(QWidget* parent)
 	//Init();
 
 
-	/**
-	 * 测试
-	 */
-	connect(ui.ceshiCommand1, &QPushButton::clicked, this, [=]() {
-		Command* command = new Command();
-		command->m_iType = 1;
-		command->m_iCode = 2;
-		command->m_iBackId = 3;
-		command->m_id = 2;
-
-		QVariant temp;
-		temp.setValue(command);
-		emit m_centeralWidget->receiverCMD(temp);
-		});
-
-	connect(ui.ceshiCommand2, &QPushButton::clicked, this, [=]() {
-		Command* command = new Command();
-		command->m_iType = 1;
-		command->m_iCode = 1;
-		command->m_iBackId = 3;
-		command->m_id = 1;
-
-		QVariant temp;
-		temp.setValue(command);
-		emit m_centeralWidget->receiverCMD(temp);
-		});
-	/**
-	 * 测试over
-	 */
+	//加载时间
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
+	timer->start(1000);
 }
 
 void DeviceManager::Init()
 {
+
+
 	//将CenterOperate设置为DeviceManager的主界面
 	//m_centeralWidget = new CenterOperate(ui.center_wgt);
 	connect(ui.pb_close, &QPushButton::clicked, this, &DeviceManager::CloseWindow);
@@ -63,8 +40,23 @@ void DeviceManager::Init()
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
 	QFont f;
 	f.setFamily(s[0]);
-	f.setPixelSize(12);
+	f.setPixelSize(20);
 	ui.title->setFont(f);
+
+	for each (auto var in m_app->m_allRocketType)
+	{
+		ui.comboBox->addItem(QString::fromLocal8Bit(var.second->m_name.c_str()), var.second->m_id);
+	}
+	ui.comboBox->setCurrentText(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()));
+	ui.comboBox->setFont(f);
+	ui.curtime->setFont(f);
+
+	connect(ui.comboBox, &QComboBox::currentTextChanged, this, [=]() {
+
+		m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toUInt();
+		m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
+		emit rocketTypeChanged();
+		});
 
 	//初始化调试信息显示区
 	m_myInfoTip = new MyInfoTip(ui.wgt_status_left);
@@ -86,6 +78,8 @@ void DeviceManager::Init()
 	changeResize();
 
 #pragma region 加载基础数据
+
+	QElapsedTimer timer1;
 
 	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
 	if (!m_pDeviceDAO->getStatus())
@@ -158,13 +152,26 @@ void DeviceManager::Init()
 		item.second->sortParams();
 	}
 
+	qDebug() << "加载基础数据用时:" << timer1.elapsed();
+
+	m_centeralWidget = new CenterOperate(ui.center_wgt);
+
+	QElapsedTimer timer2;
 	displayStatuInfo("加载基础数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 	InitDevice();
+	qDebug() << "初始化设备用时:" << timer2.elapsed();
 
-	m_centeralWidget = new CenterOperate(ui.center_wgt);
+	emit deviceLoadOver();
 }
 
+
+void DeviceManager::timeUpdate() {
+
+	QDateTime time = QDateTime::currentDateTime();
+	ui.curtime->setText(time.toString("yyyy-MM-dd hh:mm:ss"));
+
+}
 
 void DeviceManager::CloseWindow()
 {
@@ -181,93 +188,33 @@ void DeviceManager::ShowMinimized()
 }
 
 /// <summary>
-/// 初始化设备  状态和参数配置信息
+/// 初始化设备  状态和参数配置信息 初始化设备应该仅初始化当前选择的火箭的设备
 /// </summary>
 void DeviceManager::InitDevice()
 {
-	//把设备的状态及相应参数的配置进行初始化
-	QString initStat = QString("断电");
-	for (Device* eachDev : m_app->m_allDevice)
-	{
-		eachDev->m_sCurStatus = initStat.toStdString();
-	}
+
+	QThread* initThread = new QThread;
+	WorkThread* initWorker = new WorkThread;
+	initWorker->moveToThread(initThread);
+	connect(initThread, &QThread::started, initWorker, &WorkThread::doWork);
+	initThread->start();
+
+	////把设备的状态及相应参数的配置进行初始化
+	//QString initStat = QString("断电");
+	//for (Device* eachDev : m_app->m_allDevice)
+	//{
+	//	eachDev->m_sCurStatus = initStat.toStdString();
+	//}
 
 
 
-	DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
-	QString statusFilePath;
-	auto curPath = QCoreApplication::applicationDirPath();
-	statusFilePath = curPath + "/device/";
-	//设备参数初始化  四个需要初始化的值
+	//DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
+	//QString statusFilePath;
+	//auto curPath = QCoreApplication::applicationDirPath();
+	//statusFilePath = curPath + "/device/";
+	////设备参数初始化  四个需要初始化的值
 	for (auto ele = m_app->m_allDeviceParam.begin(); ele != m_app->m_allDeviceParam.end(); ele++)
 	{
-		//初始化状态不需要读取实时值列表
-		/*在这里启动定时器刷数*/
-		for (auto eachStat : m_app->m_dev2DeviceStatusID[ele->second->m_deviceId])
-		{
-			QFile file(statusFilePath + QString::fromStdString(m_app->m_allDeviceStatus[eachStat]->m_dataPath));
-			auto ret = file.open(QIODevice::ReadOnly | QIODevice::Text);
-			if (!ret)
-			{
-				continue;
-			}
-			int row = 1;
-			QTextStream in(&file);
-			in.setCodec("UTF-8");
-			QStringList paramNameList;
-
-			unordered_map<string, vector<double>> tempData;
-
-			while (!in.atEnd())
-			{
-				QString lineData = in.readLine();
-				if (row == 1)
-				{
-					paramNameList = lineData.split(QRegExp("[,]"));
-					paramNameList.pop_back();
-					row--;
-				}
-				auto lineDataList = lineData.split(QRegExp("[,]"));
-				lineDataList.pop_back();
-				//舍弃数据不足的行
-				if (lineDataList.size() < paramNameList.size())
-				{
-					continue;
-				}
-				for (int i = 0; i < paramNameList.size(); i++)
-				{
-
-					tempData[Utils::UTF8ToGBK(paramNameList[i].toStdString().c_str())].push_back(lineDataList[i].toDouble());
-					//引入异常
-					//try
-					//{
-					//	if (lineDataList.size() < paramNameList.size())
-					//	{
-					//		//throw - 1;
-					//		throw QException();
-					//	}
-					//	else
-					//	{
-					//		tempData[Utils::UTF8ToGBK(paramNameList[i].toStdString().c_str())].push_back(lineDataList[i].toDouble());
-					//	}
-
-					//}
-					//catch (QException ex) {
-					//	qDebug() << ex.what();
-					//}
-					//catch (...) {
-
-					//}
-
-
-				}
-			}
-			//状态id->状态名称
-			//string tmpKey = DeviceDBConfigInfo::getInstance()->statusInfo[eachStat][1];
-			//ele->second->m_statusVal[eachStat] = tempData;
-			ele->second->m_statusRealData[m_app->m_allDeviceStatus[eachStat]->m_statusName] = tempData[ele->second->m_subParameterName];
-		}
-
 		ele->second->timer->start(50);
 
 	}

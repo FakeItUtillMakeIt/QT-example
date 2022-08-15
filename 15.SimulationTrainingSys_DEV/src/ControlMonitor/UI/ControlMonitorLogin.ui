@@ -175,7 +175,7 @@ QComboBox QAbstractItemView::item:selected{
     </font>
    </property>
    <property name="text">
-    <string>测发监控C31软件</string>
+    <string>测发监控C3I软件</string>
    </property>
    <property name="textFormat">
     <enum>Qt::AutoText</enum>
@@ -230,7 +230,11 @@ QComboBox QAbstractItemView::item:selected{
    </property>
    <property name="font">
     <font>
+     <family>SimSun</family>
      <pointsize>15</pointsize>
+     <weight>50</weight>
+     <italic>false</italic>
+     <bold>false</bold>
     </font>
    </property>
    <property name="text">
@@ -260,7 +264,7 @@ QComboBox QAbstractItemView::item:selected{
    </property>
    <property name="font">
     <font>
-     <family>STHeitiSC-Medium,STHeitiSC</family>
+     <family>STHeitiSC-Medium</family>
      <pointsize>-1</pointsize>
      <weight>62</weight>
      <bold>true</bold>
@@ -336,7 +340,9 @@ QComboBox QAbstractItemView::item:selected{
    <property name="font">
     <font>
      <family>微软雅黑 Light</family>
+     <pointsize>9</pointsize>
      <weight>75</weight>
+     <italic>false</italic>
      <bold>true</bold>
     </font>
    </property>

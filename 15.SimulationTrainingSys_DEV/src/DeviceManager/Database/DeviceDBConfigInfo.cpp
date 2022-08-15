@@ -194,9 +194,9 @@ void DeviceDBConfigInfo::commandDeviceStatInfo2DB(int cmdID, int deviceStatID) {
 	@param rocketName     -
 	@param rocketTypeCode -
 **/
-void DeviceDBConfigInfo::rocketConfigOp2DB(QString rocketName, int rocketTypeCode) {
-	QString qSqlString = "INSERT INTO `simulatedtraining`.`rocket_info`(`name`, `code`) VALUES ('%1', %2);";
-	qSqlString = qSqlString.arg(rocketName).arg(rocketTypeCode);
+void DeviceDBConfigInfo::rocketConfigOp2DB(QString rocketName, QString rocketDescript) {
+	QString qSqlString = "INSERT INTO `simulatedtraining`.`rocket_info`(`name`, `code`) VALUES ('%1', '%2');";
+	qSqlString = qSqlString.arg(rocketName).arg(rocketDescript);
 	string sqlString = qSqlString.toStdString();
 	bool opRet = deviceManageDBOp->exec_sql(sqlString);
 	if (!opRet)
@@ -231,7 +231,7 @@ void DeviceDBConfigInfo::rocketDataInfo2DB(int rocketID, QString cmdName, int cm
 	@param resultType   -
 **/
 void DeviceDBConfigInfo::rocketParamInfo2DB(int rocketDataID, int parameterID, int index, int length, int resultType) {
-	QString qSqlString = "INSERT INTO `simulatedtraining`.`rockect_param_info`(`rocket_data_id`, `parameter_id`, `index`, `length`, `resultType`) VALUES (%1, %2, %3, %4, '%5');";
+	QString qSqlString = "INSERT INTO `simulatedtraining`.`rockect_param_info`(`rocket_data_id`, `device_parameter_id`, `index`, `length`, `resultType`) VALUES (%1, %2, %3, %4, '%5');";
 	qSqlString = qSqlString.arg(rocketDataID).arg(parameterID).arg(index).arg(length).arg(resultType);
 	string sqlString = qSqlString.toStdString();
 	bool opRet = deviceManageDBOp->exec_sql(sqlString);

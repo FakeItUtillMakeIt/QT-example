@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QtWidgets/QApplication>
 #include "Software.h" // Software.h
+#include <QLabel>
 #include <string>
 #include <map> 
 #include <vector>
@@ -58,14 +59,15 @@ public:
 	bool AppCache::ReadConfig();
 	QString m_xmlPath;
 	static QMutex mData;
-
+	QLabel* rokecttype;
 	Software* m_soft;
 	LogInfo* m_logInfo; 
 	OutputPath* m_outputPath;
 
 	PeerInfo* m_cmdSender; //命令发送
 	PeerInfo* m_paramSender;//参数发送
-	PeerInfo* m_responseReceiver;//处理命令接收
+	PeerInfo* m_paramResponseReceiver;//参数故障回令接收
+	PeerInfo* m_cmdResponseReceiver;//指令故障回令接收
 	vector<Fault*> m_allFault;
 	int* argc;
 	char*** argv;

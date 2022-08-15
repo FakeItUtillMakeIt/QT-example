@@ -240,11 +240,19 @@ bool AppCache::GetCmdSender()
 
 	//参数故障回令接收端口
 	publishElement = doc.RootElement()->FirstChildElement("software")
-		->FirstChildElement("responseReceiver");
-	m_responseReceiver = new PeerInfo();
-	m_responseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
-	m_responseReceiver->m_strIP = publishElement->Attribute("ServerIP");
-	m_responseReceiver->m_iPort = publishElement->IntAttribute("port");
+		->FirstChildElement("paramResponseReceiver");
+	m_paramResponseReceiver = new PeerInfo();
+	m_paramResponseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_paramResponseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_paramResponseReceiver->m_iPort = publishElement->IntAttribute("port");
+
+	//指令故障回令接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("cmdResponseReceiver");
+	m_cmdResponseReceiver = new PeerInfo();
+	m_cmdResponseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_cmdResponseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_cmdResponseReceiver->m_iPort = publishElement->IntAttribute("port");
 
 	return true;
 }

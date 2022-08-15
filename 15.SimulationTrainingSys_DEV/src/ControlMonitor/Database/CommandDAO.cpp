@@ -13,7 +13,7 @@ namespace DataBase
 	}
 
 	CommandDAO::~CommandDAO()
-	{
+	{ 
 		if (is_connected)
 		{
 			mysql_close(&my_connection);//断开连接  

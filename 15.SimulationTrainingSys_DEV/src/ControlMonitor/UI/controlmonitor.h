@@ -5,12 +5,15 @@
 #include <QPainter>
 #include "ui_controlmonitor.h"
 #include "CenterOperate.h"
+#include"twoDdisplay.h"
 #include "../AppCache.h"
 #include "../Database/UserDAO.h"
 #include "../Database/DeviceDAO.h"
 #include "../Database/CommandDAO.h"
+#include "../Database/mainFlowDao.h"
 #include "../Controls/MyInfoTip.h"
 #include "../Controls/MyLogBox.h"
+
 #include<QTime>
 #include<qjsonarray.h>
 #include "Light_info.h"
@@ -33,17 +36,18 @@ private:
 	DataBase::UserDAO* m_pUserDAO;
 	DataBase::DeviceDAO* m_pDeviceDAO;
 	DataBase::CommandDAO* m_pCommandDAO;
+	DataBase::mainFlowDao* m_pmainFlowDao;
 	MyLogBox* tb_show;
 	MyInfoTip* m_myInfoTip;
 	QList<Light_info*> light_info;
 	int lightnumber;
-	int testnum;
 	bool lightflag;
 	QTimer* flush;
-	QTimer* inspect;
 	QTime baseTime;
 	QFont font;
 	void changeResize();
+	bool mainflow_finish;
+	QLabel* curlabel;
 
 	FlowDisplayWidget* flowDisplayWidget = nullptr;
 
@@ -64,7 +68,9 @@ private slots:
 	void zhukongclick();
 	void erwei_displayclick();
 	void light_load();
-	void light_inspect();
+	void flash_load();
 	void light_flash();
-	void test();
+	void lighttest();
+
+	void recvMainFlow(int mainFlowIndex, bool curFlowFlag);
 };

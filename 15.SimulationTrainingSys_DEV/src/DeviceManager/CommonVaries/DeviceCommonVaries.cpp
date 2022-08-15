@@ -12,10 +12,10 @@ DeviceCommonVaries::DeviceCommonVaries() {
 	commandIndex2Type[3] = "故障指令";
 
 	paramType["连续量"] = 1;
-	paramType["离散量"] = 2;
+	paramType["开关量"] = 2;
 
 	paramIndex2Type[1] = "连续量";
-	paramIndex2Type[2] = "离散量";
+	paramIndex2Type[2] = "开关量";
 
 	paramUnit = { "伏特" , "安倍" };
 	statusName["请求改平"] = 1;
@@ -37,7 +37,7 @@ DeviceCommonVaries::DeviceCommonVaries() {
 	deviceIndex2Type[1] = "虚拟设备";
 
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 100; i++) {
 		char buffer[4];
 		itoa(i, buffer, 10);
 		commandCode[buffer] = i;

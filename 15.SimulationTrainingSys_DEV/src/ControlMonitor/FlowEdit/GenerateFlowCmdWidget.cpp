@@ -138,8 +138,8 @@ void GenerateFlowCmdWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlow
 	for (int i = 1; i <= mainFlowInfo.size(); i++)
 	{
 		qDebug() << mainFlowInfo[i][1];
-		QListWidgetItem* newBackCmdItem = new QListWidgetItem(mainFlowInfo[i][1]);
-		newBackCmdItem->setTextAlignment(Qt::AlignCenter);
+		//QListWidgetItem* newBackCmdItem = new QListWidgetItem(mainFlowInfo[i][1]);
+		//newBackCmdItem->setTextAlignment(Qt::AlignCenter);
 		//backCmdListWidget->addItem(newBackCmdItem);
 		//Á÷³ÌÃû
 		auto newItem = new QListWidgetItem(mainFlowInfo[i][0]);

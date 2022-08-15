@@ -7,7 +7,7 @@ bool SpiderWebScript::parseUrl(const string& url, string& host, string& resource
 	if (strlen(url.c_str()) > 2000)
 		return false;
 	const char* headers[2] = { "https://", "http://" };
-	for (int i=0;i<2;i++)
+	for (int i = 0; i < 2; i++)
 	{
 		const char* pos = strstr(url.c_str(), headers[i]);//返回首次出现字串的位置
 		if (pos == NULL) {
@@ -22,12 +22,12 @@ bool SpiderWebScript::parseUrl(const string& url, string& host, string& resource
 			sscanf(pos, "%[^/]%s", pHost, pResource);
 			host = pHost;
 			resource = pResource;
-			
+
 			return true;
-			
+
 		}
-		
-		
+
+
 	}
 
 }
@@ -209,7 +209,7 @@ void SpiderWebScript::downloadImg(vector<string>& imgurls, const string& url) {
 		}
 		else {
 			string ext = str.substr(pos + 1, str.size() - pos - 1);
-			if (ext != "bmp" && ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif" && ext!="mp4") {
+			if (ext != "bmp" && ext != "jpg" && ext != "jpeg" && ext != "png" && ext != "gif" && ext != "mp4") {
 				continue;
 			}
 		}

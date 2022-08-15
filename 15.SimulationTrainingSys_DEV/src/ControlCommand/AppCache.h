@@ -4,7 +4,9 @@
 #include <QMutex>
 #include <QMessageBox>
 #include <QtWidgets/QApplication>
+
 #include "Software.h" // Software.h
+#include <QLabel>
 #include <string>
 #include <map> 
 #include <vector>
@@ -57,7 +59,7 @@ public:
 	bool AppCache::ReadConfig();
 	QString m_xmlPath;
 	static QMutex mData;
-
+	QLabel* rokecttype;
 	Software* m_soft;
 	LogInfo* m_logInfo; 
 	OutputPath* m_outputPath;
@@ -65,6 +67,7 @@ public:
 	PeerInfo* m_responseReceiver; //测控回令接收端口
 	PeerInfo* m_yaoCeReceiver; //箭上数据接收端口
 	PeerInfo* m_faultReceiver; //故障指令（指令型故障）接收端口
+	PeerInfo* m_faultSender; //故障回令（指令型故障）发送端口
 	vector<User*> m_allUser;
 	vector<Device*> m_allDevice;
 	map<int, Command*> m_allCommad;//测发指令

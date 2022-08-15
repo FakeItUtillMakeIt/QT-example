@@ -32,7 +32,7 @@ void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 		QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
 		return;
 	}
-//	gCenterOperate->sendCMDFromInterface(cmd, btn);
+	gCenterOperate->sendCMDFromInterface(cmd, btn);
 }
 
 
@@ -56,66 +56,67 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
     setAttribute(Qt::WA_TranslucentBackground, true);
 	ui.comboBox->setView(new  QListView());
 	
-    Init();
-	count = 0;	
-	m_app->m_allDeviceParam;
-#if  1
-	//likai
-	{
-		QList<QPushButton* >  functionBtnList;
-		functionBtnList.push_back(ui.configedit);
-		functionBtnList.push_back(ui.configstyle);
-		functionBtnList.push_back(ui.configsave);
-		functionBtnList.push_back(ui.configcurve);
-		functionBtnList.push_back(ui.configlabel);
-		functionBtnList.push_back(ui.confitbtn);
-		functionBtnList.push_back(ui.configgroup);
-		functionBtnList.push_back(ui.configdelete);
+    Init(); 
+	CreatConfigInterface();
+
+}
+void EquivalentSoft::CreatConfigInterface()
+{  
+	gCenterOperate = m_pCenterOperate;
+	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
+
+	QList<QPushButton* >  functionBtnList;
+	functionBtnList.push_back(ui.configedit);
+	functionBtnList.push_back(ui.configstyle);
+	functionBtnList.push_back(ui.configsave);
+	functionBtnList.push_back(ui.configcurve);
+	functionBtnList.push_back(ui.configlabel);
+	functionBtnList.push_back(ui.confitbtn);
+	functionBtnList.push_back(ui.configgroup);
+	functionBtnList.push_back(ui.configdelete);
 
 	//	m_allDeviceParam = m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
+	ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
+	ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
+	ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
 
-		ConfigNameSpace::XmlStore::InitSceneFile();
-		QString exepath = QApplication::applicationDirPath();
-		QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
-		int result = ConfigNameSpace::XmlStore::ReadSceneFile(exepath.toStdString() + "/scene/scenes.xml", sceneinfolist);
-		//样式管理器
-		ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
-		ConfigNameSpace::ConfigGlobal::gstylemanager = stylemanager;
-		//   //布局管理器
-		ConfigNameSpace::MoveAbleFrame::CreateControl();
-		ConfigNameSpace::ConfigInterface* configinterface = new  ConfigNameSpace::ConfigInterface;
-		ConfigNameSpace::ConfigGlobal::gconfiginterface = configinterface;
-		configinterface->firstinitFromOut(functionBtnList);
-		configinterface->RestoreSceneFromXml(sceneinfolist);
-		for(auto  ele:configinterface->autoCreateBtn)
-		{
-			AutoAddDxq(ele.first,ele.second);
-		}
-
-		QHBoxLayout* hlayout = new QHBoxLayout;
-		hlayout->addWidget(configinterface);
-		ui.display_wgt->setLayout(hlayout);
-		hlayout->setMargin(0);
-
+	ConfigNameSpace::XmlStore::InitSceneFile();
+	QString exepath = QApplication::applicationDirPath();
+	QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
+	int result = ConfigNameSpace::XmlStore::ReadSceneFile(exepath.toStdString() + "/scene/scenes.xml", sceneinfolist);
+	//样式管理器
+	ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
+	ConfigNameSpace::ConfigGlobal::gstylemanager = stylemanager;
+	//   //布局管理器
+	ConfigNameSpace::MoveAbleFrame::CreateControl();
+	ConfigNameSpace::ConfigInterface* configinterface = new  ConfigNameSpace::ConfigInterface;
+	ConfigNameSpace::ConfigGlobal::gconfiginterface = configinterface;
+	configinterface->firstinitFromOut(functionBtnList);
+	configinterface->RestoreSceneFromXml(sceneinfolist);
+	for (auto ele : configinterface->autoCreateBtn)
+	{
+		AutoAddDxq(ele.first, ele.second);
 	}
-#endif
-	 
-}
 
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	hlayout->addWidget(configinterface);
+	ui.display_wgt->setLayout(hlayout);
+	hlayout->setMargin(0); 
+}
 void EquivalentSoft::InitFrame()
 {
 	//设置协议帧
-	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[1];//m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
 	m_pReceiveRocketData = new ReceiveRocketData(); 
 }
  
 
 void EquivalentSoft::Init()
 {  
-   // m_pCenterOperate = new CenterOperate(ui.center_wgt); 
-	gCenterOperate = m_pCenterOperate;
+	//m_pCenterOperate = new CenterOperate(ui.center_wgt); 
+	//gCenterOperate = m_pCenterOperate;
+	QWidget* tmpwidget = new QWidget();
+	m_pCenterOperate = new CenterOperate(tmpwidget);
 	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
     connect(ui.pb_close, &QPushButton::clicked, this, &EquivalentSoft::CloseWindow);
     connect(ui.pb_min, &QPushButton::clicked, this, &EquivalentSoft::ShowMinimized);
@@ -133,7 +134,8 @@ void EquivalentSoft::Init()
 	ui.rokect_type->setFont(f);
 	ui.curtime->setFont(f);
 	ui.time->setFont(f);
-	ui.rokect_type->setText(m_app->m_soft->GetType());
+	m_app->rokecttype = ui.rokect_type;
+	//ui.rokect_type->setText(m_app->m_soft->GetType());
 	
 	//加载时间
 	QTimer* timer = new QTimer(this);
@@ -230,7 +232,13 @@ void EquivalentSoft::Init()
 		return;
 	}
 	displayStatuInfo("加载指令参数数据完毕！");
-	 
+	if (!m_pCommandDAO->getFaultCommand())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载故障信息数据完毕！");
 	m_pRocketDataDAO = new DataBase::RocketDataDAO(m_app->m_outputPath);
 	if (!m_pRocketDataDAO->getRocketData())
 	{
@@ -251,7 +259,7 @@ void EquivalentSoft::Init()
 	{
 		item.second->sortParams();
 	}
-	InitFrame();
+	//InitFrame();
 	displayStatuInfo("系统启动完毕！");
 
 }

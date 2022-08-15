@@ -9,7 +9,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 {
 
 	this->setWindowTitle(QString("添加指令"));
-	this->setWindowIcon(QIcon(":/icon/icon/squareBl.png"));
+	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
 
@@ -61,7 +61,7 @@ void InfoConfigWidget::InitUILayout() {
 	commandInfoOKBtn = new QPushButton(QString("新增指令"));
 
 	//!< 	command_param_info
-	configEmitCmdID = new QLabel(QString("测发指令ID:"));
+	configEmitCmdID = new QLabel(QString("测发指令:"));
 	userSelectEmitCmdID = new QComboBox();
 	configParamName = new QLabel(QString("参数名称:"));
 	userInputParamName = new QLineEdit;
@@ -80,9 +80,9 @@ void InfoConfigWidget::InitUILayout() {
 
 	commandParamInfoOKBtn = new QPushButton(QString("新增指令参数"));
 
-	configCmdDevID = new QLabel(QString("测发指令ID:"));
+	configCmdDevID = new QLabel(QString("测发指令:"));
 	userSelectCmdDevID = new QComboBox;
-	configDevID = new QLabel(QString("设备状态ID:"));
+	configDevID = new QLabel(QString("设备状态:"));
 	userSelectDevStatID = new QComboBox;
 
 	commandDeviceInfoOKBtn = new QPushButton(QString("新增指令设备"));
@@ -173,7 +173,7 @@ void InfoConfigWidget::InitUILayout() {
 
 
 	QString qss = wss->infoConfigLabelStyleSheet.arg("QLabel") + wss->infoConfigLineEditStyleSheet.arg("QLineEdit")
-		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
+		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton1") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
 
 	this->setStyleSheet(qss);
 	this->setLayout(infoUILayout);
@@ -212,6 +212,7 @@ void InfoConfigWidget::widgetConfig() {
 		}
 
 	}
+	userSelectBackCMD->addItem(QString("无回令"), 0);
 
 	//指令编码
 	userSelectCMDCode->clear();
@@ -230,7 +231,8 @@ void InfoConfigWidget::widgetConfig() {
 	userSelectCMDPrefix->clear();
 	for (auto ele = commonVaries->commandPrefix.begin(); ele != commonVaries->commandPrefix.end(); ele++)
 	{
-		userSelectCMDPrefix->addItem(QString(ele->first.c_str()), ele->second);
+		auto aa = QString(ele->first.c_str()).toUInt(nullptr, 16);
+		userSelectCMDPrefix->addItem(QString(ele->first.c_str()), aa);
 	}
 
 	//测发指令ID
@@ -296,10 +298,13 @@ void InfoConfigWidget::widgetConfig() {
 	userSelectDevStatID->clear();
 	deviceManageDbOp->deviceStatusInfo.clear();
 	deviceManageDbOp->readDeviceStatusDB2UI();
+	deviceManageDbOp->readDeviceDB2UI();
+	deviceManageDbOp->readStatusInfoDB2UI();
 
 	for (auto ele = deviceManageDbOp->deviceStatusInfo.begin(); ele != deviceManageDbOp->deviceStatusInfo.end(); ele++)
 	{
-		userSelectDevStatID->addItem(QString(ele->second[0].c_str()), QString(ele->second[0].c_str()).toInt());
+		QString tmpp = QString::fromStdString(deviceManageDbOp->deviceInfo[atoi(ele->second[1].c_str())][2]) + QString::fromStdString(deviceManageDbOp->statusInfo[atoi(ele->second[2].c_str())][1]);
+		userSelectDevStatID->addItem(tmpp, QString(ele->second[0].c_str()).toInt());
 	}
 
 }
@@ -336,7 +341,18 @@ void InfoConfigWidget::clickCommandOKBtn() {
 
 	int rocketTypeID = userSelectRocketType->currentData().toInt();
 	int cmdBackID = userSelectBackCMD->currentData().toInt();
-	int cmdCode = userSelectCMDCode->currentData().toInt();
+	int cmdCode = userSelectCMDCode->currentData().toInt();//编码唯一
+	//访问指令表  查询是否存在相同编码
+	DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
+	for (auto var : DeviceDBConfigInfo::getInstance()->commandInfo)
+	{
+		if (atoi(var.second[4].c_str()) == cmdCode)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("已存在该指令编码，请重新选择编码!"));
+			return;
+		}
+	}
+
 	int cmdType = userSelectCMDType->currentData().toInt();
 	int cmdPredix = userSelectCMDPrefix->currentData().toInt();
 	tmpInstance->commandConfigOp2DB(cmdName, rocketTypeID, cmdBackID, cmdCode, cmdType, cmdPredix);
@@ -358,6 +374,39 @@ void InfoConfigWidget::clickCommandParamOKBtn() {
 	}
 	int paramCode1 = userSelectParamCode->currentData().toInt();
 	int index1 = userSelectIndex->currentData().toInt();
+
+	QString qSqlString = QString("SELECT\
+		command_param_info.id,\
+		command_param_info.command_id,\
+		command_param_info.`code`,\
+		command_param_info.`index`,\
+		command_param_info.createTime,\
+		command_param_info.lastUpdateTime\
+		FROM\
+		command_param_info\
+		WHERE\
+		command_param_info.command_id = %1");
+
+	qSqlString = qSqlString.arg(cmdID);
+
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+
+
+	for (auto var : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		if (atoi(var.second[2].c_str()) == paramCode1)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("当前指令已存在参数编码，请重新选择编码!"));
+			return;
+		}
+		if (atoi(var.second[3].c_str()) == index1)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("当前指令已存在索引，请重新选择索引!"));
+			return;
+		}
+	}
+
+
 	int paramLength1 = userSelectParamLength->currentData().toInt();
 	QString paramType1 = userSelectParamType->currentText();
 	float paramDefaultVal = userSelectParamDefualtVal->currentData().toFloat();

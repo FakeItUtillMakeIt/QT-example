@@ -9,6 +9,8 @@
 #include "DeviceManager.h"
 #include "../AppCache.h"
 #include "../Database/DeviceDAO.h"
+
+#include <QMovie>
 class DeviceManagerLogin : public QWidget
 {
 	Q_OBJECT
@@ -23,6 +25,11 @@ private:
 	void Init();
 	AppCache* m_app;
 	DataBase::DeviceDAO* m_pDeviceDAO;
+
+	QWidget* dataLoading;
+	QMovie* mv = new QMovie(":/DeviceManager/icon/loading2.gif");
+
+
 public slots:
 	void LoginSlot();
 	void CloseSlot();

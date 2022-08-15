@@ -1,0 +1,43 @@
+<RCC>
+    <qresource prefix="/twoDdisplay">
+        <file alias="quanjian">images/twoDdisplay/0011全箭.png</file>
+        <file alias="bg">images/twoDdisplay/b g@1x.png</file>
+        <file alias="title">images/twoDdisplay/大标题icon.png</file>
+        <file alias="topbar">images/twoDdisplay/Container.png</file>
+        <file alias="lefticon">images/twoDdisplay/小标题icon.png</file>
+        <file alias="qjxiao">images/twoDdisplay/0022全箭.png</file>
+        <file alias="select">images/twoDdisplay/选中_bg.png</file>
+        <file alias="smj">images/twoDdisplay/0022上面级.png</file>
+        <file alias="wd">images/twoDdisplay/0033尾段.png</file>
+        <file alias="kzc">images/twoDdisplay/0044控制舱.png</file>
+        <file alias="computer">images/twoDdisplay/前端计算机.png</file>
+        <file alias="tx">images/twoDdisplay/天线.png</file>
+        <file alias="fwq">images/twoDdisplay/移动地面站(1).png</file>
+        <file alias="ydz">images/twoDdisplay/移动地面站.png</file>
+        <file alias="dot">images/twoDdisplay/线条bg.png</file>
+        <file alias="dot-h">images/twoDdisplay/线条bg横.png</file>
+        <file alias="arr-up">images/twoDdisplay/箭头／上.png</file>
+        <file alias="arr-right">images/twoDdisplay/箭头／右.png</file>
+        <file alias="arr-left">images/twoDdisplay/箭头／左.png</file>
+        <file alias="edit">images/twoDdisplay/编辑.png</file>
+        <file alias="noedit">images/twoDdisplay/编辑／禁用.png</file>
+        <file alias="fd">images/twoDdisplay/放大icon.png</file>
+        <file alias="sx">images/twoDdisplay/缩小icon.png</file>
+        <file alias="rectright">images/twoDdisplay/组件右侧bg.png</file>
+        <file alias="rectleft">images/twoDdisplay/组件左侧bg.png</file>
+        <file alias="dz">images/twoDdisplay/dingzi.png</file>
+        <file alias="btnbg">images/twoDdisplay/中间件bg.png</file>
+        <file alias="closehover">images/twoDdisplay/关闭-点击.png</file>
+        <file alias="close">images/twoDdisplay/关闭-默认.png</file>
+        <file alias="kzcbig">images/twoDdisplay/控制舱大.png</file>
+        <file alias="smjbig">images/twoDdisplay/上面级大.png</file>
+        <file alias="weiduanbig">images/twoDdisplay/尾段大.png</file>
+        <file alias="more">images/twoDdisplay/更多icon.png</file>
+        <file>images/twoDdisplay/leftarr.png</file>
+        <file>images/twoDdisplay/rightarr.png</file>
+        <file alias="editmodule">images/editmodule.png</file>
+        <file>images/adddxq.png</file>
+        <file alias="deleteicon">images/deletedxq.png</file>
+        <file alias="defaultimg">images/defaultimg.png</file>
+    </qresource>
+</RCC>

@@ -29,7 +29,8 @@ private:
     AppCache* m_app; 
     bool m_isMax;
     CenterOperate* m_pCenterOperate;
-    void Init(); 
+    void Init();
+    void CreatConfigInterface();
     DataBase::UserDAO* m_pUserDAO;
     DataBase::DeviceDAO* m_pDeviceDAO;
     DataBase::CommandDAO* m_pCommandDAO;

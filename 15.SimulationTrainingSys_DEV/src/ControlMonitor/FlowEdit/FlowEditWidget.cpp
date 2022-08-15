@@ -1,12 +1,12 @@
 #include "FlowEditWidget.h"
-
+#include "QLineEdit"
 FlowEditWidget* FlowEditWidget::instance = nullptr;
 
 FlowEditWidget::FlowEditWidget(QWidget* parent)
 	: QWidget(parent)
 {
-	tableColumnName << QString("序号") << QString("口令")
-		<< QString("操作") << QString("回令")
+	tableColumnName << QString("序号") << QString("阶段")
+		<< QString("口令") << QString("回令")
 		<< QString("备注");
 
 	this->setBaseSize(640, 480);
@@ -118,41 +118,38 @@ void FlowEditWidget::InitLayout() {
 
 }
 
-void FlowEditWidget::initConnection() {
-
-
+void FlowEditWidget::initConnection() 
+{
 	connect(leftTopAdd, &QPushButton::clicked, this, &FlowEditWidget::addNewFlow);
-
 	connect(leftFlowItemList, &QListWidget::itemPressed, this, &FlowEditWidget::loadFlowTable);
-
 	connect(rightTable, &CustomTableWidget::mouseRightClicked, this, &FlowEditWidget::tableRightMouseClick);
-
 	connect(rightTable, &CustomTableWidget::cellClicked, this, &FlowEditWidget::tableCellClick);
-
 	connect(rightTable, &CustomTableWidget::cellDoubleClicked, this, &FlowEditWidget::doubleClickCell);
-
 	connect(rightBottomBtnOK, &QPushButton::clicked, this, &FlowEditWidget::clickOKButton);
-
 	connect(rightBottomBtnCancel, &QPushButton::clicked, this, &FlowEditWidget::clickCancelButton);
 }
 
 void FlowEditWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlowInfo) {
 	mainFlowInfo_.clear();
-
 	mainFlowInfo_ = mainFlowInfo;
-
-
 }
 void FlowEditWidget::setSubFlowInfo(QMap<int, QVector<QString>> subFlowInfo) {
-	subFlowInfo_.clear();
-	//commandListWidget->clear();
-
+	subFlowInfo_.clear(); 
 	subFlowInfo_ = subFlowInfo;
 }
-void FlowEditWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
-	subFlowCmdID_.clear();
-	//backCmdListWidget->clear();
 
+void FlowEditWidget::setSubFlowInfo1(QMap<int, QVector<QString>> subFlowInfo1) {
+	subFlowInfo1_.clear();
+	subFlowInfo1_ = subFlowInfo1;
+}
+
+void FlowEditWidget::setSubFlowInfo2(QMap<int, QVector<QString>> subFlowInfo2) {
+	subFlowInfo2_.clear();
+	subFlowInfo2_ = subFlowInfo2;
+}
+
+void FlowEditWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
+	subFlowCmdID_.clear(); 
 	subFlowCmdID_ = subFlowCmdID;
 	loadFlowDisplayFlow();
 }
@@ -161,10 +158,9 @@ void FlowEditWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
 	@brief 加载FlowDisplayWidget显示流程以编辑
 **/
 void FlowEditWidget::loadFlowDisplayFlow() {
+
 	rightTopFlowName->setText(rocketType);
-
 	rightTable->setColumnCount(tableColumnName.size());
-
 	for (int i = 0; i < tableColumnName.size(); i++)
 	{
 		QTableWidgetItem* item1 = new QTableWidgetItem(tableColumnName[i]);
@@ -183,42 +179,62 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 	auto flowInfoOp = FlowInfoConfig2DB::getInstance();
 	flowInfoOp->commandInfo.clear();
 	flowInfoOp->readCommandDB2FlowEdit();
-
+	//维护当前流程中已使用的指令和未使用的指令列表
+	for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
+	{
+		unUsedCmdList.push_back(QString::fromStdString(ele->second[3]));
+	}
 
 	for (int i = 1; i <= mainFlowInfo_.size(); i++)
 	{
 		int c = 0;
-		rightTable->setItem(i - 1, c++, new QTableWidgetItem(QString::number(i)));
-		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][0]));
-		//操作
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(QString::number(i)));//序号
+		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][0]));//阶段
+		//子流程口令
 		QWidget* newWidget = new QWidget;
 		newWidget->setMouseTracking(false);
-		QVBoxLayout* newVbox = new QVBoxLayout;
+		QVBoxLayout* newVbox = new QVBoxLayout; 
 		auto cmdInfoList = subFlowInfo_[mainFlowInfo_[i][3].toInt()];
-
 		for (auto cmdInfo : cmdInfoList)
 		{
 			QComboBox* combo1 = new QComboBox;
+			cmdComboBoxList.push_back(combo1); 
 			for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
 			{
 				combo1->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
 			}
 			combo1->setCurrentText(cmdInfo);
-			newVbox->addWidget(combo1);
-		}
-
+			newVbox->addWidget(combo1); 
+		} 
 		newWidget->setLayout(newVbox);
-		rightTable->setCellWidget(i - 1, c, newWidget);
-
-		c++;
-		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][1]));
-		rightTable->setItem(i - 1, c++, new QTableWidgetItem(mainFlowInfo_[i][2]));
-
-		rightTable->setRowHeight(i - 1, 40 * cmdInfoList.size());
-
-	}
+		rightTable->setCellWidget(i - 1, c++, newWidget);
 
 
+		//子流程回令
+		newWidget = new QWidget; 
+		newWidget->setMouseTracking(false);
+		newVbox = new QVBoxLayout; 
+		for (auto cmdInfo : subFlowInfo1_[mainFlowInfo_[i][3].toInt()])
+		{ 
+			newVbox->addWidget(new QLineEdit(cmdInfo));
+		} 
+		newWidget->setLayout(newVbox);
+		rightTable->setCellWidget(i - 1, c++, newWidget);
+
+
+		//子流程备注
+		newWidget = new QWidget;
+		newWidget->setMouseTracking(false);
+		newVbox = new QVBoxLayout;
+		for (auto cmdInfo : subFlowInfo2_[mainFlowInfo_[i][3].toInt()])
+		{
+			newVbox->addWidget(new QLineEdit(cmdInfo));
+		}
+		newWidget->setLayout(newVbox);
+		rightTable->setCellWidget(i - 1, c++, newWidget); 
+		int size = cmdInfoList.size() == 0 ? 1 : cmdInfoList.size();
+		rightTable->setRowHeight(i - 1, 40 * size); 
+	} 
 }
 
 /**
@@ -299,193 +315,167 @@ void FlowEditWidget::loadFlowTable() {
 	@param column -
 **/
 void FlowEditWidget::tableCellClick(int row, int column) {
-	if (rightTable->horizontalHeaderItem(column)->text().contains(tableColumnName[column]))
+	if (rightTable->horizontalHeaderItem(column)->text() == "序号"
+		|| rightTable->horizontalHeaderItem(column)->text() == "回令"
+		|| rightTable->horizontalHeaderItem(column)->text() == "备注")
 	{
-		QWidget* widget = new QWidget;
-		QVBoxLayout* boxLayout = new QVBoxLayout;
-		QPushButton* frontInsertCell = new QPushButton(QString("向前插入") + tableColumnName[column]);
-		QPushButton* backInsertCell = new QPushButton(QString("向后插入") + tableColumnName[column]);
-		QPushButton* removeCell = new QPushButton(QString("删除") + tableColumnName[column]);
-		frontInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
-		backInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
-		removeCell->setStyleSheet("* {color:red;border:none;font: 12px 微软雅黑;}");
-		boxLayout->addWidget(frontInsertCell);
-		boxLayout->addWidget(backInsertCell);
-		boxLayout->addWidget(removeCell);
-
-
-		widget->setStyleSheet(QString("*{background-color:white;border: 1px  gray;}"));
-
-		widget->setLayout(boxLayout);
-
-		widget->setWindowFlags(Qt::Popup);
-		widget->raise();
-		widget->setFixedWidth(rightTable->columnWidth(column));
-
-		widget->move(cursorPos.x(), cursorPos.y());
-		widget->show();
-
-		//删除
-		connect(removeCell, &QPushButton::clicked, this, [=]() {
-			rightTable->removeRow(row);
-
-			//修改每行的序号
-			for (int r = 0; r < rightTable->rowCount(); r++)
-			{
-				rightTable->item(r, 0)->setText(QString::number(r + 1));
-
-			}
-
-			widget->deleteLater();
-			});
-
-		//向前插入
-		connect(frontInsertCell, &QPushButton::clicked, this, [=]() {
-
-			if (column == 0 || column == 1)
-			{
-				if (row == 0)
-				{
-					rightTable->insertRow(row);
-					for (int i = 0; i < tableColumnName.size(); i++)
-					{
-						if (i == 2)
-						{
-							QComboBox* newcombox = new QComboBox;
-							for (auto ele = FlowInfoConfig2DB::getInstance()->commandInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->commandInfo.end(); ele++)
-							{
-								newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
-							}
-							QWidget* cellWidget1 = new QWidget;
-							QVBoxLayout* boxL = new QVBoxLayout;
-
-							boxL->addWidget(newcombox);
-							cellWidget1->setLayout(boxL);
-							rightTable->setCellWidget(row, i, cellWidget1);
-							rightTable->setRowHeight(row, 30 * rightTable->cellWidget(row, i)->children().count());
-						}
-						else
-						{
-							rightTable->setItem(row, i, new QTableWidgetItem);
-						}
-
-					}
-				}
-				else
-				{
-					rightTable->insertRow(row - 1);
-					for (int i = 0; i < tableColumnName.size(); i++)
-					{
-
-						if (i == 2)
-						{
-							QComboBox* newcombox = new QComboBox;
-							for (auto ele = FlowInfoConfig2DB::getInstance()->commandInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->commandInfo.end(); ele++)
-							{
-								newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
-							}
-							QWidget* cellWidget1 = new QWidget;
-							QVBoxLayout* boxL = new QVBoxLayout;
-
-							boxL->addWidget(newcombox);
-							cellWidget1->setLayout(boxL);
-							rightTable->setCellWidget(row - 1, i, cellWidget1);
-							rightTable->setRowHeight(row - 1, 30 * rightTable->cellWidget(row, i)->children().count());
-						}
-						else
-						{
-							rightTable->setItem(row - 1, i, new QTableWidgetItem);
-						}
-					}
-				}
-
-			}
-			//修改每行的序号
-			for (int r = 0; r < rightTable->rowCount(); r++)
-			{
-				rightTable->item(r, 0)->setText(QString::number(r + 1));
-
-			}
-
-			widget->deleteLater();
-
-			}
-		);
-
-		//向后插入
-		connect(backInsertCell, &QPushButton::clicked, this, [=]() {
-			if (column == 0 || column == 1)
-			{
-				rightTable->insertRow(row + 1);
-				for (int i = 0; i < tableColumnName.size(); i++)
-				{
-
-					if (i == 2)
-					{
-						QComboBox* newcombox = new QComboBox;
-						for (auto ele = FlowInfoConfig2DB::getInstance()->commandInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->commandInfo.end(); ele++)
-						{
-							newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
-						}
-						QWidget* cellWidget1 = new QWidget;
-						QVBoxLayout* boxL = new QVBoxLayout;
-
-						boxL->addWidget(newcombox);
-						cellWidget1->setLayout(boxL);
-						rightTable->setCellWidget(row + 1, i, cellWidget1);
-						rightTable->setRowHeight(row + 1, 30 * rightTable->cellWidget(row, i)->children().count());
-					}
-					else
-					{
-						rightTable->setItem(row + 1, i, new QTableWidgetItem);
-					}
-
-				}
-			}
-			if (column == 2)
-			{
-				auto cellW = rightTable->cellWidget(row, column);
-				QComboBox* newcombox = new QComboBox;
-
-				//获取数据表指令信息
-				auto flowInfoOp = FlowInfoConfig2DB::getInstance();
-				flowInfoOp->commandInfo.clear();
-				flowInfoOp->readCommandDB2FlowEdit();
-				for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
-				{
-					newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
-				}
-
-				if (cellW != nullptr)
-				{
-
-					cellW->layout()->addWidget(newcombox);
-					int wCount = cellW->children().count();
-					rightTable->setRowHeight(row, 30 * wCount);
-
-				}
-				else {
-					QWidget* cellWidget1 = new QWidget;
-					QVBoxLayout* boxL = new QVBoxLayout;
-
-					boxL->addWidget(newcombox);
-					cellWidget1->setLayout(boxL);
-					rightTable->setCellWidget(row, column, cellWidget1);
-					rightTable->setRowHeight(row, 30 * rightTable->cellWidget(row, column)->children().count());
-				}
-
-			}
-
-			//修改每行序号
-			for (int r = 0; r < rightTable->rowCount(); r++)
-			{
-				rightTable->item(r, 0)->setText(QString::number(r + 1));
-			}
-
-			widget->deleteLater();
-			}
-		);
+		return;
 	}
+
+	QWidget* widget = new QWidget;
+	QVBoxLayout* boxLayout = new QVBoxLayout;
+	QPushButton* frontInsertCell = new QPushButton(QString("向前插入") + tableColumnName[column]); 
+	QPushButton* backInsertCell = new QPushButton(QString("向后插入") + tableColumnName[column]);
+	QPushButton* removeCell = new QPushButton(QString("删除") + tableColumnName[column]);
+	
+	frontInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
+	backInsertCell->setStyleSheet("* {color:black;border:none;font: 12px 微软雅黑;}");
+	removeCell->setStyleSheet("* {color:red;border:none;font: 12px 微软雅黑;}");
+	if(tableColumnName[column] == "阶段") boxLayout->addWidget(frontInsertCell); 
+	boxLayout->addWidget(backInsertCell);
+	boxLayout->addWidget(removeCell); 
+	widget->setStyleSheet(QString("*{background-color:white;border: 1px  gray;}")); 
+	widget->setLayout(boxLayout); 
+	widget->setWindowFlags(Qt::Popup);
+	widget->raise();
+	widget->setFixedWidth(rightTable->columnWidth(column));
+
+	widget->move(cursorPos.x(), cursorPos.y());
+	widget->show();
+
+	//删除  判断为第几列
+	connect(removeCell, &QPushButton::clicked, this, [=]() 
+	{ 
+		switch (column)
+		{
+			case 1:
+			{//删除阶段 
+				rightTable->removeRow(row);
+				//修改每行的序号
+				for (int r = 0; r < rightTable->rowCount(); r++)
+				{
+					rightTable->item(r, 0)->setText(QString::number(r + 1));
+
+				}
+				widget->deleteLater();
+				break;
+			}
+			case 2:
+			{//删除口令 
+				QList<QComboBox*> allCombo = rightTable->cellWidget(row, column)->findChildren<QComboBox*>();
+				QList<QLineEdit*> allBackInfo = rightTable->cellWidget(row, column + 1)->findChildren<QLineEdit*>();
+				QList<QLineEdit*> allRemark = rightTable->cellWidget(row, column + 2)->findChildren<QLineEdit*>();
+				if (allCombo.size() <= 0)
+				{
+					QMessageBox::warning(this, QString("警告"), QString("该阶段没有口令！"));
+					return;
+				}
+				QComboBox* combox = allCombo.last();
+				rightTable->cellWidget(row, column)->layout()->removeWidget(combox);
+				delete combox;
+
+				rightTable->cellWidget(row, column)->layout();
+
+				QLineEdit* backInfo = allBackInfo.last();
+				rightTable->cellWidget(row, column + 1)->layout()->removeWidget(backInfo);
+				delete backInfo;
+
+				QLineEdit* ramark = allRemark.last();
+				rightTable->cellWidget(row, column + 2)->layout()->removeWidget(ramark);
+				delete ramark;
+
+				int size = allCombo.size() - 1 < 2 ? 1 : allCombo.size() - 1;
+				rightTable->setRowHeight(row, 40 * size);
+				break;
+			}
+			default:
+				break;
+		} 
+	});
+
+	//向前插入
+	connect(frontInsertCell, &QPushButton::clicked, this, [=]() 
+	{ 
+		if (column == 1)
+		{//插入阶段 
+			rightTable->insertRow(row);
+			for (int i = 0; i < tableColumnName.size(); i++)
+			{ 
+				if (i == 2 || i == 3 || i == 4)
+				{
+					QWidget* newWidget = new QWidget;
+					QVBoxLayout* newVbox = new QVBoxLayout;
+					newWidget->setLayout(newVbox);
+					rightTable->setCellWidget(row, i, newWidget);
+					continue;
+				}
+				rightTable->setItem(row, i, new QTableWidgetItem); 
+			} 
+		} 
+		//修改每行的序号
+		for (int r = 0; r < rightTable->rowCount(); r++)
+		{
+			rightTable->item(r, 0)->setText(QString::number(r + 1)); 
+		} 
+		widget->deleteLater(); 
+	});
+
+	//向后插入
+	connect(backInsertCell, &QPushButton::clicked, this, [=]() {
+		if (column == 1)
+		{//插入阶段
+			rightTable->insertRow(row + 1);
+			for (int i = 0; i < tableColumnName.size(); i++)
+			{ 
+				if (i == 2 || i == 3 || i == 4)
+				{
+					QWidget* newWidget = new QWidget; 
+					QVBoxLayout* newVbox = new QVBoxLayout;
+					newWidget->setLayout(newVbox);
+					rightTable->setCellWidget(row + 1, i, newWidget);
+					continue;
+				}
+				rightTable->setItem(row + 1, i, new QTableWidgetItem); 
+
+			}
+		}
+		if (column == 2)
+		{//插入口令 
+			//插入口令
+			QComboBox* newcombox = new QComboBox;  
+			cmdComboBoxList.push_back(newcombox);
+			//获取数据表指令信息
+			auto flowInfoOp = FlowInfoConfig2DB::getInstance();
+			flowInfoOp->commandInfo.clear();
+			flowInfoOp->readCommandDB2FlowEdit();
+			for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
+			{
+				newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+			} 
+			auto cellW = rightTable->cellWidget(row, 2);
+			cellW->layout()->addWidget(newcombox);
+			int wCount = cellW->children().count();
+			 
+			//插入回令 
+			cellW = rightTable->cellWidget(row, 3);
+			cellW->layout()->addWidget(new QLineEdit());
+	 
+			//插入备注 
+			cellW = rightTable->cellWidget(row, 4);
+			cellW->layout()->addWidget(new QLineEdit());
+
+			rightTable->setRowHeight(row, 30 * wCount);
+		}
+
+		//修改每行序号
+		for (int r = 0; r < rightTable->rowCount(); r++)
+		{
+			rightTable->item(r, 0)->setText(QString::number(r + 1));
+		}
+
+		widget->deleteLater();
+		}
+	);
 }
 
 /**
@@ -527,16 +517,14 @@ void FlowEditWidget::clickOKButton() {
 
 	if (rightTable->rowCount() == 0)
 	{
-		qDebug() << QString("流程为空信息");
+		//qDebug() << QString("流程为空信息");
 		this->deleteLater();
 		return;
-	}
-
+	} 
 	if (rocketID == -1)
 	{
 		return;
-	}
-
+	} 
 	auto flowInfoOP = FlowInfoConfig2DB::getInstance();
 	//先获取相应型号的主流程和子流程
 	//将流程数据库清除
@@ -554,27 +542,43 @@ void FlowEditWidget::clickOKButton() {
 
 	for_each(flowInfoOP->customSearchInfo.begin(), flowInfoOP->customSearchInfo.end(),
 		[&v](const unordered_map<int, vector<string>>::value_type& p) {v.push_back(p.first); });
-
+	 
+	//查重判断
+	hadUsedCmdList.clear();
+	for (int r = 0; r < rightTable->rowCount(); r++)
+	{
+		QList<QComboBox*> allCombo = rightTable->cellWidget(r, 2)->findChildren<QComboBox*>(); 
+		for (auto obj : allCombo)
+		{
+			QString cmdName = obj->currentText();
+			if (hadUsedCmdList.contains(cmdName))
+			{
+				QMessageBox::warning(this, QString("警告"), QString("子流程存在非唯一操作项，请更改！"));
+				return;
+			}
+			hadUsedCmdList.push_back(cmdName);
+		}
+	}
+	 
 	//先删子流程再删主流程
 	flowInfoOP->clearSubFlowDB(v);
 	flowInfoOP->clearMainFlowDB(rocketID);
 
 	for (int r = 0; r < rightTable->rowCount(); r++)
 	{
-
 		QString mainFlowName;
 		QString mainFlowIndex;
 		QString backInfo;
 		QString remark;
 
-		int mainFlowID;
+		int mainFlowID = 0;
 		QString subFlowName;
 		int emitCmdId;
 
 		mainFlowName = rightTable->item(r, 1)->text();
 		mainFlowIndex = rightTable->item(r, 0)->text();
-		backInfo = rightTable->item(r, 3)->text();
-		remark = rightTable->item(r, 4)->text();
+		backInfo = ""; //rightTable->item(r, 3)->text();
+		remark = ""; //rightTable->item(r, 4)->text();
 
 		//将主流程信息写入数据库
 		flowInfoOP->mainFlowConfigOp2DB(rocketID, mainFlowName, mainFlowIndex, backInfo, remark);
@@ -582,8 +586,7 @@ void FlowEditWidget::clickOKButton() {
 		flowInfoOP->readMainFlowDB2FlowEdit();
 
 		for (auto ele = flowInfoOP->mainFlowInfo.begin(); ele != flowInfoOP->mainFlowInfo.end(); ele++)
-		{
-
+		{ 
 			if (QString::fromStdString(ele->second[1]).toInt() == rocketID && QString::fromStdString(ele->second[2]) == mainFlowName)
 			{
 				mainFlowID = QString::fromStdString(ele->second[0]).toInt();
@@ -592,15 +595,24 @@ void FlowEditWidget::clickOKButton() {
 
 		//
 		QList<QComboBox*> allCombo = rightTable->cellWidget(r, 2)->findChildren<QComboBox*>();
+		QList<QLineEdit*> allSubBackInfo = rightTable->cellWidget(r, 3)->findChildren<QLineEdit*>();
+		QList<QLineEdit*> allSubRemark = rightTable->cellWidget(r, 4)->findChildren<QLineEdit*>(); 
+		int count = 0;
 		for (auto obj : allCombo)
 		{
 			QString cmdName;
-			int cmdID;
+			int cmdID; 
+			QString backInfo;
+			QString remark;
 
 			cmdName = obj->currentText();
 			cmdID = obj->currentData().toInt();
+
+			backInfo = allSubBackInfo[count]->text();
+			remark = allSubRemark[count]->text(); 
 			//将子流程信息写入
-			flowInfoOP->subFlowConfigOp2DB(mainFlowID, cmdID, cmdName, remark);
+			flowInfoOP->subFlowConfigOp2DB(mainFlowID, cmdID, cmdName, backInfo, remark);
+			count++; 
 		}
 	}
 

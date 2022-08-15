@@ -9,7 +9,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 {
 	this->setWindowTitle(QString("添加火箭型号"));
 
-	this->setWindowIcon(QIcon(":/icon/icon/squareBl.png"));
+	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
 
@@ -39,6 +39,7 @@ InfoConfigWidget::~InfoConfigWidget()
 **/
 void InfoConfigWidget::InitUILayout() {
 	//this->setFixedSize(640, 480);
+	auto ap = AppCache::instance();
 	wss = WidgetStyleSheet::getInstace();
 
 	//!< rocket_info
@@ -46,10 +47,14 @@ void InfoConfigWidget::InitUILayout() {
 	userInputRocketName = new QLineEdit;
 	userInputRocketName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
-	configRocketType = new QLabel(QString("火箭型号:"));
-	userSelectRocketType = new QComboBox;
+	configRocketType = new QLabel(QString("火箭描述:"));
+	userInputRocketDescript = new QLineEdit;
+	userInputRocketDescript->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
 	rocketInfoOKBtn = new QPushButton(QString("新增火箭型号"));
+
+
+
 	//!< rocke_data_info
 	configRocketID = new QLabel(QString("火箭型号:"));;
 	userSelectRocketID = new QComboBox;
@@ -59,12 +64,12 @@ void InfoConfigWidget::InitUILayout() {
 
 	configCmdCode = new QLabel(QString("指令编码:"));
 	userInputCmdCode = new QLineEdit;
-	userInputCmdCode->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputCmdCode->setValidator(new QRegExpValidator(QRegExp("\\d+")));
 
 	configCmdPrefix = new QLabel(QString("指令前缀:"));
 	userSelectCmdPrefix = new QComboBox;
 
-	rocketDataInfoOKBtn = new QPushButton(QString("新增箭上数据"));
+	rocketDataInfoOKBtn = new QPushButton(QString("新增箭上协议"));
 	//!< rocket_prame_info
 	configRocketDataBackCmdID = new QLabel(QString("箭上数据返回指令:"));;
 	userSlctRocketDataBackCmdID = new QComboBox;
@@ -72,7 +77,7 @@ void InfoConfigWidget::InitUILayout() {
 	userSelectParamID = new QComboBox;
 	configIndex = new QLabel(QString("索引:"));
 	userSlctIndex = new QLineEdit;
-	userSlctIndex->setValidator(new QIntValidator(0, 3));
+	userSlctIndex->setValidator(new QIntValidator(0, 100));
 
 	configParamLength = new QLabel(QString("参数字节长度:"));
 	userInputParamLength = new QLineEdit;
@@ -81,9 +86,10 @@ void InfoConfigWidget::InitUILayout() {
 	configParamType = new QLabel(QString("参数类型"));
 	userSelectParamType = new QComboBox;
 
-	rocketParamInfOKBtn = new	QPushButton(QString("新增箭上参数"));
+	rocketParamInfOKBtn = new	QPushButton(QString("添加"));
 
 	updateRocketInfoBtn = new QPushButton(QString("取消"));
+
 
 	QGridLayout* infoUILayout = new QGridLayout;
 	int rowCount = 40;
@@ -91,7 +97,7 @@ void InfoConfigWidget::InitUILayout() {
 	int row = 0;
 	int column = 0;
 
-	infoUILayout->addWidget(new QLabel(QString("火箭信息配置")), row++, 0);
+	infoUILayout->addWidget(new QLabel(QString("火箭型号")), row++, 0);
 
 	QFrame* hframe0 = new QFrame;
 	hframe0->setFrameShape(QFrame::HLine);
@@ -102,7 +108,7 @@ void InfoConfigWidget::InitUILayout() {
 	infoUILayout->addWidget(configRocketName, row % rowCount, column++ % columnCount, 1, 1);
 	infoUILayout->addWidget(userInputRocketName, row % rowCount, column++ % columnCount, 1, 1);
 	infoUILayout->addWidget(configRocketType, row % rowCount, column++ % columnCount, 1, 1);
-	infoUILayout->addWidget(userSelectRocketType, row++ % rowCount, column++ % columnCount, 1, 1);
+	infoUILayout->addWidget(userInputRocketDescript, row++ % rowCount, column++ % columnCount, 1, 1);
 	column = 0;
 	infoUILayout->addWidget(rocketInfoOKBtn, row++ % rowCount, column++ % columnCount, 1, 1);
 
@@ -111,7 +117,7 @@ void InfoConfigWidget::InitUILayout() {
 	infoUILayout->addWidget(frameSpace0, row++, 0);
 	frameSpace0->setLineWidth(0);
 
-	infoUILayout->addWidget(new QLabel(QString("火箭数据信息配置")), row++, 0);
+	infoUILayout->addWidget(new QLabel(QString("火箭箭上协议")), row++, 0);
 	QFrame* hframe1 = new QFrame;
 	hframe1->setFrameShape(QFrame::HLine);
 	infoUILayout->addWidget(hframe1, row++, 0, 1, columnCount);
@@ -133,7 +139,7 @@ void InfoConfigWidget::InitUILayout() {
 	infoUILayout->addWidget(frameSpace1, row++, 0);
 	frameSpace1->setLineWidth(0);
 
-	infoUILayout->addWidget(new QLabel(QString("火箭参数信息配置")), row++, 0);
+	infoUILayout->addWidget(new QLabel(QString("火箭箭上通信协议配置")), row++, 0);
 	QFrame* hframe2 = new QFrame;
 	hframe2->setFrameShape(QFrame::HLine);
 	infoUILayout->addWidget(hframe2, row++, 0, 1, columnCount);
@@ -166,7 +172,7 @@ void InfoConfigWidget::InitUILayout() {
 
 
 	QString qss = wss->infoConfigLabelStyleSheet.arg("QLabel") + wss->infoConfigLineEditStyleSheet.arg("QLineEdit")
-		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
+		+ wss->infoConfigPushButtonStyleSheet.arg("QPushButton1") + wss->infoConfigComboBoxStyleSheet.arg("QComboBox");
 
 	this->setStyleSheet(qss);
 	this->setLayout(infoUILayout);
@@ -181,14 +187,11 @@ void InfoConfigWidget::InitUILayout() {
 void InfoConfigWidget::widgetConfig() {
 	//火箭型号
 	DeviceCommonVaries* commonVaries = DeviceCommonVaries::getInstance();
-	userSelectRocketType->clear();
+	userInputRocketDescript->clear();
 	auto deviceManageDbOp = DeviceDBConfigInfo::getInstance();
 	deviceManageDbOp->rocketInfo.clear();
 	deviceManageDbOp->readRocketDB2UI();
-	for (auto ele = deviceManageDbOp->rocketInfo.begin(); ele != deviceManageDbOp->rocketInfo.end(); ele++)
-	{
-		userSelectRocketType->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
-	}
+
 	//火箭型号
 	userSelectRocketID->clear();
 	for (auto ele = deviceManageDbOp->rocketInfo.begin(); ele != deviceManageDbOp->rocketInfo.end(); ele++)
@@ -213,14 +216,44 @@ void InfoConfigWidget::widgetConfig() {
 		userSlctRocketDataBackCmdID->addItem(QString(ele->second[2].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
 
-	//参数名称
-	deviceManageDbOp->paramInfo.clear();
-	deviceManageDbOp->readParamDB2UI();
+	//箭上参数
+	connect(userSlctRocketDataBackCmdID, QOverload<const QString&>::of(&QComboBox::activated), this, [=]() {
+		QString qSqlString = QString("SELECT\
+			device_param_info.id,\
+			parameter_info.`name`,\
+			device_info.`name`,\
+			device_param_info.createTime,\
+			device_param_info.lastUpdateTime\
+			FROM\
+			device_param_info\
+			INNER JOIN parameter_info ON device_param_info.parameter_id = parameter_info.id\
+			INNER JOIN device_info ON device_param_info.device_id = device_info.id\
+			WHERE\
+			device_info.rocket_id = %1");
+
+		DeviceDBConfigInfo::getInstance()->readRocketDataDB2UI();
+		int selectCmdRocketId = atoi(DeviceDBConfigInfo::getInstance()->rocketDataInfo[userSlctRocketDataBackCmdID->currentData().toInt()][1].c_str());
+
+		qSqlString = qSqlString.arg(selectCmdRocketId);
+
+		deviceManageDbOp->customReadTableInfo(qSqlString);
+		userSelectParamID->clear();
+		for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
+		{
+			//箭上设备参数
+			userSelectParamID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
+		}
+
+		});
+
+	//箭上参数
+
+	/*deviceManageDbOp->readParamDB2UI();
 	userSelectParamID->clear();
 	for (auto ele = deviceManageDbOp->paramInfo.begin(); ele != deviceManageDbOp->paramInfo.end(); ele++)
 	{
 		userSelectParamID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
-	}
+	}*/
 
 	//参数类型
 	deviceManageDbOp->paramInfo.clear();
@@ -262,8 +295,13 @@ void InfoConfigWidget::clickRocketOKBtn() {
 		QMessageBox::information(this, "info", QString("火箭名称不能为空！"));
 		return;
 	}
-	int rocketTypeID = userSelectRocketType->currentData().toInt();
-	DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(rocketName, rocketTypeID);
+	QString rocketDescript = userInputRocketDescript->text();
+	if (rocketDescript == "")
+	{
+		QMessageBox::information(this, "info", QString("火箭描述不能为空！"));
+		return;
+	}
+	DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(rocketName, rocketDescript);
 
 	widgetConfig();
 	emit updateRocketInfo();
@@ -286,6 +324,17 @@ void InfoConfigWidget::clickRocketDataOKBtn() {
 		QMessageBox::information(this, "info", QString("指令编码不能为空！"));
 		return;
 	}
+
+	DeviceDBConfigInfo::getInstance()->readRocketDB2UI();
+	for (auto var : DeviceDBConfigInfo::getInstance()->rocketDataInfo)
+	{
+		if (atoi(var.second[3].c_str()) == cmdCode)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("已存在该编码，请重新输入编码!"));
+			return;
+		}
+	}
+
 	int cmdPrefix = userSelectCmdPrefix->currentData().toInt();
 	DeviceDBConfigInfo::getInstance()->rocketDataInfo2DB(rocketTypeID, cmdName1, cmdCode, cmdPrefix);
 	widgetConfig();
@@ -303,12 +352,45 @@ void InfoConfigWidget::clickRocketParamOKBtn() {
 		QMessageBox::information(this, "info", QString("参数索引值需大于0！"));
 		return;
 	}
+
+	QString qSqlString = QString("SELECT\
+		rockect_param_info.id,\
+		rocket_data_info.`code`,\
+		rockect_param_info.device_parameter_id,\
+		rockect_param_info.`index`,\
+		rockect_param_info.createTime,\
+		rockect_param_info.lastUpdateTime\
+		FROM\
+		rocket_data_info\
+		INNER JOIN rockect_param_info ON rocket_data_info.id = rockect_param_info.rocket_data_id\
+		WHERE\
+		rocket_data_info.`code` = %1;\
+		");
+	//同一个箭上数据指令的参数索引唯一
+	DeviceDBConfigInfo::getInstance()->readRocketDataDB2UI();
+	qSqlString = qSqlString.arg(atoi(DeviceDBConfigInfo::getInstance()->rocketDataInfo[rocketDataBackCmdID][3].c_str()));
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	for (auto var = DeviceDBConfigInfo::getInstance()->customReadInfoMap.begin(); var != DeviceDBConfigInfo::getInstance()->customReadInfoMap.end(); var++)
+	{
+		if (paramId1 == atoi(var->second[2].c_str()))
+		{
+			QMessageBox::warning(this, QString("警告"), QString("当前指令绑定参数已存在，请更换其他参数！"));
+			return;
+		}
+		if (index1 == atoi(var->second[3].c_str()))
+		{
+			QMessageBox::warning(this, QString("警告"), QString("当前指令绑定参数与其他参数索引冲突，请更换索引！"));
+			return;
+		}
+	}
+
 	int paramLength1 = userInputParamLength->text().toInt();
 	if (userInputParamLength->text() == "")
 	{
 		QMessageBox::information(this, "info", QString("参数字节长度需大于0！"));
 		return;
 	}
+
 	int paramType1 = userSelectParamType->currentData().toInt();
 	DeviceDBConfigInfo::getInstance()->rocketParamInfo2DB(rocketDataBackCmdID, paramId1, index1, paramLength1, paramType1);
 

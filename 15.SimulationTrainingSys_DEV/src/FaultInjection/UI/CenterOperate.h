@@ -51,10 +51,12 @@ private:
     //map<int, MyFaultParameters*> m_MeasurementItems;//测量系统-系统对应的故障名称
     //map<int, MyFaultParameters*> m_PowerItems;//动力系统-系统对应的故障名称
 
-    ReceiveCMDData* m_pReceiveCMDData; //接收测发指令
+    ReceiveCMDData* m_pReceiveCmdData; //接收指令故障回令
+    ReceiveCMDData* m_pReceiveParamData; //接收指令故障回令
     QUdpSocket* m_pSocket;
 
     int m_TimerID;//1s定时器超时id
+    bool m_isSendOne;
 
 private:
 

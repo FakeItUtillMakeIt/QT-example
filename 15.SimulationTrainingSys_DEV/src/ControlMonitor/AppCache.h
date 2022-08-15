@@ -5,6 +5,9 @@
 #include <QMessageBox>
 #include <QtWidgets/QApplication>
 #include "Software.h" // Software.h
+#include <QLabel>
+#include<QString>
+#include<QList>
 #include <string>
 #include <map> 
 #include <vector>
@@ -56,10 +59,11 @@ public:
 	bool AppCache::ReadConfig();
 	QString m_xmlPath;
 	static QMutex mData;
-
 	Software* m_soft;
 	LogInfo* m_logInfo; 
+	QLabel* rokecttype;
 	OutputPath* m_outputPath;
+	QList<QString> mainflowlist;
 	PeerInfo* m_cmdSender; //处理命令接收
 	PeerInfo* m_responseReceiver; //测控回令接收端口
 	PeerInfo* m_yaoCeReceiver; //箭上数据接收端口
