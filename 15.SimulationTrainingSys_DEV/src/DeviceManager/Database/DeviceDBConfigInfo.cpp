@@ -490,7 +490,7 @@ void DeviceDBConfigInfo::updateCommandInfo2DB(int paramID, QString cmdName, int 
 	@param rocketName     -
 	@param rocketTypeCode -
 **/
-void DeviceDBConfigInfo::updateRocketInfo2DB(int paramID, QString rocketName, int rocketTypeCode) {
+void DeviceDBConfigInfo::updateRocketInfo2DB(int paramID, QString rocketName, QString rocketTypeCode) {
 	QString qSqlString = "UPDATE `simulatedtraining`.`rocket_info` SET `name` = '%2', `code` = '%3' WHERE `id` = %1;";
 	qSqlString = qSqlString.arg(paramID).arg(rocketName).arg(rocketTypeCode);
 	string sqlString = qSqlString.toStdString();

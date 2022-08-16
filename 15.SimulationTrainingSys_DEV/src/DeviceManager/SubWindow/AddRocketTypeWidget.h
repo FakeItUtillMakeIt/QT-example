@@ -74,10 +74,22 @@ private:
 	QComboBox* userSelectBackCmd;
 
 
+	QPoint mLastMousePosition;
+	bool mMoving;
 private:
 	void InitUILayout();
 	void widgetConfig();
 	void initConnect();
+
+	void rocketInfoDisplay(bool flag);
+	void paramInfoDisplay(bool flag);
+	void deviceInfoDisplay(bool flag);
+	void commandInfoDisplay(bool flag);
+
+protected:
+	void mouseMoveEvent(QMouseEvent* event);
+	void mousePressEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
 
 private slots:
 	void clickRocketTypeOk();

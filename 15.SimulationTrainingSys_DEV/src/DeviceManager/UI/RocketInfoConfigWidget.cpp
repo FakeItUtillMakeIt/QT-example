@@ -7,7 +7,9 @@ InfoConfigWidget* InfoConfigWidget::instance = nullptr;
 InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	: QWidget(parent)
 {
-	this->setWindowTitle(QString("Ìí¼Ó»ð¼ýÐÍºÅ"));
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
+
+	this->setWindowTitle(QString("»ð¼ýÐÍºÅÅäÖÃ"));
 
 	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
@@ -51,7 +53,7 @@ void InfoConfigWidget::InitUILayout() {
 	userInputRocketDescript = new QLineEdit;
 	userInputRocketDescript->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
-	rocketInfoOKBtn = new QPushButton(QString("ÐÂÔö»ð¼ýÐÍºÅ"));
+	rocketInfoOKBtn = new QPushButton(QString("¸üÐÂ»ð¼ýÐÍºÅ"));
 
 
 
@@ -301,10 +303,20 @@ void InfoConfigWidget::clickRocketOKBtn() {
 		QMessageBox::information(this, "info", QString("»ð¼ýÃèÊö²»ÄÜÎª¿Õ£¡"));
 		return;
 	}
-	DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(rocketName, rocketDescript);
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(rocketName, rocketDescript);
+	}
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(editId, rocketName, rocketDescript);
+		this->close();
+	}
+
 
 	widgetConfig();
 	emit updateRocketInfo();
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 }
 
 /**
@@ -338,6 +350,7 @@ void InfoConfigWidget::clickRocketDataOKBtn() {
 	int cmdPrefix = userSelectCmdPrefix->currentData().toInt();
 	DeviceDBConfigInfo::getInstance()->rocketDataInfo2DB(rocketTypeID, cmdName1, cmdCode, cmdPrefix);
 	widgetConfig();
+	this->close();
 }
 
 /**

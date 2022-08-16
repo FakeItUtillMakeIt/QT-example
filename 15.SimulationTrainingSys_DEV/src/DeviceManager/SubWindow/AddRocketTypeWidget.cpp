@@ -70,6 +70,8 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(rocketTypeCancelBtn, rowC - 1, columnC - 2, 1, 1);
 	UIGrid->addWidget(rocketTypeOkBtn, rowC - 1, columnC - 1, 1, 1);
 
+
+
 	this->setLayout(UIGrid);
 	this->setFixedSize(640, 640);
 	this->setContentsMargins(0, 0, 0, 0);
@@ -135,6 +137,96 @@ void AddRocketTypeWidget::InitUILayout() {
 }
 
 /**
+	@brief 显示火箭型号配置
+	@param flag -
+**/
+void AddRocketTypeWidget::rocketInfoDisplay(bool flag) {
+	if (flag)
+	{
+		rocketName->show();
+		userInputRocketName->show();
+		rocketDescript->show();
+		userInputDescript->show();
+	}
+	else
+	{
+		rocketName->hide();
+		userInputRocketName->hide();
+		rocketDescript->hide();
+		userInputDescript->hide();
+	}
+}
+/**
+	@brief 显示参数配置
+	@param flag -
+**/
+void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
+	if (flag)
+	{
+		paramName->show();
+		userInputParamName->show();
+		paramType->show();
+		userSelectParamType->show();
+		paramUnit->show();
+		userInputParamUnit->show();
+	}
+	else
+	{
+		paramName->hide();
+		userInputParamName->hide();
+		paramType->hide();
+		userSelectParamType->hide();
+		paramUnit->hide();
+		userInputParamUnit->hide();
+	}
+}
+/**
+	@brief 显示设备配置
+	@param flag -
+**/
+void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
+	if (flag)
+	{
+		rocketType->show();
+		userSelectRocketType->show();
+		deviceName->show();
+		userInputDevName->show();
+		deviceType->show();
+		userSelectDevType->show();
+	}
+	else
+	{
+		rocketType->hide();
+		userSelectRocketType->hide();
+		deviceName->hide();
+		userInputDevName->hide();
+		deviceType->hide();
+		userSelectDevType->hide();
+	}
+}
+/**
+	@brief 显示火箭指令配置
+	@param flag -
+**/
+void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
+	if (flag)
+	{
+		rocketType->show();
+		userSelectRocketType->show();
+		commandType->show();
+		userSelectCmdType->show();
+		
+	}
+	else
+	{
+		rocketName->hide();
+		userInputRocketName->hide();
+		rocketDescript->hide();
+		userInputDescript->hide();
+	}
+}
+
+/**
 	@brief 界面配置
 **/
 void AddRocketTypeWidget::widgetConfig() {
@@ -162,7 +254,52 @@ void AddRocketTypeWidget::clickRocketTypeOk() {
 	instance->close();
 }
 
+/**
+	@brief 点击关闭按钮槽函数
+**/
 void AddRocketTypeWidget::clickWindowClose() {
 
 	instance->close();
+}
+
+
+
+/**
+	@brief 鼠标按下操作
+	@param event -
+**/
+void AddRocketTypeWidget::mousePressEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		mMoving = true;
+		mLastMousePosition = event->globalPos();
+	}
+}
+
+/**
+	@brief 鼠标移动操作
+	@param event -
+**/
+void AddRocketTypeWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	if (event->buttons().testFlag(Qt::LeftButton) && mMoving)
+	{
+		setCursor(Qt::OpenHandCursor);
+		this->move(this->pos() + (event->globalPos() - mLastMousePosition));
+		mLastMousePosition = event->globalPos();
+	}
+}
+
+/**
+	@brief 鼠标释放操作
+	@param event -
+**/
+void AddRocketTypeWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		mMoving = false;
+		setCursor(Qt::ArrowCursor);
+	}
 }

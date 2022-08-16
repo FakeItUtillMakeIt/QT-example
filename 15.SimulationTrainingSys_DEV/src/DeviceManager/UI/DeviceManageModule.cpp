@@ -193,9 +193,17 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
+
 		int curRow = opEditBtn->property("row").toInt();
 		qDebug() << curRow;
-		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text().toInt());
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->editId = configInfoTable->item(curRow, 0)->text().toInt();
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->userSelectRocketType->setCurrentText(configInfoTable->item(curRow, 1)->text());
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->userInputDeviceName->setText(configInfoTable->item(curRow, 2)->text());
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->userSelectDeviceType->setCurrentText(configInfoTable->item(curRow, 3)->text());
+		DeviceInfoConfig::InfoConfigWidget::getInstance()->show();
+
+		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text().toInt());
 
 		});
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {

@@ -137,15 +137,14 @@ void GenerateFlowCmdWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlow
 
 	for (int i = 1; i <= mainFlowInfo.size(); i++)
 	{
-		qDebug() << mainFlowInfo[i][1];
+		//qDebug() << mainFlowInfo[i][1];
 		//QListWidgetItem* newBackCmdItem = new QListWidgetItem(mainFlowInfo[i][1]);
 		//newBackCmdItem->setTextAlignment(Qt::AlignCenter);
 		//backCmdListWidget->addItem(newBackCmdItem);
 		//流程名
 		auto newItem = new QListWidgetItem(mainFlowInfo[i][0]);
 		newItem->setTextAlignment(Qt::AlignCenter);
-		execProgramListWidget->addItem(newItem);
-
+		execProgramListWidget->addItem(newItem); 
 	}
 
 }
@@ -230,7 +229,8 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 		}
 	}
 
-	QListWidgetItem* backInfoItem = new QListWidgetItem(curRunCmdName + QString::fromLocal8Bit("已收到"));
+	//QListWidgetItem* backInfoItem = new QListWidgetItem(curRunCmdName + QString::fromLocal8Bit("已收到"));
+	QListWidgetItem* backInfoItem = new QListWidgetItem(backCmdInfo);
 	backInfoItem->setTextAlignment(Qt::AlignCenter);
 
 	backCmdListWidget->addItem(backInfoItem);
@@ -238,33 +238,36 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 	//保留已经接收到的信息
 	hadRunExeProgram.push_back(mainFlowInfo_[mainFlowIndex][0]);
 	hadRunCmd.push_back(curRunCmdName);
-	hadRecievedBackInfo.push_back(curRunCmdName + QString::fromLocal8Bit("已收到"));
+	hadRecievedBackInfo.push_back(backCmdInfo);
+	//hadRecievedBackInfo.push_back(curRunCmdName + QString::fromLocal8Bit("已收到"));
+	//QListWidgetItem* backInfoItem1 = new QListWidgetItem(backCmdInfo);
+	//backInfoItem1->setTextAlignment(Qt::AlignCenter);
+	//backCmdListWidget->addItem(backInfoItem1);
 
+	////检索主流程信息
+	//int currentSelectMainID = -1;
+	//for (int i = 1; i <= mainFlowInfo_.size(); i++)
+	//{
+	//	//流程名
+	//	if (mainFlowInfo_[i][0] == exeItem->text()) {
+	//		currentSelectMainID = mainFlowInfo_[i][3].toInt();
+	//		break;
+	//	}
+	//}
 
-	//检索主流程信息
-	int currentSelectMainID = -1;
-	for (int i = 1; i <= mainFlowInfo_.size(); i++)
-	{
-		//流程名
-		if (mainFlowInfo_[i][0] == exeItem->text()) {
-			currentSelectMainID = mainFlowInfo_[i][3].toInt();
-			break;
-		}
-	}
-
-	auto cmdInfoList = subFlowInfo_[currentSelectMainID];
-	if (cmdInfoList.size() == 0)
-	{
-		return;
-	}
+	//auto cmdInfoList = subFlowInfo_[currentSelectMainID];
+	//if (cmdInfoList.size() == 0)
+	//{
+	//	return;
+	//}
 	//直到收到 当前子流程中的最后一个指令时才将主流程回令信息显示
-	if (cmdInfoList[cmdInfoList.size() - 1] == curRunCmdName)
-	{
-		hadRecievedBackInfo.push_back(backCmdInfo);
-		QListWidgetItem* backInfoItem1 = new QListWidgetItem(backCmdInfo);
-		backInfoItem1->setTextAlignment(Qt::AlignCenter);
-		backCmdListWidget->addItem(backInfoItem1);
-	}
+	//if (cmdInfoList[cmdInfoList.size() - 1] == curRunCmdName)
+	//{
+	//	hadRecievedBackInfo.push_back(backCmdInfo);
+	//	QListWidgetItem* backInfoItem1 = new QListWidgetItem(backCmdInfo);
+	//	backInfoItem1->setTextAlignment(Qt::AlignCenter);
+	//	backCmdListWidget->addItem(backInfoItem1);
+	//}
 
 
 }

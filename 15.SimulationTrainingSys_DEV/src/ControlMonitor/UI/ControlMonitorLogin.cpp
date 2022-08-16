@@ -17,6 +17,7 @@ void ControlMonitorLogin::LoginSlot()
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
 	m_app->rokecttype->setText(ui.TypeComboBox->currentText());
 	this->close();
+	controlMonitor->Init();
 	controlMonitor->show();
 	//ControlComPage.show();
 }

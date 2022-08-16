@@ -22,7 +22,7 @@ class EquivalentSoft : public QMainWindow
 public:
     EquivalentSoft(QWidget *parent = Q_NULLPTR);
     void displayStatuInfo(QString info, bool is_alarm = false);
-    void InitFrame(); 
+    bool InitFrame(); 
 
 private:
     Ui::EquivalentSoftClass ui;

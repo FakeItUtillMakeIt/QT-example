@@ -37,7 +37,7 @@ DeviceCommonVaries::DeviceCommonVaries() {
 	deviceIndex2Type[1] = "ÐéÄâÉè±¸";
 
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1000; i++) {
 		char buffer[4];
 		itoa(i, buffer, 10);
 		commandCode[buffer] = i;

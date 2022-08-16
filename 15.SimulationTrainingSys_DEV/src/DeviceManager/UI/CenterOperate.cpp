@@ -391,11 +391,23 @@ void CenterOperate::InitUILayout() {
 /// <summary>
 /// 初始化帧
 /// </summary>
-void CenterOperate::InitFrame()
+bool CenterOperate::InitFrame()
 {
 	//设置协议帧
-	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id];
-	if (m_app->m_CurrentRocketDataFrame == nullptr) return;
+	//m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id];
+	m_app->m_CurrentRocketDataFrame = nullptr;
+	for (auto pair : m_app->m_RocketDataFrame)
+	{
+		if (pair.second->m_rocketId == m_app->m_CurrentRocketType->m_id)
+		{
+			m_app->m_CurrentRocketDataFrame = pair.second;
+		}
+	}
+	if (m_app->m_CurrentRocketDataFrame == nullptr)
+	{
+		QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), "没有绑定箭上数据协议！");
+		return false;
+	}
 	RocketDataFrame* pFrame = m_app->m_CurrentRocketDataFrame;
 	pFrame->head().setFrameCount(1);
 	pFrame->head().setFrameLen(pFrame->params().size() * PARAM_LENGTH + FRAMEHEAD_LENGTH);
@@ -406,6 +418,8 @@ void CenterOperate::InitFrame()
 	m_pYcTimer = new QTimer();
 	connect(m_pYcTimer, &QTimer::timeout, this, &CenterOperate::sendRocketData);//发送箭上数据
 	m_pYcTimer->start(50);
+
+	return true;
 }
 
 //void CenterOperate::paintEvent(QPaintEvent* event) {

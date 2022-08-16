@@ -19,9 +19,12 @@ void ControlCommandLogin::LoginSlot()
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
 	m_app->rokecttype->setText(ui.TypeComboBox->currentText());
 	this->close();
-	controlCommand->InitFrame();
-	controlCommand->show();
-	//ControlComPage.show();
+	if (!controlCommand->InitFrame())
+	{
+		QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), "没有绑定箭上数据协议！");
+		this->close();
+	}
+	controlCommand->show(); 
 }
 void ControlCommandLogin::CloseSlot() 
 {

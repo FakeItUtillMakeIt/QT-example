@@ -45,7 +45,10 @@ namespace ParamInfoConfig {
 			}
 		}
 
-	private:
+	public:
+		int currentDeviceFlag;
+		int editId = -1;
+
 		WidgetStyleSheet* wss;
 		//!< ²ÎÊý
 		QLabel* configParamName;

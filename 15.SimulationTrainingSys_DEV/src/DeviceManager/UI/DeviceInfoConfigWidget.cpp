@@ -7,8 +7,9 @@ InfoConfigWidget* InfoConfigWidget::instance = nullptr;
 InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	: QWidget(parent)
 {
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 
-	this->setWindowTitle(QString("添加设备"));
+	this->setWindowTitle(QString("设备配置"));
 	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
@@ -53,7 +54,7 @@ void InfoConfigWidget::InitUILayout() {
 	configDeviceType = new QLabel(QString("设备类型:"));
 	userSelectDeviceType = new QComboBox;
 
-	deviceConfigOKBtn = new QPushButton(QString("新增设备"));
+	deviceConfigOKBtn = new QPushButton(QString("更新设备"));
 	//!< 	开关量状态值
 	configStatusName = new QLabel(QString("设备状态名称:"));;
 	userInputStatusName = new QLineEdit;
@@ -202,16 +203,26 @@ void InfoConfigWidget::widgetConfig() {
 		userSelectDeviceType->addItem(QString::fromLocal8Bit(ele->first.c_str()), commonVaries->deviceType[ele->first.c_str()]);
 	}
 
-	//设备ID  
+	//和型号关联的设备ID  
+	QString qSqlString = QString("SELECT\
+		device_info.id,\
+		device_info.`name`,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1");
 
-	deviceManageDbOp->deviceInfo.clear();
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
+	deviceManageDbOp->customReadTableInfo(qSqlString);
 	userSelectDeviceID->clear();
-	deviceManageDbOp->readDeviceDB2UI();
 
-	for (auto ele = deviceManageDbOp->deviceInfo.begin(); ele != deviceManageDbOp->deviceInfo.end(); ele++)
+
+	for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
 	{
 		//显示名称  后带数据为ID
-		userSelectDeviceID->addItem(QString(ele->second[2].c_str()), QString(ele->second[0].c_str()).toInt());
+		userSelectDeviceID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
 	//状态ID
 	userSelectStatusID->clear();
@@ -223,14 +234,26 @@ void InfoConfigWidget::widgetConfig() {
 		userSelectStatusID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
 
-	//设备ID  
-	userSelectDeviceParamID->clear();
-	deviceManageDbOp->deviceInfo.clear();
-	deviceManageDbOp->readDeviceDB2UI();
+	//和型号关联的设备ID  
+	qSqlString = QString("SELECT\
+		device_info.id,\
+		device_info.`name`,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1");
 
-	for (auto ele = deviceManageDbOp->deviceInfo.begin(); ele != deviceManageDbOp->deviceInfo.end(); ele++)
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
+	deviceManageDbOp->customReadTableInfo(qSqlString);
+
+	userSelectDeviceParamID->clear();
+
+
+	for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
 	{
-		userSelectDeviceParamID->addItem(QString(ele->second[2].c_str()), QString(ele->second[0].c_str()).toInt());
+		userSelectDeviceParamID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
 	//参数ID
 	deviceManageDbOp->paramInfo.clear();
@@ -267,7 +290,10 @@ void InfoConfigWidget::setConfigHeader(QString header) {
 void InfoConfigWidget::selectFilePathOKBtn() {
 	//过滤格式txt
 	QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
-
+	if (filepath1.isEmpty())
+	{
+		return;
+	}
 	filepath1 = filepath1.split("/device/")[1];
 	userSelectPath->setWordWrap(true);
 	userSelectPath->setText(filepath1);
@@ -278,20 +304,41 @@ void InfoConfigWidget::selectFilePathOKBtn() {
 **/
 void InfoConfigWidget::clickDeviceOKBtn() {
 	//更改device_info
-	int rocketType = userSelectRocketType->currentData().toInt();
-	QString deviceName = userInputDeviceName->text();
-
-	if (deviceName == "")
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE)
 	{
-		QMessageBox::information(this, "info", QString("设备名不能为空！"));
-		return;
+		int rocketType = userSelectRocketType->currentData().toInt();
+		QString deviceName = userInputDeviceName->text();
+
+		if (deviceName == "")
+		{
+			QMessageBox::information(this, "info", QString("设备名不能为空！"));
+			return;
+		}
+
+		int deviceType = userSelectDeviceType->currentData().toInt();
+		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(rocketType, deviceName, deviceType);
+	}
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE)
+	{
+		int rocketType = userSelectRocketType->currentData().toInt();
+		QString deviceName = userInputDeviceName->text();
+
+		if (deviceName == "")
+		{
+			QMessageBox::information(this, "info", QString("设备名不能为空！"));
+			return;
+		}
+
+		int deviceType = userSelectDeviceType->currentData().toInt();
+
+		DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(editId, rocketType, deviceName, deviceType);
+		this->close();
 	}
 
-	int deviceType = userSelectDeviceType->currentData().toInt();
-	DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(rocketType, deviceName, deviceType);
 
 	widgetConfig();
 	emit updateDeviceInfo();
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 }
 
 /**

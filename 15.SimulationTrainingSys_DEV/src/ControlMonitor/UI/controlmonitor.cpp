@@ -24,6 +24,7 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	ui.setupUi(this);
 
 	m_app = AppCache::instance();
+	m_app->rokecttype = ui.rokect_type;
 	//ui.lb_title->setText(m_app->m_soft->GetName());
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
@@ -36,7 +37,7 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
 	m_pmainFlowDao->getMainflow();
 
-	Init();
+	//Init();
 
 	//指示灯测试用代码 
 	/*light_info.append(new Light_info(1, "控制箭上配电", 0));
@@ -80,7 +81,8 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 void ControlMonitor::Init()
 {
 	//请把主控发射流程页放在ui.page1 中
-	//m_pCenterOperate = new CenterOperate(ui.page1);
+	QWidget* tmpwidget = new QWidget();
+	m_pCenterOperate = new CenterOperate(tmpwidget);
 
 
 	new twoDdisplay(ui.page2);
@@ -93,19 +95,18 @@ void ControlMonitor::Init()
 	qSqlString = qSqlString.arg(rocketTypeName);
 	int rocketId = -1;
 	QString rocketCode = "";
-	if (FlowInfoConfig2DB::getInstance()->customDBQuery(qSqlString)) {
-		for (auto ele = FlowInfoConfig2DB::getInstance()->customSearchInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->customSearchInfo.end(); ele++)
-		{
-			if (QString::fromStdString(ele->second[0]).toInt() == 1)
-			{
-				rocketId = QString::fromStdString(ele->second[1]).toInt();
-				rocketCode = QString::fromStdString(ele->second[2]);
-			}
-		}
-	}
-
-
-	flowDisplayWidget = new FlowDisplayWidget(ui.page1, rocketCode, rocketId);
+	//if (FlowInfoConfig2DB::getInstance()->customDBQuery(qSqlString)) {
+	//	for (auto ele = FlowInfoConfig2DB::getInstance()->customSearchInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->customSearchInfo.end(); ele++)
+	//	{
+	//		if (QString::fromStdString(ele->second[0]).toInt() == 1)
+	//		{
+	//			rocketId = QString::fromStdString(ele->second[1]).toInt();
+	//			rocketCode = QString::fromStdString(ele->second[2]);
+	//		}
+	//	}
+	//}
+	 
+	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromStdString(Utils::GBKToUTF8(m_app->m_CurrentRocketType->m_name.c_str())), m_app->m_CurrentRocketType->m_id);
 
 	flowDisplayWidget->setGeometry(0, 0, 1920, 768);
 
@@ -146,7 +147,6 @@ void ControlMonitor::Init()
 	ui.rokect_type->setFont(font);
 	ui.curtime->setFont(font);
 	ui.time->setFont(font);
-	m_app->rokecttype = ui.rokect_type;
 	//ui.rokect_type->setText(m_app->m_soft->GetType());
 
 	//加载时间
@@ -414,7 +414,7 @@ void ControlMonitor::zhukongclick()
 		ui.page1->setStyleSheet("background-color:rgb(245,245,245);");
 		//ui.page1->setStyleSheet("background-image:url(:/flowload/images/Flow/白底20%透明@2x.png);");
 		//进来就自动先加载流程
-		flowDisplayWidget = new FlowDisplayWidget(ui.page1, "Ling", 1);
+		flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromStdString(Utils::GBKToUTF8(m_app->m_CurrentRocketType->m_name.c_str())), m_app->m_CurrentRocketType->m_id);
 		flowDisplayWidget->setMinimumWidth(ui.page1->width());
 		flowDisplayWidget->setMinimumHeight(ui.page1->height());
 

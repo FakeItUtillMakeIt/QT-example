@@ -53,8 +53,10 @@ void DeviceManager::Init()
 
 	connect(ui.comboBox, &QComboBox::currentTextChanged, this, [=]() {
 
-		m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toUInt();
-		m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
+		//m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toUInt();
+		//m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
+
+		m_app->m_CurrentRocketType = m_app->m_allRocketType[ui.comboBox->currentData().toUInt()];
 		emit rocketTypeChanged();
 		});
 

@@ -7,7 +7,9 @@ InfoConfigWidget* InfoConfigWidget::instance = nullptr;
 InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	: QWidget(parent)
 {
-	this->setWindowTitle(QString("添加参数"));
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
+
+	this->setWindowTitle(QString("参数配置"));
 	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
@@ -51,7 +53,7 @@ void InfoConfigWidget::InitUILayout() {
 	configParamUnit = new QLabel(QString("参数单位:"));
 	userSelcetUnit = new QComboBox;
 	//paramCancelBtn = new QPushButton(QString("取消"));
-	paramOKBtn = new QPushButton(QString("新增参数"));
+	paramOKBtn = new QPushButton(QString("更新参数"));
 	//!< 	开关量状态值
 	configSwitchValName = new QLabel(QString("开关量名称:"));;
 	userInputSwitchVal = new QLineEdit;
@@ -59,9 +61,9 @@ void InfoConfigWidget::InitUILayout() {
 	//switchValCancelBtn = new QPushButton(QString("取消"));;
 	switchValOKBtn = new QPushButton(QString("新增开关量"));
 	//!< 	开关量显示值
-	configSwitchShowParamID = new QLabel(QString("参数ID:"));
+	configSwitchShowParamID = new QLabel(QString("参数:"));
 	userSlctSwitchShowParamID = new QComboBox;
-	configSwitchValID = new QLabel(QString("状态值ID:"));
+	configSwitchValID = new QLabel(QString("状态值:"));
 	userSlctSwitchValID = new QComboBox;
 	configStatusVal = new QLabel(QString("状态索引:"));
 	userInputStatusVal = new QLineEdit;
@@ -228,10 +230,22 @@ void InfoConfigWidget::clickParamOKBtn() {
 	int paramTypeIndex = userSelectType->currentIndex() + 1;
 	QString paramUnit = userSelcetUnit->currentText();
 
-	DeviceDBConfigInfo::getInstance()->paramConfigOp2DB(paramName, paramTypeIndex, paramUnit);
-	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->paramConfigOp2DB(paramName, paramTypeIndex, paramUnit);
+		DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+	}
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->updateParamInfo2DB(editId, paramName, paramTypeIndex, paramUnit);
+		this->close();
+	}
+
 	widgetConfig();
 	emit updateParams();
+
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+
 }
 
 /**

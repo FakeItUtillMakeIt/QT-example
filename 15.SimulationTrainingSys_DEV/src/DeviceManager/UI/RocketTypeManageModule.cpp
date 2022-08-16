@@ -5,7 +5,7 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
 {
 	selectedRowNum = -1;
-	columnNameList << QString("火箭ID") << QString("火箭型号名称") << QString("火箭型号类型") << QString("操作");
+	columnNameList << QString("火箭ID") << QString("火箭型号名称") << QString("火箭型号描述") << QString("操作");
 
 
 	InitUILayout();
@@ -164,7 +164,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	opCfgDataBtn->hide();
 
 	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opCfgDataBtn);
+	//hbox->addWidget(opCfgDataBtn);
 	hbox->addWidget(opDeleteBtn);
 
 
@@ -179,7 +179,16 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 		int curRow = opEditBtn->property("row").toInt();
 		qDebug() << curRow;
-		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt());
+
+		RocketInfoConfig::InfoConfigWidget::getInstance()->currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+		RocketInfoConfig::InfoConfigWidget::getInstance()->editId = configInfoTable->item(curRow, 0)->text().toInt();
+		RocketInfoConfig::InfoConfigWidget::getInstance()->userInputRocketName->setText(configInfoTable->item(curRow, 1)->text());
+		RocketInfoConfig::InfoConfigWidget::getInstance()->userInputRocketDescript->setText(configInfoTable->item(curRow, 2)->text());
+
+		RocketInfoConfig::InfoConfigWidget::getInstance()->show();
+
+		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt());
+
 
 		});
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
@@ -223,7 +232,7 @@ void RocketTypeManageModule::removeOneRow(int removeRow) {
 	@brief 编辑数据
 	@param  -编辑后的数据
 **/
-void RocketTypeManageModule::editOneRow(int rocketID, QString rocketName, int  rocketCode) {
+void RocketTypeManageModule::editOneRow(int rocketID, QString rocketName, QString  rocketCode) {
 	//这里需要更新数据库
 	DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(rocketID, rocketName, rocketCode);
 }
@@ -274,8 +283,8 @@ void RocketTypeManageModule::paintEvent(QPaintEvent* event) {
 **/
 void RocketTypeManageModule::insertOneRowData() {
 
-	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
-	addRocketTypeW->show();
+	/*AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->show();*/
 
 	RocketInfoConfig::InfoConfigWidget* infoConfigWidget = RocketInfoConfig::InfoConfigWidget::getInstance();
 	infoConfigWidget->show();

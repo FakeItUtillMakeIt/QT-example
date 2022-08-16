@@ -22,7 +22,7 @@ class ControlCommand : public QMainWindow
 public:
     ControlCommand(QWidget *parent = Q_NULLPTR);
     void displayStatuInfo(QString info, bool is_alarm = false);
-    void InitFrame(); 
+    bool InitFrame(); 
 private:
     Ui::ControlCommandClass ui;
     AppCache* m_app;

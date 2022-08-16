@@ -103,10 +103,18 @@ void EquivalentSoft::CreatConfigInterface()
 	ui.display_wgt->setLayout(hlayout);
 	hlayout->setMargin(0); 
 }
-void EquivalentSoft::InitFrame()
+bool EquivalentSoft::InitFrame()
 {
 	//ÉèÖÃÐ­ÒéÖ¡
-	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_app->m_CurrentRocketDataFrame = nullptr;
+	for (auto pair : m_app->m_RocketDataFrame)
+	{
+		if (pair.second->m_rocketId == m_app->m_CurrentRocketType->m_id)
+		{
+			m_app->m_CurrentRocketDataFrame = pair.second;
+		}
+	}
+	if (m_app->m_CurrentRocketDataFrame == nullptr) return false;
 	m_pReceiveRocketData = new ReceiveRocketData(); 
 }
  

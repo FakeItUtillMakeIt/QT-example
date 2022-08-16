@@ -72,11 +72,20 @@ void ControlCommand::CreatConfigInterface()
 }
 
 
-void ControlCommand::InitFrame()
+bool ControlCommand::InitFrame()
 { 
 	//设置协议帧
-	m_app->m_CurrentRocketDataFrame = m_app->m_RocketDataFrame[m_app->m_CurrentRocketType->m_id]; 
+	m_app->m_CurrentRocketDataFrame = nullptr; 
+	for (auto pair : m_app->m_RocketDataFrame)
+	{
+		if (pair.second->m_rocketId == m_app->m_CurrentRocketType->m_id)
+		{
+			m_app->m_CurrentRocketDataFrame = pair.second;
+		}
+	} 
+	if (m_app->m_CurrentRocketDataFrame == nullptr) return false;
 	m_pReceiveRocketData = new ReceiveRocketData();
+	return true;
 }
 
 void ControlCommand::Init()
@@ -131,7 +140,7 @@ void ControlCommand::Init()
 		});
 	tb_show->hide();
 	changeResize();
-
+	cout << m_app->m_allDevice.size()<<endl;
 	//加载基础数据
 	m_pUserDAO = new DataBase::UserDAO(m_app->m_outputPath);
 	if (!m_pUserDAO->getUser())

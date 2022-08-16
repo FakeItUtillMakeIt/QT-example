@@ -46,7 +46,10 @@ namespace CommandInfoConfig {
 			}
 		}
 
-	private:
+	public:
+		int currentDeviceFlag;
+		int editId = -1;
+
 		WidgetStyleSheet* wss;
 		//!< command_info
 		QLabel* configRocketType;

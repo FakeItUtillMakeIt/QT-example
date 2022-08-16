@@ -7,8 +7,9 @@ InfoConfigWidget* InfoConfigWidget::instance = nullptr;
 InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	: QWidget(parent)
 {
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 
-	this->setWindowTitle(QString("添加指令"));
+	this->setWindowTitle(QString("指令配置"));
 	this->setWindowIcon(QIcon(":/icon/icon/bb.png"));
 
 	//this->setBackgroundRole(QPalette::Light);
@@ -44,7 +45,7 @@ void InfoConfigWidget::InitUILayout() {
 	//!< command_info
 	configRocketType = new QLabel(QString("火箭型号:"));
 	userSelectRocketType = new QComboBox;
-	configBackCommand = new QLabel(QString("回令ID:"));
+	configBackCommand = new QLabel(QString("回令:"));
 	userSelectBackCMD = new QComboBox;
 	configCommandName = new QLabel(QString("指令名称:"));
 	userInputCMDName = new QLineEdit;
@@ -58,7 +59,7 @@ void InfoConfigWidget::InitUILayout() {
 	configCommandPrefix = new QLabel(QString("指令前缀:"));
 	userSelectCMDPrefix = new QComboBox;
 
-	commandInfoOKBtn = new QPushButton(QString("新增指令"));
+	commandInfoOKBtn = new QPushButton(QString("更新指令"));
 
 	//!< 	command_param_info
 	configEmitCmdID = new QLabel(QString("测发指令:"));
@@ -78,7 +79,7 @@ void InfoConfigWidget::InitUILayout() {
 	configParamDefaultVal = new QLabel(QString("参数默认值:"));
 	userSelectParamDefualtVal = new QComboBox();
 
-	commandParamInfoOKBtn = new QPushButton(QString("新增指令参数"));
+	commandParamInfoOKBtn = new QPushButton(QString("新增指令帧内容"));
 
 	configCmdDevID = new QLabel(QString("测发指令:"));
 	userSelectCmdDevID = new QComboBox;
@@ -124,7 +125,7 @@ void InfoConfigWidget::InitUILayout() {
 	infoUILayout->addWidget(frameSpace0, row++, 0);
 	frameSpace0->setLineWidth(0);
 
-	infoUILayout->addWidget(new QLabel(QString("指令参数配置")), row++, 0);
+	infoUILayout->addWidget(new QLabel(QString("指令帧配置")), row++, 0);
 	QFrame* hframe1 = new QFrame;
 	hframe1->setFrameShape(QFrame::HLine);
 	infoUILayout->addWidget(hframe1, row++, 0, 1, columnCount);
@@ -236,20 +237,29 @@ void InfoConfigWidget::widgetConfig() {
 	}
 
 	//测发指令ID
+	QString qSqlString = QString("SELECT\
+		command_info.id,\
+		command_info.`name`,\
+		command_info.prefix,\
+		command_info.createTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.rocket_id = %1 AND\
+		command_info.type = %2; \
+		");
+
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(1);
+	deviceManageDbOp->customReadTableInfo(qSqlString);
 	userSelectEmitCmdID->clear();
-	deviceManageDbOp->commandInfo.clear();
-	deviceManageDbOp->readCommandDB2UI();
 
 	//这里需要筛选类型为测发指令的
-	for (auto ele = deviceManageDbOp->commandInfo.begin(); ele != deviceManageDbOp->commandInfo.end(); ele++)
+	for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
 	{
-		auto a = QString(ele->second[5].c_str()).toInt();
-		auto b = commonVaries->commandType["测发指令"];
-		if (QString(ele->second[5].c_str()).toInt() == 1)
-		{
-			userSelectEmitCmdID->addItem(QString(ele->second[3].c_str()), QString(ele->second[0].c_str()).toInt());
-		}
+
+		userSelectEmitCmdID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
+
 	//参数编码
 	userSelectParamCode->clear();
 	for (auto ele = commonVaries->commandParamCode.begin(); ele != commonVaries->commandParamCode.end(); ele++)
@@ -284,27 +294,50 @@ void InfoConfigWidget::widgetConfig() {
 
 	//测发指令ID
 	//这里需要筛选类型为测发指令的
+	qSqlString = QString("SELECT\
+		command_info.id,\
+		command_info.`name`,\
+		command_info.prefix,\
+		command_info.createTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.rocket_id = %1 AND\
+		command_info.type = %2; \
+		");
+
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(1);
+	deviceManageDbOp->customReadTableInfo(qSqlString);
 	userSelectCmdDevID->clear();
-	for (auto ele = deviceManageDbOp->commandInfo.begin(); ele != deviceManageDbOp->commandInfo.end(); ele++)
+	for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
 	{
-		auto a = QString(ele->second[5].c_str()).toInt();
-		auto b = commonVaries->commandType["测发指令"];
-		if (QString(ele->second[5].c_str()).toInt() == 1)//类型为1为测发指令
-		{
-			userSelectCmdDevID->addItem(QString(ele->second[3].c_str()), QString(ele->second[0].c_str()).toInt());
-		}
+
+		userSelectCmdDevID->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
+
 	}
 	//设备状态ID
-	userSelectDevStatID->clear();
-	deviceManageDbOp->deviceStatusInfo.clear();
-	deviceManageDbOp->readDeviceStatusDB2UI();
-	deviceManageDbOp->readDeviceDB2UI();
-	deviceManageDbOp->readStatusInfoDB2UI();
+	qSqlString = QString("SELECT\
+		device_status_info.id,\
+		device_info.`name`,\
+		status_info.`name`,\
+		status_info.createTime,\
+		status_info.lastUpdateTime\
+		FROM\
+		device_info\
+		INNER JOIN device_status_info ON device_info.id = device_status_info.device_id\
+		INNER JOIN status_info ON device_status_info.status_id = status_info.id\
+		WHERE\
+		device_info.rocket_id = %1;");
 
-	for (auto ele = deviceManageDbOp->deviceStatusInfo.begin(); ele != deviceManageDbOp->deviceStatusInfo.end(); ele++)
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
+	deviceManageDbOp->customReadTableInfo(qSqlString);
+	userSelectDevStatID->clear();
+
+
+	for (auto ele = deviceManageDbOp->customReadInfoMap.begin(); ele != deviceManageDbOp->customReadInfoMap.end(); ele++)
 	{
-		QString tmpp = QString::fromStdString(deviceManageDbOp->deviceInfo[atoi(ele->second[1].c_str())][2]) + QString::fromStdString(deviceManageDbOp->statusInfo[atoi(ele->second[2].c_str())][1]);
-		userSelectDevStatID->addItem(tmpp, QString(ele->second[0].c_str()).toInt());
+		QString tmpp = QString::fromStdString(ele->second[1].c_str()) + QString::fromStdString(ele->second[2].c_str());
+		userSelectDevStatID->addItem(tmpp, atoi(ele->second[0].c_str()));
 	}
 
 }
@@ -342,23 +375,34 @@ void InfoConfigWidget::clickCommandOKBtn() {
 	int rocketTypeID = userSelectRocketType->currentData().toInt();
 	int cmdBackID = userSelectBackCMD->currentData().toInt();
 	int cmdCode = userSelectCMDCode->currentData().toInt();//编码唯一
-	//访问指令表  查询是否存在相同编码
-	DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
-	for (auto var : DeviceDBConfigInfo::getInstance()->commandInfo)
-	{
-		if (atoi(var.second[4].c_str()) == cmdCode)
-		{
-			QMessageBox::warning(this, QString("警告"), QString("已存在该指令编码，请重新选择编码!"));
-			return;
-		}
-	}
+
 
 	int cmdType = userSelectCMDType->currentData().toInt();
 	int cmdPredix = userSelectCMDPrefix->currentData().toInt();
-	tmpInstance->commandConfigOp2DB(cmdName, rocketTypeID, cmdBackID, cmdCode, cmdType, cmdPredix);
+
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE)
+	{
+		//访问指令表  查询是否存在相同编码
+		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
+		for (auto var : DeviceDBConfigInfo::getInstance()->commandInfo)
+		{
+			if (atoi(var.second[4].c_str()) == cmdCode)
+			{
+				QMessageBox::warning(this, QString("警告"), QString("已存在该指令编码，请重新选择编码!"));
+				return;
+			}
+		}
+		tmpInstance->commandConfigOp2DB(cmdName, rocketTypeID, cmdBackID, cmdCode, cmdType, cmdPredix);
+	}
+	if (currentDeviceFlag == DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE)
+	{
+		tmpInstance->updateCommandInfo2DB(editId, cmdName, rocketTypeID, cmdBackID, cmdCode, cmdType, cmdPredix);
+		this->close();
+	}
+
 	widgetConfig();
 	emit updateCommandInfos();
-
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 }
 
 /**

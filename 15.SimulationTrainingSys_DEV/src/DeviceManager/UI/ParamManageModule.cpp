@@ -195,7 +195,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 
 	hbox->addWidget(opEditBtn);
 	hbox->addWidget(opDeleteBtn);
-	hbox->addWidget(opCfgSwitchBtn);
+	//hbox->addWidget(opCfgSwitchBtn);
 
 	/*hbox->addWidget(new QPushButton(QString("±à¼­")));
 	hbox->addWidget(new QPushButton(QString("É¾³ý")));*/
@@ -209,7 +209,15 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 
 		int curRow = opEditBtn->property("row").toInt();
 		qDebug() << curRow;
-		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text());
+
+		ParamInfoConfig::InfoConfigWidget::getInstance()->currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+		ParamInfoConfig::InfoConfigWidget::getInstance()->editId = configInfoTable->item(curRow, 0)->text().toInt();
+		ParamInfoConfig::InfoConfigWidget::getInstance()->userInputParamName->setText(configInfoTable->item(curRow, 1)->text());
+		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelectType->setCurrentText(configInfoTable->item(curRow, 2)->text());
+		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
+
+		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
+		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text());
 
 		});
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {

@@ -44,7 +44,7 @@ public slots:
 
 	void dealFaultCmd(Command* command);//处理故障指令影响的设备参数
 	void receiverCMD(QVariant oneCommand);
-	void InitFrame();
+	bool InitFrame();
 private:
 	QVector<QString> configOperateName;
 

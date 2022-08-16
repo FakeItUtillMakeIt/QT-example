@@ -112,7 +112,7 @@ public:
 	void updateParamInfo2DB(int paramID, QString paramName, int paramType, QString paramUnit);
 	void updateDeviceInfo2DB(int paramID, int rocketType, QString deviceName, int virtualDev);
 	void updateCommandInfo2DB(int paramID, QString cmdName, int rocketID, int backCmdID, int cmdCode, int cmdType, int cmdPrefix);
-	void updateRocketInfo2DB(int paramID, QString rocketName, int rocketTypeCode);
+	void updateRocketInfo2DB(int paramID, QString rocketName, QString rocketTypeCode);
 
 	//自定义执行语句
 	void customRunSql(QString qSqlString);

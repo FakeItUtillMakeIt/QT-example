@@ -36,7 +36,11 @@ public:
 
 
 public:
-
+	enum DeviceModule
+	{
+		ADD_MODULE = 0x0,
+		UPDATE_MODULE = 0x1
+	};
 	//!<	参数类型
 	unordered_map < string, int> paramType;
 	unordered_map<int, string> paramIndex2Type;

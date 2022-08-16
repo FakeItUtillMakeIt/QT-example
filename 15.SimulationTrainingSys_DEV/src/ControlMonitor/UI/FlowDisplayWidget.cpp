@@ -289,8 +289,23 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 	//1.获得主流程和子流程
 	//2.根据主流程和子流程关系（子流程执行反向得到主流程，假如子流程到当前主流程的最后一步时，切换至下一个主流程，然后依次递归）
 
-		//查询主流程对应子流程信息
-	QString qSqlString = "SELECT\
+
+	//查询主流程对应子流程信息
+	QString qSqlString = "SELECT * FROM main_flow_info WHERE rocket_id = %1; ";
+	qSqlString = qSqlString.arg(rocketID);
+	auto flowDBOp = FlowInfoConfig2DB::getInstance();
+	flowDBOp->customDBQuery1(qSqlString);
+	mainFlowInfo.clear();
+	for (auto ele = flowDBOp->customSearchInfo1.begin(); ele != flowDBOp->customSearchInfo1.end(); ele++)
+	{
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[2]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[4]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[5]));
+		mainFlowInfo[atoi(ele->second[3].c_str())].push_back(QString::fromStdString(ele->second[0]));
+	}
+	 
+	//查询主流程对应子流程信息
+	qSqlString = "SELECT\
 		sub_flow_info.id,\
 		main_flow_info.`name`,\
 		main_flow_info.`index`,\
@@ -298,7 +313,9 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 		main_flow_info.remark,\
 		sub_flow_info.main_id,\
 		sub_flow_info.`name`,\
-		sub_flow_info.command_id\
+		sub_flow_info.command_id,\
+        sub_flow_info.backInfo as sub_backInfo,\
+		sub_flow_info.remark as sub_remark\
 		FROM\
 		main_flow_info\
 		INNER JOIN sub_flow_info ON sub_flow_info.main_id = main_flow_info.id\
@@ -306,32 +323,35 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 		main_flow_info.rocket_id = %1; ";
 
 	qSqlString = qSqlString.arg(rocketID);
-	auto flowDBOp = FlowInfoConfig2DB::getInstance();
+	//auto flowDBOp = FlowInfoConfig2DB::getInstance();
 	flowDBOp->customDBQuery(qSqlString);
-	mainFlowInfo.clear();
 	subFlowInfo.clear();
+	subFlowInfo1.clear();
+	subFlowInfo2.clear();
 	subFlowCmdID.clear();
 
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
 	{
-		QString tt1 = QString::fromStdString(ele->second[1]);
-		QString tt2 = QString::fromStdString(ele->second[3]);
-		QString tt3 = QString::fromStdString(ele->second[4]);
-		QString tt4 = QString::fromStdString(ele->second[5]);
+		//QString tt1 = QString::fromStdString(ele->second[1]);
+		//QString tt2 = QString::fromStdString(ele->second[3]);
+		//QString tt3 = QString::fromStdString(ele->second[4]);
+		//QString tt4 = QString::fromStdString(ele->second[5]);
 		//主流程索引到子流程ID
 		mainID2SubID[atoi(ele->second[2].c_str())].push_back(atoi(ele->second[0].c_str()));
 		//主流程ID到子流程名称
 		subFlowInfo[atoi(ele->second[5].c_str())].push_back(ele->second[6].c_str());
+		subFlowInfo1[atoi(ele->second[5].c_str())].push_back(ele->second[8].c_str());
+		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str());
 		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
-		if (mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt1) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt2) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt3) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt4))
-		{
-			continue;
-		}
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
-		mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
+		//if (mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt1) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt2) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt3) || mainFlowInfo[atoi(ele->second[2].c_str())].contains(tt4))
+		//{
+		//	continue;
+		//}
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[1]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[3]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[4]));
+		//mainFlowInfo[atoi(ele->second[2].c_str())].push_back(QString::fromStdString(ele->second[5]));
 
 	}
 
@@ -367,7 +387,7 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 			curRunCmdName = QString::fromStdString(ele->second[6]);
 			mainFlowIndex = atoi(ele->second[2].c_str());
 			subFlowID = atoi(ele->second[0].c_str());
-			backCmdInfo = QString::fromStdString(ele->second[3].c_str());
+			backCmdInfo = QString::fromStdString(ele->second[9].c_str());
 		}
 	}
 	if (mainFlowIndex == -1 && curRunCmdName == "")

@@ -44,7 +44,11 @@ namespace DeviceInfoConfig {
 			}
 		}
 
-	private:
+	public:
+
+		int editId = -1;
+		int currentDeviceFlag;
+
 		WidgetStyleSheet* wss;
 		//!< Éè±¸ device_info
 		QLabel* configRocketType;

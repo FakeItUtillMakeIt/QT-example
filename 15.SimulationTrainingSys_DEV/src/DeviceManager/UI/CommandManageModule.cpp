@@ -208,8 +208,18 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 
 		int curRow = opEditBtn->property("row").toInt();
 		qDebug() << curRow;
-		editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text(), \
-			configInfoTable->item(curRow, 4)->text().toInt(), configInfoTable->item(curRow, 5)->text().toInt(), configInfoTable->item(curRow, 6)->text().toInt());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+		CommandInfoConfig::InfoConfigWidget::getInstance()->editId = configInfoTable->item(curRow, 0)->text().toInt();
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectRocketType->setCurrentText(configInfoTable->item(curRow, 1)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectBackCMD->setCurrentText(configInfoTable->item(curRow, 2)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userInputCMDName->setText(configInfoTable->item(curRow, 3)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDCode->setCurrentText(configInfoTable->item(curRow, 4)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDType->setCurrentText(configInfoTable->item(curRow, 5)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDPrefix->setCurrentText(configInfoTable->item(curRow, 6)->text());
+		CommandInfoConfig::InfoConfigWidget::getInstance()->show();
+
+		/*editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text(), \
+			configInfoTable->item(curRow, 4)->text().toInt(), configInfoTable->item(curRow, 5)->text().toInt(), configInfoTable->item(curRow, 6)->text().toInt());*/
 
 		});
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {

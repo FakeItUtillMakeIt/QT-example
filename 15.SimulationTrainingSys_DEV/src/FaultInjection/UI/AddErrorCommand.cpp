@@ -223,6 +223,7 @@ void AddErrorCommand::OnFaultNode(QString name, int deviceid)
 {
     //根据传入的faultItems和name比较，显示出当前故障的信息数据
 
+    m_isAddFault = false;
     if (ui.pb_edit->text() == "完成")
     {
         ui.pb_edit->setText("编辑");
@@ -312,6 +313,22 @@ void AddErrorCommand::DelFault()
     oneFault.m_responseCommandID = delFault.responseCommandID;
 
     m_delFaults.push_back(oneFault);
+
+
+    if (m_faultItems.size() <= 0)
+    {
+        ui.le_errorName->setText("");
+        ui.cb_deciveType->setCurrentIndex(0);
+        ui.cb_faultType->setCurrentIndex(0);
+        ui.le_errorName->setReadOnly(true);
+
+        IsEnable(false);
+        ShowParamsTable(-1);//空表格
+    }
+    else
+    {
+        m_myFaultTree->selectItem(m_faultItems[0].Name);
+    }
 }
 
 
@@ -320,8 +337,6 @@ void AddErrorCommand::DelFault()
 /// </summary>
 void AddErrorCommand::EditFault()
 {
-    m_isAddFault = false;
-
     if (ui.le_errorName->text() == "")
     {
         QMessageBox::information(this, tr("提示"), "请输入故障名称！");
@@ -389,6 +404,8 @@ void AddErrorCommand::EditFault()
             oneFault.m_deviceParamInfoID = addFault.deviceParamInfoID;
             oneFault.m_responseCommandID = addFault.responseCommandID;
             m_addFaults.push_back(oneFault);
+
+            m_isAddFault = false;
         }
         else//修改
         {

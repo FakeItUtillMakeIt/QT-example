@@ -39,10 +39,10 @@ void DeviceParam::updateParamRealVal() {
 **/
 void DeviceParam::timerUpdateParam() {
 
-	if (QString::fromStdString(m_status) == QString("初始化"))
+	if (QString::fromStdString(m_status) == QString("初始化") || paramData.size() <= 0)
 	{
 		return;
-	}
+	} 
 	m_iCurValue = paramData[curIndex++];
 	if (curIndex >= paramData.size())
 	{
