@@ -74,4 +74,4 @@ C++模板
 3.rederence 引用
 =======
 ## [2022/07/29更新,添加模训系统](https://github.com/FakeItUtillMakeIt/QT-example/tree/main/15.SimulationTrainingSys_DEV/src)
->>>>>>> 45f5ae4aa34c259fb4afa44645dd77151f1eabd0
+
