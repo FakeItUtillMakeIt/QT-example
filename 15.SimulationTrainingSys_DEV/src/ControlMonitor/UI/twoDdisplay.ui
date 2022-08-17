@@ -5678,7 +5678,7 @@ background-color:rgba(255,255,255,0.25);</string>
                     <widget class="QWidget" name="imageEdit" native="true">
                      <property name="geometry">
                       <rect>
-                       <x>550</x>
+                       <x>470</x>
                        <y>10</y>
                        <width>800</width>
                        <height>700</height>

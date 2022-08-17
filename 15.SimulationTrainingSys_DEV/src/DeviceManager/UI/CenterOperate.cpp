@@ -7,6 +7,7 @@
 
 CenterOperate::CenterOperate(QWidget* parent)
 	: QWidget(parent)
+	, m_pYcTimer(nullptr)
 {
 
 	ui.setupUi(parent);
@@ -31,7 +32,7 @@ CenterOperate::~CenterOperate()
 		delete m_pYaoCeSenderSocket;
 		m_pYaoCeSenderSocket = nullptr;
 	}
-	m_pYcTimer->stop();
+	if(m_pYcTimer != nullptr) m_pYcTimer->stop();
 }
 
 void CenterOperate::Init()
@@ -254,11 +255,9 @@ void CenterOperate::sendCMDResponse(int cmd_id, int sendCmd_code)
 	QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
 	m_pBuff[0] = 0x55;
 	m_pBuff[1] = 0xBB;
-	m_pBuff[2] = command->m_iCode; //测发回令指令code
-	m_pBuff[3] = 0x01; //参数，执行成功
-	m_pBuff[4] = sendCmd_code;
-	m_pBuff[5] = 0x00;
-	m_pBuff[6] = 0x00;
+	memcpy(m_pBuff.data() + 2, &command->m_iCode, 2);//测发指令code 
+	m_pBuff[4] = 0x01; //参数，执行成功
+	memcpy(m_pBuff.data() + 5, &sendCmd_code, 2); 
 	m_pBuff[7] = 0x00;
 	m_pBuff[8] = 0x00;
 	m_pBuff[9] = 0x00;

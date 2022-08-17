@@ -116,9 +116,7 @@ void ConfigPlatForm::addScene(QString text)
     ConfigScene* newscene = new ConfigScene;
     newscene->SetName(text);
     QString exepath  = QApplication::applicationDirPath();
-
-    bool result =  ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString()+ "/scene/scenes.xml",newscene);
-
+    bool result =  ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString()+  "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket.toLocal8Bit().data() + "/scenes.xml",newscene);
     if (m_showtype == 1)
     {
         sceneContainer->addWidget(newscene);
@@ -180,7 +178,8 @@ void ConfigPlatForm::addScene(QString text,QPushButton* selbtn,QPushButton* delb
     newscene->SetName(text);
     QString exepath = QApplication::applicationDirPath();
 
-    bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/scene/scenes.xml", newscene);
+    bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket.toLocal8Bit().data() + "/scenes.xml", newscene);
+   // bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/scene/scenes.xml", newscene);
 
     if (m_showtype == 1)
     {
@@ -209,7 +208,7 @@ void ConfigPlatForm::addSceneFromXmlData(ConfigNameSpace::SceneInfo& sceneinfo)
 {
     ConfigScene* newscene = new ConfigScene;
     newscene->RestoreSceneInfo(sceneinfo);
-    QString exepath  = QApplication::applicationDirPath();
+  //  QString exepath  = QApplication::applicationDirPath();
     if (m_showtype == 1)
     {
         sceneContainer->addWidget(newscene);

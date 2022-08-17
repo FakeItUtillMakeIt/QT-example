@@ -1,9 +1,12 @@
 #pragma once
 
 #include <QWidget>
+#include <QMouseEvent>
+#include <QPainter>
 #include<qlabel.h>
 #include "ui_twoDdisplay.h"
 #include"CMutils.h"
+//#include"dragablewid.h"
 
 class twoDdisplay : public QWidget
 {
@@ -12,6 +15,8 @@ class twoDdisplay : public QWidget
 public:
 	twoDdisplay(QWidget *parent = nullptr);
 	~twoDdisplay();
+protected:
+
 	
 
 

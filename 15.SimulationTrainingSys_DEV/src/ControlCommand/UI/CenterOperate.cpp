@@ -113,11 +113,9 @@ void CenterOperate::sendCMD(int cmd_id, int sendCode)
     QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
     m_pBuff[0] = 0x55;
     m_pBuff[1] = 0xBB;
-    m_pBuff[2] = command->m_iCode; //测发指令code
-    m_pBuff[3] = 0x01;
-    m_pBuff[4] = sendCode;
-    m_pBuff[5] = 0x00;
-    m_pBuff[6] = 0x00;
+    memcpy(m_pBuff.data() + 2, &command->m_iCode, 2);//测发指令code 
+    m_pBuff[4] = 0x01;
+    memcpy(m_pBuff.data() + 5, &sendCode, 2);//测发指令code 
     m_pBuff[7] = 0x00;
     m_pBuff[8] = 0x00;
     m_pBuff[9] = 0x00;
@@ -140,9 +138,8 @@ void CenterOperate::sendCMDFromInterface(int cmd_id, ConfigNameSpace::ConfigButt
     Command* command = m_app->m_allCommad[cmd_id];
     QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
     m_pBuff[0] = 0x55;
-    m_pBuff[1] = 0xAA;
-    m_pBuff[2] = command->m_iCode; //测发指令code
-    m_pBuff[3] = 0x00;
+    m_pBuff[1] = 0xAA; 
+    memcpy(m_pBuff.data() + 2, &command->m_iCode, 2);//测发指令code  
     m_pBuff[4] = 0x00;
     m_pBuff[5] = 0x00;
     m_pBuff[6] = 0x00;

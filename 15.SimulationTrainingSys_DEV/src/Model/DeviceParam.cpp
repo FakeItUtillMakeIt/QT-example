@@ -42,7 +42,7 @@ void DeviceParam::timerUpdateParam() {
 	if (QString::fromStdString(m_status) == QString("≥ı ºªØ") || paramData.size() <= 0)
 	{
 		return;
-	} 
+	}
 	m_iCurValue = paramData[curIndex++];
 	if (curIndex >= paramData.size())
 	{

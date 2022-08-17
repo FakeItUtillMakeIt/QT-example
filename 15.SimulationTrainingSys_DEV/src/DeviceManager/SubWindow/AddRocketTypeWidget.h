@@ -7,6 +7,14 @@
 #include "../Database/DeviceDBConfigInfo.h"
 #include "../CommonVaries/DeviceCommonVaries.h"
 
+
+/**
+
+	@class   AddRocketTypeWidget
+	@brief   优化的设备管理新增界面
+	@details ~
+
+**/
 class AddRocketTypeWidget : public QWidget
 {
 	Q_OBJECT
@@ -32,6 +40,9 @@ public:
 		}
 	}
 
+	void setInfoWidget(int);
+	void setWindowName(QString);
+
 private:
 	QString windowName;
 
@@ -48,13 +59,12 @@ private:
 	QLabel* rocketDescript;
 	QLineEdit* userInputDescript;
 
-	QPushButton* rocketTypeOkBtn;
-	QPushButton* rocketTypeCancelBtn;
+
 
 	//参数部分
 	QLabel* paramName;
 	QLineEdit* userInputParamName;
-	QLineEdit* paramType;
+	QLabel* paramType;
 	QComboBox* userSelectParamType;
 	QLabel* paramUnit;
 	QLineEdit* userInputParamUnit;
@@ -73,6 +83,9 @@ private:
 	QLabel* cmdBackCmd;
 	QComboBox* userSelectBackCmd;
 
+	//
+	QPushButton* OkBtn;
+	QPushButton* CancelBtn;
 
 	QPoint mLastMousePosition;
 	bool mMoving;

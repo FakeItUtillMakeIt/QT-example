@@ -2,7 +2,7 @@
 #include "../AppCache.h"
 #include "../../Public/log.h"
 #include "mysql.h" 
-
+using namespace std;
 
 
 namespace DataBase
@@ -16,7 +16,7 @@ namespace DataBase
 		bool connected();
 		bool connect();
 		bool test();
-		bool getMainflow();
+		bool getMainflow(int id);
 
 	private:
 		OutputPath* m_path;

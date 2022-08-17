@@ -200,7 +200,9 @@ void DeviceManager::InitDevice()
 	initWorker->moveToThread(initThread);
 	connect(initThread, &QThread::started, initWorker, &WorkThread::doWork);
 	initThread->start();
-
+	connect(initWorker, &WorkThread::workFinished, this, [=]() {
+		QMessageBox::information(nullptr, "信息", "数据加载完毕！");
+		});
 	////把设备的状态及相应参数的配置进行初始化
 	//QString initStat = QString("断电");
 	//for (Device* eachDev : m_app->m_allDevice)

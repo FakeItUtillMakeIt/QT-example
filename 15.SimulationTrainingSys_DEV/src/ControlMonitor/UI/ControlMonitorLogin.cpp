@@ -8,6 +8,7 @@ ControlMonitorLogin::ControlMonitorLogin(ControlMonitor * conMoni,QWidget *paren
 	setWindowFlags(Qt::FramelessWindowHint);
 	controlMonitor = conMoni;
 	Init();
+	connect(this, &ControlMonitorLogin::sendrocketType, conMoni, &ControlMonitor::recieverocketType);
 	connect(ui.LoginBt, SIGNAL(clicked()), this, SLOT(LoginSlot()));
 	connect(ui.CloseBt, SIGNAL(clicked()), this, SLOT(CloseSlot()));
 }
@@ -15,11 +16,11 @@ void ControlMonitorLogin::LoginSlot()
 {
 	int typeId = ui.TypeComboBox->currentData().toUInt();
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
-	m_app->rokecttype->setText(ui.TypeComboBox->currentText());
+	m_app->rokecttype->setText(ui.TypeComboBox->currentText()); 
 	this->close();
 	controlMonitor->Init();
-	controlMonitor->show();
-	//ControlComPage.show();
+	emit sendrocketType(m_app->m_allRocketType[typeId]->m_id);
+	controlMonitor->show(); 
 }
 void ControlMonitorLogin::CloseSlot()
 {

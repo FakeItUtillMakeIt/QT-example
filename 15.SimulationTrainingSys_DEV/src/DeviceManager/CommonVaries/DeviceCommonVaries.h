@@ -41,6 +41,14 @@ public:
 		ADD_MODULE = 0x0,
 		UPDATE_MODULE = 0x1
 	};
+
+	enum InfoWidgetFlag
+	{
+		ROCKET_WIDGET = 0x0,
+		PARAM_WIDGET = 0x1,
+		DEVICE_WIDGET = 0x2,
+		COMMAND_WIDGET = 0x3
+	};
 	//!<	参数类型
 	unordered_map < string, int> paramType;
 	unordered_map<int, string> paramIndex2Type;

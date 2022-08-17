@@ -865,7 +865,7 @@ QPushButton {
           </item>
           <item>
            <widget class="QWidget" name="dengtiao" native="true">
-            <widget class="QLabel" name="label_14">
+            <widget class="QLabel" name="dtbg">
              <property name="geometry">
               <rect>
                <x>0</x>
@@ -891,25 +891,6 @@ QPushButton {
              </property>
              <property name="text">
               <string/>
-             </property>
-            </widget>
-            <widget class="QLabel" name="label_18">
-             <property name="geometry">
-              <rect>
-               <x>110</x>
-               <y>30</y>
-               <width>36</width>
-               <height>36</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="pixmap">
-              <pixmap resource="controlmonitor.qrc">:/ControlMonitor/light</pixmap>
-             </property>
-             <property name="scaledContents">
-              <bool>true</bool>
              </property>
             </widget>
            </widget>

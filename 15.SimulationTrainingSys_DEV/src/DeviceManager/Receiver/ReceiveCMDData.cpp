@@ -63,7 +63,7 @@ void ReceiveCMDData::receiveData()
 		command->m_iType = 1;
 		command->m_iCode = 0;
 		command->m_iBackId = 0;
-		memcpy(&command->m_iCode, datagram.data() + 2, 1); //测发指令code  
+		memcpy(&command->m_iCode, datagram.data() + 2, 2); //测发指令code  
 		for (auto it = m_app->m_allCommad.begin(); it != m_app->m_allCommad.end(); it++)
 		{
 			if (it->second->m_iCode == command->m_iCode)

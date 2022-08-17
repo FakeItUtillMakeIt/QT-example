@@ -23,7 +23,8 @@ public:
 //    static bool saveCurve(std::string filename, QList<StyleCurve *> curvelist);
     static bool saveStyle(std::string filename, std::string groupname, QList<QMap<int, QPair<bool, QString> > *> &stylelist);
     static bool restoreStyle(std::string filename, std::string groupname, QList<QMap<int, QPair<bool, QString> >> &stylelist);
-    static bool InitSceneFile();
+    static bool InitSceneFile(QString path, QString ifilename, bool adddefault = false);
+    static bool InitRocketFile(bool adddefault = false);
     static bool InitStylePath();
     static bool ReadSceneFile(std::string filename, QList<SceneInfo> &sceneinfolist);
     static bool AddSceneToFile(std::string filename, ConfigScene *scene);
@@ -31,7 +32,7 @@ public:
     static QString XmlStore::handlePath(QString  aimStr);
     static int RemoveSceneFromFile(ConfigScene* scene);
     static int RemoveSceneElementFromFile(QString filename,QString elementid, ControlType ctrtype);
-
+    static void initMainControlScene();
     static bool SaveSceneToFile(ConfigScene *scene);
     //static bool ReadSceneFromFile(std::string filename);
     static bool ReadSceneFromFile(std::string filename, QMap<QString, QList<QMap<QString, QString> > >& sceneinfo);
@@ -44,7 +45,7 @@ public:
     static bool ReadGroupElementInfo(tinyxml2::XMLDocument &doc, QString groupname, QString elementname, QList<GroupElementInfo> &groupinfolist);
     static bool ReadElementInfo(tinyxml2::XMLElement *groupElement, QString elementname, QList<QMap<QString, QString> > &Infolist);
     static bool SaveSceneCurves(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *&curvesElement, QList<ConfigCurve *> &sceneCurveList);
-
+    static bool AddDefaultScene(tinyxml2::XMLElement* groupeslement,tinyxml2::XMLDocument& doc, QString ipath);
 };
 ConfigNameSpaceEnd
 #endif // XMLSTORE_H

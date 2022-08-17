@@ -29,6 +29,8 @@ QMap<int, ConfigButton*>  ConfigGlobal::buttonmap;//测发指令
 QMap<ConfigCurve*, QList<QString>>  ConfigGlobal::reversecurvemap;//以curve 做key，记录其包含的所有参数
 bool  ConfigGlobal::dataupdated = false;
 
+QString ConfigGlobal::currentRocket;
+int ConfigGlobal::currentRocketID;
 
 void(*ConfigGlobal::cmdhandler)(int, ConfigNameSpace::ConfigButton*) = nullptr;
 

@@ -310,8 +310,13 @@ void DeviceManageModule::paintEvent(QPaintEvent* event) {
 **/
 void DeviceManageModule::insertOneRowData() {
 
+	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->setInfoWidget(DeviceCommonVaries::DEVICE_WIDGET);
+	addRocketTypeW->setWindowName(QString("新增设备"));
+	addRocketTypeW->show();
+
 	DeviceInfoConfig::InfoConfigWidget* infoConfigWidget = DeviceInfoConfig::InfoConfigWidget::getInstance();
-	infoConfigWidget->show();
+	//infoConfigWidget->show();
 	//更新
 	connect(infoConfigWidget, &DeviceInfoConfig::InfoConfigWidget::updateDeviceInfo, this, [=]() {
 		InitDisplayData();

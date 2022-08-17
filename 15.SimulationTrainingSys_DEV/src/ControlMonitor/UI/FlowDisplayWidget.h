@@ -66,6 +66,8 @@ signals:
 	void updateMainFlowAndSubFlow(int mainIndex, QString curRunCmdName, QString backCmdInfo);
 	void sendMainFlowInfo(int mainFlowIndex, bool curFlowFlag);
 
+	void updateFlowOver();
+
 };
 
 

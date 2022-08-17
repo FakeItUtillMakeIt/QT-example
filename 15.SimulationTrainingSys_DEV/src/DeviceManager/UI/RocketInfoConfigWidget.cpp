@@ -217,6 +217,11 @@ void InfoConfigWidget::widgetConfig() {
 	{
 		userSlctRocketDataBackCmdID->addItem(QString(ele->second[2].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
+	if (!userLastSelectCmd.isEmpty())
+	{
+		userSlctRocketDataBackCmdID->setCurrentText(userLastSelectCmd);
+	}
+
 
 	//¼ıÉÏ²ÎÊı
 	connect(userSlctRocketDataBackCmdID, QOverload<const QString&>::of(&QComboBox::activated), this, [=]() {
@@ -358,6 +363,7 @@ void InfoConfigWidget::clickRocketDataOKBtn() {
 **/
 void InfoConfigWidget::clickRocketParamOKBtn() {
 	int rocketDataBackCmdID = userSlctRocketDataBackCmdID->currentData().toInt();
+	userLastSelectCmd = userSlctRocketDataBackCmdID->currentText();
 	int paramId1 = userSelectParamID->currentData().toInt();
 	int index1 = userSlctIndex->text().toInt();
 	if (userSlctIndex->text() == "")

@@ -244,7 +244,7 @@ void InfoConfigWidget::clickParamOKBtn() {
 	widgetConfig();
 	emit updateParams();
 
-	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::UPDATE_MODULE;
+	currentDeviceFlag = DeviceCommonVaries::getInstance()->DeviceModule::ADD_MODULE;
 
 }
 

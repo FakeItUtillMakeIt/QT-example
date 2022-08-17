@@ -42,6 +42,7 @@ void ConfigInterface::timerEvent(QTimerEvent* event)
 
 void  ConfigInterface::firstinitFromOut(QList<QPushButton*> btnlist)
 {
+    //初始化编辑入口
         connect(ConfigNameSpace::ConfigGlobal::gstylemanager,&StyleManager::Return,this,&ConfigInterface::Return);
         centralwidget = new QStackedWidget;
         centralwidget->addWidget(ConfigNameSpace::ConfigGlobal::gstylemanager);

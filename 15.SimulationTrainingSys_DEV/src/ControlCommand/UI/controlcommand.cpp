@@ -1,4 +1,4 @@
- #include "controlcommand.h" 
+#include "controlcommand.h" 
 #include <qmath.h>
 #include <QDateTime>
 #include<QFontDatabase>
@@ -11,11 +11,11 @@ static CenterOperate* gCenterOperate = nullptr;
 
 void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 {
-    if (!gCenterOperate)
-    {
-        QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
-        return;
-    }
+	if (!gCenterOperate)
+	{
+		QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
+		return;
+	}
 	gCenterOperate->sendCMDFromInterface(cmd, btn);
 }
 
@@ -37,66 +37,67 @@ ControlCommand::ControlCommand(QWidget* parent)
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
 	setAttribute(Qt::WA_TranslucentBackground, true);
-	Init();	
-	CreatConfigInterface();
+	Init();
+	//CreatConfigInterface();
 }
 void ControlCommand::CreatConfigInterface()
 {
-	    gCenterOperate = m_pCenterOperate;
-		ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
-		//m_allDeviceParam = m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
-		ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
-		ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
-
-		ConfigNameSpace::XmlStore::InitSceneFile();
-		ConfigNameSpace::XmlStore::InitStylePath();
-		QString exepath = QApplication::applicationDirPath();
-		QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
-		int result = ConfigNameSpace::XmlStore::ReadSceneFile(exepath.toStdString() + "/scene/scenes.xml", sceneinfolist);
-		//样式管理器
-		ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
-		ConfigNameSpace::ConfigGlobal::gstylemanager = stylemanager;
-		//   //布局管理器
-		ConfigNameSpace::MoveAbleFrame::CreateControl();
-		ConfigNameSpace::ConfigInterface* configinterface = new  ConfigNameSpace::ConfigInterface;
-		ConfigNameSpace::ConfigGlobal::gconfiginterface = configinterface;
-		configinterface->firstinit();
-		configinterface->RestoreSceneFromXml(sceneinfolist);
-		configinterface->AddSceneEntry();
-		QHBoxLayout* hlayout = new QHBoxLayout;
-		hlayout->addWidget(configinterface);
-		ui.center_wgt->setLayout(hlayout);
-		hlayout->setMargin(0);
-
+	gCenterOperate = m_pCenterOperate;
+	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
+	//m_allDeviceParam = m_app->m_allDeviceParam;
+	ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
+	ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
+	ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
+	ConfigNameSpace::XmlStore::InitRocketFile(true);
+	ConfigNameSpace::XmlStore::InitStylePath();
+	QString exepath = QApplication::applicationDirPath();
+	QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
+	QString  filepath = exepath + "/rocket/" + QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()) + "/scenes.xml";
+	ConfigNameSpace::ConfigGlobal::currentRocket = QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str());
+	ConfigNameSpace::ConfigGlobal::currentRocketID = m_app->m_CurrentRocketType->m_id;
+	int result = ConfigNameSpace::XmlStore::ReadSceneFile(filepath.toLocal8Bit().data(), sceneinfolist);
+	//样式管理器
+	ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
+	ConfigNameSpace::ConfigGlobal::gstylemanager = stylemanager;
+	//   //布局管理器
+	ConfigNameSpace::MoveAbleFrame::CreateControl();
+	ConfigNameSpace::ConfigInterface* configinterface = new  ConfigNameSpace::ConfigInterface;
+	ConfigNameSpace::ConfigGlobal::gconfiginterface = configinterface;
+	configinterface->firstinit();
+	configinterface->RestoreSceneFromXml(sceneinfolist);
+	configinterface->AddSceneEntry();
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	hlayout->addWidget(configinterface);
+	ui.center_wgt->setLayout(hlayout);
+	hlayout->setMargin(0);
 }
 
 
 bool ControlCommand::InitFrame()
-{ 
+{
 	//设置协议帧
-	m_app->m_CurrentRocketDataFrame = nullptr; 
+	m_app->m_CurrentRocketDataFrame = nullptr;
 	for (auto pair : m_app->m_RocketDataFrame)
 	{
 		if (pair.second->m_rocketId == m_app->m_CurrentRocketType->m_id)
 		{
 			m_app->m_CurrentRocketDataFrame = pair.second;
 		}
-	} 
+	}
 	if (m_app->m_CurrentRocketDataFrame == nullptr) return false;
 	m_pReceiveRocketData = new ReceiveRocketData();
 	return true;
 }
 
 void ControlCommand::Init()
-{   
+{
 	QWidget* tmpwidget = new QWidget();
 	m_pCenterOperate = new CenterOperate(tmpwidget);
 	tmpwidget->hide();
 	connect(ui.pb_close, &QPushButton::clicked, this, &ControlCommand::CloseWindow);
 	connect(ui.pb_min, &QPushButton::clicked, this, &ControlCommand::ShowMinimized);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlCommand::changeResize);
-	
+
 	//加载字体
 	int id = QFontDatabase::addApplicationFont(":/ControlCommand/word/word.ttf");
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
@@ -140,7 +141,7 @@ void ControlCommand::Init()
 		});
 	tb_show->hide();
 	changeResize();
-	cout << m_app->m_allDevice.size()<<endl;
+
 	//加载基础数据
 	m_pUserDAO = new DataBase::UserDAO(m_app->m_outputPath);
 	if (!m_pUserDAO->getUser())
@@ -181,7 +182,7 @@ void ControlCommand::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
-	displayStatuInfo("加载指令参数数据完毕！"); 
+	displayStatuInfo("加载指令参数数据完毕！");
 	if (!m_pCommandDAO->getFaultCommand())
 	{
 		QString info = "建立数据库连接失败，请检查数据库配置文件";

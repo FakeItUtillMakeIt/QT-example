@@ -172,8 +172,8 @@ namespace DataBase
 				m_app->m_allFaults.clear();
 				while (sql_row = mysql_fetch_row(result))
 				{  
-					int fault_command_id = atoi(sql_row[3]);
-					int response_command_id = atoi(sql_row[4]); 
+					int fault_command_id = atoi(sql_row[4]);
+					int response_command_id = atoi(sql_row[5]); 
 					if (m_app->m_allCommad.find(fault_command_id) == m_app->m_allCommad.end() ||
 						m_app->m_allCommad.find(response_command_id) == m_app->m_allCommad.end())
 					{

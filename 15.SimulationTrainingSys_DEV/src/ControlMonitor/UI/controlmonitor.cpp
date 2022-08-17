@@ -34,8 +34,8 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	int id = QFontDatabase::addApplicationFont(":/ControlMonitor/word/word.ttf");
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
 	font.setFamily(s[0]);
-	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
-	m_pmainFlowDao->getMainflow();
+	//m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
+	//m_pmainFlowDao->getMainflow();
 
 	//Init();
 
@@ -123,12 +123,14 @@ void ControlMonitor::Init()
 	connect(ui.pb_min, &QPushButton::clicked, this, &ControlMonitor::ShowMinimized);
 
 	connect(m_pCenterOperate, &CenterOperate::curRunCmd, flowDisplayWidget, &FlowDisplayWidget::updateFlowStat);
+
 	connect(flowDisplayWidget, &FlowDisplayWidget::sendMainFlowInfo, this, &ControlMonitor::recvMainFlow);
+	//connect(flowDisplayWidget, &FlowDisplayWidget::sendMainflowchange, this, &ControlMonitor::acceptchage);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlMonitor::changeResize);
 
 
 	//指示灯初始化
-	lightnumber =1;
+	lightnumber =0;
 	lightflag = true;
 	//inspect = new QTimer(this);
 //	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
@@ -231,58 +233,67 @@ void ControlMonitor::Init()
 //指示灯加载
 void ControlMonitor::light_load()
 {
-	int width = (int)1840 / m_app->mainflowlist.size();
-	int margin = (int)((width - 36) / 2);
-	int setvalue = 0;
-	int word_setvalue = 0;
-	font.setPixelSize(16);
-	for (int i = 0; i < m_app->mainflowlist.size(); i++)
+	if (m_app->mainflowlist.size() == 0)
 	{
-		setvalue = margin + i * width;
-		QLabel* LIGHT(i) = new QLabel(ui.dengtiao);
-
-		QString str = "light";
-		QString count_str = QString::number(i);
-
-		LIGHT(i)->setObjectName(str.append(count_str));
-		LIGHT(i)->setGeometry(QRect(setvalue, 0, 36, 36));
-		LIGHT(i)->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
-		LIGHT(i)->setScaledContents(true);
-		LIGHT(i)->show();
-
-
-		if (i % 2 == 0)
-		{
-			word_setvalue = setvalue + 18 - 55 + 40;
-			QLabel* WORD(i) = new QLabel(ui.down_wordbar);
-			QString str0 = "word";
-			QString count_str0 = QString::number(i);
-			WORD(i)->setObjectName(str0.append(count_str0));
-			WORD(i)->setText(m_app->mainflowlist[i]);
-			WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
-			WORD(i)->setAlignment(Qt::AlignCenter);
-			WORD(i)->setWordWrap(true);
-			WORD(i)->setFont(font);
-			WORD(i)->setStyleSheet("color:rgb(202,220,255)");
-			WORD(i)->show();
-		}
-		else {
-			word_setvalue = setvalue + 18 - 55 + 40;
-			QLabel* WORD(i) = new QLabel(ui.up_wordbar);
-			QString str1 = "word";;
-			QString count_str1 = QString::number(i);
-			WORD(i)->setObjectName(str1.append(count_str1));
-			WORD(i)->setText(m_app->mainflowlist[i]);
-			WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
-			WORD(i)->setAlignment(Qt::AlignCenter);
-			WORD(i)->setWordWrap(true);
-			WORD(i)->setFont(font);
-			WORD(i)->setStyleSheet("color:rgb(202,220,255)");
-			WORD(i)->show();
-		}
-
-
+		qDebug() << "没有主流程！！！";
+		return;
 	}
+	else
+	{
+		int width = (int)1840 / m_app->mainflowlist.size();
+		int margin = (int)((width - 36) / 2);
+		int setvalue = 0;
+		int word_setvalue = 0;
+		font.setPixelSize(16);
+		for (int i = 0; i < m_app->mainflowlist.size(); i++)
+		{
+			setvalue = margin + i * width;
+			QLabel* LIGHT(i) = new QLabel(ui.dengtiao);
+
+			QString str = "light";
+			QString count_str = QString::number(i);
+
+			LIGHT(i)->setObjectName(str.append(count_str));
+			LIGHT(i)->setGeometry(QRect(setvalue, 0, 36, 36));
+			LIGHT(i)->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
+			LIGHT(i)->setScaledContents(true);
+			LIGHT(i)->show();
+
+
+			if (i % 2 == 0)
+			{
+				word_setvalue = setvalue + 18 - 55 + 40;
+				QLabel* WORD(i) = new QLabel(ui.down_wordbar);
+				QString str0 = "word";
+				QString count_str0 = QString::number(i);
+				WORD(i)->setObjectName(str0.append(count_str0));
+				WORD(i)->setText(m_app->mainflowlist[i]);
+				WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
+				WORD(i)->setAlignment(Qt::AlignCenter);
+				WORD(i)->setWordWrap(true);
+				WORD(i)->setFont(font);
+				WORD(i)->setStyleSheet("color:rgb(202,220,255)");
+				WORD(i)->show();
+			}
+			else {
+				word_setvalue = setvalue + 18 - 55 + 40;
+				QLabel* WORD(i) = new QLabel(ui.up_wordbar);
+				QString str1 = "word";;
+				QString count_str1 = QString::number(i);
+				WORD(i)->setObjectName(str1.append(count_str1));
+				WORD(i)->setText(m_app->mainflowlist[i]);
+				WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
+				WORD(i)->setAlignment(Qt::AlignCenter);
+				WORD(i)->setWordWrap(true);
+				WORD(i)->setFont(font);
+				WORD(i)->setStyleSheet("color:rgb(202,220,255)");
+				WORD(i)->show();
+			}
+
+
+		}
+	}
+
 
 }
 //指示灯状态检查
@@ -323,39 +334,71 @@ void ControlMonitor::light_load()
 // 指示灯收到指令装载
 void ControlMonitor::flash_load()
 {
-	QLabel* label;
-	QLabel* wordlabel;
-
-	for (int i = 0; i < lightnumber; i++)
+	if (m_app->mainflowlist.size() == 0)
 	{
-		QString s = "light";
-		QString w = "word";
-		QString word = w.append(QString::number(i));
-		QString str = s.append(QString::number(i));
-		label = ui.dengtiao->findChild<QLabel*>(str);
-		wordlabel = ui.lightbar->findChild<QLabel*>(word);
-		label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-		wordlabel->setStyleSheet("color:white;");
+		qDebug() << "没有主流程！！！";
+		return;
 	}
+	else {
+		QLabel* label;
+		QLabel* wordlabel;
 
-	if (mainflow_finish)
-	{
-		
-		QString s = "light";
-		QString w = "word";
-		QString word = w.append(QString::number(lightnumber));
-		QString str = s.append(QString::number(lightnumber));
-		label = ui.dengtiao->findChild<QLabel*>(str);
-		wordlabel = ui.lightbar->findChild<QLabel*>(word);
-		label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-		wordlabel->setStyleSheet("color:white;");
-	}else
-	{
+
+		for (int i = 0; i < lightnumber; i++)
+		{
+			QString s = "light";
+			QString w = "word";
+			QString word = w.append(QString::number(i));
+			QString str = s.append(QString::number(i));
+			label = ui.dengtiao->findChild<QLabel*>(str);
+			wordlabel = ui.lightbar->findChild<QLabel*>(word);
+			label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+			wordlabel->setStyleSheet("color:white;");
+		}
+
+		if (mainflow_finish)
+		{
+
+			QString s = "light";
+			QString w = "word";
+			QString word = w.append(QString::number(lightnumber));
+			QString str = s.append(QString::number(lightnumber));
+			label = ui.dengtiao->findChild<QLabel*>(str);
+			wordlabel = ui.lightbar->findChild<QLabel*>(word);
+			label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+			wordlabel->setStyleSheet("color:white;");
+		}
+		else
+		{
+
+			flush->start(700);
+		}
+	}
 	
-		flush->start(700);
+
+
+}
+
+//指示灯清空
+void ControlMonitor::lightreset()
+{
+	QList<QLabel*> lblist = ui.down_wordbar->findChildren<QLabel*>();
+	QList<QLabel*> lblist1 = ui.up_wordbar->findChildren<QLabel*>();
+	QList<QLabel*> lblist2 = ui.dengtiao->findChildren<QLabel*>();
+	
+	qDeleteAll(lblist);
+	qDeleteAll(lblist1);
+
+	for (int i = 0; i < lblist2.size(); i++)
+	{
+		if (QString("dtbg")==lblist2[i]->objectName())
+		{
+			continue;
+		}
+		delete lblist2[i];
 	}
-
-
+	flush->stop();
+	
 }
 //指示灯闪烁
 void ControlMonitor::light_flash() {
@@ -365,10 +408,12 @@ void ControlMonitor::light_flash() {
 
 	if (lightflag == true)
 	{
+		qDebug() << "1";
 		lightflag = false;
 		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
 	}
 	else {
+		qDebug() << "2";
 		lightflag = true;
 		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
 	}
@@ -584,4 +629,23 @@ void ControlMonitor::recvMainFlow(int mainFlowIndex, bool curFlowFlag) {
 	mainflow_finish = curFlowFlag;
 	flash_load();
 
+}
+
+void ControlMonitor::recieverocketType(int id)
+{
+	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
+	m_pmainFlowDao->getMainflow(id);
+	light_load();
+	flash_load();
+	qDebug() << "this is recieved id" ;
+}
+
+void ControlMonitor::acceptchage()
+{
+	lightnumber = 1;
+	lightreset();
+	light_load();
+	flash_load();
+	
+	qDebug() << "main flow has been changed!";
 }

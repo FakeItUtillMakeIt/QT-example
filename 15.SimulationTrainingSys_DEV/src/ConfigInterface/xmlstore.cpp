@@ -7,6 +7,7 @@
 #include "stylegroup.h"
 #include "stylelabel.h"
 #include "configscene.h"
+#include "../ControlCommand/AppCache.h"
 using namespace tinyxml2;
 
 ConfigNameSpaceStart
@@ -54,20 +55,74 @@ bool XmlStore::InitStylePath()
     return true;
 }
 
-bool XmlStore::InitSceneFile()
+bool XmlStore::InitRocketFile( bool adddefault)
 {
-    QString filename;
+     QString filename;
     {//场景文件初始化
         bool  fileexit = false;
         QString exepath = QApplication::applicationDirPath();
-        exepath += "/scene/";
+        exepath += "/rocket/";
         QDir  dir;
         if (!dir.exists(exepath))
         {
             dir.mkpath(exepath);
         }
 
-        filename = exepath + "/scenes.xml";
+        filename = exepath + "/rocket.xml";
+        QFile  file(filename);
+        if (file.exists())
+        {
+            qDebug() << "文件存在";
+            fileexit = true;
+        }
+        else
+        {
+            file.open(QIODevice::WriteOnly);
+            file.close();
+        }
+      //  if (fileexit)
+        //    return true;
+    }
+    tinyxml2::XMLDocument doc;//定义doc对象
+    const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    XMLError result = doc.Parse(declaration);
+
+    //<2.添加节点
+    XMLElement* groupeslement = doc.NewElement("rockets");
+    doc.InsertEndChild(groupeslement);
+
+    //生成火箭节点
+    for (auto item: AppCache::instance()->m_allRocketType)
+    {
+        XMLElement* rocketlement = doc.NewElement("rocket");
+        rocketlement->SetAttribute("id", item.first);
+        rocketlement->SetAttribute("name", item.second->m_name.c_str());
+        rocketlement->SetAttribute("code", item.second->m_code.c_str());
+        rocketlement->SetAttribute("path", ("/rocket/" + item.second->m_name + "/scenes.xml").c_str());
+        groupeslement->InsertEndChild(rocketlement);
+        //生成场景文件
+        InitSceneFile( QString::fromLocal8Bit(("/rocket/" + item.second->m_name + "/").c_str()), "scenes.xml", adddefault);
+    }
+    //<5.保存至文件中
+    result = doc.SaveFile(filename.toStdString().data());//会清除原来文件中的内容
+    qDebug() << "result:" << result << " filename:" << filename;
+    return true;
+}
+
+bool XmlStore::InitSceneFile(QString path,QString ifilename,bool adddefault)
+{
+    QString filename;
+    {//场景文件初始化
+        bool  fileexit = false;
+        QString exepath = QApplication::applicationDirPath();
+        exepath += path;
+        QDir  dir;
+        if (!dir.exists(exepath))
+        {
+            dir.mkpath(exepath);
+        }
+
+        filename = exepath + ifilename;
         QFile  file(filename);
         if (file.exists())
         {
@@ -89,10 +144,31 @@ bool XmlStore::InitSceneFile()
     //<2.添加节点
    XMLElement* groupeslement = doc.NewElement("scenes");
    doc.InsertEndChild(groupeslement);
+
+   //如果是主控，自动添加前后端两个场景
+   if(adddefault)
+     AddDefaultScene(groupeslement,doc,path);
    //<5.保存至文件中
-   result = doc.SaveFile(filename.toStdString().data());//会清除原来文件中的内容
-   qDebug() << "result:" <<result << " filename:" << filename;
+   result = doc.SaveFile(filename.toLocal8Bit().data());//会清除原来文件中的内容
+ //  qDebug() << "result:" <<result << " filename:" << filename;
    return true;
+}
+bool XmlStore::AddDefaultScene(XMLElement* groupeslement, tinyxml2::XMLDocument& doc,QString ipath)
+{
+    QMap<QString, QString>  scenemap;
+    scenemap[get_uuid()] = "主控软件";
+    scenemap[get_uuid()] = "前端软件";
+
+    for (auto key : scenemap.keys())
+    {
+        tinyxml2::XMLElement* sceneElement = doc.NewElement("scene");
+        sceneElement->SetAttribute("name", scenemap[key].toLocal8Bit().data());
+        sceneElement->SetAttribute("id", key.toLocal8Bit().data());
+        QString filepath = ipath  + scenemap[key] + ".xml";
+        sceneElement->SetAttribute("path", filepath.toLocal8Bit().data());
+        groupeslement->InsertEndChild(sceneElement);
+    }
+    return true;
 }
 
 bool  XmlStore::ReadElementInfo(tinyxml2::XMLElement* groupElement,QString elementname,QList<QMap<QString,QString>>&  Infolist)
@@ -251,7 +327,7 @@ bool XmlStore::AddSceneToFile(std::string filename, ConfigScene *scene)
     tinyxml2::XMLElement* sceneElement = doc.NewElement("scene");
     sceneElement->SetAttribute("name",scene->GetName().toLocal8Bit().data());
     sceneElement->SetAttribute("id",scene->GetID().toLocal8Bit().data());
-    QString filepath  = "/scene/" + scene->GetName()+ ".xml";
+    QString filepath  = "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket + "/" + scene->GetName()+ ".xml";
     scene->SetPath(filepath);
     sceneElement->SetAttribute("path",filepath.toLocal8Bit().data());
     groupElement->InsertEndChild(sceneElement);

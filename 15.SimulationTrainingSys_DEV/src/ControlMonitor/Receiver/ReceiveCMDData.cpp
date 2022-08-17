@@ -59,12 +59,12 @@ void ReceiveCMDData::receiveData()
 		{
 			continue;
 		}
-		Command* command = new Command();
-		command->m_iType = 1;
-		command->m_iCode = 0;
-		command->m_iBackId = 0;
-		memcpy(&command->m_iCode, datagram.data() + 2, 1); //测发指令code 
-		memcpy(&command->m_iBackId, datagram.data() + 3, 1); //参数，执行情况 
+		//Command* command = new Command();
+		//command->m_iType = 1;
+		//command->m_iCode = 0;
+		//command->m_iBackId = 0;
+		//memcpy(&command->m_iCode, datagram.data() + 2, 2); //测发指令code 
+		//memcpy(&command->m_iBackId, datagram.data() + 4, 1); //参数，执行情况 
 		QVariant temp;
 		//temp.setValue(command);
 

@@ -23,6 +23,7 @@ public:
 	~DeviceParam();
 	int m_id;//这个是唯一标识符，用于绑定组态控件
 	int m_deviceId;
+	int m_rockcketid;
 	string m_deviceName;
 	int m_subParameterId;//外键引用parameter_info.id
 	string m_subParameterName;

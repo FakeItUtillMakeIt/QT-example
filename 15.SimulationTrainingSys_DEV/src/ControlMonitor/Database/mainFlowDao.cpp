@@ -46,7 +46,7 @@ namespace DataBase
 		return is_connected;
 	}
 
-	bool mainFlowDao::getMainflow()
+	bool mainFlowDao::getMainflow(int id)
 	{
 
 		if (!connected())
@@ -58,7 +58,9 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		string sql;
-		sql.append("SELECT `name`,`index` FROM main_flow_info ORDER BY `index`;");
+		string sql2=to_string(id);
+		string sql3=" ORDER BY `index`;";
+		sql.append("SELECT `name`,`index` FROM main_flow_info where rocket_id=").append(sql2).append(sql3);
 		int res=0;
 		
 		mysql_query(&my_connection, "SET NAMES UTF8"); //…Ë÷√±‡¬Î∏Ò Ω

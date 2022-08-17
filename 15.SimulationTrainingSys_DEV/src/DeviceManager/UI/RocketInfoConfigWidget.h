@@ -85,6 +85,8 @@ namespace RocketInfoConfig {
 		QPushButton* rocketParamInfOKBtn;
 
 		QPushButton* updateRocketInfoBtn;
+
+		QString userLastSelectCmd = "";
 	private:
 		void InitUILayout();
 		void widgetConfig();

@@ -136,21 +136,32 @@ void PropertySet::updateOneSetData(ConfigValueSet &configset)
         }
         if (datasources.contains(configvalue->valueid))
         {
-            string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[configvalue->getStrValue().toInt()]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[configvalue->getStrValue().toInt()]->m_subParameterName;
-            datasources[configvalue->valueid]->setPlainText(QString::fromLocal8Bit(showtext.c_str()));
+            QString strkey = configvalue->getStrValue();
+            if (VerifyNumber(strkey)&& (*ConfigGlobal::m_allDeviceParamPtr).count(strkey.toInt()))
+            {
+                string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[configvalue->getStrValue().toInt()]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[configvalue->getStrValue().toInt()]->m_subParameterName;
+                datasources[configvalue->valueid]->setPlainText(QString::fromLocal8Bit(showtext.c_str()));
+            }
         }
         if (cmdsources.contains(configvalue->valueid))
         {
-            string  showtext = (*ConfigGlobal::m_allCommadPrt)[configvalue->getStrValue().toInt()]->m_sName;
-            cmdsources[configvalue->valueid]->setPlainText(QString::fromLocal8Bit(showtext.c_str()));
+            QString strkey = configvalue->getStrValue();
+            if (VerifyNumber(strkey) && (*ConfigGlobal::m_allCommadPrt).count(strkey.toInt()))
+            {
+                string  showtext = (*ConfigGlobal::m_allCommadPrt)[configvalue->getStrValue().toInt()]->m_sName;
+                cmdsources[configvalue->valueid]->setPlainText(QString::fromLocal8Bit(showtext.c_str()));
+            }
         }
         if (multiDatasoueces.contains(configvalue->valueid))
         {
             QList<QString>& dataSourceList = *(QList<QString>*)configvalue->value;
             for (auto item : dataSourceList)
             {
-                string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_subParameterName;
-                multiDatasoueces[configvalue->valueid]->addItem(showtext.c_str());
+                if (VerifyNumber(item) && (*ConfigGlobal::m_allDeviceParamPtr).count(item.toInt()))
+                {
+                    string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_subParameterName;
+                    multiDatasoueces[configvalue->valueid]->addItem(showtext.c_str());
+                }
             }
         }
     }

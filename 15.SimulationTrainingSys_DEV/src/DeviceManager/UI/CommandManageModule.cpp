@@ -328,8 +328,13 @@ void CommandManageModule::paintEvent(QPaintEvent* event) {
 **/
 void CommandManageModule::insertOneRowData() {
 
+	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->setInfoWidget(DeviceCommonVaries::COMMAND_WIDGET);
+	addRocketTypeW->setWindowName(QString("新增指令"));
+	addRocketTypeW->show();
+
 	CommandInfoConfig::InfoConfigWidget* infoConfigWidget = CommandInfoConfig::InfoConfigWidget::getInstance();
-	infoConfigWidget->show();
+	//infoConfigWidget->show();
 	connect(infoConfigWidget, &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
 		//要更新数据库
 		InitDisplayData();

@@ -44,6 +44,9 @@ public:
     static bool  dataupdated;
     static void(*cmdhandler)(int, ConfigNameSpace::ConfigButton*);
     static void updateDefaultState();
+    static QString currentRocket;
+    static int currentRocketID;
+
 }; 
 
 

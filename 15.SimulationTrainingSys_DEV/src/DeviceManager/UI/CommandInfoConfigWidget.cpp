@@ -198,6 +198,11 @@ void InfoConfigWidget::widgetConfig() {
 	{
 		userSelectRocketType->addItem(QString(ele->second[1].c_str()), QString(ele->second[0].c_str()).toInt());
 	}
+	if (!userLastSlectRocket.isEmpty())
+	{
+		userSelectRocketType->setCurrentText(userLastSlectRocket);
+	}
+
 	//»ØÁî
 	userSelectBackCMD->clear();
 	deviceManageDbOp->commandInfo.clear();
@@ -373,6 +378,7 @@ void InfoConfigWidget::clickCommandOKBtn() {
 	auto tmpInstance = DeviceDBConfigInfo::getInstance();
 
 	int rocketTypeID = userSelectRocketType->currentData().toInt();
+	userLastSlectRocket = userSelectRocketType->currentText();
 	int cmdBackID = userSelectBackCMD->currentData().toInt();
 	int cmdCode = userSelectCMDCode->currentData().toInt();//±àÂëÎ¨Ò»
 

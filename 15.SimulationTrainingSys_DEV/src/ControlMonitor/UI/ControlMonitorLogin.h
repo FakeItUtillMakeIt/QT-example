@@ -22,4 +22,5 @@ public slots:
 	void CloseSlot();
 signals:
 	void LoginSignal();
+	void sendrocketType(int id);
 };

@@ -4,6 +4,7 @@
 #include <QStandardItemModel>
 #include <QDebug>
 #include "qmessagebox.h"
+#include "configglobal.h"
 #pragma execution_character_set("utf-8")
 
 ParamSelect::ParamSelect(QWidget *parent) :
@@ -189,8 +190,11 @@ ParamSelect::~ParamSelect()
 }
 void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
 {
+    int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allCommadPrt.begin(); it != m_allCommadPrt.end(); it++)
     {
+        if (it->second->m_iRocketId != rocketid || it->second->m_iType != 1)
+            continue;
         QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_sName.c_str()));
         paramnode->setData(it->second->m_id, Qt::UserRole + 1);
         paramModel->appendRow(paramnode);
@@ -202,8 +206,11 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
 void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
 {
     map<int, QStandardItem*> deviceItemMap;
+    int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allDeviceParam.begin(); it != m_allDeviceParam.end(); it++)
     {
+        if (it->second->m_rockcketid != rocketid)
+            continue;
         QStandardItem* devicenode = nullptr;  //获取设备节点
         if (deviceItemMap.find(it->second->m_deviceId) != deviceItemMap.end())
         {

@@ -101,7 +101,7 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql; 
-		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
+		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit,b.rocket_id FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -119,6 +119,7 @@ namespace DataBase
 					oneDeviceParam->m_subParameterId = atoi(sql_row[3]);
 					oneDeviceParam->m_subParameterName = Utils::UTF8ToGBK(sql_row[4]);
 					oneDeviceParam->m_unit = Utils::UTF8ToGBK(sql_row[5]);
+					oneDeviceParam->m_rockcketid = atoi(sql_row[6]);
 					m_app->m_allDeviceParam.insert(pair<int, DeviceParam*>(oneDeviceParam->m_id, oneDeviceParam));
 				}
 			}

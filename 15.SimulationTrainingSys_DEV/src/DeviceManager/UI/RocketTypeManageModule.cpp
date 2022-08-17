@@ -283,11 +283,13 @@ void RocketTypeManageModule::paintEvent(QPaintEvent* event) {
 **/
 void RocketTypeManageModule::insertOneRowData() {
 
-	/*AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
-	addRocketTypeW->show();*/
+	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->setInfoWidget(DeviceCommonVaries::ROCKET_WIDGET);
+	addRocketTypeW->setWindowName(QString("新增火箭型号"));
+	addRocketTypeW->show();
 
 	RocketInfoConfig::InfoConfigWidget* infoConfigWidget = RocketInfoConfig::InfoConfigWidget::getInstance();
-	infoConfigWidget->show();
+	//infoConfigWidget->show();
 	connect(infoConfigWidget, &RocketInfoConfig::InfoConfigWidget::updateRocketInfo, this, [=]() {
 		//要更新数据库
 		InitDisplayData();

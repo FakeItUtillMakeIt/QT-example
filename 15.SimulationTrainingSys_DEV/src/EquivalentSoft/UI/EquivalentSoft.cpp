@@ -37,7 +37,7 @@ void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 
 
 EquivalentSoft::EquivalentSoft(QWidget* parent)
-    : QMainWindow(parent)
+	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_pUserDAO(nullptr)
 	, m_pDeviceDAO(nullptr)
@@ -48,20 +48,20 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 	, m_isMax(false)
 	, m_pReceiveRocketData(nullptr)
 {
-    ui.setupUi(this);
+	ui.setupUi(this);
 	m_app = AppCache::instance();
 	//ui.lb_title->setText(m_app->m_soft->GetName());
-    this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
+	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	//this->setWindowTitle(m_app->m_soft->GetName());
-    setAttribute(Qt::WA_TranslucentBackground, true);
+	setAttribute(Qt::WA_TranslucentBackground, true);
 	ui.comboBox->setView(new  QListView());
-	
-    Init(); 
-	CreatConfigInterface();
+
+	Init();
+	//	CreatConfigInterface();
 
 }
 void EquivalentSoft::CreatConfigInterface()
-{  
+{
 	gCenterOperate = m_pCenterOperate;
 	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
 
@@ -80,10 +80,14 @@ void EquivalentSoft::CreatConfigInterface()
 	ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
 	ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
 
-	ConfigNameSpace::XmlStore::InitSceneFile();
+	ConfigNameSpace::XmlStore::InitRocketFile(false);
 	QString exepath = QApplication::applicationDirPath();
 	QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
-	int result = ConfigNameSpace::XmlStore::ReadSceneFile(exepath.toStdString() + "/scene/scenes.xml", sceneinfolist);
+
+	QString  filepath = exepath + "/rocket/" + QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()) + "/scenes.xml";
+	ConfigNameSpace::ConfigGlobal::currentRocket = QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str());
+	ConfigNameSpace::ConfigGlobal::currentRocketID = m_app->m_CurrentRocketType->m_id;
+	int result = ConfigNameSpace::XmlStore::ReadSceneFile(filepath.toLocal8Bit().data(), sceneinfolist);
 	//样式管理器
 	ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
 	ConfigNameSpace::ConfigGlobal::gstylemanager = stylemanager;
@@ -101,7 +105,7 @@ void EquivalentSoft::CreatConfigInterface()
 	QHBoxLayout* hlayout = new QHBoxLayout;
 	hlayout->addWidget(configinterface);
 	ui.display_wgt->setLayout(hlayout);
-	hlayout->setMargin(0); 
+	hlayout->setMargin(0);
 }
 bool EquivalentSoft::InitFrame()
 {
@@ -115,19 +119,20 @@ bool EquivalentSoft::InitFrame()
 		}
 	}
 	if (m_app->m_CurrentRocketDataFrame == nullptr) return false;
-	m_pReceiveRocketData = new ReceiveRocketData(); 
+	m_pReceiveRocketData = new ReceiveRocketData();
+	return true;
 }
- 
+
 
 void EquivalentSoft::Init()
-{  
+{
 	//m_pCenterOperate = new CenterOperate(ui.center_wgt); 
 	//gCenterOperate = m_pCenterOperate;
 	QWidget* tmpwidget = new QWidget();
 	m_pCenterOperate = new CenterOperate(tmpwidget);
 	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
-    connect(ui.pb_close, &QPushButton::clicked, this, &EquivalentSoft::CloseWindow);
-    connect(ui.pb_min, &QPushButton::clicked, this, &EquivalentSoft::ShowMinimized);
+	connect(ui.pb_close, &QPushButton::clicked, this, &EquivalentSoft::CloseWindow);
+	connect(ui.pb_min, &QPushButton::clicked, this, &EquivalentSoft::ShowMinimized);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &EquivalentSoft::changeResize);
 	// 
 		//加载字体
@@ -144,7 +149,7 @@ void EquivalentSoft::Init()
 	ui.time->setFont(f);
 	m_app->rokecttype = ui.rokect_type;
 	//ui.rokect_type->setText(m_app->m_soft->GetType());
-	
+
 	//加载时间
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timeupdate()));
@@ -176,15 +181,15 @@ void EquivalentSoft::Init()
 	connect(ui.delete_cancel, SIGNAL(clicked()), this, SLOT(closehbj2()));
 	//等效器编辑
 	connect(ui.edit, SIGNAL(clicked()), this, SLOT(editdxq()));
-	 
+
 	//初始化调试信息显示区
 	m_myInfoTip = new MyInfoTip(ui.wgt_status_left);
 	//ui.wgt_status_left->setStyleSheet("background-color:red");
 	connect(m_myInfoTip, &MyInfoTip::hoverInfo, this, [this]() {
 		tb_show->raise();
 		tb_show->show();
-		
-	});
+
+		});
 	if (tb_show != nullptr)
 	{
 		delete tb_show;
@@ -192,11 +197,11 @@ void EquivalentSoft::Init()
 	tb_show = new MyLogBox(ui.centralWidget);
 	connect(tb_show, &MyLogBox::leaveInfo, this, [this]() {
 		tb_show->hide();
-	});
-	tb_show->hide(); 
+		});
+	tb_show->hide();
 	changeResize();
 
-	displayStatuInfo("系统开始加载基础数据！"); 
+	displayStatuInfo("系统开始加载基础数据！");
 	//加载基础数据
 	m_pUserDAO = new DataBase::UserDAO(m_app->m_outputPath);
 	if (!m_pUserDAO->getUser())
@@ -205,7 +210,7 @@ void EquivalentSoft::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
-	displayStatuInfo("加载用户数据完毕！"); 
+	displayStatuInfo("加载用户数据完毕！");
 
 	//加载基础数据
 	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
@@ -261,7 +266,7 @@ void EquivalentSoft::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
-	displayStatuInfo("加载帧协议参数数据完毕！"); 
+	displayStatuInfo("加载帧协议参数数据完毕！");
 	//协议帧排序
 	for (auto item : m_app->m_RocketDataFrame)
 	{
@@ -274,15 +279,15 @@ void EquivalentSoft::Init()
 //添加等效器弹框界面
 void EquivalentSoft::adddxq()
 {
-	
+
 	hbj->show();
-	
+
 }
 //添加等效器成功后处理函数
 void EquivalentSoft::adddxq_ok()
 {
 	count++;
-	QWidget*SINGLE_NAME(count) = new QWidget();
+	QWidget* SINGLE_NAME(count) = new QWidget();
 	QString count_str = QString::number(count);
 	QString s1 = "single_dxq";
 	QString single = s1.append(count_str);
@@ -330,7 +335,7 @@ void EquivalentSoft::adddxq_ok()
 		""));
 	DXQ_NAME(count)->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(DXQ_NAME(count), SIGNAL(clicked()), this, SLOT(selected()));
-	
+
 	HO_NAME(count)->addWidget(DXQ_NAME(count));
 
 	QLabel* LABEL_RIGHT(count) = new QLabel();
@@ -343,7 +348,7 @@ void EquivalentSoft::adddxq_ok()
 	LABEL_RIGHT(count)->setAlignment(Qt::AlignCenter);
 	HO_NAME(count)->addWidget(LABEL_RIGHT(count));
 
-	QPushButton*DXQ_CLOSE(count) = new QPushButton();
+	QPushButton* DXQ_CLOSE(count) = new QPushButton();
 	QString s = "dxqCLOSE";
 	QString dxqclose = s.append(count_str);
 	connect(DXQ_CLOSE(count), SIGNAL(clicked()), this, SLOT(deletedxq()));
@@ -392,14 +397,14 @@ void EquivalentSoft::adddxq_ok()
 				""));
 		}
 
-	}	
-	DXQ_NAME(count)->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252)}");	
+	}
+	DXQ_NAME(count)->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252)}");
 	hbj->hide();
 
 	ConfigNameSpace::ConfigGlobal::gconfiginterface->AddSceneFromOut(ui.comboBox->currentText(), DXQ_NAME(count), DXQ_CLOSE(count));
 }
 
-void EquivalentSoft::AutoAddDxq(QPushButton* selbtn,QPushButton* delbtn)
+void EquivalentSoft::AutoAddDxq(QPushButton* selbtn, QPushButton* delbtn)
 {
 	count++;
 	QWidget* SINGLE_NAME(count) = new QWidget();
@@ -538,14 +543,14 @@ void EquivalentSoft::selected()
 				"}\n"
 				""));
 		}
-	
+
 	}
 	selectbutton->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252)}");
 	cur = selectbutton->parentWidget();
 	QString m = "的展示界面-编辑界面请点击右上角矩形小图标";
 	QString n = cur->objectName();
 	n.append(m);
-   // ui.test->setText(n.append(m));
+	// ui.test->setText(n.append(m));
 
 	ConfigNameSpace::ConfigGlobal::gconfiginterface->ChangeSceneByBtnFromOut(selectbutton);
 
@@ -578,28 +583,28 @@ void EquivalentSoft::delete_ok()
 		cur->deleteLater();
 		cur = nullptr;
 		hbj2->hide();
-		if(result)
-		QMessageBox::warning(nullptr, tr("错误"), tr("删除节点失败%1").arg(result));
+		if (result)
+			QMessageBox::warning(nullptr, tr("错误"), tr("删除节点失败%1").arg(result));
 
 	}
-	
+
 }
 //进入编辑界面
 void EquivalentSoft::editdxq()
 
 {
 	qDebug() << cur;
-	if (cur==nullptr)
+	if (cur == nullptr)
 	{
 		QMessageBox::warning(this, "waring", "需要选中一个等效器才能编辑", (QMessageBox::Ok | QMessageBox::Cancel));
-		
+
 	}
 	else {
-	
+
 		QString m = "的编辑界面";
 		QString n = cur->objectName();
 		n.append(m);
-	//	ui.test->setText(n.append(m));
+		//	ui.test->setText(n.append(m));
 	}
 
 }
@@ -622,11 +627,11 @@ void EquivalentSoft::timecount()
 }
 void EquivalentSoft::CloseWindow()
 {
-    this->close();
+	this->close();
 }
 void EquivalentSoft::ShowMinimized()
 {
-    this->showMinimized();
+	this->showMinimized();
 }
 
 void EquivalentSoft::displayStatuInfo(QString info, bool is_alarm)
@@ -664,7 +669,7 @@ void EquivalentSoft::changeResize()
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
 		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 158, ui.center_wgt->width() - 12, 300));
- 
+
 	}
 	else
 	{
@@ -675,7 +680,7 @@ void EquivalentSoft::changeResize()
 		showNormal();
 		ui.vl_UI->setContentsMargins(5, 5, 5, 5);//设置软件界面边界
 		tb_show->setGeometry(QRect(8, ui.center_wgt->height() - 127, ui.center_wgt->width() - 17, 200));
- 
+
 	}
 
 	//ui.lb_title->setGeometry(QRect((ui.wgt_title_middle->width() - 250) / 2, 5, 250, 16));
@@ -721,10 +726,10 @@ void EquivalentSoft::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton && event->modifiers() == Qt::NoModifier)
 	{
-		qDebug() << "~~EquivalentSoft offset outrange" <<  " event->globalPos()" << event->globalPos() << " screnn:" << event->screenPos() << " windowspos:" << event->windowPos() << " mLastMousePosition" << mLastMousePosition;;;
+		qDebug() << "~~EquivalentSoft offset outrange" << " event->globalPos()" << event->globalPos() << " screnn:" << event->screenPos() << " windowspos:" << event->windowPos() << " mLastMousePosition" << mLastMousePosition;;;
 
 		mMoving = true;
-		
+
 		mLastMousePosition = event->globalPos();
 	}
 }

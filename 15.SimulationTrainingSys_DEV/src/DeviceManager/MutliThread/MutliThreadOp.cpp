@@ -104,4 +104,5 @@ void WorkThread::doWork() {
 
 	}
 
+	emit workFinished();
 }

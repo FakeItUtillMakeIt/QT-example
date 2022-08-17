@@ -32,6 +32,47 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 {
 	ui.setupUi(this);
+
+
+	//dragablewid* test = new dragablewid(ui.page_5);
+	//test->setGeometry(0, 0, 200, 200);
+	//test->setStyleSheet("background-color:red;");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	ui.thumbnail_prew->setPixmap(exepath + "defaultimg.png");
 	ui.thumbnail_prew->setScaledContents(true);
 		
@@ -1788,6 +1829,8 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 twoDdisplay::~twoDdisplay()
 {}
+
+
 
 
 

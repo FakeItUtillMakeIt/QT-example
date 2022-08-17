@@ -28,6 +28,7 @@ public:
 	ControlMonitor(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
 	void Init();
+	void recieverocketType(int id);
 private:
 	Ui::ControlMonitorClass ui;
 	AppCache* m_app;
@@ -71,6 +72,8 @@ private slots:
 	void flash_load();
 	void light_flash();
 	void lighttest();
+	void lightreset();
 
 	void recvMainFlow(int mainFlowIndex, bool curFlowFlag);
+	void acceptchage();
 };

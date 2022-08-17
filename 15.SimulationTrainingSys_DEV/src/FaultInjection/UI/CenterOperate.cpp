@@ -479,12 +479,14 @@ void CenterOperate::receiverCMD(QByteArray oneCommand)
     //防止一发多收，似的注入状态未变的情况
     if (m_isSendOne == false)
         return;
-    if (oneCommand.at(2) != m_BackCode)
+    int backCode = 0, sendCode = 0; 
+    memcpy(&backCode, oneCommand.data() + 2, 2);//测发指令code 
+    memcpy(&sendCode, oneCommand.data() + 5, 2);//测发指令code  
+    if (backCode != m_BackCode)
         return;
-    if (oneCommand.at(4) != m_sendCode)
-        return;
-
-    if (oneCommand.at(3) == 0x01)
+    if (sendCode != m_sendCode)
+        return; 
+    if (oneCommand.at(4) == 0x01)
         emit backOnFaultClick(true);//故障设定成功
     else
         emit backOnFaultClick(false);//故障设定失败
@@ -523,8 +525,8 @@ void CenterOperate::sendCMD(int cmd_id, int type)
     QByteArray m_pBuff(FRAMELENGTH, Qt::Uninitialized);
     m_pBuff[0] = headType;//帧头2字节
     m_pBuff[1] = 0xAA;
-    m_pBuff[2] = command->m_code; //测发指令code 1字节
-    m_pBuff[3] = 0x00;//预留
+    //m_pBuff[2] = command->m_code; //测发指令code 1字节
+    memcpy(m_pBuff.data() + 2, &command->m_code, 2);//测发指令code 
     m_pBuff[4] = 0x00;//预留
     m_pBuff[5] = 0x00;//预留
     m_pBuff[6] = 0x00;//预留

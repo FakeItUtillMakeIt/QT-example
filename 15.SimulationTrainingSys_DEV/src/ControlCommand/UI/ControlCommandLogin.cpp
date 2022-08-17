@@ -21,9 +21,10 @@ void ControlCommandLogin::LoginSlot()
 	this->close();
 	if (!controlCommand->InitFrame())
 	{
-		QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), "没有绑定箭上数据协议！");
+		QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), "该型号没有绑定箭上数据协议！");
 		this->close();
 	}
+	controlCommand->CreatConfigInterface();
 	controlCommand->show(); 
 }
 void ControlCommandLogin::CloseSlot() 

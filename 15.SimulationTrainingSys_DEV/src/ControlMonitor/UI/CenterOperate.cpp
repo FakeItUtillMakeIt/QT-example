@@ -34,11 +34,14 @@ void CenterOperate::receiverCMD(QVariant oneCommand)
 	{
 		m_pBuff[i] = frameData[i];
 	}
+	 
+	int m_iCode = 0;
+	int exeStat = 0;
+	int sendICode = 0;
 
-	int m_iCode = m_pBuff[2];
-	int exeStat = m_pBuff[3];
-	int sendICode = m_pBuff[4];
-
+	memcpy(&m_iCode, m_pBuff.data() + 2, 2); //测发指令code 
+	memcpy(&exeStat, m_pBuff.data() + 4, 1); //参数，执行情况 
+	memcpy(&sendICode, m_pBuff.data() + 5, 2); //参数，执行情况 
 	//QMessageBox::information(qApp->activeWindow(), "", QString("C3I收到测发回令，测发回令ID:%1，指令发送方code:%2,执行情况:%3;").arg(m_iCode).arg(sendICode).arg(exeStat == 1 ? "成功" : "失败"));
 	emit curRunCmd(m_iCode, sendICode);
 }

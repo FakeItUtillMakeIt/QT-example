@@ -22,14 +22,14 @@ class ControlCommand : public QMainWindow
 public:
     ControlCommand(QWidget *parent = Q_NULLPTR);
     void displayStatuInfo(QString info, bool is_alarm = false);
-    bool InitFrame(); 
+    bool InitFrame();  
+    void CreatConfigInterface(); 
 private:
     Ui::ControlCommandClass ui;
     AppCache* m_app;
     bool m_isMax;
     CenterOperate* m_pCenterOperate;
     void Init();
-    void CreatConfigInterface();
     DataBase::UserDAO* m_pUserDAO;
     DataBase::DeviceDAO* m_pDeviceDAO;
     DataBase::CommandDAO* m_pCommandDAO;

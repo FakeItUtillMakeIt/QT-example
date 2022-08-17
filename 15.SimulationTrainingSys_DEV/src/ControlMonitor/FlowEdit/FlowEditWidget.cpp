@@ -172,18 +172,20 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 
 	}
 	rightTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
+	//为空流程时 
 	if (mainFlowInfo_.size() == 0)
 	{
-		rightTable->insertRow(0);
-		for (int i = 0; i < tableColumnName.size(); i++)
-		{
-			rightTable->setItem(0, i, new QTableWidgetItem);
-		}
-		return;
-	}
+		rightTable->setRowCount(1);
+		mainFlowInfo_[1].push_back("");
+		mainFlowInfo_[1].push_back("");
+		mainFlowInfo_[1].push_back("");
+		mainFlowInfo_[1].push_back("");
 
-	rightTable->setRowCount(mainFlowInfo_.size());
+	}
+	else
+	{
+		rightTable->setRowCount(mainFlowInfo_.size());
+	}
 
 	/************************************************************************/
 	/*                                                                      */

@@ -267,8 +267,13 @@ void ParamManageModule::paintEvent(QPaintEvent* event) {
 **/
 void ParamManageModule::insertOneRowData() {
 
+	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
+	addRocketTypeW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
+	addRocketTypeW->setWindowName(QString("新增参数"));
+	addRocketTypeW->show();
+
 	ParamInfoConfig::InfoConfigWidget* infoConfigWidget = ParamInfoConfig::InfoConfigWidget::getInstance();
-	infoConfigWidget->show();
+	//infoConfigWidget->show();
 
 	connect(infoConfigWidget, &ParamInfoConfig::InfoConfigWidget::updateParams, this, [=]() {
 		//要更新数据库

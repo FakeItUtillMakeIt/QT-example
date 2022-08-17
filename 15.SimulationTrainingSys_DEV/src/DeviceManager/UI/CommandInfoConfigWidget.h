@@ -93,6 +93,8 @@ namespace CommandInfoConfig {
 
 		QPushButton* updateCommandBtn;
 
+		QString userLastSlectRocket = "";
+
 	private:
 		void InitUILayout();
 		void widgetConfig();
