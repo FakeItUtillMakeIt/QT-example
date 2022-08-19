@@ -1,4 +1,7 @@
 #pragma once
+#ifndef ADD_ROCKET_TYPE_WIDGET_H
+#define ADD_ROCKET_TYPE_WIDGET_H
+
 
 #include <QWidget>
 #include <QtWidgets>
@@ -34,7 +37,7 @@ public:
 	}
 
 	static void closeInstance() {
-		if (instance)
+		if (instance != nullptr)
 		{
 			instance->deleteLater();
 		}
@@ -110,3 +113,6 @@ private slots:
 	void clickWindowClose();
 
 };
+
+
+#endif

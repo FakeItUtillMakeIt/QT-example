@@ -39,6 +39,7 @@ void DeviceParam::updateParamRealVal() {
 **/
 void DeviceParam::timerUpdateParam() {
 
+	qDebug() << QString::fromLocal8Bit(m_deviceName.c_str()) << QString::fromLocal8Bit(m_subParameterName.c_str());
 	if (QString::fromStdString(m_status) == QString("³õÊ¼»¯") || paramData.size() <= 0)
 	{
 		return;

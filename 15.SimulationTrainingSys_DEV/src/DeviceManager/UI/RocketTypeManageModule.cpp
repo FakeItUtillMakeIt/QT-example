@@ -161,10 +161,10 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	QPushButton* opCfgDataBtn = new QPushButton(QString("配置"));
 	opCfgDataBtn->setProperty("row", insertRow);
 
-	opCfgDataBtn->hide();
+	//opCfgDataBtn->hide();
 
 	hbox->addWidget(opEditBtn);
-	//hbox->addWidget(opCfgDataBtn);
+	hbox->addWidget(opCfgDataBtn);
 	hbox->addWidget(opDeleteBtn);
 
 
@@ -197,14 +197,8 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 	connect(opCfgDataBtn, &QPushButton::clicked, this, [=]() {
 		//获取当前火箭型号
-		int curRocketID = AppCache::instance()->m_CurrentRocketType->m_id;
-		QString curRocketName = QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str());
-
-		RocketDataCfgW* dataCfgW = new RocketDataCfgW;
-		dataCfgW->show();
-
-		(opDeleteBtn->property("row").toInt());
-
+		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->show();
 		});
 
 

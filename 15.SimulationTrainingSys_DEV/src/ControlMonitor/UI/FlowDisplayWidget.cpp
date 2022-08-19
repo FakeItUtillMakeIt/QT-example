@@ -1,4 +1,6 @@
+//#pragma execution_character_set("utf-8")
 #include "FlowDisplayWidget.h"
+#include "..\..\Public\Utils.h"
 #define ONEROWHEIGHT 27
 
 /**
@@ -11,12 +13,12 @@ FlowDisplayWidget::FlowDisplayWidget(QWidget* parent, QString rocketCode, int ro
 {
 
 	this->setAutoFillBackground(true);
-
+	m_app = AppCache::instance();
 	flowEditWidget = nullptr;
 	rowHeader << QString("序号") << QString("阶段") << QString("口令") << QString("回令") << QString("备注");
 
 	InitLayout();
-	loadSavedFlow();
+	//loadSavedFlow();
 }
 
 FlowDisplayWidget::~FlowDisplayWidget()
@@ -28,11 +30,19 @@ FlowDisplayWidget::~FlowDisplayWidget()
 
 }
 
-
+/*!
+ *  设置火箭型号.
+ *
+ *      @param [in] title
+ *      @param [in] id
+ */
 void FlowDisplayWidget::setRocketType(QString title, int id) {
 	flowName = title;
 	rocketID = id;
+	//InitLayout();
 }
+
+
 
 /**
 	@brief 初始化界面布局
@@ -44,7 +54,8 @@ void FlowDisplayWidget::InitLayout() {
 	QWidget* flowLeftTopWidget = new QWidget;
 	QHBoxLayout* flowLeftTopWLayout = new QHBoxLayout;
 	flowIcon = new QLabel();
-	flowLabel = new QLabel(QString("xxx-发射流程"));
+	//QString info = QString::fromStdString(Utils::GBKToUTF8(m_app->m_CurrentRocketType->m_name.c_str()));
+	flowLabel = new QLabel(QString("%1-发射流程").arg(flowName));
 	addFlow = new QPushButton(QString("编辑"));
 	loadFlow = new QPushButton(QString("加载流程"));
 
@@ -96,8 +107,11 @@ void FlowDisplayWidget::InitLayout() {
 	layout->addWidget(flowLeftTopWidget, 0, 0, 1, columnCount);
 	layout->addWidget(flowTable, 1, 0, rowCount - 1, columnCount);
 
+
 	//流程生成界面
 	generateFlowWidget = new GenerateFlowCmdWidget;
+
+	loadSavedFlow();
 
 	layout->addWidget(generateFlowWidget, 0, 8, 10, 8);;
 
@@ -115,13 +129,13 @@ void FlowDisplayWidget::InitLayout() {
 /**
 	@brief 新建流程
 **/
-void FlowDisplayWidget::addNewFlow() {
-
+void FlowDisplayWidget::addNewFlow()
+{
 	if (flowEditWidget == nullptr)
 	{
 		flowEditWidget = FlowEditWidget::getInstance();
 
-		flowEditWidget->setRocketType(flowName, rocketID);
+		flowEditWidget->setRocketType(flowName, AppCache::instance()->m_CurrentRocketType->m_id);
 	}
 
 	flowEditWidget->setMainFlowInfo(mainFlowInfo);
@@ -135,7 +149,6 @@ void FlowDisplayWidget::addNewFlow() {
 	flowEditWidget->show();
 
 	connect(flowEditWidget, &FlowEditWidget::updateDisPlayFlow, this, &FlowDisplayWidget::loadSavedFlow);
-
 }
 
 /**
@@ -147,12 +160,12 @@ void FlowDisplayWidget::loadSavedFlow()
 	mainFlowInfo.clear();
 	subFlowInfo.clear();
 	subFlowCmdID.clear();
-	flowLabel->setText(QString("%1-发射流程").arg(flowName));
+	//flowLabel->setText(QString("%1-发射流程").arg(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 	flowTable->setHorizontalHeaderLabels(rowHeader);
 	//从数据库中加载流程  
 	//查询主流程对应子流程信息
 	QString qSqlString = "SELECT * FROM main_flow_info WHERE rocket_id = %1; ";
-	qSqlString = qSqlString.arg(rocketID);
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
 	auto flowDBOp = FlowInfoConfig2DB::getInstance();
 	flowDBOp->customDBQuery1(qSqlString);
 	mainFlowInfo.clear();
@@ -182,7 +195,7 @@ void FlowDisplayWidget::loadSavedFlow()
 		WHERE\
 		main_flow_info.rocket_id = %1; ";
 
-	qSqlString = qSqlString.arg(rocketID);
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
 	flowDBOp->customDBQuery(qSqlString);
 	subFlowInfo.clear();
 	subFlowInfo1.clear();
@@ -191,14 +204,14 @@ void FlowDisplayWidget::loadSavedFlow()
 
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
-	{  
+	{
 		//主流程索引到子流程ID
 		mainID2SubID[atoi(ele->second[2].c_str())].push_back(atoi(ele->second[0].c_str()));
 		//主流程ID到子流程名称
 		subFlowInfo[atoi(ele->second[5].c_str())].push_back(ele->second[6].c_str());
 		subFlowInfo1[atoi(ele->second[5].c_str())].push_back(ele->second[8].c_str());
-		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str()); 
-		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str())); 
+		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str());
+		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
 	}
 
 	/*!
@@ -221,10 +234,10 @@ void FlowDisplayWidget::loadSavedFlow()
 		int cmdCount = 1, maxSize = 12, rows1 = 0, rows2 = 0, rows3 = 0, oneRow = 0;
 
 		for (auto val : subFlowInfo.value(mainID))
-		{ 
+		{
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
-			rows1 += oneRow; 
-			cmdCount++; 
+			rows1 += oneRow;
+			cmdCount++;
 			label = new QLabel(val);
 			label->adjustSize();
 			label->setGeometry(0, 0, 200, 27 * 4);
@@ -242,10 +255,10 @@ void FlowDisplayWidget::loadSavedFlow()
 		{
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
 			rows2 += oneRow;
-			label = new QLabel(val); 
+			label = new QLabel(val);
 			label->adjustSize();
 			label->setGeometry(0, 0, 200, 27 * 4);
-			label->setWordWrap(true); 
+			label->setWordWrap(true);
 			boxLayout->addWidget(label);
 		}
 
@@ -261,29 +274,30 @@ void FlowDisplayWidget::loadSavedFlow()
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
 			rows3 += oneRow;
 			label = new QLabel(val);
-			label->adjustSize(); 
-			label->setGeometry(0,0,200,27*4);
+			label->adjustSize();
+			label->setGeometry(0, 0, 200, 27 * 4);
 			label->setWordWrap(true);
 			boxLayout->addWidget(label);
-		} 
+		}
 		if (rows1 < rows2) rows1 = rows2;
 		if (rows1 < rows3) rows1 = rows3;
-		 
+
 		cellWidg->setLayout(boxLayout);
 		flowTable->setRowHeight(i - 1, (rows1 == 1 || rows1 == 0) ? 35 : rows1 * ONEROWHEIGHT);
-		flowTable->setCellWidget(i - 1, column1++, cellWidg); 
+		flowTable->setCellWidget(i - 1, column1++, cellWidg);
 	}
 
 	if (generateFlowWidget == nullptr)
 	{
-		return; 
+		return;
 	}
+
 	generateFlowWidget->setMainFlowInfo(mainFlowInfo);
 	generateFlowWidget->setSubFlowInfo(subFlowInfo);
 	generateFlowWidget->setFlowCmdID(subFlowCmdID);
 
-
 	emit updateFlowOver();
+	emit sendMainflowchange();
 }
 
 /**
@@ -298,7 +312,7 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 
 	//查询主流程对应子流程信息
 	QString qSqlString = "SELECT * FROM main_flow_info WHERE rocket_id = %1; ";
-	qSqlString = qSqlString.arg(rocketID);
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
 	auto flowDBOp = FlowInfoConfig2DB::getInstance();
 	flowDBOp->customDBQuery1(qSqlString);
 	mainFlowInfo.clear();
@@ -328,7 +342,7 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 		WHERE\
 		main_flow_info.rocket_id = %1; ";
 
-	qSqlString = qSqlString.arg(rocketID);
+	qSqlString = qSqlString.arg(AppCache::instance()->m_CurrentRocketType->m_id);
 	//auto flowDBOp = FlowInfoConfig2DB::getInstance();
 	flowDBOp->customDBQuery(qSqlString);
 	subFlowInfo.clear();
@@ -338,14 +352,14 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
-	{ 
+	{
 		//主流程索引到子流程ID
 		mainID2SubID[atoi(ele->second[2].c_str())].push_back(atoi(ele->second[0].c_str()));
 		//主流程ID到子流程名称
 		subFlowInfo[atoi(ele->second[5].c_str())].push_back(ele->second[6].c_str());
 		subFlowInfo1[atoi(ele->second[5].c_str())].push_back(ele->second[8].c_str());
 		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str());
-		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));  
+		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
 	}
 
 

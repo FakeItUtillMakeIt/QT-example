@@ -24,7 +24,6 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	ui.setupUi(this);
 
 	m_app = AppCache::instance();
-	m_app->rokecttype = ui.rokect_type;
 	//ui.lb_title->setText(m_app->m_soft->GetName());
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
@@ -34,10 +33,8 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	int id = QFontDatabase::addApplicationFont(":/ControlMonitor/word/word.ttf");
 	QStringList s = QFontDatabase::applicationFontFamilies(id);
 	font.setFamily(s[0]);
-	//m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
-	//m_pmainFlowDao->getMainflow();
 
-	//Init();
+
 
 	//指示灯测试用代码 
 	/*light_info.append(new Light_info(1, "控制箭上配电", 0));
@@ -81,33 +78,13 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 void ControlMonitor::Init()
 {
 	//请把主控发射流程页放在ui.page1 中
-	QWidget* tmpwidget = new QWidget();
-	m_pCenterOperate = new CenterOperate(tmpwidget);
-
-
+	//m_pCenterOperate = new CenterOperate(ui.page1);
+	QWidget* one = new QWidget();
+	m_pCenterOperate = new CenterOperate(one);
+	ui.rokect_type->setText(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()));
 	new twoDdisplay(ui.page2);
-	//这里放入主控发射流程展示页，父窗口为ui.page1
-	/************************************************************************/
-	/* 这里不能删除2022/07/29  如需修改默认显示，将zhukongclick注释就行                                                                     */
-	/************************************************************************/
-	QString rocketTypeName = m_app->m_soft->GetType();
-	QString qSqlString = "select rocket_info.`name`='%1',rocket_info.id,rocket_info.code,rocket_info.createTime,rocket_info.lastUpdateTime from simulatedtraining.rocket_info;";
-	qSqlString = qSqlString.arg(rocketTypeName);
-	int rocketId = -1;
-	QString rocketCode = "";
-	//if (FlowInfoConfig2DB::getInstance()->customDBQuery(qSqlString)) {
-	//	for (auto ele = FlowInfoConfig2DB::getInstance()->customSearchInfo.begin(); ele != FlowInfoConfig2DB::getInstance()->customSearchInfo.end(); ele++)
-	//	{
-	//		if (QString::fromStdString(ele->second[0]).toInt() == 1)
-	//		{
-	//			rocketId = QString::fromStdString(ele->second[1]).toInt();
-	//			rocketCode = QString::fromStdString(ele->second[2]);
-	//		}
-	//	}
-	//}
-	 
-	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromStdString(Utils::GBKToUTF8(m_app->m_CurrentRocketType->m_name.c_str())), m_app->m_CurrentRocketType->m_id);
-
+	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
+	flowDisplayWidget->setRocketType(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
 	flowDisplayWidget->setGeometry(0, 0, 1920, 768);
 
 	ui.center_wgt->setObjectName("mainControlWidget");
@@ -125,20 +102,20 @@ void ControlMonitor::Init()
 	connect(m_pCenterOperate, &CenterOperate::curRunCmd, flowDisplayWidget, &FlowDisplayWidget::updateFlowStat);
 
 	connect(flowDisplayWidget, &FlowDisplayWidget::sendMainFlowInfo, this, &ControlMonitor::recvMainFlow);
-	//connect(flowDisplayWidget, &FlowDisplayWidget::sendMainflowchange, this, &ControlMonitor::acceptchage);
+	connect(flowDisplayWidget, &FlowDisplayWidget::sendMainflowchange, this, &ControlMonitor::acceptchage);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlMonitor::changeResize);
 
 
 	//指示灯初始化
-	lightnumber =0;
+	lightnumber = 0;
 	lightflag = true;
 	//inspect = new QTimer(this);
 //	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
 	//inspect->start(1000);
 	flush = new QTimer(this);
 	connect(flush, SIGNAL(timeout()), this, SLOT(light_flash()));
-	light_load();
-	flash_load();
+
+
 	//lighttest();
 
 	//加载字体
@@ -149,6 +126,7 @@ void ControlMonitor::Init()
 	ui.rokect_type->setFont(font);
 	ui.curtime->setFont(font);
 	ui.time->setFont(font);
+	m_app->rokecttype = ui.rokect_type;
 	//ui.rokect_type->setText(m_app->m_soft->GetType());
 
 	//加载时间
@@ -374,7 +352,7 @@ void ControlMonitor::flash_load()
 			flush->start(700);
 		}
 	}
-	
+
 
 
 }
@@ -385,20 +363,20 @@ void ControlMonitor::lightreset()
 	QList<QLabel*> lblist = ui.down_wordbar->findChildren<QLabel*>();
 	QList<QLabel*> lblist1 = ui.up_wordbar->findChildren<QLabel*>();
 	QList<QLabel*> lblist2 = ui.dengtiao->findChildren<QLabel*>();
-	
+
 	qDeleteAll(lblist);
 	qDeleteAll(lblist1);
 
 	for (int i = 0; i < lblist2.size(); i++)
 	{
-		if (QString("dtbg")==lblist2[i]->objectName())
+		if (QString("dtbg") == lblist2[i]->objectName())
 		{
 			continue;
 		}
 		delete lblist2[i];
 	}
 	flush->stop();
-	
+
 }
 //指示灯闪烁
 void ControlMonitor::light_flash() {
@@ -408,12 +386,13 @@ void ControlMonitor::light_flash() {
 
 	if (lightflag == true)
 	{
-		qDebug() << "1";
+
+
 		lightflag = false;
 		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
 	}
 	else {
-		qDebug() << "2";
+
 		lightflag = true;
 		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
 	}
@@ -459,7 +438,7 @@ void ControlMonitor::zhukongclick()
 		ui.page1->setStyleSheet("background-color:rgb(245,245,245);");
 		//ui.page1->setStyleSheet("background-image:url(:/flowload/images/Flow/白底20%透明@2x.png);");
 		//进来就自动先加载流程
-		flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromStdString(Utils::GBKToUTF8(m_app->m_CurrentRocketType->m_name.c_str())), m_app->m_CurrentRocketType->m_id);
+		flowDisplayWidget = new FlowDisplayWidget(ui.page1, "Ling", 1);
 		flowDisplayWidget->setMinimumWidth(ui.page1->width());
 		flowDisplayWidget->setMinimumHeight(ui.page1->height());
 
@@ -469,6 +448,7 @@ void ControlMonitor::zhukongclick()
 	flowDisplayWidget->show();
 	ui.page1->show();
 }
+//twoDimensionClick
 void ControlMonitor::erwei_displayclick()
 {
 	ui.tabwgt->setCurrentIndex(1);//对象名为page2
@@ -530,40 +510,18 @@ void ControlMonitor::changeResize()
 		mark = "缩小-默认.png";
 		pressMark = "缩小-点击.png";
 		hoverMark = "缩小-悬浮.png";
-		//ui.pb_resize->setToolTip("向下还原");
-		//ui.vl_UI->setContentsMargins(0, 0, 0, 0); //去掉软件界面边界
 		this->move(this->pos() + (QPoint(1, 1))); //窗口最大化需要 
 		showMaximized();
 		tb_show->setGeometry(QRect(6, ui.center_wgt->height() - 73, ui.center_wgt->width() - 12, 300));
-
 	}
 	else
 	{
 		mark = "放大-默认.png";
 		pressMark = "放大-点击.png";
 		hoverMark = "放大-悬浮.png";
-		//ui.pb_resize->setToolTip("最大化");
 		showNormal();
-		//ui.vl_UI->setContentsMargins(5, 5, 5, 5);//设置软件界面边界
 		tb_show->setGeometry(QRect(8, ui.center_wgt->height() - 127, ui.center_wgt->width() - 17, 200));
-
 	}
-
-	//ui.lb_title->setGeometry(QRect((ui.wgt_title_middle->width() - 250) / 2, 5, 250, 16));
-
-	//ui.pb_resize->setStyleSheet(QString("QPushButton:hover{\n"
-	//	"background-color:transparent;\n"
-	//	"background-image:url(:/ControlMonitor/images/%1);\n"
-	//	"border:0px;}\n"
-	//	"QPushButton:pressed{\n"
-	//	"background-color:transparent;\n"
-	//	"background-image:url(:/ControlMonitor/images/%2);\n"
-	//	"border:0px;}\n"
-	//	"QPushButton {\n"
-	//	"background-color:transparent;\n"
-	//	"background-image: url(:/ControlMonitor/images/%3);\n"
-	//	"border:0px;\n"
-	//	"}").arg(hoverMark).arg(pressMark).arg(mark));
 }
 
 void ControlMonitor::paintEvent(QPaintEvent* event)
@@ -637,15 +595,18 @@ void ControlMonitor::recieverocketType(int id)
 	m_pmainFlowDao->getMainflow(id);
 	light_load();
 	flash_load();
-	qDebug() << "this is recieved id" ;
+	qDebug() << "this is recieved id";
 }
 
 void ControlMonitor::acceptchage()
 {
 	lightnumber = 1;
+	m_app->mainflowlist.clear();
+	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
+	m_pmainFlowDao->getMainflow(m_app->m_allRocketType[m_app->m_CurrentRocketType->m_id]->m_id);
 	lightreset();
 	light_load();
 	flash_load();
-	
+
 	qDebug() << "main flow has been changed!";
 }

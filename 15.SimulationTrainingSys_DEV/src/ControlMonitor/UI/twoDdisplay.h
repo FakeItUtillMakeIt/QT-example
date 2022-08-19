@@ -6,7 +6,7 @@
 #include<qlabel.h>
 #include "ui_twoDdisplay.h"
 #include"CMutils.h"
-//#include"dragablewid.h"
+#include"dragablewid.h"
 
 class twoDdisplay : public QWidget
 {

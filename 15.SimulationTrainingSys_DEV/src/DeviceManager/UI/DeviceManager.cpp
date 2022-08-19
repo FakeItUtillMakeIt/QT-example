@@ -183,6 +183,11 @@ void DeviceManager::CloseWindow()
 	CommandInfoConfig::InfoConfigWidget::closeInstance();
 	RocketInfoConfig::InfoConfigWidget::closeInstance();
 	WidgetStyleSheet::closeInstance();
+
+	if (m_centeralWidget != nullptr)
+	{
+		m_centeralWidget->deleteLater();
+	}
 }
 void DeviceManager::ShowMinimized()
 {

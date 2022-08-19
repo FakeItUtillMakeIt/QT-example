@@ -1323,7 +1323,7 @@ QPushButton {
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="page_1">
                <property name="styleSheet">
@@ -5675,493 +5675,31 @@ background-color:rgba(255,255,255,0.25);</string>
                       <string/>
                      </property>
                     </widget>
-                    <widget class="QWidget" name="imageEdit" native="true">
+                    <widget class="QToolButton" name="jzxqs">
                      <property name="geometry">
                       <rect>
-                       <x>470</x>
-                       <y>10</y>
-                       <width>800</width>
-                       <height>700</height>
+                       <x>180</x>
+                       <y>420</y>
+                       <width>100</width>
+                       <height>100</height>
                       </rect>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">background-color:white</string>
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_2">
-                      <property name="spacing">
-                       <number>0</number>
-                      </property>
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
-                      <item>
-                       <widget class="QWidget" name="imgedit_topbar" native="true">
-                        <property name="maximumSize">
-                         <size>
-                          <width>16777215</width>
-                          <height>40</height>
-                         </size>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">border-bottom:1px solid rgba(38,38,38,0.1000);</string>
-                        </property>
-                        <widget class="QLabel" name="label_56">
-                         <property name="geometry">
-                          <rect>
-                           <x>10</x>
-                           <y>0</y>
-                           <width>40</width>
-                           <height>40</height>
-                          </rect>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="pixmap">
-                          <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="label_3">
-                         <property name="geometry">
-                          <rect>
-                           <x>50</x>
-                           <y>0</y>
-                           <width>111</width>
-                           <height>41</height>
-                          </rect>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-font-weight: 500;
-color: #262626;</string>
-                         </property>
-                         <property name="text">
-                          <string>预览图编辑</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                        </widget>
-                        <widget class="QToolButton" name="imgprewedit_close">
-                         <property name="geometry">
-                          <rect>
-                           <x>770</x>
-                           <y>0</y>
-                           <width>30</width>
-                           <height>30</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>30</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>PointingHandCursor</cursorShape>
-                         </property>
-                         <property name="toolTip">
-                          <string>关闭</string>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">QToolButton:hover{
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-
-QToolButton {
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/close);
-    border:0px;
-}
-
-</string>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                        </widget>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QWidget" name="widget_4" native="true">
-                        <widget class="QScrollArea" name="imgedit_scrollArea">
-                         <property name="geometry">
-                          <rect>
-                           <x>50</x>
-                           <y>20</y>
-                           <width>720</width>
-                           <height>380</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>720</width>
-                           <height>380</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>720</width>
-                           <height>380</height>
-                          </size>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="widgetResizable">
-                          <bool>true</bool>
-                         </property>
-                         <widget class="QWidget" name="scrollAreaWidgetContents_5">
-                          <property name="geometry">
-                           <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>700</width>
-                            <height>380</height>
-                           </rect>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>700</width>
-                            <height>9999</height>
-                           </size>
-                          </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_55">
-                           <property name="spacing">
-                            <number>0</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>0</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>20</number>
-                           </property>
-                           <item>
-                            <widget class="QWidget" name="imgprew_wid" native="true">
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>16777215</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
-                             <property name="styleSheet">
-                              <string notr="true"/>
-                             </property>
-                             <layout class="QVBoxLayout" name="imgsprew_ho">
-                              <property name="spacing">
-                               <number>20</number>
-                              </property>
-                              <property name="leftMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="topMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="rightMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="bottomMargin">
-                               <number>0</number>
-                              </property>
-                             </layout>
-                            </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </widget>
-                        <widget class="QToolButton" name="imgprew_upload">
-                         <property name="geometry">
-                          <rect>
-                           <x>550</x>
-                           <y>460</y>
-                           <width>140</width>
-                           <height>34</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>140</width>
-                           <height>34</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>140</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>PointingHandCursor</cursorShape>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                         </property>
-                         <property name="text">
-                          <string>图片上传</string>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="thumbnail_prew">
-                         <property name="geometry">
-                          <rect>
-                           <x>140</x>
-                           <y>460</y>
-                           <width>100</width>
-                           <height>100</height>
-                          </rect>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>UpArrowCursor</cursorShape>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="label_60">
-                         <property name="geometry">
-                          <rect>
-                           <x>130</x>
-                           <y>410</y>
-                           <width>131</width>
-                           <height>31</height>
-                          </rect>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-font-weight: 500;
-color: #262626;</string>
-                         </property>
-                         <property name="text">
-                          <string>预览缩略图选择</string>
-                         </property>
-                        </widget>
-                        <widget class="QToolButton" name="imgprew_reset">
-                         <property name="geometry">
-                          <rect>
-                           <x>550</x>
-                           <y>520</y>
-                           <width>140</width>
-                           <height>34</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>140</width>
-                           <height>34</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>140</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>PointingHandCursor</cursorShape>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                         </property>
-                         <property name="text">
-                          <string>清空</string>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="label_19">
-                         <property name="geometry">
-                          <rect>
-                           <x>340</x>
-                           <y>410</y>
-                           <width>41</width>
-                           <height>21</height>
-                          </rect>
-                         </property>
-                         <property name="text">
-                          <string>共上传</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="label_23">
-                         <property name="geometry">
-                          <rect>
-                           <x>420</x>
-                           <y>410</y>
-                           <width>41</width>
-                           <height>21</height>
-                          </rect>
-                         </property>
-                         <property name="text">
-                          <string>张图片</string>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                        </widget>
-                        <widget class="QLabel" name="imgupload_num">
-                         <property name="geometry">
-                          <rect>
-                           <x>380</x>
-                           <y>410</y>
-                           <width>40</width>
-                           <height>21</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>40</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>80</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="text">
-                          <string>0</string>
-                         </property>
-                         <property name="scaledContents">
-                          <bool>true</bool>
-                         </property>
-                         <property name="alignment">
-                          <set>Qt::AlignCenter</set>
-                         </property>
-                         <property name="wordWrap">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QWidget" name="widget_7" native="true">
-                        <property name="maximumSize">
-                         <size>
-                          <width>16777215</width>
-                          <height>60</height>
-                         </size>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">border-top:1px solid rgba(38,38,38,0.1000);</string>
-                        </property>
-                        <widget class="QToolButton" name="imgprewedit_ok">
-                         <property name="geometry">
-                          <rect>
-                           <x>550</x>
-                           <y>14</y>
-                           <width>140</width>
-                           <height>34</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>140</width>
-                           <height>34</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>140</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>PointingHandCursor</cursorShape>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                         </property>
-                         <property name="text">
-                          <string>确定</string>
-                         </property>
-                        </widget>
-                        <widget class="QToolButton" name="imgprewedit_cancel">
-                         <property name="geometry">
-                          <rect>
-                           <x>120</x>
-                           <y>14</y>
-                           <width>140</width>
-                           <height>34</height>
-                          </rect>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>140</width>
-                           <height>34</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>140</width>
-                           <height>34</height>
-                          </size>
-                         </property>
-                         <property name="cursor">
-                          <cursorShape>PointingHandCursor</cursorShape>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">font-size: 16px;
-color: rgb(200,200,200);
-border-radius: 4px;
-border:1px solid rgb(230,230,230)
-</string>
-                         </property>
-                         <property name="text">
-                          <string>取消</string>
-                         </property>
-                        </widget>
-                       </widget>
-                      </item>
-                     </layout>
+                     <property name="text">
+                      <string>...</string>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="twoDdisplay.qrc">
+                       <normaloff>:/twoDdisplay/jzxqs</normaloff>:/twoDdisplay/jzxqs</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>100</width>
+                       <height>100</height>
+                      </size>
+                     </property>
                     </widget>
                     <zorder>label_26</zorder>
                     <zorder>tianxian</zorder>
@@ -6203,7 +5741,7 @@ border:1px solid rgb(230,230,230)
                     <zorder>smjjump</zorder>
                     <zorder>kzcjump</zorder>
                     <zorder>wdjump</zorder>
-                    <zorder>imageEdit</zorder>
+                    <zorder>jzxqs</zorder>
                    </widget>
                   </item>
                  </layout>
@@ -7401,6 +6939,494 @@ QToolButton {
                       </layout>
                      </widget>
                     </widget>
+                    <widget class="QWidget" name="imageEdit" native="true">
+                     <property name="geometry">
+                      <rect>
+                       <x>570</x>
+                       <y>20</y>
+                       <width>800</width>
+                       <height>700</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:white</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_2">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="imgedit_topbar" native="true">
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">border-bottom:1px solid rgba(38,38,38,0.1000);</string>
+                        </property>
+                        <widget class="QLabel" name="label_56">
+                         <property name="geometry">
+                          <rect>
+                           <x>10</x>
+                           <y>0</y>
+                           <width>40</width>
+                           <height>40</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="pixmap">
+                          <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_3">
+                         <property name="geometry">
+                          <rect>
+                           <x>50</x>
+                           <y>0</y>
+                           <width>111</width>
+                           <height>41</height>
+                          </rect>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+font-weight: 500;
+color: #262626;</string>
+                         </property>
+                         <property name="text">
+                          <string>预览图编辑</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QToolButton" name="imgprewedit_close">
+                         <property name="geometry">
+                          <rect>
+                           <x>770</x>
+                           <y>0</y>
+                           <width>30</width>
+                           <height>30</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="toolTip">
+                          <string>关闭</string>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QToolButton:hover{
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/closehover);
+    border:0px;}
+
+QToolButton {
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/close);
+    border:0px;
+}
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_4" native="true">
+                        <widget class="QScrollArea" name="imgedit_scrollArea">
+                         <property name="geometry">
+                          <rect>
+                           <x>50</x>
+                           <y>20</y>
+                           <width>720</width>
+                           <height>380</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>720</width>
+                           <height>380</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>720</width>
+                           <height>380</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true"/>
+                         </property>
+                         <property name="widgetResizable">
+                          <bool>true</bool>
+                         </property>
+                         <widget class="QWidget" name="scrollAreaWidgetContents_5">
+                          <property name="geometry">
+                           <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>700</width>
+                            <height>380</height>
+                           </rect>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>700</width>
+                            <height>9999</height>
+                           </size>
+                          </property>
+                          <layout class="QHBoxLayout" name="horizontalLayout_55">
+                           <property name="spacing">
+                            <number>0</number>
+                           </property>
+                           <property name="leftMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>20</number>
+                           </property>
+                           <item>
+                            <widget class="QWidget" name="imgprew_wid" native="true">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>16777215</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true"/>
+                             </property>
+                             <layout class="QVBoxLayout" name="imgsprew_ho">
+                              <property name="spacing">
+                               <number>20</number>
+                              </property>
+                              <property name="leftMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="topMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="rightMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="bottomMargin">
+                               <number>0</number>
+                              </property>
+                             </layout>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                        </widget>
+                        <widget class="QToolButton" name="imgprew_upload">
+                         <property name="geometry">
+                          <rect>
+                           <x>550</x>
+                           <y>460</y>
+                           <width>140</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>140</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>140</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string>图片上传</string>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="thumbnail_prew">
+                         <property name="geometry">
+                          <rect>
+                           <x>140</x>
+                           <y>460</y>
+                           <width>100</width>
+                           <height>100</height>
+                          </rect>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>UpArrowCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true"/>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_60">
+                         <property name="geometry">
+                          <rect>
+                           <x>130</x>
+                           <y>410</y>
+                           <width>131</width>
+                           <height>31</height>
+                          </rect>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+font-weight: 500;
+color: #262626;</string>
+                         </property>
+                         <property name="text">
+                          <string>预览缩略图选择</string>
+                         </property>
+                        </widget>
+                        <widget class="QToolButton" name="imgprew_reset">
+                         <property name="geometry">
+                          <rect>
+                           <x>550</x>
+                           <y>520</y>
+                           <width>140</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>140</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>140</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string>清空</string>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_19">
+                         <property name="geometry">
+                          <rect>
+                           <x>340</x>
+                           <y>410</y>
+                           <width>41</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>共上传</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_23">
+                         <property name="geometry">
+                          <rect>
+                           <x>420</x>
+                           <y>410</y>
+                           <width>41</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string>张图片</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="imgupload_num">
+                         <property name="geometry">
+                          <rect>
+                           <x>380</x>
+                           <y>410</y>
+                           <width>40</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>40</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>80</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="text">
+                          <string>0</string>
+                         </property>
+                         <property name="scaledContents">
+                          <bool>true</bool>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                         <property name="wordWrap">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_7" native="true">
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>60</height>
+                         </size>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">border-top:1px solid rgba(38,38,38,0.1000);</string>
+                        </property>
+                        <widget class="QToolButton" name="imgprewedit_ok">
+                         <property name="geometry">
+                          <rect>
+                           <x>550</x>
+                           <y>14</y>
+                           <width>140</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>140</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>140</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string>确定</string>
+                         </property>
+                        </widget>
+                        <widget class="QToolButton" name="imgprewedit_cancel">
+                         <property name="geometry">
+                          <rect>
+                           <x>120</x>
+                           <y>14</y>
+                           <width>140</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>140</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>140</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: rgb(200,200,200);
+border-radius: 4px;
+border:1px solid rgb(230,230,230)
+</string>
+                         </property>
+                         <property name="text">
+                          <string>取消</string>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
                     <zorder>fdj_label_9</zorder>
                     <zorder>fdj_label_8</zorder>
                     <zorder>label_10</zorder>
@@ -7412,6 +7438,7 @@ QToolButton {
                     <zorder>fdj_label_10</zorder>
                     <zorder>label_127</zorder>
                     <zorder>zhezhao2</zorder>
+                    <zorder>imageEdit</zorder>
                    </widget>
                   </item>
                  </layout>
@@ -8984,6 +9011,1475 @@ QToolButton {
                       </layout>
                      </widget>
                     </widget>
+                    <widget class="QWidget" name="imageEdit_3" native="true">
+                     <property name="geometry">
+                      <rect>
+                       <x>320</x>
+                       <y>0</y>
+                       <width>1000</width>
+                       <height>700</height>
+                      </rect>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>1000</width>
+                       <height>700</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>1000</width>
+                       <height>700</height>
+                      </size>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:white</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_19">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="imgedit_topbar_3" native="true">
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">border-bottom:1px solid rgba(38,38,38,0.1000);</string>
+                        </property>
+                        <widget class="QLabel" name="label_58">
+                         <property name="geometry">
+                          <rect>
+                           <x>10</x>
+                           <y>0</y>
+                           <width>40</width>
+                           <height>40</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="pixmap">
+                          <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_46">
+                         <property name="geometry">
+                          <rect>
+                           <x>40</x>
+                           <y>5</y>
+                           <width>121</width>
+                           <height>31</height>
+                          </rect>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+font-weight: 500;
+color: #262626;
+border:0;</string>
+                         </property>
+                         <property name="text">
+                          <string>相关内容编辑</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QToolButton" name="imgprewedit_close_3">
+                         <property name="geometry">
+                          <rect>
+                           <x>970</x>
+                           <y>0</y>
+                           <width>30</width>
+                           <height>30</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="toolTip">
+                          <string>关闭</string>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QToolButton:hover{
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/closehover);
+    border:0px;}
+
+QToolButton {
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/close);
+    border:0px;
+}
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="edit_imgline" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <layout class="QHBoxLayout" name="horizontalLayout_56" stretch="0,0">
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
+                         <property name="leftMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <item>
+                          <widget class="QWidget" name="imgeditwid" native="true">
+                           <property name="minimumSize">
+                            <size>
+                             <width>850</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>850</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <widget class="QWidget" name="widget_33" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>50</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg1">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QWidget" name="widget_34" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>180</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg2">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QWidget" name="widget_35" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>310</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg3">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QWidget" name="widget_36" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>440</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg4">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QWidget" name="widget_37" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>570</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg5">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QWidget" name="widget_38" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>700</x>
+                              <y>60</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <widget class="QLabel" name="uploadedimg6">
+                             <property name="geometry">
+                              <rect>
+                               <x>0</x>
+                               <y>0</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:pink;</string>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QLabel" name="label_66">
+                            <property name="geometry">
+                             <rect>
+                              <x>50</x>
+                              <y>20</y>
+                              <width>61</width>
+                              <height>21</height>
+                             </rect>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">font-size: 14px;
+font-weight: 500;
+color: #262626;
+border:0;</string>
+                            </property>
+                            <property name="text">
+                             <string>图片上传</string>
+                            </property>
+                           </widget>
+                           <widget class="QLabel" name="label_67">
+                            <property name="geometry">
+                             <rect>
+                              <x>110</x>
+                              <y>24</y>
+                              <width>421</width>
+                              <height>16</height>
+                             </rect>
+                            </property>
+                            <property name="text">
+                             <string>（支持png,jpg,jpeg格式，最多上传6张，至少上传一张，且大小不得超过1M）</string>
+                            </property>
+                           </widget>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QWidget" name="widget_31" native="true">
+                           <property name="minimumSize">
+                            <size>
+                             <width>150</width>
+                             <height>0</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>150</width>
+                             <height>16777215</height>
+                            </size>
+                           </property>
+                           <widget class="QWidget" name="imgpuloadblock" native="true">
+                            <property name="geometry">
+                             <rect>
+                              <x>20</x>
+                              <y>40</y>
+                              <width>100</width>
+                              <height>100</height>
+                             </rect>
+                            </property>
+                            <property name="cursor">
+                             <cursorShape>PointingHandCursor</cursorShape>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">background-color:rgb(250,250,250);</string>
+                            </property>
+                            <widget class="QPushButton" name="imguploadbtn">
+                             <property name="geometry">
+                              <rect>
+                               <x>20</x>
+                               <y>10</y>
+                               <width>61</width>
+                               <height>51</height>
+                              </rect>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font-size:50px;
+border:0;
+outline:0;</string>
+                             </property>
+                             <property name="text">
+                              <string>+</string>
+                             </property>
+                            </widget>
+                            <widget class="QLabel" name="label_52">
+                             <property name="geometry">
+                              <rect>
+                               <x>23</x>
+                               <y>70</y>
+                               <width>61</width>
+                               <height>20</height>
+                              </rect>
+                             </property>
+                             <property name="text">
+                              <string>上传图片</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </widget>
+                           <widget class="QPushButton" name="imguploadresetbtn">
+                            <property name="geometry">
+                             <rect>
+                              <x>20</x>
+                              <y>150</y>
+                              <width>101</width>
+                              <height>31</height>
+                             </rect>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+</string>
+                            </property>
+                            <property name="text">
+                             <string>清空</string>
+                            </property>
+                           </widget>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_21" native="true">
+                        <widget class="QWidget" name="widget_39" native="true">
+                         <property name="geometry">
+                          <rect>
+                           <x>0</x>
+                           <y>0</y>
+                           <width>1000</width>
+                           <height>207</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_57" stretch="0,0">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QWidget" name="widget_40" native="true">
+                            <property name="minimumSize">
+                             <size>
+                              <width>850</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>850</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <widget class="QWidget" name="widget_41" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>50</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel1">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_86">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_42" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>180</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel2">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_87">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_43" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>310</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel3">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_88">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_44" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>440</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel4">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_89">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_45" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>570</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel5">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_90">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_46" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>700</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="videolabel6">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_92">
+                              <property name="geometry">
+                               <rect>
+                                <x>30</x>
+                                <y>30</y>
+                                <width>40</width>
+                                <height>40</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background:transparent;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/videoplay</pixmap>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QLabel" name="label_74">
+                             <property name="geometry">
+                              <rect>
+                               <x>50</x>
+                               <y>20</y>
+                               <width>61</width>
+                               <height>21</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font-size: 14px;
+font-weight: 500;
+color: #262626;
+border:0;</string>
+                             </property>
+                             <property name="text">
+                              <string>视频上传</string>
+                             </property>
+                            </widget>
+                            <widget class="QLabel" name="label_75">
+                             <property name="geometry">
+                              <rect>
+                               <x>110</x>
+                               <y>24</y>
+                               <width>331</width>
+                               <height>16</height>
+                              </rect>
+                             </property>
+                             <property name="text">
+                              <string>（仅支持.mp4格式，最多上传6个，每个视频不得超过100M）</string>
+                             </property>
+                            </widget>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="widget_47" native="true">
+                            <property name="minimumSize">
+                             <size>
+                              <width>150</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>150</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <widget class="QWidget" name="widget_48" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>20</x>
+                               <y>40</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:rgb(250,250,250);</string>
+                             </property>
+                             <widget class="QPushButton" name="videouploadbtn">
+                              <property name="geometry">
+                               <rect>
+                                <x>20</x>
+                                <y>10</y>
+                                <width>61</width>
+                                <height>51</height>
+                               </rect>
+                              </property>
+                              <property name="cursor">
+                               <cursorShape>PointingHandCursor</cursorShape>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">font-size:50px;
+border:0;
+outline:0;</string>
+                              </property>
+                              <property name="text">
+                               <string>+</string>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_76">
+                              <property name="geometry">
+                               <rect>
+                                <x>23</x>
+                                <y>70</y>
+                                <width>61</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>上传视频</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QPushButton" name="videouploadresetbtn">
+                             <property name="geometry">
+                              <rect>
+                               <x>20</x>
+                               <y>150</y>
+                               <width>101</width>
+                               <height>31</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+</string>
+                             </property>
+                             <property name="text">
+                              <string>清空</string>
+                             </property>
+                            </widget>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_22" native="true">
+                        <widget class="QWidget" name="widget_49" native="true">
+                         <property name="geometry">
+                          <rect>
+                           <x>0</x>
+                           <y>0</y>
+                           <width>1000</width>
+                           <height>207</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_58" stretch="0,0">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QWidget" name="widget_50" native="true">
+                            <property name="minimumSize">
+                             <size>
+                              <width>850</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>850</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <widget class="QWidget" name="widget_51" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>50</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_77">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_59">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件1</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QLabel" name="label_83">
+                             <property name="geometry">
+                              <rect>
+                               <x>50</x>
+                               <y>20</y>
+                               <width>61</width>
+                               <height>21</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font-size: 14px;
+font-weight: 500;
+color: #262626;
+border:0;</string>
+                             </property>
+                             <property name="text">
+                              <string>文件上传</string>
+                             </property>
+                            </widget>
+                            <widget class="QLabel" name="label_84">
+                             <property name="geometry">
+                              <rect>
+                               <x>110</x>
+                               <y>24</y>
+                               <width>431</width>
+                               <height>16</height>
+                              </rect>
+                             </property>
+                             <property name="text">
+                              <string>（支持PDF,Excel,PPT,Word,txt文件格式最多上传6个且每个文件大小不超过10M）</string>
+                             </property>
+                            </widget>
+                            <widget class="QWidget" name="widget_52" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>180</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_78">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_61">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件2</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_53" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>310</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_79">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_62">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件3</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_54" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>440</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_80">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_63">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件4</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_55" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>700</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_81">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_64">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件6</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QWidget" name="widget_56" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>570</x>
+                               <y>60</y>
+                               <width>100</width>
+                               <height>120</height>
+                              </rect>
+                             </property>
+                             <widget class="QLabel" name="label_82">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>100</width>
+                                <height>100</height>
+                               </rect>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color:pink;</string>
+                              </property>
+                              <property name="text">
+                               <string/>
+                              </property>
+                              <property name="pixmap">
+                               <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/twoDdisplay/file.png</pixmap>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_65">
+                              <property name="geometry">
+                               <rect>
+                                <x>0</x>
+                                <y>100</y>
+                                <width>100</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>文件5</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="widget_57" native="true">
+                            <property name="minimumSize">
+                             <size>
+                              <width>150</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>150</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <widget class="QWidget" name="widget_58" native="true">
+                             <property name="geometry">
+                              <rect>
+                               <x>20</x>
+                               <y>40</y>
+                               <width>100</width>
+                               <height>100</height>
+                              </rect>
+                             </property>
+                             <property name="cursor">
+                              <cursorShape>PointingHandCursor</cursorShape>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">background-color:rgb(250,250,250);</string>
+                             </property>
+                             <widget class="QPushButton" name="fileuoloadbtn">
+                              <property name="geometry">
+                               <rect>
+                                <x>20</x>
+                                <y>10</y>
+                                <width>61</width>
+                                <height>51</height>
+                               </rect>
+                              </property>
+                              <property name="cursor">
+                               <cursorShape>PointingHandCursor</cursorShape>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">font-size:50px;
+border:0;
+outline:0;</string>
+                              </property>
+                              <property name="text">
+                               <string>+</string>
+                              </property>
+                             </widget>
+                             <widget class="QLabel" name="label_85">
+                              <property name="geometry">
+                               <rect>
+                                <x>23</x>
+                                <y>70</y>
+                                <width>61</width>
+                                <height>20</height>
+                               </rect>
+                              </property>
+                              <property name="text">
+                               <string>上传文件</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </widget>
+                            <widget class="QPushButton" name="fileuploadresetbtn">
+                             <property name="geometry">
+                              <rect>
+                               <x>20</x>
+                               <y>150</y>
+                               <width>101</width>
+                               <height>31</height>
+                              </rect>
+                             </property>
+                             <property name="styleSheet">
+                              <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+</string>
+                             </property>
+                             <property name="text">
+                              <string>清空</string>
+                             </property>
+                            </widget>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_23" native="true">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>16777215</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                        <widget class="QToolButton" name="imgprewedit_cancel_2">
+                         <property name="geometry">
+                          <rect>
+                           <x>230</x>
+                           <y>3</y>
+                           <width>80</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>80</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>80</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: rgb(200,200,200);
+border-radius: 4px;
+border:1px solid rgb(230,230,230)
+</string>
+                         </property>
+                         <property name="text">
+                          <string>取消</string>
+                         </property>
+                        </widget>
+                        <widget class="QToolButton" name="imgprewedit_ok_2">
+                         <property name="geometry">
+                          <rect>
+                           <x>590</x>
+                           <y>3</y>
+                           <width>80</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>80</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>80</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string>确定</string>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
                    </widget>
                   </item>
                  </layout>
@@ -10295,6 +11791,1102 @@ QToolButton {
                       </widget>
                      </item>
                     </layout>
+                   </widget>
+                  </widget>
+                  <widget class="QWidget" name="imageEdit_2" native="true">
+                   <property name="geometry">
+                    <rect>
+                     <x>440</x>
+                     <y>20</y>
+                     <width>800</width>
+                     <height>530</height>
+                    </rect>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color:white</string>
+                   </property>
+                   <widget class="QWidget" name="imgedit_topbar_2" native="true">
+                    <property name="geometry">
+                     <rect>
+                      <x>0</x>
+                      <y>0</y>
+                      <width>800</width>
+                      <height>40</height>
+                     </rect>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>40</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">border-bottom:1px solid rgba(38,38,38,0.1000);</string>
+                    </property>
+                    <widget class="QLabel" name="label_57">
+                     <property name="geometry">
+                      <rect>
+                       <x>10</x>
+                       <y>0</y>
+                       <width>40</width>
+                       <height>40</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="pixmap">
+                      <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="label_5">
+                     <property name="geometry">
+                      <rect>
+                       <x>40</x>
+                       <y>5</y>
+                       <width>121</width>
+                       <height>31</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-size: 16px;
+font-weight: 500;
+color: #262626;
+border:0;</string>
+                     </property>
+                     <property name="text">
+                      <string>相关内容展示</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                    <widget class="QToolButton" name="imgprewedit_close_2">
+                     <property name="geometry">
+                      <rect>
+                       <x>770</x>
+                       <y>0</y>
+                       <width>30</width>
+                       <height>30</height>
+                      </rect>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>30</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>30</width>
+                       <height>30</height>
+                      </size>
+                     </property>
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="toolTip">
+                      <string>关闭</string>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QToolButton:hover{
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/closehover);
+    border:0px;}
+
+QToolButton {
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/close);
+    border:0px;
+}
+
+</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                    </widget>
+                   </widget>
+                   <widget class="QStackedWidget" name="stackedWidget_2">
+                    <property name="geometry">
+                     <rect>
+                      <x>20</x>
+                      <y>80</y>
+                      <width>760</width>
+                      <height>421</height>
+                     </rect>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">border:0;
+  outline:0;
+</string>
+                    </property>
+                    <property name="currentIndex">
+                     <number>0</number>
+                    </property>
+                    <widget class="QWidget" name="image_page">
+                     <widget class="QPushButton" name="imagebtn_1">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="imagebtn_2">
+                      <property name="geometry">
+                       <rect>
+                        <x>270</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="imagebtn_3">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_17">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_18">
+                      <property name="geometry">
+                       <rect>
+                        <x>270</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_19">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>image</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QWidget" name="video_page">
+                     <widget class="QPushButton" name="pushButton_20">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>video</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_21">
+                      <property name="geometry">
+                       <rect>
+                        <x>270</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>video</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_22">
+                      <property name="geometry">
+                       <rect>
+                        <x>20</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="twoDdisplay.qrc">
+                        <normaloff>:/twoDdisplay/videoplay</normaloff>:/twoDdisplay/videoplay</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>40</width>
+                        <height>40</height>
+                       </size>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_23">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>video</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_24">
+                      <property name="geometry">
+                       <rect>
+                        <x>270</x>
+                        <y>20</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>video</string>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_25">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>220</y>
+                        <width>220</width>
+                        <height>180</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red;</string>
+                      </property>
+                      <property name="text">
+                       <string>video</string>
+                      </property>
+                     </widget>
+                    </widget>
+                    <widget class="QWidget" name="filepage">
+                     <widget class="QWidget" name="widget_2" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>30</x>
+                        <y>30</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_11">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_8">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_6">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file1.word</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="widget_8" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>280</x>
+                        <y>30</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_12">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_9">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_8">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file2.pdf</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="widget_9" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>30</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_15">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_10">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_9">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file3.ppt</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="widget_10" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>30</x>
+                        <y>230</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_16">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_11">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_18">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file4.txt</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="widget_11" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>280</x>
+                        <y>230</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_17">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_12">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_21">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file5.excle</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="widget_12" native="true">
+                      <property name="geometry">
+                       <rect>
+                        <x>520</x>
+                        <y>230</y>
+                        <width>200</width>
+                        <height>160</height>
+                       </rect>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayout_18">
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QPushButton" name="pushButton_13">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>120</height>
+                          </size>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:red;</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset resource="twoDdisplay.qrc">
+                           <normaloff>:/twoDdisplay/images/twoDdisplay/file.png</normaloff>:/twoDdisplay/images/twoDdisplay/file.png</iconset>
+                         </property>
+                         <property name="iconSize">
+                          <size>
+                           <width>60</width>
+                           <height>60</height>
+                          </size>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLabel" name="label_45">
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">background-color:white</string>
+                         </property>
+                         <property name="text">
+                          <string>file6.word</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                    <widget class="QWidget" name="imgbig">
+                     <widget class="QPushButton" name="pushButton_6">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>190</y>
+                        <width>30</width>
+                        <height>30</height>
+                       </rect>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="twoDdisplay.qrc">
+                        <normaloff>:/twoDdisplay/left-yuan</normaloff>:/twoDdisplay/left-yuan</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>30</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                     </widget>
+                     <widget class="QPushButton" name="pushButton_7">
+                      <property name="geometry">
+                       <rect>
+                        <x>720</x>
+                        <y>190</y>
+                        <width>30</width>
+                        <height>30</height>
+                       </rect>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="icon">
+                       <iconset resource="twoDdisplay.qrc">
+                        <normaloff>:/twoDdisplay/right-yuan</normaloff>:/twoDdisplay/right-yuan</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>30</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                     </widget>
+                     <widget class="QLabel" name="label_47">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>751</width>
+                        <height>411</height>
+                       </rect>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">background-color:red</string>
+                      </property>
+                      <property name="text">
+                       <string>imagebig</string>
+                      </property>
+                      <property name="scaledContents">
+                       <bool>true</bool>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                     <zorder>label_47</zorder>
+                     <zorder>pushButton_6</zorder>
+                     <zorder>pushButton_7</zorder>
+                    </widget>
+                   </widget>
+                   <widget class="QWidget" name="displaytop" native="true">
+                    <property name="geometry">
+                     <rect>
+                      <x>20</x>
+                      <y>50</y>
+                      <width>760</width>
+                      <height>30</height>
+                     </rect>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">
+border:0;
+  outline:0;
+</string>
+                    </property>
+                    <widget class="QPushButton" name="displayimage">
+                     <property name="geometry">
+                      <rect>
+                       <x>30</x>
+                       <y>3</y>
+                       <width>24</width>
+                       <height>24</height>
+                      </rect>
+                     </property>
+                     <property name="cursor">
+                      <cursorShape>PointingHandCursor</cursorShape>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="twoDdisplay.qrc">
+                       <normaloff>:/twoDdisplay/image_select</normaloff>:/twoDdisplay/image_select</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>24</width>
+                       <height>24</height>
+                      </size>
+                     </property>
+                    </widget>
+                    <widget class="QPushButton" name="displayvideo">
+                     <property name="geometry">
+                      <rect>
+                       <x>70</x>
+                       <y>3</y>
+                       <width>24</width>
+                       <height>24</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="twoDdisplay.qrc">
+                       <normaloff>:/twoDdisplay/video_default</normaloff>:/twoDdisplay/video_default</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>24</width>
+                       <height>24</height>
+                      </size>
+                     </property>
+                    </widget>
+                    <widget class="QPushButton" name="displayfile">
+                     <property name="geometry">
+                      <rect>
+                       <x>110</x>
+                       <y>3</y>
+                       <width>24</width>
+                       <height>24</height>
+                      </rect>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset resource="twoDdisplay.qrc">
+                       <normaloff>:/twoDdisplay/file_default</normaloff>:/twoDdisplay/file_default</iconset>
+                     </property>
+                     <property name="iconSize">
+                      <size>
+                       <width>24</width>
+                       <height>24</height>
+                      </size>
+                     </property>
+                    </widget>
                    </widget>
                   </widget>
                  </widget>

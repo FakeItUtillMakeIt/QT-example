@@ -39,5 +39,19 @@
         <file>images/adddxq.png</file>
         <file alias="deleteicon">images/deletedxq.png</file>
         <file alias="defaultimg">images/defaultimg.png</file>
+        <file alias="jzxqs">images/twoDdisplay/jzxqs.png</file>
+        <file>images/twoDdisplay/close_icon.png</file>
+        <file>images/twoDdisplay/file.png</file>
+        <file alias="file_select">images/twoDdisplay/file_icon_active.png</file>
+        <file alias="file_default">images/twoDdisplay/file_icon_normal.png</file>
+        <file alias="image_select">images/twoDdisplay/Images_icon_active.png</file>
+        <file alias="image_default">images/twoDdisplay/Images_icon_normal.png</file>
+        <file alias="left-yuan">images/twoDdisplay/last one_icon.png</file>
+        <file alias="right-yuan">images/twoDdisplay/next one_icon.png</file>
+        <file alias="left-go">images/twoDdisplay/return_icon_active.png</file>
+        <file alias="right=go">images/twoDdisplay/return_icon_normal.png</file>
+        <file alias="video_select">images/twoDdisplay/video_icon_active.png</file>
+        <file alias="video_default">images/twoDdisplay/video_icon_normal.png</file>
+        <file alias="videoplay">images/twoDdisplay/video_icon.png</file>
     </qresource>
 </RCC>

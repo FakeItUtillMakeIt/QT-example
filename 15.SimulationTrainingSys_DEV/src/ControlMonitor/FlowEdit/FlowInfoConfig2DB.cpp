@@ -125,7 +125,7 @@ void FlowInfoConfig2DB::mainFlowConfigOp2DB(int rocketTypeID, QString mainFlowNa
 	@param otherInfo   -
 **/
 void FlowInfoConfig2DB::subFlowConfigOp2DB(int mainFlowID, int emitCmdID, QString subFlowName, QString subBackInfo, QString otherInfo) {
-	QString qSqlString = "INSERT INTO `simulatedtraining`.`sub_flow_info`(`main_id`, `command_id`, `name`, `backInfo`, `remark`)  VALUES (%1, %2, '%3', '%4', '%5');";
+	QString qSqlString = "INSERT INTO `simulatedtraining`.`sub_flow_info`(`main_id`, `command_id`, `name`, `backInfo`, `remark`)  VALUES (%1, %2, '%3', '%4','%5');";
 	qSqlString = qSqlString.arg(mainFlowID).arg(emitCmdID).arg(subFlowName).arg(subBackInfo).arg(otherInfo);
 	string sqlString = qSqlString.toStdString();
 	bool opRet = flowInfoDBOp->exec_sql(sqlString);

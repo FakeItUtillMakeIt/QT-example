@@ -137,6 +137,9 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     QString str = "";
     QString indexStr = "";
 
+    m_isAddFault = false;
+    ui.cb_faultType->setEnabled(false);
+    ui.cb_deciveType->setEnabled(false);
     m_faultItems = faultItems;
     m_delFaults.clear();
     m_addFaults.clear();
@@ -680,6 +683,8 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
     verticalHeader->setDefaultSectionSize(30);//设置高度(2)
     ui.tv_paramInfo->horizontalHeader()->setMinimumHeight(38);//设置表头高度
     ui.tv_paramInfo->horizontalHeader()->setStyleSheet("QHeaderView::section {color: black;padding-left: 4px;border: 1px solid #6c6c6c;}");
+
+    ui.tv_paramInfo->setColumnHidden(1, true);
 }
 
 /// <summary>
@@ -721,7 +726,7 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
                 bool isfind = false;
                 for (auto item : m_app->m_FaultDeviceParamInfoFrames) ///m_app->m_FaultParameterInfoFrames
                 {
-                    if ((item.first == m_faultItems[j].deviceParamInfoID[i]) && (item.second->m_deviceID == deviceid))//参数故障绑定的id相同  且设备相同
+                    if ((item.first == m_faultItems[j].deviceParamInfoID[i]))//TODO 20220118修改参数故障绑定的id相同  且设备相同 //&& (item.second->m_deviceID == deviceid)
                     {
                         //根据参数id显示参数信息
                         for (auto itemP : m_app->m_FaultParameterInfoFrames)
@@ -810,6 +815,8 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
     verticalHeader->setDefaultSectionSize(30);//设置高度(2)
     ui.tv_paramInfo->horizontalHeader()->setMinimumHeight(38);//设置表头高度
     ui.tv_paramInfo->horizontalHeader()->setStyleSheet("QHeaderView::section {color: black;padding-left: 4px;border: 1px solid #6c6c6c;}");
+
+    ui.tv_paramInfo->setColumnHidden(1, true);
 }
 
 

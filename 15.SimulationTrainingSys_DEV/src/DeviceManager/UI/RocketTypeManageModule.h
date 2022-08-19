@@ -9,6 +9,7 @@
 
 #include "RocketInfoConfigWidget.h"
 #include "../SubWindow/AddRocketTypeWidget.h"
+#include "../SubWindow/AllInfoConfigWidget.h"
 
 class RocketTypeManageModule : public QWidget
 {

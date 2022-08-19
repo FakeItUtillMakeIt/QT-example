@@ -1,5 +1,6 @@
 #include "twoDdisplay.h"
 #include"textcontent.h"
+#include "../../VLCVideo/vlcplayer.h"
 #include<QFontDatabase>
 #include<QFont>
 #include<QList>
@@ -13,7 +14,7 @@
 #include<QString>
 #include<QTimer>
 #include<QSpacerItem>
-
+#include<QDesktopServices>
 
 
 
@@ -32,18 +33,74 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 {
 	ui.setupUi(this);
-
+//	QDesktopServices::openUrl(QUrl("E:/mx_soft/SimulatedTraining/exe/ControlMonitor/video/tempjzx.mp4"));
 
 	//dragablewid* test = new dragablewid(ui.page_5);
 	//test->setGeometry(0, 0, 200, 200);
 	//test->setStyleSheet("background-color:red;");
 
 
+	//临时需求
+	connect(ui.jzxqs, &QPushButton::clicked, this, [this]() {
+	/*	VlcPlayer * m_pVlcPlayer = new VlcPlayer(0, 0, "", 20);
+		m_pVlcPlayer->setParent(ui.testwid);
+		QString temp = QCoreApplication::applicationDirPath() + "/video/tempjzx.mp4";
+		QString path = temp.replace("/", "\\\\");
+		m_pVlcPlayer->PlayVideo(path.toStdString());*/
+		QString url = QCoreApplication::applicationDirPath() + "/video/tempjzx.mp4";
+		QDesktopServices::openUrl(QUrl(url));
+
+		});
 
 
+//内容预览切换
+	connect(ui.displayimage, &QPushButton::clicked, this, [this]() {
+		QIcon icon;
+		icon.addFile(QStringLiteral(":/twoDdisplay/image_select"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayimage->setIcon(icon);
+		ui.displayimage->setIconSize(QSize(24, 24));
+		QIcon icon1;
+		icon.addFile(QStringLiteral(":/twoDdisplay/video_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayvideo->setIcon(icon1);
+		ui.displayvideo->setIconSize(QSize(24, 24));
+		QIcon icon2;
+		icon.addFile(QStringLiteral(":/twoDdisplay/file_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayfile->setIcon(icon2);
+		ui.displayfile->setIconSize(QSize(24, 24));
+		ui.stackedWidget_2->setCurrentIndex(0);
 
-
-
+		
+		});
+	connect(ui.displayvideo, &QPushButton::clicked, this, [this]() {
+		QIcon icon;
+		icon.addFile(QStringLiteral(":/twoDdisplay/image_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayimage->setIcon(icon);
+		ui.displayimage->setIconSize(QSize(24, 24));
+		QIcon icon1;
+		icon.addFile(QStringLiteral(":/twoDdisplay/video_select"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayvideo->setIcon(icon1);
+		ui.displayvideo->setIconSize(QSize(24, 24));
+		QIcon icon2;
+		icon.addFile(QStringLiteral(":/twoDdisplay/file_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayfile->setIcon(icon2);
+		ui.displayfile->setIconSize(QSize(24, 24));
+		ui.stackedWidget_2->setCurrentIndex(1);
+		});
+	connect(ui.displayfile, &QPushButton::clicked, this, [this]() {
+		QIcon icon;
+		icon.addFile(QStringLiteral(":/twoDdisplay/image_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayimage->setIcon(icon);
+		ui.displayimage->setIconSize(QSize(24, 24));
+		QIcon icon1;
+		icon.addFile(QStringLiteral(":/twoDdisplay/video_default"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayvideo->setIcon(icon1);
+		ui.displayvideo->setIconSize(QSize(24, 24));
+		QIcon icon2;
+		icon.addFile(QStringLiteral(":/twoDdisplay/file_select"), QSize(), QIcon::Normal, QIcon::Off);
+		ui.displayfile->setIcon(icon2);
+		ui.displayfile->setIconSize(QSize(24, 24));
+		ui.stackedWidget_2->setCurrentIndex(2);
+		});
 
 
 
@@ -408,6 +465,14 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 	zhezhao_global->setGeometry(0, 0, 1920, 794);
 	zhezhao_global->setStyleSheet("background-color:rgba(0,0,0,0.3)");
 	zhezhao_global->hide();
+	ui.imageEdit_3->setParent(zhezhao_global);
+	ui.imageEdit_2->setParent(zhezhao_global);
+	ui.imageEdit_3->hide();
+	ui.imageEdit_2->hide();
+	//zhezhao_global->show();
+	//ui.imageEdit_2->show();
+	//ui.imageEdit_3->show();
+
 	ui.modulea_edialog->setGeometry(780, 70, 361,450);
 	ui.delete_dialog->setGeometry(768, 70, 384, 241);
 	ui.delete_dialog->setParent(zhezhao_global);
@@ -1423,31 +1488,31 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 					if (btnlist3[i]->objectName() == "aqzljsjbtn")
 					{
 						curobjectname = "aqzljsjbtn";
-						ui.textcontent3->setText(mcxsydjtext);
+						ui.textcontent3->setText(aqzljsjtext);
 						ui.vicontent3->setStyleSheet("border-image:url(" + exepath + "/displayimg/aqzljsj-x.png)");
 					}
 					if (btnlist3[i]->objectName() == "dzhbtn")
 					{
 						curobjectname = "dzhbtn";
-						ui.textcontent3->setText(mcxsydjtext);
+						ui.textcontent3->setText(dzhtext);
 						ui.vicontent3->setStyleSheet("border-image:url(" + exepath + "/displayimg/dzh-x.png)");
 					}
 					if (btnlist3[i]->objectName() == "zkjbtn")
 					{
 						curobjectname = "zkjbtn";
-						ui.textcontent3->setText(mcxsydjtext);
+						ui.textcontent3->setText(zkjtext);
 						ui.vicontent3->setStyleSheet("border-image:url(" + exepath + "/displayimg/zkj-x.png)");
 					}
 					if (btnlist3[i]->objectName() == "spqdbtn")
 					{
 						curobjectname = "spqdbtn";
-						ui.textcontent3->setText(mcxsydjtext);
+						ui.textcontent3->setText(spqdtext);
 						ui.vicontent3->setStyleSheet("border-image:url(" + exepath + "/displayimg/spqd-x.png)");
 					}
 					if (btnlist3[i]->objectName() == "zdcbtn")
 					{
 						curobjectname = "zdcbtn";
-						ui.textcontent3->setText(mcxsydjtext);
+						ui.textcontent3->setText(zdctext);
 						ui.vicontent3->setStyleSheet("border-image:url(" + exepath + "/displayimg/zdc-x.png)");
 					}
 		

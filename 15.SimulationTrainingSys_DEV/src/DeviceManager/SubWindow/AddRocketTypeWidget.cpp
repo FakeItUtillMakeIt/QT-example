@@ -84,6 +84,7 @@ void AddRocketTypeWidget::InitUILayout() {
 	QFrame* hframe1 = new QFrame;
 	hframe1->setFrameShape(QFrame::HLine);
 	hframe1->setFixedWidth(640);
+	hframe1->setBackgroundRole(QPalette::Background);
 
 	QVBoxLayout* lineLayout = new QVBoxLayout;
 	lineLayout->addWidget(hframe1);
@@ -123,6 +124,16 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(userSelectBackCmd, row++, column, 1, 3);
 
 	UIGrid->setRowStretch(row, 3);
+
+	QFrame* hframe2 = new QFrame;
+	hframe2->setFrameShape(QFrame::HLine);
+	hframe2->setFixedWidth(640);
+	hframe2->setBackgroundRole(QPalette::Background);
+
+	QVBoxLayout* lineLayout2 = new QVBoxLayout;
+	lineLayout2->addWidget(hframe2);
+
+	UIGrid->addLayout(lineLayout2, rowC - 2, 0, 1, columnC);
 
 	UIGrid->addWidget(CancelBtn, rowC - 1, columnC - 2, 1, 1);
 	UIGrid->addWidget(OkBtn, rowC - 1, columnC - 1, 1, 1);

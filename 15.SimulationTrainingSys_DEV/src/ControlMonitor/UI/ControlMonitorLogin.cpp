@@ -1,5 +1,5 @@
 #include "ControlMonitorLogin.h"
-ControlMonitorLogin::ControlMonitorLogin(ControlMonitor * conMoni,QWidget *parent)
+ControlMonitorLogin::ControlMonitorLogin(ControlMonitor* conMoni, QWidget* parent)
 	: QWidget(parent)
 	, m_pDeviceDAO(nullptr)
 {
@@ -16,11 +16,13 @@ void ControlMonitorLogin::LoginSlot()
 {
 	int typeId = ui.TypeComboBox->currentData().toUInt();
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
-	m_app->rokecttype->setText(ui.TypeComboBox->currentText()); 
+
+	//m_app->rokecttype->setText(ui.TypeComboBox->currentText());
+
 	this->close();
 	controlMonitor->Init();
 	emit sendrocketType(m_app->m_allRocketType[typeId]->m_id);
-	controlMonitor->show(); 
+	controlMonitor->show();
 }
 void ControlMonitorLogin::CloseSlot()
 {

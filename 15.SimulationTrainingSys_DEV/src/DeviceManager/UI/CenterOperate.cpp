@@ -32,7 +32,14 @@ CenterOperate::~CenterOperate()
 		delete m_pYaoCeSenderSocket;
 		m_pYaoCeSenderSocket = nullptr;
 	}
-	if(m_pYcTimer != nullptr) m_pYcTimer->stop();
+	if (m_pYcTimer != nullptr) m_pYcTimer->stop();
+
+
+
+	AllInfoConfigWidget::closeInstance();
+
+	AddRocketTypeWidget::closeInstance();
+
 }
 
 void CenterOperate::Init()
@@ -81,7 +88,8 @@ void CenterOperate::switchDeviceStatus(Command* command)
 	//2.根据指令编码进行设备状态切换
 	DeviceDBConfigInfo::getInstance()->readCMDDeviceStatDB2UI();
 	auto a = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo;
-	int deviceId = 0, dStatusId = 0;
+	vector<int> deviceIdV;
+	vector<int> statusIdV;
 
 	try
 	{
@@ -91,8 +99,19 @@ void CenterOperate::switchDeviceStatus(Command* command)
 		}
 		else
 		{
-			deviceId = atoi(a[command->m_id][1].c_str());
-			dStatusId = atoi(a[command->m_id][3].c_str());
+			/*for (int ele1 = 0; ele1 < a.size(); ele1++)
+			{
+				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * ele1)].c_str()));
+				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * ele1)].c_str()));
+			}*/
+
+		
+				for (int i = 0; i <a[command->m_id].size()/4; i++)
+				{
+					deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * i)].c_str()));
+					statusIdV.push_back(atoi(a[command->m_id][3 + (4 * i)].c_str()));
+				}
+			
 		}
 
 	}
@@ -103,10 +122,12 @@ void CenterOperate::switchDeviceStatus(Command* command)
 	}
 
 	//从设备管理器中得到指令影响的设备
-	Device* dev = m_app->m_allDeviceCopy[deviceId];
-	//根据指令编码进行设备状态切换
-	dev->m_sCurStatus = m_app->m_allDeviceStatus[dStatusId]->m_statusName;
-
+	for (auto i = 0; i < deviceIdV.size(); i++)
+	{
+		Device* dev = m_app->m_allDeviceCopy[deviceIdV[i]];
+		//根据指令编码进行设备状态切换
+		dev->m_sCurStatus = m_app->m_allDeviceStatus[statusIdV[i]]->m_statusName;
+	}
 }
 
 /// <summary>
@@ -118,7 +139,9 @@ void CenterOperate::dealDeviceParams(Command* command) {
 	DeviceDBConfigInfo::getInstance()->readCMDDeviceStatDB2UI();
 
 	auto a = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo;
-	int deviceId = 0, dStatusId = 0;
+	/*int deviceId = 0, dStatusId = 0;*/
+	vector<int> deviceIdV;
+	vector<int> statusIdV;
 
 	try
 	{
@@ -128,8 +151,18 @@ void CenterOperate::dealDeviceParams(Command* command) {
 		}
 		else
 		{
-			deviceId = atoi(a[command->m_id][1].c_str());
-			dStatusId = atoi(a[command->m_id][3].c_str());
+		
+			/*for (int ele1 = 0; ele1 < a.size(); ele1++)
+			{
+				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * ele1)].c_str()));
+				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * ele1)].c_str()));
+			}*/
+			for (int i = 0; i < a[command->m_id].size() / 4; i++)
+			{
+				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * i)].c_str()));
+				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * i)].c_str()));
+			}
+
 		}
 
 	}
@@ -138,24 +171,24 @@ void CenterOperate::dealDeviceParams(Command* command) {
 		qDebug() << msg;
 		return;
 	}
-
-	//auto deviceId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][1];
-	//auto dStatusId = DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][3];
-
-	auto paramV = m_app->m_dev2DeviceParamID[deviceId];
-
-	for (auto eachParam : paramV)
+	 
+	vector<int> paramV;
+	for (int i = 0; i < deviceIdV.size(); i++)
 	{
-		DeviceParam* deviceParam = m_app->m_allDeviceParam[eachParam];
-		//参数状态和设备状态保持一致
-		deviceParam->m_status = m_app->m_allDeviceStatus[dStatusId]->m_statusName;
-		deviceParam->updateParamRealVal();
-		deviceParam->m_curStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
-		deviceParam->m_curStatus.m_name = deviceParam->m_status;
+		for (int j: m_app->m_dev2DeviceParamID[deviceIdV[i]])
+		{
 
-		deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
-		deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
-		//deviceParam->timer->start(1000);
+			DeviceParam* deviceParam = m_app->m_allDeviceParam[j];
+			//参数状态和设备状态保持一致
+	
+			deviceParam->m_status = m_app->m_allDeviceStatus[statusIdV[i]]->m_statusName;
+			deviceParam->updateParamRealVal();
+			deviceParam->m_curStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
+			deviceParam->m_curStatus.m_name = deviceParam->m_status;
+
+			deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
+			deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+		}
 	}
 
 }
@@ -257,7 +290,7 @@ void CenterOperate::sendCMDResponse(int cmd_id, int sendCmd_code)
 	m_pBuff[1] = 0xBB;
 	memcpy(m_pBuff.data() + 2, &command->m_iCode, 2);//测发指令code 
 	m_pBuff[4] = 0x01; //参数，执行成功
-	memcpy(m_pBuff.data() + 5, &sendCmd_code, 2); 
+	memcpy(m_pBuff.data() + 5, &sendCmd_code, 2);
 	m_pBuff[7] = 0x00;
 	m_pBuff[8] = 0x00;
 	m_pBuff[9] = 0x00;

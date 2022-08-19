@@ -31,9 +31,10 @@ GenerateFlowCmdWidget::GenerateFlowCmdWidget(QWidget* parent)
 	backCmdListWidget->setSelectionMode(QAbstractItemView::NoSelection);
 
 	//禁用用户鼠标点击
-	execProgramListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
-	commandListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
-	backCmdListWidget->setAttribute(Qt::WA_TransparentForMouseEvents, QIODevice::ReadOnly);
+	execProgramListWidget->setAttribute(Qt::WA_Disabled, QIODevice::ReadOnly);
+	commandListWidget->setAttribute(Qt::WA_Disabled, QIODevice::ReadOnly);
+	backCmdListWidget->setAttribute(Qt::WA_Disabled, QIODevice::ReadOnly);
+
 
 	execProgramListWidget->installEventFilter(this);
 	commandListWidget->installEventFilter(this);
@@ -120,7 +121,7 @@ void GenerateFlowCmdWidget::InitLayout() {
 
 	this->setLayout(hboxLayout);
 
-	//connect(execProgramListWidget, &QListWidget::itemClicked, this, &GenerateFlowCmdWidget::clickExeProgramItem);
+
 }
 
 /**
@@ -137,14 +138,10 @@ void GenerateFlowCmdWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlow
 
 	for (int i = 1; i <= mainFlowInfo.size(); i++)
 	{
-		//qDebug() << mainFlowInfo[i][1];
-		//QListWidgetItem* newBackCmdItem = new QListWidgetItem(mainFlowInfo[i][1]);
-		//newBackCmdItem->setTextAlignment(Qt::AlignCenter);
-		//backCmdListWidget->addItem(newBackCmdItem);
 		//流程名
 		auto newItem = new QListWidgetItem(mainFlowInfo[i][0]);
 		newItem->setTextAlignment(Qt::AlignCenter);
-		execProgramListWidget->addItem(newItem); 
+		execProgramListWidget->addItem(newItem);
 	}
 
 }
@@ -171,6 +168,9 @@ void GenerateFlowCmdWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
 	//backCmdListWidget->clear();
 
 	subFlowCmdID_ = subFlowCmdID;
+
+
+	//responseRecieveCmd(1, QString::fromLocal8Bit("集装箱配电"), QString::fromLocal8Bit("集装箱已配电"));
 }
 
 /**
@@ -185,7 +185,7 @@ void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
 	commandListWidget->clear();
 
 	clickedItem->setSelected(true);
-
+	execProgramListWidget->scrollToItem(clickedItem);
 	//检索主流程信息
 	int currentSelectMainID = -1;
 	for (int i = 1; i <= mainFlowInfo_.size(); i++)
@@ -219,6 +219,7 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 
 	auto exeItem = execProgramListWidget->item(mainFlowIndex - 1);
 	clickExeProgramItem(exeItem);
+	execProgramListWidget->setCurrentItem(exeItem);
 
 	QListWidgetItem* cmdItem;
 	for (int i = 0; i < commandListWidget->count(); i++)
@@ -234,6 +235,8 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 	backInfoItem->setTextAlignment(Qt::AlignCenter);
 
 	backCmdListWidget->addItem(backInfoItem);
+	backCmdListWidget->setCurrentItem(backInfoItem);
+	backCmdListWidget->scrollToItem(backInfoItem);
 
 	//保留已经接收到的信息
 	hadRunExeProgram.push_back(mainFlowInfo_[mainFlowIndex][0]);

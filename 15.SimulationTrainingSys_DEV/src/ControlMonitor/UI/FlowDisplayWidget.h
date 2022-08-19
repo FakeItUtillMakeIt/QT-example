@@ -6,10 +6,12 @@
 
 #include <QWidget>
 #include <QtWidgets>
-
+#include "../AppCache.h"
 #include "../FlowEdit/FlowInfoConfig2DB.h"
 #include "../FlowEdit/FlowEditWidget.h"
 #include "../FlowEdit/GenerateFlowCmdWidget.h"
+
+class GenerateFlowCmdWidget;
 
 class FlowDisplayWidget : public QWidget
 {
@@ -20,7 +22,7 @@ public:
 	~FlowDisplayWidget();
 
 	void setRocketType(QString, int);
-
+	AppCache* m_app;
 private:
 	QLabel* flowIcon;
 	QLabel* flowLabel;
@@ -57,7 +59,7 @@ public slots:
 
 private:
 	void InitLayout();
-
+	
 private slots:
 	void addNewFlow();
 	void loadSavedFlow();
@@ -67,6 +69,7 @@ signals:
 	void sendMainFlowInfo(int mainFlowIndex, bool curFlowFlag);
 
 	void updateFlowOver();
+	void sendMainflowchange();
 
 };
 

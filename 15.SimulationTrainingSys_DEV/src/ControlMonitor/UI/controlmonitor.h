@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QtWidgets/QMainWindow>
 #include <QMouseEvent>
 #include <QPainter>
@@ -27,13 +26,14 @@ class ControlMonitor : public QMainWindow
 public:
 	ControlMonitor(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
-	void Init();
 	void recieverocketType(int id);
+	void Init();
 private:
 	Ui::ControlMonitorClass ui;
 	AppCache* m_app;
 	bool m_isMax;
 	CenterOperate* m_pCenterOperate;
+
 	DataBase::UserDAO* m_pUserDAO;
 	DataBase::DeviceDAO* m_pDeviceDAO;
 	DataBase::CommandDAO* m_pCommandDAO;
@@ -49,6 +49,7 @@ private:
 	void changeResize();
 	bool mainflow_finish;
 	QLabel* curlabel;
+
 
 	FlowDisplayWidget* flowDisplayWidget = nullptr;
 
