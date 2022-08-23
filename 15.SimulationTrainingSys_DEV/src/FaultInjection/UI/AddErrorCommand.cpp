@@ -137,6 +137,7 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     QString str = "";
     QString indexStr = "";
 
+    m_faultType = index;
     m_isAddFault = false;
     ui.cb_faultType->setEnabled(false);
     ui.cb_deciveType->setEnabled(false);
@@ -146,10 +147,11 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     m_editFaults.clear();
     m_tempParamId.clear();
     m_tempCommandId.clear();
+    
     this->move(420, 100);    //设置位置
 
 
-    switch (index)
+    switch (m_faultType)
     {
     case 1:
         indexStr = "控制系统故障注入";
@@ -387,8 +389,9 @@ void AddErrorCommand::EditFault()
             //添加故障有效性判断
             if (AddFaultValidity() == false) return;
 
-            //加入界面
+            //加入界面m_faultType
             ItemStruct addFault;
+            addFault.faultType = m_faultType;
             addFault.Name = ui.le_errorName->text();
             addFault.deviceID = m_indexDevice[ui.cb_deciveType->currentIndex()];//TODO设备id，获取设备类型
             addFault.deviceParamInfoID = m_tempParamId;
@@ -401,6 +404,7 @@ void AddErrorCommand::EditFault()
 
             //暂存下来，后续确定后写入数据库
             AddOneFaultInfo oneFault;
+            oneFault.faultType = m_faultType;
             oneFault.m_name = addFault.Name.toStdString();
             oneFault.m_Type = addFault.type;
             oneFault.m_FaultCommandID = addFault.FaultCommandID;
@@ -414,6 +418,7 @@ void AddErrorCommand::EditFault()
         {
             //修改界面  （name是不可以修改的！！！）
             ItemStruct editFault;
+            editFault.faultType = m_faultType;
             editFault.Name = ui.le_errorName->text();
             editFault.deviceID = m_indexDevice[ui.cb_deciveType->currentIndex()];//TODO设备id，获取设备类型
             editFault.FaultCommandID = m_currentComandId;
@@ -435,6 +440,7 @@ void AddErrorCommand::EditFault()
 
             //暂存下来，后续确定后写修改数据库
             AddOneFaultInfo oneFault;
+            oneFault.faultType = m_faultType;
             oneFault.m_name = editFault.Name.toStdString();
             oneFault.m_Type = editFault.type;
             oneFault.m_FaultCommandID = editFault.FaultCommandID;

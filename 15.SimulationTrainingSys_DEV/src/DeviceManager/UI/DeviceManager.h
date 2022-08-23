@@ -20,6 +20,15 @@
 #include "CenterOperate.h"
 #include "../MutliThread/MutliThreadOp.h"
 
+#define NEW_UI//优化后的UI
+#ifndef NEW_UI
+
+#define OLD_UI
+
+#endif // NEW_UI
+
+
+
 class DeviceManager : public QMainWindow
 {
 	Q_OBJECT

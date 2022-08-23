@@ -1,6 +1,8 @@
 #include "RocketTypeManageModule.h"
 #include "DeviceManager.h"
 
+
+
 RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
 {
@@ -18,6 +20,12 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
+		});
+
+	connect(RocketInfoConfig::InfoConfigWidget::getInstance(), &RocketInfoConfig::InfoConfigWidget::updateRocketInfo, this, [=]() {
+		//要更新数据库
+		InitDisplayData();
+
 		});
 }
 
@@ -161,19 +169,13 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	QPushButton* opCfgDataBtn = new QPushButton(QString("配置"));
 	opCfgDataBtn->setProperty("row", insertRow);
 
-	//opCfgDataBtn->hide();
-
-	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opCfgDataBtn);
-	hbox->addWidget(opDeleteBtn);
+	//#ifdef NEW_UI
+	//	opCfgDataBtn->show();
+	//#endif // NEW_UI
 
 
-	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
-
-
-	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
-
+#ifdef OLD_UI
+	opCfgDataBtn->hide();
 	//编辑时呼出窗口  infoConfigWidget窗口，将当前行信息传至窗口，编辑
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
@@ -186,11 +188,19 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		RocketInfoConfig::InfoConfigWidget::getInstance()->userInputRocketDescript->setText(configInfoTable->item(curRow, 2)->text());
 
 		RocketInfoConfig::InfoConfigWidget::getInstance()->show();
-
-		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt());
-
-
 		});
+#endif // OLD_UI
+
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opCfgDataBtn);
+	hbox->addWidget(opDeleteBtn);
+
+	w1->setLayout(hbox);
+	w1->setStyleSheet("*{border:none;color:blue;}");
+
+
+	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
@@ -198,9 +208,9 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	connect(opCfgDataBtn, &QPushButton::clicked, this, [=]() {
 		//获取当前火箭型号
 		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::ROCKET_WIDGET);
 		w->show();
 		});
-
 
 }
 
@@ -209,7 +219,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	@brief 删除一行
 **/
 void RocketTypeManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = QMessageBox::warning(RocketInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
 	if (ret == 0)
 	{
 		return;
@@ -249,11 +259,8 @@ void RocketTypeManageModule::InitDisplayData() {
 		rowData.push_back(QString::fromStdString(ele->second[0]));
 		rowData.push_back(QString::fromStdString(ele->second[1]));
 		rowData.push_back(QString::fromStdString(ele->second[2]));
-		if (QString::fromStdString(ele->second[1]) == QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()))
-		{
-			insertOneRow(row++, rowData);
 
-		}
+		insertOneRow(row++, rowData);
 
 	}
 }
@@ -277,18 +284,25 @@ void RocketTypeManageModule::paintEvent(QPaintEvent* event) {
 **/
 void RocketTypeManageModule::insertOneRowData() {
 
+#ifdef NEW_UI
+
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::ROCKET_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增火箭型号"));
+
 	addRocketTypeW->show();
+#endif // !1
+
+#ifdef OLD_UI
 
 	RocketInfoConfig::InfoConfigWidget* infoConfigWidget = RocketInfoConfig::InfoConfigWidget::getInstance();
-	//infoConfigWidget->show();
-	connect(infoConfigWidget, &RocketInfoConfig::InfoConfigWidget::updateRocketInfo, this, [=]() {
-		//要更新数据库
-		InitDisplayData();
+	infoConfigWidget->show();
+#endif // DEBUG
+	//connect(infoConfigWidget, &RocketInfoConfig::InfoConfigWidget::updateRocketInfo, this, [=]() {
+	//	//要更新数据库
+	//	InitDisplayData();
 
-		});
+	//	});
 }
 
 /**
@@ -348,11 +362,8 @@ RocketDataCfgW::RocketDataCfgW() {
 
 	}
 
-
-
 	QPushButton* rOKBtn = new QPushButton(QString("添加"));
 	QPushButton* rCancelBtn = new QPushButton(QString("取消"));
-
 
 	scrollArea->setFixedSize(480, 500);
 	vlayout->addWidget(scrollArea);
@@ -366,7 +377,6 @@ RocketDataCfgW::RocketDataCfgW() {
 	this->setFixedSize(500, 580);
 	this->setWindowTitle(QString("火箭数据信息配置"));
 	this->setWindowFlags(Qt::WindowStaysOnTopHint);
-
 
 }
 

@@ -27,7 +27,6 @@ void CenterOperate::timerEvent(QTimerEvent* event)
     bool isOK = true;
     if (event->timerId() == m_TimerID)
     {
-        //emit backOnFaultClick(false);//故障设定失败
         QMessageBox::warning(nullptr, QString("提示"), "接收故障回令超时！","确定");
         killTimer(m_TimerID);//关闭定时器
     }
@@ -124,12 +123,15 @@ void CenterOperate::FlashFualtInfo()
         switch (it.second->m_faultType)
         {
         case ControlFault:
+            oneItem.faultType = ControlFault;
             m_AllFaultItems[ControlFault].push_back(oneItem);//TODO在每次添加或删除故障参数够也需要对其进行修改
             break;
         case MeasurementFault:
+            oneItem.faultType = MeasurementFault;
             m_AllFaultItems[2].push_back(oneItem);
             break;
         case PowerFault:
+            oneItem.faultType = PowerFault;
             m_AllFaultItems[3].push_back(oneItem);
             break;
         default:
@@ -189,12 +191,15 @@ void CenterOperate::FlashFualtInfo()
         switch (it.second->m_faultType)
         {
         case ControlFault:
+            oneItem.faultType = ControlFault;
             m_AllFaultItems[ControlFault].push_back(oneItem);//TODO在每次添加或删除故障参数够也需要对其进行修改
             break;
         case MeasurementFault:
+            oneItem.faultType = MeasurementFault;
             m_AllFaultItems[2].push_back(oneItem);
             break;
         case PowerFault:
+            oneItem.faultType = PowerFault;
             m_AllFaultItems[3].push_back(oneItem);
             break;
         default:
@@ -217,9 +222,11 @@ void CenterOperate::FlashFualtInfo()
 
     m_systemItems[MeasurementFault] = new MyFaultParameters(ui.wgt_Measurement);
     connect(m_systemItems[MeasurementFault], &MyFaultParameters::onFaultClick, this, &CenterOperate::isEnabledFault);
+    connect(this, &CenterOperate::backOnFaultClick, m_systemItems[MeasurementFault], &MyFaultParameters::backonFaultClick);
 
     m_systemItems[PowerFault] = new MyFaultParameters(ui.wgt_Power);
     connect(m_systemItems[PowerFault], &MyFaultParameters::onFaultClick, this, &CenterOperate::isEnabledFault);
+    connect(this, &CenterOperate::backOnFaultClick, m_systemItems[PowerFault], &MyFaultParameters::backonFaultClick);
 
     m_systemItems[ControlFault]->Init(m_AllFaultItems[ControlFault]);
     m_systemItems[ControlFault]->show();
@@ -276,10 +283,10 @@ void CenterOperate::AddPowerFaultClicked()
 /// <param name="title"></param>
 /// <param name="code"></param>
 /// <param name="isSave"></param>
-void CenterOperate::isEnabledFault(QString name, int code, int type)
+void CenterOperate::isEnabledFault(QString name, int code, int type, int faultType)
 {
     //TODO 这里UDP组播发送故障指令
-
+    m_faultType = faultType;
     sendCMD(code,type);
 }
 
@@ -361,30 +368,6 @@ void CenterOperate::EditFaultItem(vector<AddOneFaultInfo> editFaults)
     //直接删除，然后写入
     for (int i = 0; i < editFaults.size(); i++)
     {
-        ////对故障指令和故障回令进行删除
-        //editName = editFaults[i].m_name;
-        //m_pFaultDAO2->DelCommandInfoParam(editName + "指令");
-        //m_pFaultDAO2->DelCommandInfoParam(editName + "回令");
-
-
-        ////再添加故障回令和故障指令
-        //FaultCommandInfo* oneCommandInfo = new FaultCommandInfo();
-        //oneCommandInfo->m_name = editName + "回令";
-        //oneCommandInfo->m_backID = 0;
-        //oneCommandInfo->m_prefix = 0X55AA;
-        //oneCommandInfo->m_code = m_pFaultDAO2->GetNowId("command_info");
-        //oneCommandInfo->m_type = 3;
-        //oneCommandInfo->m_rocketID = m_app->m_rockedType;
-        //m_pFaultDAO2->InsertCommandInfo(oneCommandInfo);
-
-        //oneCommandInfo->m_name = editName + "指令";
-        //oneCommandInfo->m_backID = oneCommandInfo->m_id;//绑定回令id
-        //oneCommandInfo->m_code = m_pFaultDAO2->GetNowId("command_info");
-        //m_pFaultDAO2->InsertCommandInfo(oneCommandInfo);
-
-        //commandID = oneCommandInfo->m_id;//得到指令id
-
-
         //写入数据库 1：参数故障；2：指令故障
         if (editFaults[i].m_Type == 1)
         {
@@ -487,9 +470,9 @@ void CenterOperate::receiverCMD(QByteArray oneCommand)
     if (sendCode != m_sendCode)
         return; 
     if (oneCommand.at(4) == 0x01)
-        emit backOnFaultClick(true);//故障设定成功
+        emit backOnFaultClick(m_faultType,true);//故障设定成功
     else
-        emit backOnFaultClick(false);//故障设定失败
+        emit backOnFaultClick(m_faultType,false);//故障设定失败
 
     m_isSendOne = false;
     killTimer(m_TimerID);//关闭定时器

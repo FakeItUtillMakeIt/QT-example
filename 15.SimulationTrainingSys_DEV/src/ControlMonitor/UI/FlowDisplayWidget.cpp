@@ -399,7 +399,7 @@ void FlowDisplayWidget::updateFlowStat(int m_iCode, int sendICode) {
 	}
 	if (mainFlowIndex == -1 && curRunCmdName == "")
 	{
-		QMessageBox::warning(this, "warning", "流程中无此指令");
+		//QMessageBox::warning(this, "warning", "流程中无此指令");
 		return;
 	}
 

@@ -17,6 +17,13 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});
+
+	connect(ParamInfoConfig::InfoConfigWidget::getInstance(), &ParamInfoConfig::InfoConfigWidget::updateParams, this, [=]() {
+		//要更新数据库
+		InitDisplayData();
+
+		});
+
 }
 
 ParamManageModule::~ParamManageModule()
@@ -188,23 +195,15 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
 	opDeleteBtn->setProperty("row", insertRow);
-	QPushButton* opCfgSwitchBtn = new QPushButton(QString("配置开关量"));
+	QPushButton* opCfgSwitchBtn = new QPushButton(QString("配置"));
 	opCfgSwitchBtn->setProperty("row", insertRow);
 
+	//#ifdef NEW_UI
+	//	opCfgSwitchBtn->show();
+	//#endif // NEW_UI
+
+#ifdef OLD_UI
 	opCfgSwitchBtn->hide();
-
-	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opDeleteBtn);
-	//hbox->addWidget(opCfgSwitchBtn);
-
-	/*hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));*/
-	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
-
-
-	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
-
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
 		int curRow = opEditBtn->property("row").toInt();
@@ -217,9 +216,20 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text());
-
 		});
+#endif // OLD_UI
+
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opCfgSwitchBtn);
+	hbox->addWidget(opDeleteBtn);
+
+	w1->setLayout(hbox);
+	w1->setStyleSheet("*{border:none;color:blue;}");
+
+
+	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
@@ -229,7 +239,8 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	@brief 删除一行
 **/
 void ParamManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = QMessageBox::warning(ParamInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+
 	if (ret == 0)
 	{
 		return;
@@ -267,19 +278,23 @@ void ParamManageModule::paintEvent(QPaintEvent* event) {
 **/
 void ParamManageModule::insertOneRowData() {
 
+#ifdef NEW_UI
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增参数"));
 	addRocketTypeW->show();
+#endif
 
+#ifdef OLD_UI
 	ParamInfoConfig::InfoConfigWidget* infoConfigWidget = ParamInfoConfig::InfoConfigWidget::getInstance();
-	//infoConfigWidget->show();
+	infoConfigWidget->show();
+#endif // OLD_UI
 
-	connect(infoConfigWidget, &ParamInfoConfig::InfoConfigWidget::updateParams, this, [=]() {
-		//要更新数据库
-		InitDisplayData();
+	//connect(infoConfigWidget, &ParamInfoConfig::InfoConfigWidget::updateParams, this, [=]() {
+	//	//要更新数据库
+	//	InitDisplayData();
 
-		});
+	//	});
 
 	return;
 

@@ -16,6 +16,12 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});
+
+	connect(CommandInfoConfig::InfoConfigWidget::getInstance(), &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
+		//要更新数据库
+		InitDisplayData();
+
+		});
 }
 
 CommandManageModule::~CommandManageModule()
@@ -184,26 +190,16 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
 	opDeleteBtn->setProperty("row", insertRow);
-	QPushButton* opCfgCmdParamBtn = new QPushButton(QString("配置指令参数"));
-	opCfgCmdParamBtn->setProperty("row", insertRow);
-	QPushButton* opCmdDevBtn = new QPushButton(QString("配置指令设备"));
-	opCmdDevBtn->setProperty("row", insertRow);
+	QPushButton* opCfgCmdBtn = new QPushButton(QString("配置"));
+	opCfgCmdBtn->setProperty("row", insertRow);
 
-	opCfgCmdParamBtn->hide();
-	opCmdDevBtn->hide();
-
-	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opDeleteBtn);
-	hbox->addWidget(opCfgCmdParamBtn);
-	hbox->addWidget(opCmdDevBtn);
-	/*hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));*/
-	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
+	//#ifdef NEW_UI
+	//	opCfgCmdBtn->show();
+	//#endif // NEW_UI
 
 
-	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
-
+#ifdef OLD_UI
+	opCfgCmdBtn->hide();
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
 		int curRow = opEditBtn->property("row").toInt();
@@ -217,14 +213,30 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDType->setCurrentText(configInfoTable->item(curRow, 5)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDPrefix->setCurrentText(configInfoTable->item(curRow, 6)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->show();
-
-		/*editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text().toInt(), configInfoTable->item(curRow, 3)->text(), \
-			configInfoTable->item(curRow, 4)->text().toInt(), configInfoTable->item(curRow, 5)->text().toInt(), configInfoTable->item(curRow, 6)->text().toInt());*/
-
 		});
+#endif // OLD_UI
+
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opCfgCmdBtn);
+	hbox->addWidget(opDeleteBtn);
+
+	w1->setLayout(hbox);
+	w1->setStyleSheet("*{border:none;color:blue;}");
+
+
+	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
+
+	connect(opCfgCmdBtn, &QPushButton::clicked, this, [=]() {
+		//获取当前火箭型号
+		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::COMMAND_WIDGET);
+		w->show();
+		});
+
 }
 
 
@@ -232,7 +244,9 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 	@brief 删除一行
 **/
 void CommandManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+
+
+	int ret = QMessageBox::warning(CommandInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
 	if (ret == 0)
 	{
 		return;
@@ -328,18 +342,26 @@ void CommandManageModule::paintEvent(QPaintEvent* event) {
 **/
 void CommandManageModule::insertOneRowData() {
 
+
+#ifdef NEW_UI
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::COMMAND_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增指令"));
 	addRocketTypeW->show();
+#endif // NEW_UI
 
+#ifdef OLD_UI
 	CommandInfoConfig::InfoConfigWidget* infoConfigWidget = CommandInfoConfig::InfoConfigWidget::getInstance();
-	//infoConfigWidget->show();
-	connect(infoConfigWidget, &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
-		//要更新数据库
-		InitDisplayData();
+	infoConfigWidget->show();
 
-		});
+#endif // OLD_UI
+
+
+	//connect(infoConfigWidget, &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
+	//	//要更新数据库
+	//	InitDisplayData();
+
+	//	});
 }
 
 /**

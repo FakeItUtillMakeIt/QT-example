@@ -75,6 +75,7 @@ private:
 	Ui::AddErrorCommandClass ui;
 	//QStandardItemModel m_tableModel2;
 	bool m_isAddFault;
+	int m_faultType;//添加故障所属系统标志
 
 	vector<ItemStruct> m_faultItems;//暂存当前故障项
 	vector<ItemStruct> searchItems;//用于搜索框显示

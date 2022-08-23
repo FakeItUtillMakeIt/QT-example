@@ -4,6 +4,9 @@
 #define FAULT_NAME "故障"
 #define FAULT_ID 3
 
+#define POWER_NAME "配电"
+#define POWER_ID 1
+
 
 CenterOperate::CenterOperate(QWidget* parent)
 	: QWidget(parent)
@@ -99,19 +102,11 @@ void CenterOperate::switchDeviceStatus(Command* command)
 		}
 		else
 		{
-			/*for (int ele1 = 0; ele1 < a.size(); ele1++)
+			for (int i = 0; i < a[command->m_id].size() / 4; i++)
 			{
-				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * ele1)].c_str()));
-				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * ele1)].c_str()));
-			}*/
-
-		
-				for (int i = 0; i <a[command->m_id].size()/4; i++)
-				{
-					deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * i)].c_str()));
-					statusIdV.push_back(atoi(a[command->m_id][3 + (4 * i)].c_str()));
-				}
-			
+				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * i)].c_str()));
+				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * i)].c_str()));
+			}
 		}
 
 	}
@@ -151,12 +146,6 @@ void CenterOperate::dealDeviceParams(Command* command) {
 		}
 		else
 		{
-		
-			/*for (int ele1 = 0; ele1 < a.size(); ele1++)
-			{
-				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * ele1)].c_str()));
-				statusIdV.push_back(atoi(a[command->m_id][3 + (4 * ele1)].c_str()));
-			}*/
 			for (int i = 0; i < a[command->m_id].size() / 4; i++)
 			{
 				deviceIdV.push_back(atoi(a[command->m_id][1 + (4 * i)].c_str()));
@@ -171,23 +160,29 @@ void CenterOperate::dealDeviceParams(Command* command) {
 		qDebug() << msg;
 		return;
 	}
-	 
+
 	vector<int> paramV;
 	for (int i = 0; i < deviceIdV.size(); i++)
 	{
-		for (int j: m_app->m_dev2DeviceParamID[deviceIdV[i]])
+		for (int j : m_app->m_dev2DeviceParamID[deviceIdV[i]])
 		{
 
 			DeviceParam* deviceParam = m_app->m_allDeviceParam[j];
-			//参数状态和设备状态保持一致
-	
+			//参数状态和设备状态保持一致m_id
+
+			deviceParam->m_Validity = 1;//参数数据有效
+			if (deviceParam->m_curStatus.m_id == 3)
+			{
+				continue;
+			}
+
 			deviceParam->m_status = m_app->m_allDeviceStatus[statusIdV[i]]->m_statusName;
+			deviceParam->m_curStatus.m_name = deviceParam->m_status;
+			deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+
 			deviceParam->updateParamRealVal();
 			deviceParam->m_curStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
-			deviceParam->m_curStatus.m_name = deviceParam->m_status;
-
 			deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
-			deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
 		}
 	}
 
@@ -258,9 +253,20 @@ void CenterOperate::dealFaultCmd(Command* command) {
 					}
 					else
 					{
-						//记录前置状态
-						deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
-						deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+						if (deviceParam->m_Validity == 0)
+						{
+							//记录前置状态
+							deviceParam->m_preStatus.m_id = POWER_ID;//配电索引
+							deviceParam->m_preStatus.m_name = Utils::UTF8ToGBK(POWER_NAME);//配电
+						}
+						else
+						{
+							//记录前置状态
+							deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
+							deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+						}
+
+
 						//第一次点击故障
 						deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
 						deviceParam->updateParamRealVal();
@@ -454,40 +460,5 @@ bool CenterOperate::InitFrame()
 	return true;
 }
 
-//void CenterOperate::paintEvent(QPaintEvent* event) {
-//	qDebug() << ui.widget->width();
-//
-//	QTableWidget* displayWidget;
-//
-//	switch (ui.listWidget->currentRow())
-//	{
-//	case 0:
-//		//呼出对应属性窗口
-//		displayWidget = paramManageUI->configInfoTable;
-//		break;
-//	case 1:
-//		displayWidget = deviceManageUI->configInfoTable;
-//		break;
-//	case 2:
-//		displayWidget = commandManageUI->configInfoTable;
-//		break;
-//	case 3:
-//		displayWidget = rocketManageUI->configInfoTable;
-//		break;
-//	default:
-//		displayWidget = nullptr;
-//		break;
-//	}
-//
-//	if (displayWidget)
-//	{
-//		qDebug() << this->width() << this->parentWidget()->width();
-//		for (int columnIndex = 0; columnIndex < displayWidget->columnCount(); columnIndex++)
-//		{
-//			//displayWidget->setColumnWidth(columnIndex, (this->parentWidget()->width()) / (displayWidget->columnCount() + 1));
-//			displayWidget->setColumnWidth(columnIndex, (displayWidget->width()) / (displayWidget->columnCount()));
-//		}
-//	}
-//
-//}
+
 

@@ -127,12 +127,12 @@ QLayout* AllInfoConfigWidget::publicBottomLayout() {
 
 
 /**
-	@brief 初始化界面
+	@brief 初始化火箭配置界面
 **/
-QLayout* AllInfoConfigWidget::initRocketConfigLayout() {
+void AllInfoConfigWidget::initRocketConfigLayout() {
 	windowTitle->setText("火箭型号配置");
 
-	UIGrid = new QGridLayout;
+	//UIGrid = new QGridLayout;
 
 	QGridLayout* leftGrid = new QGridLayout;
 	QGridLayout* rightGrid = new QGridLayout;
@@ -143,6 +143,8 @@ QLayout* AllInfoConfigWidget::initRocketConfigLayout() {
 	int columnC = 4;
 	int row = 0;
 	int column = 0;
+
+
 	//左侧
 	leftGrid->addWidget(rocketTypeParamTitle, row, column++, Qt::AlignLeft);
 	leftGrid->addWidget(searchLineEdit, row++, columnC - 1, Qt::AlignRight);
@@ -166,61 +168,375 @@ QLayout* AllInfoConfigWidget::initRocketConfigLayout() {
 	searchLineEdit->setPlaceholderText(QString("搜索"));
 	searchSelect->setPlaceholderText(QString("搜索"));
 
+	rocketWidget->setLayout(midUILayout);
 
-	UIGrid->addLayout(publicTopLayout(), 0, 0, 1, 16);
-	UIGrid->addLayout(midUILayout, 1, 0, 1, 16);
-	UIGrid->addLayout(publicBottomLayout(), 2, 0, 1, 16);
-
-	UIGrid->setContentsMargins(0, 12, 0, 0);
-
-
-	this->setLayout(UIGrid);
-	return UIGrid;
 }
 
 /**
-	@brief
-	@retval  -
+	@brief 初始化设备配置界面
 **/
-QLayout* AllInfoConfigWidget::initDeviceConfigLayout() {
+void AllInfoConfigWidget::initDeviceConfigLayout() {
+
+
+	QWidget* scrollAreaStatContent = new QWidget;
+	QWidget* scrollAreaParamContent = new QWidget;
+
+	QGridLayout* midUILayout = new QGridLayout;
+	//左侧
+	QVBoxLayout* leftVlayout = new QVBoxLayout;
+	leftVlayout->addWidget(searchDeviceCfg);
+	leftVlayout->addWidget(deviceCfgList);
+	deviceCfgList->setFixedWidth(220);
+	searchDeviceCfg->setFixedWidth(220);
+
+	//右侧1  状态
+	scrollAreaStat->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	scrollAreaStat->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	QGridLayout* rightGird = new QGridLayout;
+	rightGird->setContentsMargins(120, 40, 20, 60);
+	int rightGridColumnC = 2;
+	int curInd = 0;
+	deviceStatList.clear();
+	DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
+
+	for (auto ele : DeviceDBConfigInfo::getInstance()->statusInfo)
+	{
+		QWidget* widget = new QWidget;
+		widget->setObjectName("widget");
+		QHBoxLayout* statusHbox = new QHBoxLayout;
+		statusHbox->addWidget(new QLabel(QString::fromStdString(ele.second[1])));
+		QCheckBox* statusCheck = new QCheckBox;
+		statusHbox->setSpacing(160);
+		statusHbox->addWidget(statusCheck);
+
+		widget->setLayout(statusHbox);
+		rightGird->addWidget(widget, curInd / rightGridColumnC, curInd % rightGridColumnC);
+		rightGird->setRowStretch(curInd / rightGridColumnC, 1);
+		widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		deviceStatList.push_back(widget);
+		widget->setFixedHeight(58);
+		curInd++;
+	}
+
+	QPushButton* addNewStat = new QPushButton;
+	addNewStat->setStyleSheet(QString("QPushButton{width:330px;height:58px;border:1px solid gray;border-radius:5px;background-color:rgba(255,255,255,1);image:url(:/icon/icon/+hao.png);}"));
+	addNewStat->setFixedHeight(58);
+	rightGird->addWidget(addNewStat, curInd / rightGridColumnC, curInd % rightGridColumnC);
+	rightGird->setVerticalSpacing(50);
+	rightGird->setRowStretch(++curInd / rightGridColumnC, 1);
+	//
+	scrollAreaStatContent->setLayout(rightGird);
+	scrollAreaStat->setWidget(scrollAreaStatContent);
+	//右侧2  参数
+
+	scrollAreaParam->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	scrollAreaParam->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	QGridLayout* rightGird2 = new QGridLayout;
+	rightGird2->setContentsMargins(120, 40, 20, 60);
+	int rightGridColumnC2 = 1;
+	int curInd2 = 0;
+	deviceParamList.clear();
+	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+
+	for (auto ele : DeviceDBConfigInfo::getInstance()->paramInfo)
+	{
+		QWidget* widget = new QWidget;
+		widget->setObjectName("widget");
+		widget->setFixedSize(600, 40);
+		QHBoxLayout* statusHbox = new QHBoxLayout;
+		statusHbox->addWidget(new QLabel(QString::fromStdString(ele.second[1])));
+		QCheckBox* statusCheck = new QCheckBox;
+		//statusHbox->setSpacing(widget->width() - 200);
+		statusHbox->addStretch(1);
+		statusHbox->addWidget(statusCheck);
+
+		widget->setLayout(statusHbox);
+		rightGird2->addWidget(widget, curInd2 / rightGridColumnC2, curInd2 % rightGridColumnC2);
+		rightGird2->setRowStretch(curInd2 / rightGridColumnC2, 1);
+		widget->setStyleSheet(QString("QWidget#widget{width:600px;height:40px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		deviceParamList.push_back(widget);
+
+		curInd2++;
+	}
+
+	//
+	scrollAreaParamContent->setLayout(rightGird2);
+	scrollAreaParam->setWidget(scrollAreaParamContent);
+	//右侧2上
+	QHBoxLayout* rightTopLayout = new QHBoxLayout;
+
+	rightTopLayout->addWidget(searchDevParam);
+
+	rightTopLayout->setContentsMargins(200, 0, 0, 0);
+	searchDevParam->setFixedWidth(300);
+
+	//布局
+	midUILayout->addLayout(leftVlayout, 0, 0, 2, 1);
+	midUILayout->addLayout(rightTopLayout, 0, 1, 1, 2);
+
+	midUILayout->addWidget(scrollAreaStat, 1, 1, 1, 1);
+	midUILayout->addWidget(scrollAreaParam, 1, 2, 1, 1);
+	midUILayout->setContentsMargins(12, 12, 12, 0);
+
+	scrollAreaStat->setStyleSheet("*{border:none;}");
+	scrollAreaParam->setStyleSheet("*{border:none;}");
+
+	deviceWidget->setLayout(midUILayout);
+
+}
+
+/**
+	@brief 初始化指令配置界面
+**/
+void AllInfoConfigWidget::initCommandConfigLayout() {
+
+	QGridLayout* midUILayout = new QGridLayout;
+
+	//左侧
+	QVBoxLayout* leftVlayout = new QVBoxLayout;
+	leftVlayout->addWidget(searchCmdCfg);
+	leftVlayout->addWidget(cmdCfgList);
+	cmdCfgList->setFixedWidth(220);
+	searchCmdCfg->setFixedWidth(220);
+	//右侧1
+	QVBoxLayout* rightTop1Layout = new QVBoxLayout;
+	rightTop1Layout->addWidget(deviceLabel);
+	rightTop1Layout->addWidget(deviceCombox);
+	rightTop1Layout->setContentsMargins(40, 0, 0, 0);
+
+	scrollAreaDevStat = new QScrollArea;
+	scrollAreaDevStat->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+	scrollAreaDevStat->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+
+	connect(deviceCombox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [=](int index) {
+		QWidget* devStatComtents = new QWidget;
+
+		int deviceId = deviceCombox->itemData(index).toInt();
+
+		//在设备状态表中查询
+		QString qSqlString = QString("SELECT\
+			device_status_info.status_id,\
+			status_info.`name`,\
+			device_status_info.createTime,\
+			device_status_info.lastUpdateTime\
+			FROM\
+			device_status_info\
+			INNER JOIN status_info ON device_status_info.status_id = status_info.id\
+			WHERE\
+			device_status_info.device_id = %1").arg(deviceId);
+
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		int rightGridColumnC = 2;
+		int curInd = 0;
+		QGridLayout* contentsLayout = new QGridLayout;
+		contentsLayout->setContentsMargins(40, 0, 0, 0);
+		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+		{
+
+			QWidget* widget = new QWidget;
+			widget->setObjectName("widget");
+			QHBoxLayout* statusHbox = new QHBoxLayout;
+			statusHbox->addWidget(new QLabel(QString::fromStdString(ele.second[1])));
+			QCheckBox* statusCheck = new QCheckBox;
+			statusHbox->addSpacing(160);
+			statusHbox->addStretch(1);
+			statusHbox->addWidget(statusCheck);
+
+			widget->setLayout(statusHbox);
+			contentsLayout->addWidget(widget, curInd / rightGridColumnC, curInd % rightGridColumnC);
+			contentsLayout->setRowStretch(curInd / rightGridColumnC, 1);
+			widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+
+			widget->setFixedHeight(58);
+			curInd++;
+		}
+
+		devStatComtents->setLayout(contentsLayout);
+		scrollAreaDevStat->setWidget(devStatComtents);
+
+		});
+
+
+	deviceStatLayout->addLayout(rightTop1Layout, 0, 0, 1, 1);
+	deviceStatLayout->addWidget(scrollAreaDevStat, 1, 0, 1, 2);
+
+	midUILayout->addLayout(leftVlayout, 0, 0, 1, 1);
+	midUILayout->addLayout(deviceStatLayout, 0, 1, 1, 1);
+	midUILayout->setContentsMargins(12, 12, 12, 0);
+
+	searchCmdCfg->setPlaceholderText(QString("搜索"));
+
+	scrollAreaDevStat->setStyleSheet("*{border:none;}");
+	commandWidget->setLayout(midUILayout);
+
+
+
+}
+
+/**
+	@brief 加载火箭型号相关数据
+**/
+void AllInfoConfigWidget::loadRocketInfoData() {
+
+
+	//根据火箭型号进行设备和参数过滤
+	QString qSqlString = QString("SELECT\
+		device_info.id,\
+		device_param_info.parameter_id,\
+		parameter_info.createTime,\
+		parameter_info.lastUpdateTime\
+		FROM\
+		rocket_info\
+		INNER JOIN device_info ON rocket_info.id = device_info.rocket_id\
+		INNER JOIN device_param_info ON device_info.id = device_param_info.device_id\
+		INNER JOIN parameter_info ON device_param_info.parameter_id = parameter_info.id\
+		WHERE\
+		rocket_info.id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id);
+
+
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto rocketHadConfigData = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	qSqlString = QString("SELECT\
+		device_info.id,\
+		device_info.`name`,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1;").arg(AppCache::instance()->m_CurrentRocketType->m_id);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto allDevCurRocket = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+
+	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+
+	for (pair<int, vector< string>> ele1 : allDevCurRocket)
+	{
+		QTreeWidgetItem* eachItem = new QTreeWidgetItem;
+		eachItem->setCheckState(0, Qt::Unchecked);
+		eachItem->setText(0, QString::fromStdString(ele1.second[1]));
+		for (pair<int, vector<string>> ele2 : DeviceDBConfigInfo::getInstance()->paramInfo)
+		{
+			QTreeWidgetItem* subItem = new QTreeWidgetItem;
+			subItem->setCheckState(1, Qt::Unchecked);
+			subItem->setText(1, QString::fromStdString(ele2.second[1]));
+			eachItem->addChild(subItem);
+		}
+		deviceParamTree->addTopLevelItem(eachItem);
+	}
+
+	windowTitle->setText("火箭型号配置");
+
+	rocketWidget->show();
+
+	deviceWidget->hide();
+	commandWidget->hide();
+}
+
+/**
+	@brief 加载设备相关数据
+
+**/
+void AllInfoConfigWidget::loadDeviceInfoData() {
+	deviceCfgList->clear();
+	//list
+	deviceCfgList->addItem(QString("    设备状态"));
+	deviceCfgList->addItem(QString("    设备参数绑定"));
+	deviceCfgList->item(0)->setSelected(true);
+
+	deviceCfgList->setFocusPolicy(Qt::NoFocus);
+
+	QString ss = QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;}\
+				QListWidget::item{border-radius:5px;padding:10px;image:url(:/icon/icon/bb.png);image-position:left;margin:0 0 10 0;min-height:30px;}\
+				QListWidget::item:hover{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}\
+				QListWidget::item:selected{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}");
+
+	deviceCfgList->setStyleSheet(ss);
+
+	connect(deviceCfgList, &QListWidget::currentTextChanged,
+		[=](const QString& text) {
+			if (text == QString("    设备状态"))
+			{
+				scrollAreaStat->show();//进入时默认不显示
+				searchDevParam->hide();
+				scrollAreaParam->hide();
+			}
+			else
+			{
+				scrollAreaStat->hide();//进入时默认不显示
+				searchDevParam->show();
+				scrollAreaParam->show();
+			}
+		});
+
+	//设备显示
+	rocketWidget->hide();
+	commandWidget->hide();
+	deviceWidget->show();
+	scrollAreaParam->hide();
+	searchDevParam->hide();
+
 	windowTitle->setText("设备配置");
-
-	UIGrid = new QGridLayout;
-
-	QGridLayout* midUILayout = new QGridLayout;
-
-	UIGrid->addLayout(publicTopLayout(), 0, 0, 1, 16);
-	UIGrid->addLayout(midUILayout, 1, 0, 1, 16);
-	UIGrid->addLayout(publicBottomLayout(), 2, 0, 1, 16);
-
-	UIGrid->setContentsMargins(0, 12, 0, 0);
-
-
-	this->setLayout(UIGrid);
-	return UIGrid;
 }
 
-/**
-	@brief
-	@retval  -
-**/
-QLayout* AllInfoConfigWidget::initCommandConfigLayout() {
-	windowTitle->setText("指令配置");
+void AllInfoConfigWidget::loadCmdInfoData() {
+	cmdCfgList->clear();
+	//list
+	cmdCfgList->addItem(QString("    指令设备状态绑定"));
+	cmdCfgList->addItem(QString("    帧内容配置"));
 
-	UIGrid = new QGridLayout;
-	QGridLayout* midUILayout = new QGridLayout;
+	cmdCfgList->item(0)->setSelected(true);
 
-	UIGrid->addLayout(publicTopLayout(), 0, 0, 1, 16);
-	UIGrid->addLayout(midUILayout, 1, 0, 1, 16);
-	UIGrid->addLayout(publicBottomLayout(), 2, 0, 1, 16);
+	cmdCfgList->setFocusPolicy(Qt::NoFocus);
 
-	UIGrid->setContentsMargins(0, 12, 0, 0);
+	QString ss = QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;}\
+				QListWidget::item{border-radius:5px;padding:10px;image:url(:/icon/icon/bb.png);image-position:left;margin:0 0 10 0;min-height:30px;}\
+				QListWidget::item:hover{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}\
+				QListWidget::item:selected{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}");
 
+	cmdCfgList->setStyleSheet(ss);
 
-	this->setLayout(UIGrid);
-	return UIGrid;
+	connect(cmdCfgList, &QListWidget::currentTextChanged,
+		[=](const QString& text) {
+			if (text == QString("    指令设备状态绑定"))
+			{
+				scrollAreaDevStat->show();//进入时默认不显示
+				deviceCombox->show();
+				deviceLabel->show();
+
+			}
+			else
+			{
+				scrollAreaDevStat->hide();//进入时默认不显示
+				deviceCombox->hide();
+				deviceLabel->hide();
+			}
+		});
+
+	QString qSqlString = QString("SELECT\
+		device_info.id,\
+		device_info.`name`,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id);
+
+	deviceCombox->clear();
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto infodata = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : infodata)
+	{
+		QString tmpName = ele.second[1].c_str();
+		deviceCombox->addItem(tmpName, ele.first);
+	}
+
+	rocketWidget->hide();
+	deviceWidget->hide();
+	commandWidget->show();
 }
-
 
 /**
 	@brief 初始化界面布局
@@ -294,9 +610,30 @@ void AllInfoConfigWidget::InitUILayout() {
 	addCmdFrame = new QPushButton(QString("新增"));
 	cmdFrameTable = new QTableWidget;
 
+	scrollAreaStat = new QScrollArea;
+	scrollAreaParam = new QScrollArea;
 
-	//initRocketConfigLayout();
+	rocketWidget = new QWidget;
+	deviceWidget = new QWidget;
+	commandWidget = new QWidget;
+
+	initRocketConfigLayout();
 	initDeviceConfigLayout();
+	initCommandConfigLayout();
+
+	UIGrid = new QGridLayout;
+
+	UIGrid->addLayout(publicTopLayout(), 0, 0, 1, 16);
+	UIGrid->addWidget(rocketWidget, 1, 0, 1, 16);
+	UIGrid->addWidget(deviceWidget, 2, 0, 1, 16);
+	UIGrid->addWidget(commandWidget, 2, 0, 1, 16);
+	UIGrid->addLayout(publicBottomLayout(), 4, 0, 1, 16);
+	UIGrid->setContentsMargins(0, 12, 0, 0);
+
+	rocketWidget->hide();
+	deviceWidget->hide();
+	this->setLayout(UIGrid);
+
 }
 
 /**
@@ -307,19 +644,35 @@ void AllInfoConfigWidget::setCurrentUI(DeviceCommonVaries::InfoWidgetFlag switch
 
 	switch (switch_on)
 	{
-	case DeviceCommonVaries::PARAM_WIDGET:
-		initRocketConfigLayout();
+	case DeviceCommonVaries::ROCKET_WIDGET:
+		//initRocketConfigLayout();
+		loadRocketInfoData();
+		//this->setLayout(UIGrid);
 		break;
 	case DeviceCommonVaries::DEVICE_WIDGET:
-		initDeviceConfigLayout();
+		//initDeviceConfigLayout();
+		loadDeviceInfoData();
+		//this->setLayout(UIGrid);
 		break;
 	case DeviceCommonVaries::COMMAND_WIDGET:
-		initCommandConfigLayout();
+		loadCmdInfoData();
 		break;
 	default:
 		break;
 	}
 
+}
+
+/**
+	@brief	  显示页配置
+	@param rocketId -火箭型号ID
+	@param deviceId -设备ID
+	@param cmdId    -指令ID
+**/
+void AllInfoConfigWidget::setInfoWidgetCfg(int rocketId, int deviceId, int cmdId) {
+	rocketID = rocketId;
+	deviceID = deviceId;
+	cmdID = cmdId;
 }
 
 /**

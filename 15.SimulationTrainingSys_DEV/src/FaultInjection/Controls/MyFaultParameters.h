@@ -14,6 +14,7 @@ struct ItemStruct
 {
 	int ID;
 	int type;//1：参数故障；2：指令故障
+	int faultType;//1:控制、2:测量、3:动力
 	int code;
 	QString Name;
 
@@ -148,6 +149,7 @@ private:
 		int id;//故障的标志
 		int code;//故障code
 		int type;//1：参数故障；2：指令故障
+		int faultType;//1:控制、2:测量、3:动力
 
 		int FaultCommandID;//故障指令id
 		vector<int> responseCommandID;//受影响指令id
@@ -175,10 +177,10 @@ private:
 	void setHeight();
 
 public slots:
-	void backonFaultClick(bool isOK);
+	void backonFaultClick(int faultype, bool isOK);
 
 signals:
-	void onFaultClick(QString name, int code, int type);
+	void onFaultClick(QString name, int code, int type,int faultType);
 };
 
 

@@ -19,6 +19,11 @@ DeviceManageModule::DeviceManageModule(QWidget* parent)
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});
+
+	//更新
+	connect(DeviceInfoConfig::InfoConfigWidget::getInstance(), &DeviceInfoConfig::InfoConfigWidget::updateDeviceInfo, this, [=]() {
+		InitDisplayData();
+		});
 }
 
 DeviceManageModule::~DeviceManageModule()
@@ -171,26 +176,16 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	opEditBtn->setProperty("row", insertRow);
 	QPushButton* opDeleteBtn = new QPushButton(QString("删除"));
 	opDeleteBtn->setProperty("row", insertRow);
-	QPushButton* opCfgDevStatBtn = new QPushButton(QString("配置设备状态"));
+	QPushButton* opCfgDevStatBtn = new QPushButton(QString("配置"));
 	opCfgDevStatBtn->setProperty("row", insertRow);
-	QPushButton* opCfgDevParamBtn = new QPushButton(QString("配置设备参数"));
-	opCfgDevParamBtn->setProperty("row", insertRow);
 
-	opCfgDevParamBtn->hide();
+	//#ifdef NEW_UI
+	//	opCfgDevStatBtn->show();
+	//#endif // NEW_UI
+	//
+
+#ifdef OLD_UI
 	opCfgDevStatBtn->hide();
-
-	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opDeleteBtn);
-	hbox->addWidget(opCfgDevStatBtn);
-	hbox->addWidget(opCfgDevParamBtn);
-	/*hbox->addWidget(new QPushButton(QString("编辑")));
-	hbox->addWidget(new QPushButton(QString("删除")));*/
-	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
-
-
-	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
-
 	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
 
 
@@ -202,10 +197,18 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		DeviceInfoConfig::InfoConfigWidget::getInstance()->userInputDeviceName->setText(configInfoTable->item(curRow, 2)->text());
 		DeviceInfoConfig::InfoConfigWidget::getInstance()->userSelectDeviceType->setCurrentText(configInfoTable->item(curRow, 3)->text());
 		DeviceInfoConfig::InfoConfigWidget::getInstance()->show();
-
-		//editOneRow(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text().toInt(), configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text().toInt());
-
 		});
+#endif // OLD_UI
+
+	hbox->addWidget(opEditBtn);
+	hbox->addWidget(opCfgDevStatBtn);
+	hbox->addWidget(opDeleteBtn);
+
+	w1->setLayout(hbox);
+	w1->setStyleSheet("*{border:none;color:blue;}");
+
+	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
@@ -213,18 +216,22 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	connect(opCfgDevStatBtn, &QPushButton::clicked, this, [=]() {
 		//
 		opDeleteBtn->property("row").toInt();
+
+		//获取当前火箭型号
+		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::DEVICE_WIDGET);
+		w->show();
+
 		});
 
-	connect(opCfgDevParamBtn, &QPushButton::clicked, this, [=]() {
-		(opDeleteBtn->property("row").toInt());
-		});
+
 }
 
 /**
 	@brief 删除一行
 **/
 void DeviceManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(this, QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = QMessageBox::warning(DeviceInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
 	if (ret == 0)
 	{
 		return;
@@ -310,17 +317,22 @@ void DeviceManageModule::paintEvent(QPaintEvent* event) {
 **/
 void DeviceManageModule::insertOneRowData() {
 
+#ifdef NEW_UI
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::DEVICE_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增设备"));
 	addRocketTypeW->show();
+#endif // NEW_UI
 
+#ifdef OLD_UI
 	DeviceInfoConfig::InfoConfigWidget* infoConfigWidget = DeviceInfoConfig::InfoConfigWidget::getInstance();
-	//infoConfigWidget->show();
-	//更新
-	connect(infoConfigWidget, &DeviceInfoConfig::InfoConfigWidget::updateDeviceInfo, this, [=]() {
-		InitDisplayData();
-		});
+	infoConfigWidget->show();
+#endif // OLD_UI
+
+	////更新
+	//connect(infoConfigWidget, &DeviceInfoConfig::InfoConfigWidget::updateDeviceInfo, this, [=]() {
+	//	InitDisplayData();
+	//	});
 }
 
 /**

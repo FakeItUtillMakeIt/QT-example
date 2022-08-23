@@ -2,7 +2,7 @@
 #include "../DeviceManager/Database/DeviceDBConfigInfo.h"
 
 DeviceParam::DeviceParam() :
-	m_status(string("初始化")), m_iCurValue(0), m_iCurStr("")
+	m_status(string("初始化")), m_iCurValue(0), m_iCurStr(""), m_Validity(0)
 {
 	curIndex = 0;
 	paramData = { 0 };

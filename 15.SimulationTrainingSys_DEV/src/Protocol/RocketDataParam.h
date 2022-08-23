@@ -9,11 +9,12 @@
 #include "../Model/DeviceParam.h"
 using namespace std;
 
-#define PARAM_LENGTH 13 
+#define PARAM_LENGTH 17 
 
 #define PARAM_ADDR_ID 0 
-#define PARAM_ADDR_VALUE     4
-#define PARAM_ADDR_STATUS    12
+#define PARAM_ADDR_Valid 4 
+#define PARAM_ADDR_VALUE 8
+#define PARAM_ADDR_STATUS 16
 
 class RocketDataFrame;
 class RocketDataParam

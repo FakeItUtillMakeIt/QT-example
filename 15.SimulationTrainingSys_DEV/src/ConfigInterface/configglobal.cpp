@@ -67,8 +67,13 @@ bool  ConfigGlobal::VerifyNumber(QString str)
 
     return true;
 }
-void   ConfigGlobal::updateControlValue(int key,double itime,double value,int error)
+void   ConfigGlobal::updateControlValue(int validity,int key,double itime,double value,int error)
 {
+    if (validity == 0)
+    {
+        return;
+    }
+
     if (key == 0x13)
     {
         qDebug() << "value:" << value;

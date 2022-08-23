@@ -79,6 +79,7 @@ void MyFaultParameters::addItem(ItemStruct inItem, int itemNumber)
 	item.id = inItem.ID;
 	item.code = inItem.code;
 	item.type = inItem.type;
+	item.faultType = inItem.faultType;
 	item.FaultCommandID = inItem.FaultCommandID;
 	item.responseCommandID = inItem.responseCommandID;
 	item.deviceParamInfoID = inItem.deviceParamInfoID;
@@ -142,13 +143,18 @@ void MyFaultParameters::addItem(ItemStruct inItem, int itemNumber)
 /// 修改当前故障注入情况，（在解析故障回令之后再进行控件的修改）
 /// </summary>
 /// <param name="isOK"></param>
-void MyFaultParameters::backonFaultClick(bool isOK)
+void MyFaultParameters::backonFaultClick(int faultype,bool isOK)
 {
 	for (auto& item : items)
 	{
 		bool selected = false; //取反
 		if (m_clickButtonname == item.tab->getName())
 		{
+			if (faultype != item.faultType)
+			{
+				return;
+			}
+
 			if (isOK)
 			{
 				//选中
@@ -188,7 +194,7 @@ void MyFaultParameters::onClick(QObject* obj)
 
 			//告诉已选参数列表，最新的操作
 			m_clickButtonname = item.tab->getName();
-			emit onFaultClick(m_clickButtonname, item.code, item.type);
+			emit onFaultClick(m_clickButtonname, item.code, item.type, item.faultType);
 
 			//item.is_selected = selected;
 			//item.tab->selectItem(selected);

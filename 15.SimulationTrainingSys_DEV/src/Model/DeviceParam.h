@@ -38,6 +38,7 @@ public:
 	string m_status;//参数状态
 
 	Status m_preStatus;//上一个状态
+	int m_Validity;//参数有效性 0：无效；1：有效
 
 
 	map<string, vector<double>> m_statusRealData;//每个状态对应的实时值列表

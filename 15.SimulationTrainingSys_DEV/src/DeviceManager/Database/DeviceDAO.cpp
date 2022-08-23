@@ -121,6 +121,8 @@ namespace DataBase
 					oneDeviceParam->m_subParameterId = atoi(sql_row[3]);
 					oneDeviceParam->m_subParameterName = Utils::UTF8ToGBK(sql_row[4]);
 					oneDeviceParam->m_unit = Utils::UTF8ToGBK(sql_row[5]);
+
+					oneDeviceParam->m_Validity = 0;//参数数据无效
 					m_app->m_allDeviceParam.insert(pair<int, DeviceParam*>(oneDeviceParam->m_id, oneDeviceParam));
 					m_app->m_dev2DeviceParamID[oneDeviceParam->m_deviceId].push_back(oneDeviceParam->m_id);
 				}

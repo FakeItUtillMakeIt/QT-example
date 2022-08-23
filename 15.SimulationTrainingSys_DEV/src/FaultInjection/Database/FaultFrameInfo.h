@@ -182,6 +182,7 @@ namespace DataBase
 
 		string m_name;//故障名称
 		int m_Type;//故障类型 1：参数故障；2：指令故障
+		int faultType;//1:控制、2:测量、3:动力
 		int m_FaultCommandID;//故障指令id
 		vector<int> m_responseCommandID;//受影响指令id
 		vector<int> m_deviceParamInfoID;//参数id  device_param_info_id

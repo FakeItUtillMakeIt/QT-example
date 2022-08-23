@@ -57,6 +57,7 @@ private:
 
     int m_TimerID;//1s¶¨Ê±Æ÷³¬Ê±id
     bool m_isSendOne;
+    int m_faultType;
 
 private:
 
@@ -71,7 +72,7 @@ private:
     void EditFaultItem(vector<AddOneFaultInfo> editFaults);
     void DelFaultItem(vector<AddOneFaultInfo> delFaults);
 
-    void isEnabledFault(QString name, int code, int type);
+    void isEnabledFault(QString name, int code, int type, int faultType);
 
 
 public slots:
@@ -79,6 +80,6 @@ public slots:
     void receiverCMD(QByteArray oneCommand);
 
 signals:
-    void backOnFaultClick(bool isOK);
+    void backOnFaultClick(int faultype, bool isOK);
 
 };

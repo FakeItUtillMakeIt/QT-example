@@ -54,8 +54,6 @@ void WorkThread::doWork() {
 		//初始化状态不需要读取实时值列表
 		/*在这里启动定时器刷数*/
 
-
-
 		for (auto eachStat : AppCache::instance()->m_dev2DeviceStatusID[ele->second->m_deviceId])
 		{
 			QFile file(statusFilePath + QString::fromStdString(AppCache::instance()->m_allDeviceStatus[eachStat]->m_dataPath));
@@ -79,6 +77,7 @@ void WorkThread::doWork() {
 					paramNameList = lineData.split(QRegExp("[,]"));
 					paramNameList.pop_back();
 					row--;
+					continue;
 				}
 				auto lineDataList = lineData.split(QRegExp("[,]"));
 				lineDataList.pop_back();
@@ -89,7 +88,6 @@ void WorkThread::doWork() {
 				}
 				for (int i = 0; i < paramNameList.size(); i++)
 				{
-
 					tempData[Utils::UTF8ToGBK(paramNameList[i].toStdString().c_str())].push_back(lineDataList[i].toDouble());
 
 				}

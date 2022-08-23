@@ -40,7 +40,7 @@ public:
     static void  updateButtonMap(int key, ConfigButton*);
 
     static void  updateCurveMap(QList<QString>  keys, ConfigCurve*);
-    static void  updateControlValue(int key,double itime, double value, int error = 0);
+    static void  updateControlValue(int validity, int key,double itime, double value, int error = 0);
     static bool  dataupdated;
     static void(*cmdhandler)(int, ConfigNameSpace::ConfigButton*);
     static void updateDefaultState();

@@ -42,6 +42,8 @@ public:
 
 	void setCurrentUI(DeviceCommonVaries::InfoWidgetFlag);
 
+	void setInfoWidgetCfg(int rocketId, int deviceId, int cmdId);
+
 private:
 	AllInfoConfigWidget(QWidget* parent = nullptr);
 	~AllInfoConfigWidget();
@@ -49,7 +51,14 @@ private:
 	void widgetConfig();
 	void initConnect();
 
+	void loadRocketInfoData();
+	void loadDeviceInfoData();
+	void loadCmdInfoData();
+
 private:
+	int rocketID;
+	int deviceID;
+	int cmdID;
 
 	//…œ≤‡¿∏
 	QLabel* windowIcon;
@@ -81,10 +90,15 @@ private:
 	QPushButton* addDeviceCfg;
 	QListWidget* deviceCfgList;
 	//”“≤‡1…Ë±∏◊¥Ã¨
+	QVector<QWidget*> deviceStatList;
+	QVector<QWidget*> deviceParamList;
 	QGridLayout* devStatusLayout;
+	QScrollArea* scrollAreaStat;
 	//”“≤‡2…Ë±∏≤Œ ˝
 	QLineEdit* searchDevParam;
 	QGridLayout* devParamLayout;
+	QScrollArea* scrollAreaParam;
+
 
 	//÷∏¡Ó≈‰÷√
 	//◊Û≤‡
@@ -95,6 +109,7 @@ private:
 	QLabel* deviceLabel;
 	QComboBox* deviceCombox;
 	QGridLayout* deviceStatLayout;
+	QScrollArea* scrollAreaDevStat;
 	//”“2
 	QLineEdit* searchCmdFrame;
 	QLabel* cmdFrameLabel;
@@ -103,18 +118,22 @@ private:
 
 
 
+
 	QPoint mLastMousePosition;
 	bool mMoving;
 
 	QGridLayout* UIGrid;
+	QWidget* rocketWidget;
+	QWidget* deviceWidget;
+	QWidget* commandWidget;
 
 private:
 	QLayout* publicTopLayout();
 	QLayout* publicBottomLayout();
 
-	QLayout* initRocketConfigLayout();
-	QLayout* initDeviceConfigLayout();
-	QLayout* initCommandConfigLayout();
+	void initRocketConfigLayout();
+	void initDeviceConfigLayout();
+	void initCommandConfigLayout();
 
 
 
