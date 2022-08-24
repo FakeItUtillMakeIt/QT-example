@@ -46,7 +46,16 @@ public:
 	void setInfoWidget(int);
 	void setWindowName(QString);
 
+	void setRocketInfo(int rocketId, QString rocketName, QString rocketDescrp);
+	void setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit);
+	void setDevInfo(int devId, QString rocketType, QString devName, QString devType);
+	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd);
+
 private:
+	int rocketID, paramID, deviceID, commandID;
+	DeviceCommonVaries::DeviceModule currentModule;
+	int currentDealType;
+
 	QString windowName;
 
 	WidgetStyleSheet* wss;
@@ -111,6 +120,13 @@ private slots:
 	void clickRocketTypeOk();
 	void clickRocketTypeCancel();
 	void clickWindowClose();
+
+
+signals:
+	void updateRocketInfos();
+	void updateParamInfos();
+	void updateDeviceInfos();
+	void updateCommandInfos();
 
 };
 

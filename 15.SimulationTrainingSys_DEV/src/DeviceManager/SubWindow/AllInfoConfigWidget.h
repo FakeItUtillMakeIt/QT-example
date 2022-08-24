@@ -99,7 +99,6 @@ private:
 	QGridLayout* devParamLayout;
 	QScrollArea* scrollAreaParam;
 
-
 	//÷∏¡Ó≈‰÷√
 	//◊Û≤‡
 	QLineEdit* searchCmdCfg;
@@ -115,10 +114,7 @@ private:
 	QLabel* cmdFrameLabel;
 	QPushButton* addCmdFrame;
 	QTableWidget* cmdFrameTable;
-
-
-
-
+	//
 	QPoint mLastMousePosition;
 	bool mMoving;
 

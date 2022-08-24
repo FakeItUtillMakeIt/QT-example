@@ -27,6 +27,11 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 		InitDisplayData();
 
 		});
+
+	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateRocketInfos, this, [=]() {
+		InitDisplayData();
+
+		});
 }
 
 RocketTypeManageModule::~RocketTypeManageModule()
@@ -200,6 +205,16 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+		auto editW = AddRocketTypeWidget::getInstance();
+		editW->setInfoWidget(DeviceCommonVaries::ROCKET_WIDGET);
+		editW->setWindowName(QString("±à¼­»ð¼ýÐÍºÅ"));
+		int curRow = opEditBtn->property("row").toInt();
+		editW->setRocketInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
+			configInfoTable->item(curRow, 2)->text());
+		editW->show();
+		});
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());

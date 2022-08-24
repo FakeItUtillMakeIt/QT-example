@@ -24,6 +24,11 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 
 		});
 
+	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateParamInfos, this, [=]() {
+		InitDisplayData();
+
+		});
+
 }
 
 ParamManageModule::~ParamManageModule()
@@ -226,8 +231,17 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
 
-
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+		auto editW = AddRocketTypeWidget::getInstance();
+		editW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
+		editW->setWindowName(QString("±à¼­²ÎÊý"));
+		int curRow = opEditBtn->property("row").toInt();
+		editW->setParamInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
+			configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text());
+		editW->show();
+		});
 
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {

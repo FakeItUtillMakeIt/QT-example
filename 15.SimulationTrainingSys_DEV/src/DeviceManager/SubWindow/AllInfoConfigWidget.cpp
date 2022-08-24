@@ -361,8 +361,17 @@ void AllInfoConfigWidget::initCommandConfigLayout() {
 	deviceStatLayout->addLayout(rightTop1Layout, 0, 0, 1, 1);
 	deviceStatLayout->addWidget(scrollAreaDevStat, 1, 0, 1, 2);
 
+	//右侧2
+	QGridLayout* cmdFrameLayout = new QGridLayout;
+	searchCmdFrame->setFixedWidth(200);
+	cmdFrameLayout->addWidget(searchCmdFrame, 0, 0, 1, 1);
+	cmdFrameLayout->addWidget(cmdFrameLabel, 1, 0, 1, 1);
+	cmdFrameLayout->addWidget(addCmdFrame, 1, 4, 1, 1);
+	cmdFrameLayout->addWidget(cmdFrameTable, 2, 0, 8, 5);
+
 	midUILayout->addLayout(leftVlayout, 0, 0, 1, 1);
 	midUILayout->addLayout(deviceStatLayout, 0, 1, 1, 1);
+	midUILayout->addLayout(cmdFrameLayout, 0, 2, 1, 1);
 	midUILayout->setContentsMargins(12, 12, 12, 0);
 
 	searchCmdCfg->setPlaceholderText(QString("搜索"));
@@ -370,8 +379,10 @@ void AllInfoConfigWidget::initCommandConfigLayout() {
 	scrollAreaDevStat->setStyleSheet("*{border:none;}");
 	commandWidget->setLayout(midUILayout);
 
-
-
+	searchCmdFrame->hide();
+	cmdFrameLabel->hide();
+	addCmdFrame->hide();
+	cmdFrameTable->hide();
 }
 
 /**
@@ -505,9 +516,20 @@ void AllInfoConfigWidget::loadCmdInfoData() {
 				deviceCombox->show();
 				deviceLabel->show();
 
+				searchCmdFrame->hide();
+				cmdFrameLabel->hide();
+				addCmdFrame->hide();
+				cmdFrameTable->hide();
+
 			}
 			else
 			{
+				searchCmdFrame->show();
+				cmdFrameLabel->show();
+				addCmdFrame->show();
+				cmdFrameTable->show();
+
+
 				scrollAreaDevStat->hide();//进入时默认不显示
 				deviceCombox->hide();
 				deviceLabel->hide();
@@ -532,6 +554,9 @@ void AllInfoConfigWidget::loadCmdInfoData() {
 		QString tmpName = ele.second[1].c_str();
 		deviceCombox->addItem(tmpName, ele.first);
 	}
+
+
+	windowTitle->setText("指令配置");
 
 	rocketWidget->hide();
 	deviceWidget->hide();
@@ -606,9 +631,50 @@ void AllInfoConfigWidget::InitUILayout() {
 	//右2
 	searchCmdFrame = new QLineEdit;
 	searchCmdFrame->setPlaceholderText(QString("搜索"));
+
 	cmdFrameLabel = new QLabel(QString("指令帧内容列表"));
 	addCmdFrame = new QPushButton(QString("新增"));
+
+	addCmdFrame->setStyleSheet("\
+				\
+				QPushButton:hover{background-color:transparent;\
+					border-image:url(:/DeviceManager/bt_suspension.png);\
+					color:rgb(255,255,255);\
+					font:12pt 微软雅黑;\
+					border:0px;\
+					}\
+				QPushButton:pressed{\
+					background-color:transparent;\
+					border-image:url(:/DeviceManager/bt_disable.png);\
+					color:rgb(255,255,255);\
+					font:12pt 微软雅黑;\
+					border:0px;}\
+				QPushButton{\
+					height:30px;width:60px;\
+					background-color:transparent;\
+					border-image:url(:/DeviceManager/bt_normal.png);\
+					color:rgb(255,255,255);\
+					font:12pt 微软雅黑;\
+					border:0px;\
+					}\
+		");
+
 	cmdFrameTable = new QTableWidget;
+	QStringList tableHeaders;
+	tableHeaders << QString("帧内容名称") << QString("帧内容字节长度") << QString("帧内容类型") << QString("帧内容默认值") << QString("操作");
+	cmdFrameTable->setColumnCount(tableHeaders.size());
+	cmdFrameTable->horizontalHeader()->setMinimumHeight(40);
+	cmdFrameTable->horizontalHeader()->setStyleSheet("font: 14px 微软雅黑 bold;");
+	cmdFrameTable->horizontalHeader()->setStretchLastSection(true);
+	cmdFrameTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
+	cmdFrameTable->setHorizontalHeaderLabels(tableHeaders);
+	cmdFrameTable->horizontalHeader()->show();
+	cmdFrameTable->verticalHeader()->show();
+
+	for (int i = 0; i < cmdFrameTable->columnCount(); i++)
+	{
+		cmdFrameTable->setColumnWidth(i, 160);
+	}
 
 	scrollAreaStat = new QScrollArea;
 	scrollAreaParam = new QScrollArea;

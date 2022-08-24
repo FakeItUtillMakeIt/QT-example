@@ -18,10 +18,15 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 		});
 
 	connect(CommandInfoConfig::InfoConfigWidget::getInstance(), &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
-		//要更新数据库
+
 		InitDisplayData();
 
 		});
+	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateCommandInfos, this, [=]() {
+		InitDisplayData();
+
+		});
+
 }
 
 CommandManageModule::~CommandManageModule()
@@ -226,6 +231,17 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
 
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+		auto editW = AddRocketTypeWidget::getInstance();
+		editW->setInfoWidget(DeviceCommonVaries::COMMAND_WIDGET);
+		editW->setWindowName(QString("编辑指令"));
+		int curRow = opEditBtn->property("row").toInt();
+		editW->setCommandInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
+			configInfoTable->item(curRow, 5)->text(), configInfoTable->item(curRow, 3)->text(),
+			configInfoTable->item(curRow, 2)->text());
+		editW->show();
+		});
+
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		});
@@ -234,6 +250,7 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		//获取当前火箭型号
 		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::COMMAND_WIDGET);
+
 		w->show();
 		});
 

@@ -24,6 +24,11 @@ DeviceManageModule::DeviceManageModule(QWidget* parent)
 	connect(DeviceInfoConfig::InfoConfigWidget::getInstance(), &DeviceInfoConfig::InfoConfigWidget::updateDeviceInfo, this, [=]() {
 		InitDisplayData();
 		});
+
+	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateDeviceInfos, this, [=]() {
+		InitDisplayData();
+
+		});
 }
 
 DeviceManageModule::~DeviceManageModule()
@@ -208,6 +213,16 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	w1->setStyleSheet("*{border:none;color:blue;}");
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
+
+	connect(opEditBtn, &QPushButton::clicked, this, [=]() {
+		auto editW = AddRocketTypeWidget::getInstance();
+		editW->setInfoWidget(DeviceCommonVaries::DEVICE_WIDGET);
+		editW->setWindowName(QString("±à¼­Éè±¸"));
+		int curRow = opEditBtn->property("row").toInt();
+		editW->setDevInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
+			configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text());
+		editW->show();
+		});
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
