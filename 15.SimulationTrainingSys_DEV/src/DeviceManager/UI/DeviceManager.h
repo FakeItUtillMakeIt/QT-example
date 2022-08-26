@@ -19,6 +19,12 @@
 #include "../Helper/DeviceHelper.h"
 #include "CenterOperate.h"
 #include "../MutliThread/MutliThreadOp.h"
+#include"twoDdisplay.h"
+
+#include "../Database/FaultDAO.h"
+#include "../Database/DeviceDAOF.h"
+#include "../Database/FaultParamDAO.h"
+#include "CenterOperateF.h" 
 
 #define NEW_UI//优化后的UI
 #ifndef NEW_UI
@@ -37,6 +43,7 @@ public:
 	DeviceManager(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
 	void Init();
+	void DataLoading();
 	void ShowMinimized();
 private:
 	Ui::DeviceManagerClass ui;
@@ -53,6 +60,11 @@ private:
 	void InitDevice();
 	void changeResize();
 
+	//故障注入添加
+	DataBaseF::FaultDAO* m_pFaultDAOF;
+	DataBaseF::FaultParamDAO* m_pFaultParamDAOF;
+	DataBaseF::DeviceDAO* m_pDeviceDAOF;
+	CenterOperateF* m_CenterOperateF;
 
 
 protected:

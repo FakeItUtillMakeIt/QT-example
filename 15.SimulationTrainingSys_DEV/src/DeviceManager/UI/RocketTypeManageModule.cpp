@@ -223,7 +223,10 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	connect(opCfgDataBtn, &QPushButton::clicked, this, [=]() {
 		//获取当前火箭型号
 		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setInfoWidgetCfg(configInfoTable->item(opCfgDataBtn->property("row").toInt(), 0)->text().toInt(), -1, -1);
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::ROCKET_WIDGET);
+		w->setWindowTitle(configInfoTable->item(opCfgDataBtn->property("row").toInt(), 1)->text() + QString("-箭上数据通信协议配置"));
+
 		w->show();
 		});
 
@@ -304,7 +307,7 @@ void RocketTypeManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::ROCKET_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增火箭型号"));
-
+	addRocketTypeW->setRocketInfo(0, "", "");
 	addRocketTypeW->show();
 #endif // !1
 

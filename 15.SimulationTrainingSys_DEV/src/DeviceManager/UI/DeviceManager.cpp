@@ -155,8 +155,10 @@ void DeviceManager::Init()
 	}
 
 	qDebug() << "加载基础数据用时:" << timer1.elapsed();
-
-	m_centeralWidget = new CenterOperate(ui.center_wgt);
+	
+	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);
+	DataLoading();//故障加载
+	new twoDdisplay(ui.tab_Display);
 
 	QElapsedTimer timer2;
 	displayStatuInfo("加载基础数据完毕！");
@@ -167,6 +169,107 @@ void DeviceManager::Init()
 	emit deviceLoadOver();
 }
 
+
+/// <summary>
+/// 获取故障注入所需要的数据
+/// </summary>
+void DeviceManager::DataLoading()
+{
+	m_app->m_rockedType = m_app->m_CurrentRocketType->m_id;//选择火箭类型
+
+	//加载基础数据
+	m_pFaultDAOF = new DataBaseF::FaultDAO(m_app->m_outputPath);
+	if (!m_pFaultDAOF->getFault())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//获取rocket_info表信息
+	if (!m_pFaultDAOF->GetAllRocketInfoFrame())
+	{
+		QString info = "获取rocket_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//获取command_info表信息
+	if (!m_pFaultDAOF->GetAllCommandInfoFrame())
+	{
+		QString info = "获取command_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//获取command_param_info表信息
+	if (!m_pFaultDAOF->GetAllCommandParamInfoFrame())
+	{
+		QString info = "获取command_param_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	m_pFaultParamDAOF = new DataBaseF::FaultParamDAO(m_app->m_outputPath);
+	//获取fault_param_info表信息
+	if (!m_pFaultParamDAOF->GetAllFaultParamInfoFrames())
+	{
+		QString info = "获取fault_param_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//获取故障参数fault_command_info表信息
+	if (!m_pFaultParamDAOF->GetAllFaultCommandInfoFrames())
+	{
+		QString info = "获取fault_command_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+
+	m_pDeviceDAOF = new DataBaseF::DeviceDAO(m_app->m_outputPath);
+	//获取故障参数parameter_info表信息
+	if (!m_pDeviceDAOF->GetAllParameterInfoFrames())
+	{
+		QString info = "获取parameter_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//获取故障参数device_info表信息
+	if (!m_pDeviceDAOF->GetAllDeviceInfoFrames())
+	{
+		QString info = "获取rocket_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+
+	//获取故障参数device_param_info表信息
+	if (!m_pDeviceDAOF->GetAllDeviceParamInfoFrames())
+	{
+		QString info = "获取device_param_info数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	if (!m_pDeviceDAOF->GetDeviceIDParamIDFrames())
+	{
+		QString info = "获取数据信息失败！";
+		displayStatuInfo(info, true);
+		//return;
+	}
+
+	//m_centeralWidget = new CenterOperate(ui.tab_faultInjection);
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	m_CenterOperateF = new CenterOperateF();
+	hlayout->addWidget(m_CenterOperateF);
+	ui.tab_faultInjection->setLayout(hlayout);
+
+	displayStatuInfo("加载故障数据完毕！");
+	displayStatuInfo("系统启动完毕！");
+}
 
 void DeviceManager::timeUpdate() {
 

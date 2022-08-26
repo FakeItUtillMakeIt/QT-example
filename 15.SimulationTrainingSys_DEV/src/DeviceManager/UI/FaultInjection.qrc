@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/FaultInjection">
+        <file>images/addFault (2).png</file>
+        <file>images/addFault.png</file>
+        <file>images/bg_02.png</file>
+        <file>images/bt_disable.png</file>
+        <file>images/bt_normal.png</file>
+        <file>images/bt_suspension.png</file>
+        <file>images/CheckboxOff.png</file>
+        <file>images/CheckboxOn.png</file>
+        <file>images/ic_add@2x.png</file>
+        <file>images/icon／more_active.png</file>
+        <file>images/icon1.png</file>
+        <file>images/icon2.png</file>
+        <file>images/icon3.png</file>
+        <file>images/icon4.png</file>
+        <file>images/icon5.png</file>
+        <file>images/minus.png</file>
+        <file>images/oslogo.png</file>
+        <file>images/plus.png</file>
+        <file>images/search.png</file>
+        <file>images/white.png</file>
+        <file>images/故障参数集.png</file>
+        <file>images/故障点击.png</file>
+        <file>images/故障禁用.png</file>
+        <file>images/故障默认未点击.png</file>
+        <file>images/故障配置成功.png</file>
+        <file>images/故障配置异常.png</file>
+        <file>images/故障悬浮.png</file>
+        <file>images/未标题-2_02.png</file>
+        <file>images/右边装饰@1x.png</file>
+        <file>images/指令1.png</file>
+        <file>images/指令2.png</file>
+        <file>images/中间件@1x.png</file>
+        <file>images/左边装饰@1x.png</file>
+    </qresource>
+</RCC>

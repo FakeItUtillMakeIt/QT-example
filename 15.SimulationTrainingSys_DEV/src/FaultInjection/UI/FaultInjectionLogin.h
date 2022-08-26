@@ -4,7 +4,7 @@
 #include "ui_FaultInjectionLogin.h"
 #include "FaultInjection.h"
 #include "../AppCache.h"
-#include "../Database/DeviceDAO.h"
+#include "../Database/DeviceDAOF.h"
 class FaultInjectionLogin : public QWidget
 {
 	Q_OBJECT
@@ -22,5 +22,5 @@ private:
 	FaultInjection* faultInjection;
 	void Init();
 	AppCache* m_app;
-	DataBase::DeviceDAO* m_pDeviceDAO;
+	DataBaseF::DeviceDAO* m_pDeviceDAO;
 };

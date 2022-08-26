@@ -39,18 +39,22 @@ public:
 			instance->deleteLater();
 		}
 	}
-
+	//设置相关
+	void setWindowTitle(QString);
 	void setCurrentUI(DeviceCommonVaries::InfoWidgetFlag);
-
 	void setInfoWidgetCfg(int rocketId, int deviceId, int cmdId);
+
+
 
 private:
 	AllInfoConfigWidget(QWidget* parent = nullptr);
 	~AllInfoConfigWidget();
+	//初始化相关
 	void InitUILayout();
 	void widgetConfig();
 	void initConnect();
 
+	//数据加载相关
 	void loadRocketInfoData();
 	void loadDeviceInfoData();
 	void loadCmdInfoData();
@@ -59,6 +63,8 @@ private:
 	int rocketID;
 	int deviceID;
 	int cmdID;
+
+	DeviceCommonVaries::InfoWidgetFlag curWidget;
 
 	//上侧栏
 	QLabel* windowIcon;
@@ -73,6 +79,9 @@ private:
 	//火箭型号
 	//左侧栏
 	//型号参数
+	QLineEdit* rocketSearch;
+	QPushButton* addCommuProto;
+	QListWidget* rocketComProtoList;
 	QLabel* rocketTypeParamTitle;
 	QLineEdit* searchLineEdit;
 	QTreeWidget* deviceParamTree;

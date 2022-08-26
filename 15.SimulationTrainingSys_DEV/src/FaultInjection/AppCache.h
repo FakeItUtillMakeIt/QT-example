@@ -19,7 +19,7 @@
 #include "../Model/DeviceParam.h"
 #include "../Model/RocketType.h"
 using namespace std;
-using namespace DataBase;
+using namespace DataBaseF;
 /**
 * @brief 应用程序的全局缓冲区 \n
 * 单例类。保存配置文件中的所有数据信息

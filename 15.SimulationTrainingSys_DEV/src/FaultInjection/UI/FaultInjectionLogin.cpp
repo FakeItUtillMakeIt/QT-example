@@ -32,7 +32,7 @@ void FaultInjectionLogin::Init()
 {
 	m_app->m_CurrentRocketType = nullptr;
 	//加载基础数据
-	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
+	m_pDeviceDAO = new DataBaseF::DeviceDAO(m_app->m_outputPath);
 	if (!m_pDeviceDAO->getRocketType())
 	{
 		QString info = "建立数据库连接失败，请检查数据库配置文件";

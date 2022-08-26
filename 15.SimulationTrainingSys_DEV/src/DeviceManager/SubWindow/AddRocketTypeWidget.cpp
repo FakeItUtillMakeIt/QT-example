@@ -199,6 +199,13 @@ void AddRocketTypeWidget::InitUILayout() {
 					border:0px;\
 					}\
 		");
+	//输入内容限制
+	userInputRocketName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputDescript->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputParamName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputParamUnit->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputDevName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
+	userInputCmdName->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 
 	windowIcon->setStyleSheet("image:url(:/icon/icon/bb.png);left:6px;height:25px;");
 	windowCloseBtn->setStyleSheet("QPushButton{height:25px;image:url(:/DeviceManager/images/close_normal.png);image-position:right;background-color:rgba(255,255,255,1);border:0px;}\
@@ -298,7 +305,11 @@ void AddRocketTypeWidget::setRocketInfo(int rocketId, QString rocketName, QStrin
 	rocketID = rocketId;
 	userInputRocketName->setText(rocketName);
 	userInputDescript->setText(rocketDescrp);
-	currentModule = DeviceCommonVaries::UPDATE_MODULE;
+
+	if (rocketId != 0)
+	{
+		currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	}
 }
 
 /**
@@ -313,7 +324,10 @@ void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString p
 	userInputParamName->setText(paramName);
 	userSelectParamType->setCurrentText(paramType);
 	userInputParamUnit->setText(paramUnit);
-	currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	if (paramId != 0)
+	{
+		currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	}
 }
 
 /**
@@ -328,7 +342,10 @@ void AddRocketTypeWidget::setDevInfo(int devId, QString rocketType, QString devN
 	userSelectRocketType->setCurrentText(rocketType);
 	userInputDevName->setText(devName);
 	userSelectDevType->setCurrentText(devType);
-	currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	if (devId != 0)
+	{
+		currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	}
 }
 
 /**
@@ -346,7 +363,10 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 	userSelectCmdType->setCurrentText(cmdType);
 	userInputCmdName->setText(cmdName);
 	userSelectBackCmd->setCurrentText(backCmd);
-	currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	if (cmdId != 0)
+	{
+		currentModule = DeviceCommonVaries::UPDATE_MODULE;
+	}
 }
 
 
@@ -449,6 +469,120 @@ void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
 }
 
 /**
+	@brief
+	@param wid -
+**/
+void AddRocketTypeWidget::opRocketInfo(DeviceCommonVaries::DeviceModule wid) {
+
+	if (userInputRocketName->text().isEmpty() | userInputDescript->text().isEmpty())
+	{
+		QMessageBox::warning(this, QString("警告"), QString("火箭型号或描述不能为空"));
+		return;
+	}
+	if (wid == DeviceCommonVaries::ADD_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(userInputRocketName->text(), userInputDescript->text());
+	}
+	else
+	{
+		DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(rocketID, userInputRocketName->text(), userInputDescript->text());
+	}
+	emit updateRocketInfos();
+}
+
+/**
+	@brief
+	@param wid -
+**/
+void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
+
+	if (userInputParamName->text().isEmpty() | userInputParamUnit->text().isEmpty())
+	{
+		QMessageBox::warning(this, QString("警告"), QString("参数名称或单位不能为空"));
+		return;
+	}
+	if (wid == DeviceCommonVaries::ADD_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->paramConfigOp2DB(userInputParamName->text(), userSelectParamType->currentData().toInt(), userInputParamUnit->text());
+
+	}
+	else
+	{
+		DeviceDBConfigInfo::getInstance()->updateParamInfo2DB(paramID, userInputParamName->text(), userSelectParamType->currentData().toInt(), userInputParamUnit->text());
+
+	}
+	emit updateParamInfos();
+}
+
+/**
+	@brief
+	@param wid -
+**/
+void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
+
+	if (userInputDevName->text().isEmpty())
+	{
+		QMessageBox::warning(this, QString("警告"), QString("设备名称不能为空"));
+		return;
+	}
+	if (wid == DeviceCommonVaries::ADD_MODULE)
+	{
+		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
+
+	}
+	else
+	{
+		DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(deviceID, userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
+
+	}
+	emit updateDeviceInfos();
+}
+
+/**
+	@brief
+	@param wid -
+**/
+void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
+	if (userInputCmdName->text().isEmpty())
+	{
+		QMessageBox::warning(this, QString("警告"), QString("指令名称不能为空"));
+		return;
+	}
+	int cmdcode = 1;
+
+	QVector<int> savedCode;
+	if (wid == DeviceCommonVaries::ADD_MODULE)
+	{
+
+		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
+
+		for (pair<int, vector<string>> eachele : DeviceDBConfigInfo::getInstance()->commandInfo)
+		{
+			savedCode.push_back(atoi(eachele.second[4].c_str()));
+		}
+		for (int i = 0; i < 0xffff; i++)
+		{
+			if (!savedCode.contains(i))
+			{
+				cmdcode = i;
+				break;
+			}
+		}
+		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+
+	}
+	else
+	{
+		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
+		cmdcode = atoi(DeviceDBConfigInfo::getInstance()->commandInfo[commandID][4].c_str());
+		DeviceDBConfigInfo::getInstance()->updateCommandInfo2DB(commandID, userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+
+	}
+
+	emit updateCommandInfos();
+}
+
+/**
 	@brief 界面配置
 **/
 void AddRocketTypeWidget::widgetConfig() {
@@ -475,76 +609,27 @@ void AddRocketTypeWidget::clickRocketTypeCancel() {
 	@brief 确定按钮槽函数  区分不同窗口
 **/
 void AddRocketTypeWidget::clickRocketTypeOk() {
-	int cmdcode = 1;
-	QVector<int> savedCode;
-	if (currentModule == DeviceCommonVaries::ADD_MODULE)
+
+
+	//写入数据表
+	switch (currentDealType)
 	{
-		//写入数据表
-		switch (currentDealType)
-		{
-		case DeviceCommonVaries::ROCKET_WIDGET:
-			DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(userInputRocketName->text(), userInputDescript->text());
-			emit updateRocketInfos();
-			break;
-		case DeviceCommonVaries::PARAM_WIDGET:
-			DeviceDBConfigInfo::getInstance()->paramConfigOp2DB(userInputParamName->text(), userSelectParamType->currentData().toInt(), userInputParamUnit->text());
-			emit updateParamInfos();
-			break;
-		case DeviceCommonVaries::DEVICE_WIDGET:
-			DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
-			emit updateDeviceInfos();
-			break;
-		case DeviceCommonVaries::COMMAND_WIDGET://code自动生成
-			DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
-
-			for (pair<int, vector<string>> eachele : DeviceDBConfigInfo::getInstance()->commandInfo)
-			{
-				savedCode.push_back(atoi(eachele.second[4].c_str()));
-			}
-			for (int i = 0; i < 0xffff; i++)
-			{
-				if (!savedCode.contains(i))
-				{
-					cmdcode = i;
-					break;
-				}
-			}
-			DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
-			updateCommandInfos();
-			break;
-		default:
-			break;
-		}
-
-
+	case DeviceCommonVaries::ROCKET_WIDGET:
+		opRocketInfo(currentModule);
+		break;
+	case DeviceCommonVaries::PARAM_WIDGET:
+		opParamInfo(currentModule);
+		break;
+	case DeviceCommonVaries::DEVICE_WIDGET:
+		opDeviceInfo(currentModule);
+		break;
+	case DeviceCommonVaries::COMMAND_WIDGET://code自动生成
+		opCommandInfo(currentModule);
+		break;
+	default:
+		break;
 	}
-	else
-	{
-		//更新数据表
-		switch (currentDealType)
-		{
-		case DeviceCommonVaries::ROCKET_WIDGET:
-			DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(rocketID, userInputRocketName->text(), userInputDescript->text());
-			emit updateRocketInfos();
-			break;
-		case DeviceCommonVaries::PARAM_WIDGET:
-			DeviceDBConfigInfo::getInstance()->updateParamInfo2DB(paramID, userInputParamName->text(), userSelectParamType->currentData().toInt(), userInputParamUnit->text());
-			emit updateParamInfos();
-			break;
-		case DeviceCommonVaries::DEVICE_WIDGET:
-			DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(deviceID, userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
-			emit updateDeviceInfos();
-			break;
-		case DeviceCommonVaries::COMMAND_WIDGET://code从元数据中获取
-			DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
-			cmdcode = atoi(DeviceDBConfigInfo::getInstance()->commandInfo[commandID][4].c_str());
-			DeviceDBConfigInfo::getInstance()->updateCommandInfo2DB(commandID, userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
-			emit updateCommandInfos();
-			break;
-		default:
-			break;
-		}
-	}
+
 	currentModule = DeviceCommonVaries::ADD_MODULE;
 	instance->close();
 }

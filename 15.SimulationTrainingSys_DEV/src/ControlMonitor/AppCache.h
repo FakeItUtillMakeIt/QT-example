@@ -28,7 +28,7 @@ class AppCache
 {
 public:
 	~AppCache();
-
+	
 	/**
 	* @brief 返回AppCache的唯一实例指针
 	* @return 返回AppCache的唯一实例指针

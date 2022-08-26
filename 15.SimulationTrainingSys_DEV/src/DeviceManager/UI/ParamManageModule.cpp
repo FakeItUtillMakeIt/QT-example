@@ -203,6 +203,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	QPushButton* opCfgSwitchBtn = new QPushButton(QString("配置"));
 	opCfgSwitchBtn->setProperty("row", insertRow);
 
+	opCfgSwitchBtn->hide();
 	//#ifdef NEW_UI
 	//	opCfgSwitchBtn->show();
 	//#endif // NEW_UI
@@ -221,7 +222,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-		});
+});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
@@ -296,6 +297,7 @@ void ParamManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增参数"));
+	addRocketTypeW->setParamInfo(0, "", "", "");
 	addRocketTypeW->show();
 #endif
 

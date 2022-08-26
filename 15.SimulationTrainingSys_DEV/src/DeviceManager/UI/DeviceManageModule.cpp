@@ -230,11 +230,13 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 
 	connect(opCfgDevStatBtn, &QPushButton::clicked, this, [=]() {
 		//
-		opDeleteBtn->property("row").toInt();
 
 		//获取当前火箭型号
 		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setInfoWidgetCfg(AppCache::instance()->m_CurrentRocketType->m_id, configInfoTable->item(opDeleteBtn->property("row").toInt(), 0)->text().toInt(), -1);
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::DEVICE_WIDGET);
+		w->setWindowTitle(configInfoTable->item(opDeleteBtn->property("row").toInt(), 2)->text() + QString("-设备配置"));
+
 		w->show();
 
 		});
@@ -336,6 +338,7 @@ void DeviceManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::DEVICE_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增设备"));
+	addRocketTypeW->setDevInfo(0, "", "", "");
 	addRocketTypeW->show();
 #endif // NEW_UI
 

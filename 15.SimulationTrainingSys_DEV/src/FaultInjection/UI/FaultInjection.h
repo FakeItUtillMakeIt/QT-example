@@ -6,12 +6,12 @@
 #include "ui_FaultInjection.h"
 #include "../AppCache.h"
 #include "../Database/FaultDAO.h"
-#include "../Database/DeviceDAO.h"
+#include "../Database/DeviceDAOF.h"
 #include "../Database/FaultParamDAO.h"
 #include "../Controls/MyInfoTip.h"
 #include "../Controls/MyLogBox.h"
 
-#include "CenterOperate.h" 
+#include "CenterOperateF.h" 
 #include<QTime>
 class FaultInjection : public QMainWindow
 {
@@ -28,15 +28,15 @@ private:
     bool m_isMax;
    
     void Init();
-    DataBase::FaultDAO* m_pFaultDAO;
-    DataBase::FaultParamDAO* m_pFaultParamDAO;
-    DataBase::DeviceDAO* m_pDeviceDAO;
+    DataBaseF::FaultDAO* m_pFaultDAO;
+    DataBaseF::FaultParamDAO* m_pFaultParamDAO;
+    DataBaseF::DeviceDAO* m_pDeviceDAO;
 
     MyLogBox* tb_show;
     MyInfoTip* m_myInfoTip;
     QTime baseTime;
 
-    CenterOperate* m_centerOperate;
+    CenterOperateF* m_CenterOperateF;
 
     void changeResize();
 protected:

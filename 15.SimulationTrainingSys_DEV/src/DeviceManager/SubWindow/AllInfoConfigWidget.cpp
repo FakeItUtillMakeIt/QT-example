@@ -26,7 +26,7 @@ QLayout* AllInfoConfigWidget::publicTopLayout() {
 
 	topLayout->addWidget(windowIcon);
 	topLayout->addWidget(windowTitle);
-	topLayout->addSpacing(this->width() - 250);
+	topLayout->addSpacing(this->width() - 350);
 	topLayout->addWidget(windowCloseBtn, 0, Qt::AlignRight);
 
 	hframe1 = new QFrame;
@@ -130,7 +130,7 @@ QLayout* AllInfoConfigWidget::publicBottomLayout() {
 	@brief 初始化火箭配置界面
 **/
 void AllInfoConfigWidget::initRocketConfigLayout() {
-	windowTitle->setText("火箭型号配置");
+	windowTitle->setText("箭上通信协议配置");
 
 	//UIGrid = new QGridLayout;
 
@@ -142,19 +142,33 @@ void AllInfoConfigWidget::initRocketConfigLayout() {
 	int rowC = 8;
 	int columnC = 4;
 	int row = 0;
-	int column = 0;
+	int column = 1;
 
 
 	//左侧
+	QHBoxLayout* leftTopHbx = new QHBoxLayout;
+	leftTopHbx->addWidget(rocketSearch);
+	leftTopHbx->addWidget(addCommuProto);
+	rocketSearch->setFixedWidth(180);
+	addCommuProto->setFixedWidth(30);
+	leftTopHbx->setContentsMargins(0, 0, 0, 0);
+	QVBoxLayout* leftVbx = new QVBoxLayout;
+	leftVbx->addLayout(leftTopHbx);
+	leftVbx->addWidget(rocketComProtoList);
+	rocketComProtoList->setFixedWidth(220);
+	leftVbx->setContentsMargins(0, 0, 0, 0);
+
+	leftGrid->addLayout(leftVbx, 0, 0, rowC, 1);
+
 	leftGrid->addWidget(rocketTypeParamTitle, row, column++, Qt::AlignLeft);
 	leftGrid->addWidget(searchLineEdit, row++, columnC - 1, Qt::AlignRight);
-	column = 0;
+	column = 1;
 	leftGrid->addWidget(deviceParamTree, row, column, rowC - 2, columnC);
 	leftGrid->addWidget(selectAllBox, rowC - 1, column++);
 	leftGrid->addWidget(cancelAllBox, rowC - 1, column);
 
 	//右侧
-	row = 0; column = 0;
+	row = 0; column = 1;
 	rightGrid->addWidget(selectParamTitle, row, column, Qt::AlignLeft);
 	rightGrid->addWidget(searchSelect, row, columnC - 1, Qt::AlignRight);
 	row++;
@@ -202,11 +216,12 @@ void AllInfoConfigWidget::initDeviceConfigLayout() {
 	for (auto ele : DeviceDBConfigInfo::getInstance()->statusInfo)
 	{
 		QWidget* widget = new QWidget;
+		widget->setFixedWidth(330);
 		widget->setObjectName("widget");
 		QHBoxLayout* statusHbox = new QHBoxLayout;
 		statusHbox->addWidget(new QLabel(QString::fromStdString(ele.second[1])));
 		QCheckBox* statusCheck = new QCheckBox;
-		statusHbox->setSpacing(160);
+		statusHbox->addStretch(1);
 		statusHbox->addWidget(statusCheck);
 
 		widget->setLayout(statusHbox);
@@ -389,55 +404,168 @@ void AllInfoConfigWidget::initCommandConfigLayout() {
 	@brief 加载火箭型号相关数据
 **/
 void AllInfoConfigWidget::loadRocketInfoData() {
+	//加载原有协议
+	rocketComProtoList->clear();
+	QString qSqlString = QString("SELECT\
+		rocket_data_info.id,\
+		rocket_data_info.`name`,\
+		rocket_data_info.`code`,\
+		rocket_data_info.createTime,\
+		rocket_data_info.lastUpdateTime\
+		FROM\
+		rocket_data_info\
+		WHERE\
+		rocket_data_info.rocket_id = %1").arg(rocketID);
 
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+
+	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		QListWidgetItem* tmpItem = new QListWidgetItem(QString::fromStdString(ele.second[1]));
+		tmpItem->setData(Qt::UserRole, ele.first);//rocket_data表ID
+		rocketComProtoList->addItem(tmpItem);
+	}
+
+	//点击添加时添加新的协议至rocket_data表
+	connect(addCommuProto, &QPushButton::clicked, this, [=]() {
+		//添加
+		//先检查表中同一火箭型号是否存在相同code
+
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		QVector<int> thisRocketCodes;
+		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+		{
+			thisRocketCodes.push_back(atoi(ele.second[2].c_str()));
+		}
+		int addCode = 1;
+		for (int i = 1; i < 255; i++)
+		{
+			if (!thisRocketCodes.contains(i))
+			{
+				addCode = i;
+				break;
+			}
+		}
+		DeviceDBConfigInfo::getInstance()->rocketDataInfo2DB(rocketID, rocketSearch->text(), addCode, 0x55aa);
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		int rocketDataId = 0;
+		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+		{
+			if (addCode == atoi(ele.second[2].c_str()))
+			{
+				rocketDataId = ele.first;
+			}
+		}
+		QListWidgetItem* tmpItem = new QListWidgetItem(rocketSearch->text());
+		tmpItem->setData(Qt::UserRole, rocketDataId);//rocket_data表ID
+		rocketComProtoList->addItem(tmpItem);
+		});
 
 	//根据火箭型号进行设备和参数过滤
-	QString qSqlString = QString("SELECT\
-		device_info.id,\
-		device_param_info.parameter_id,\
+
+	qSqlString = QString("SELECT\
+		device_param_info.device_id,\
+		device_info.`name`,\
+		device_param_info.id,\
+		parameter_info.`name`,\
 		parameter_info.createTime,\
 		parameter_info.lastUpdateTime\
 		FROM\
-		rocket_info\
-		INNER JOIN device_info ON rocket_info.id = device_info.rocket_id\
-		INNER JOIN device_param_info ON device_info.id = device_param_info.device_id\
+		device_param_info\
 		INNER JOIN parameter_info ON device_param_info.parameter_id = parameter_info.id\
+		INNER JOIN device_info ON device_param_info.device_id = device_info.id\
 		WHERE\
-		rocket_info.id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id);
-
+		device_info.rocket_id = %1").arg(rocketID);
 
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
-	auto rocketHadConfigData = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
-	qSqlString = QString("SELECT\
-		device_info.id,\
-		device_info.`name`,\
-		device_info.createTime,\
-		device_info.lastUpdateTime\
-		FROM\
-		device_info\
-		WHERE\
-		device_info.rocket_id = %1;").arg(AppCache::instance()->m_CurrentRocketType->m_id);
-	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
-	auto allDevCurRocket = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	auto allDev2Param = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
 
 	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+	deviceParamTree->clear();
+	deviceParamTree->setColumnCount(2);
+	deviceParamTree->headerItem()->setHidden(true);
 
-	for (pair<int, vector< string>> ele1 : allDevCurRocket)
+	for (pair<int, vector< string>> ele1 : allDev2Param)
 	{
 		QTreeWidgetItem* eachItem = new QTreeWidgetItem;
-		eachItem->setCheckState(0, Qt::Unchecked);
+		//eachItem->setCheckState(0, Qt::Unchecked);
+		eachItem->setData(0, Qt::UserRole, ele1.first);
 		eachItem->setText(0, QString::fromStdString(ele1.second[1]));
-		for (pair<int, vector<string>> ele2 : DeviceDBConfigInfo::getInstance()->paramInfo)
+		//eachItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsAutoTristate);
+		eachItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+		QList<QTreeWidgetItem*> childList;
+		for (int i = 0; i < ele1.second.size() / 4; i++)
 		{
 			QTreeWidgetItem* subItem = new QTreeWidgetItem;
 			subItem->setCheckState(1, Qt::Unchecked);
-			subItem->setText(1, QString::fromStdString(ele2.second[1]));
-			eachItem->addChild(subItem);
+			subItem->setData(1, Qt::UserRole, atoi(ele1.second[2 + 4 * i].c_str()));
+			subItem->setText(1, QString::fromStdString(ele1.second[3 + 4 * i]));
+			//subItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+			childList.append(subItem);
 		}
+		eachItem->addChildren(childList);
+
 		deviceParamTree->addTopLevelItem(eachItem);
+
 	}
 
-	windowTitle->setText("火箭型号配置");
+	connect(deviceParamTree, &QTreeWidget::itemClicked, this, [=](QTreeWidgetItem* item1, int column) {
+		//必须是子项
+		auto sss = item1->text(column);
+		int c = item1->childCount();
+		if (column == 0)
+		{
+			return;
+		}
+		//为最小叶子时
+		if (item1->childCount() == 0)
+		{
+			if (item1->checkState(column) == Qt::Checked)
+			{
+				item1->setCheckState(column, Qt::Unchecked);
+				auto findItems = hadSelectedParamsL->findItems(item1->text(column), Qt::MatchExactly);
+				for (auto itemL : findItems)
+				{
+					hadSelectedParamsL->takeItem(hadSelectedParamsL->row(itemL));
+				}
+			}
+			else
+			{
+				item1->setCheckState(column, Qt::Checked);
+				QListWidgetItem* tmpitem = new QListWidgetItem(item1->text(column));
+				tmpitem->setData(Qt::UserRole, item1->data(column, Qt::UserRole));
+				hadSelectedParamsL->insertItem(0, tmpitem);
+			}
+		}
+		//非叶子
+		for (int childIndex = 0; childIndex < item1->childCount(); childIndex++)
+		{
+			if (item1->child(childIndex)->checkState(column) == Qt::Checked)
+			{
+				item1->child(childIndex)->setCheckState(column, Qt::Unchecked);
+				auto findItems = hadSelectedParamsL->findItems(item1->child(childIndex)->text(column), Qt::MatchExactly);
+				for (auto itemL : findItems)
+				{
+					hadSelectedParamsL->takeItem(hadSelectedParamsL->row(itemL));
+				}
+			}
+			else
+			{
+				item1->child(childIndex)->setCheckState(column, Qt::Checked);
+				QListWidgetItem* tmpitem = new QListWidgetItem(item1->child(childIndex)->text(column));
+				tmpitem->setData(Qt::UserRole, item1->child(childIndex)->data(column, Qt::UserRole));
+				hadSelectedParamsL->insertItem(0, tmpitem);
+			}
+		}
+		hadSelectedParamsL->update();
+		});
+
+	//右侧列表 可以拖动改变顺序
+	hadSelectedParamsL->setDragDropMode(QAbstractItemView::InternalMove);
+	hadSelectedParamsL->setAcceptDrops(true);
+
+
+	windowTitle->setText("火箭数据通信协议配置");
 
 	rocketWidget->show();
 
@@ -488,7 +616,7 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 	scrollAreaParam->hide();
 	searchDevParam->hide();
 
-	windowTitle->setText("设备配置");
+	windowTitle->setText(QString("-设备配置"));
 }
 
 void AllInfoConfigWidget::loadCmdInfoData() {
@@ -556,7 +684,7 @@ void AllInfoConfigWidget::loadCmdInfoData() {
 	}
 
 
-	windowTitle->setText("指令配置");
+	windowTitle->setText(QString("-指令配置"));
 
 	rocketWidget->hide();
 	deviceWidget->hide();
@@ -587,6 +715,18 @@ void AllInfoConfigWidget::InitUILayout() {
 	 *  Inits the u i layout.火箭型号
 	 */
 	 //左侧
+	rocketSearch = new QLineEdit;
+	rocketSearch->setPlaceholderText(QString("搜索"));
+	addCommuProto = new QPushButton;
+	addCommuProto->setStyleSheet(QString("QPushButton{min-height:30px;border:none;image:url(:/icon/icon/+hao.png);}"));
+	rocketComProtoList = new QListWidget;
+	//rocketComProtoList->setStyleSheet(WidgetStyleSheet::getInstace()->deviceManageListSS.arg(":/icon/icon/ww.png").arg(":/icon/icon/bb.png"));
+	rocketComProtoList->setStyleSheet(QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;border-right-color:rgb(142,145,145);}\
+				QListWidget::item{border-radius:3px;padding:5px;margin:0 0 10 0;min-height:20px;focus:NoFocus;}\
+				QListWidget::item:hover{background-color:rgba(63,144,255,1);}\
+				QListWidget::item:selected{background-color:rgba(63,144,255,1);}"));
+	rocketComProtoList->setFocusPolicy(Qt::NoFocus);
+	rocketComProtoList->setContentsMargins(0, 0, 0, 0);
 	rocketTypeParamTitle = new QLabel(QString("型号参数"));
 	searchLineEdit = new QLineEdit;
 	searchLineEdit->setStatusTip(QString("搜索"));
@@ -659,6 +799,12 @@ void AllInfoConfigWidget::InitUILayout() {
 					}\
 		");
 
+	hadSelectedParamsL->setStyleSheet(QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;border-right-color:rgb(142,145,145);}\
+				QListWidget::item{border-radius:3px;padding:5px;margin:0 0 10 0;min-height:20px;focus:NoFocus;}\
+				QListWidget::item:hover{background-color:rgba(63,144,255,1);}\
+				QListWidget::item:selected{background-color:rgba(63,144,255,1);}"));
+	hadSelectedParamsL->setFocusPolicy(Qt::NoFocus);
+
 	cmdFrameTable = new QTableWidget;
 	QStringList tableHeaders;
 	tableHeaders << QString("帧内容名称") << QString("帧内容字节长度") << QString("帧内容类型") << QString("帧内容默认值") << QString("操作");
@@ -707,6 +853,7 @@ void AllInfoConfigWidget::InitUILayout() {
 	@param switch_on -
 **/
 void AllInfoConfigWidget::setCurrentUI(DeviceCommonVaries::InfoWidgetFlag switch_on) {
+	curWidget = switch_on;
 
 	switch (switch_on)
 	{
@@ -727,6 +874,10 @@ void AllInfoConfigWidget::setCurrentUI(DeviceCommonVaries::InfoWidgetFlag switch
 		break;
 	}
 
+}
+
+void AllInfoConfigWidget::setWindowTitle(QString title) {
+	windowTitle->setText(title);
 }
 
 /**
@@ -779,9 +930,35 @@ void AllInfoConfigWidget::clickedCancelBtn() {
 }
 
 /**
-	@brief
+	@brief 点击确定按钮
 **/
 void AllInfoConfigWidget::clickedOkBtn() {
+	//判别当前操作配置
+	if (curWidget == DeviceCommonVaries::ROCKET_WIDGET)
+	{
+		//读取rocketComProtoList中选中的选项作为使用的协议
+		int rocketDataID = rocketComProtoList->currentItem()->data(Qt::UserRole).toInt();
+		//将之前该协议的配置清除
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM `simulatedtraining`.`rockect_param_info` WHERE `rocket_data_id` = %1").arg(rocketDataID));
+		int paramIndex = -1;
+		//将这里的数据以排序顺序写入rocketParam表
+		//确定时得到当前顺序
+		for (int rowR = 0; rowR < hadSelectedParamsL->count(); rowR++)
+		{
+			DeviceDBConfigInfo::getInstance()->rocketParamInfo2DB(rocketDataID, hadSelectedParamsL->item(rowR)->data(Qt::UserRole).toInt(), rowR + 1, 1, 0);
+		}
+		QMessageBox::information(this, QString("信息"), QString("协议配置成功"));
+	}
+	else if (curWidget == DeviceCommonVaries::DEVICE_WIDGET)
+	{
+
+		QMessageBox::information(this, QString("信息"), QString("设备配置成功"));
+	}
+	else if (curWidget == DeviceCommonVaries::COMMAND_WIDGET)
+	{
+
+		QMessageBox::information(this, QString("信息"), QString("指令配置成功"));
+	}
 
 	this->close();
 }

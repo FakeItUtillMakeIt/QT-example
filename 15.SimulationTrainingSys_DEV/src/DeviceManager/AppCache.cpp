@@ -182,7 +182,11 @@ bool AppCache::ReadConfig()
 	}
 	if (!GetNetworkPeer()) {
 		LOG(INFO) << "读取网络配置项相关内容时出错,请确认CmdSender配置文件内容是否正确";
-		return false;
+		return false; 
+	}
+	if (!GetCmdSender()) {
+		LOG(INFO) << "读取网络配置项相关内容时出错,请确认CmdSender配置文件内容是否正确";
+		return false; 
 	}
 	if (!GetOutputPath()) {
 		LOG(INFO) << "读取数据库配置storage节点相关内容时出错,请确认配置文件内容是否正确";
@@ -246,6 +250,47 @@ bool AppCache::GetNetworkPeer()
 	m_yaoCeSender->m_strNetworkType = publishElement->Attribute("network_type");
 	m_yaoCeSender->m_strIP = publishElement->Attribute("ServerIP");
 	m_yaoCeSender->m_iPort = publishElement->IntAttribute("port");
+	return true;
+}
+
+/// 解析节点cmdReceiver
+/// </summary>
+/// <returns></returns>
+bool AppCache::GetCmdSender()
+{
+	//指令故障指令发送端口
+	tinyxml2::XMLElement* publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("cmdSender");
+	m_cmdSender = new PeerInfo();
+	m_cmdSender->m_strNetworkType = publishElement->Attribute("network_type");
+	m_cmdSender->m_strIP = publishElement->Attribute("ServerIP");
+	m_cmdSender->m_iPort = publishElement->IntAttribute("port");
+
+
+	//参数故障指令发送端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("paramSender");
+	m_paramSender = new PeerInfo();
+	m_paramSender->m_strNetworkType = publishElement->Attribute("network_type");
+	m_paramSender->m_strIP = publishElement->Attribute("ServerIP");
+	m_paramSender->m_iPort = publishElement->IntAttribute("port");
+
+	//参数故障回令接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("paramResponseReceiver");
+	m_paramResponseReceiver = new PeerInfo();
+	m_paramResponseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_paramResponseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_paramResponseReceiver->m_iPort = publishElement->IntAttribute("port");
+
+	//指令故障回令接收端口
+	publishElement = doc.RootElement()->FirstChildElement("software")
+		->FirstChildElement("cmdResponseReceiver");
+	m_cmdResponseReceiver = new PeerInfo();
+	m_cmdResponseReceiver->m_strNetworkType = publishElement->Attribute("network_type");
+	m_cmdResponseReceiver->m_strIP = publishElement->Attribute("ServerIP");
+	m_cmdResponseReceiver->m_iPort = publishElement->IntAttribute("port");
+
 	return true;
 }
 

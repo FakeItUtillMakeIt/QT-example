@@ -173,6 +173,9 @@ void CenterOperate::dealDeviceParams(Command* command) {
 			deviceParam->m_Validity = 1;//参数数据有效
 			if (deviceParam->m_curStatus.m_id == 3)
 			{
+				deviceParam->m_status = m_app->m_allDeviceStatus[statusIdV[i]]->m_statusName;
+				deviceParam->m_preStatus.m_name = deviceParam->m_status;
+				deviceParam->m_preStatus.m_id = atoi(DeviceDBConfigInfo::getInstance()->commandDeviceStatInfo[command->m_id][2].c_str());
 				continue;
 			}
 
@@ -256,8 +259,8 @@ void CenterOperate::dealFaultCmd(Command* command) {
 						if (deviceParam->m_Validity == 0)
 						{
 							//记录前置状态
-							deviceParam->m_preStatus.m_id = POWER_ID;//配电索引
-							deviceParam->m_preStatus.m_name = Utils::UTF8ToGBK(POWER_NAME);//配电
+							deviceParam->m_preStatus.m_id = POWER_ID;//POWER_ID;//配电索引
+							deviceParam->m_preStatus.m_name = Utils::UTF8ToGBK(POWER_NAME);//Utils::UTF8ToGBK(POWER_NAME);//配电
 						}
 						else
 						{
@@ -265,7 +268,6 @@ void CenterOperate::dealFaultCmd(Command* command) {
 							deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
 							deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
 						}
-
 
 						//第一次点击故障
 						deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);

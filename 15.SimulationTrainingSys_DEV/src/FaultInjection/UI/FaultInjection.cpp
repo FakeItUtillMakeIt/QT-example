@@ -72,14 +72,14 @@ void FaultInjection::Init()
 }
 
 /// <summary>
-/// 获取数据
+/// 获取故障注入所需要的数据
 /// </summary>
 void FaultInjection::DataLoading()
 {
 	m_app->m_rockedType = m_app->m_CurrentRocketType->m_id;//选择火箭类型
 
 	//加载基础数据
-	m_pFaultDAO = new DataBase::FaultDAO(m_app->m_outputPath);
+	m_pFaultDAO = new DataBaseF::FaultDAO(m_app->m_outputPath);
 	if (!m_pFaultDAO->getFault())
 	{
 		QString info = "建立数据库连接失败，请检查数据库配置文件";
@@ -111,7 +111,7 @@ void FaultInjection::DataLoading()
 		//return;
 	}
 
-	m_pFaultParamDAO = new DataBase::FaultParamDAO(m_app->m_outputPath);
+	m_pFaultParamDAO = new DataBaseF::FaultParamDAO(m_app->m_outputPath);
 	//获取fault_param_info表信息
 	if (!m_pFaultParamDAO->GetAllFaultParamInfoFrames())
 	{
@@ -129,7 +129,7 @@ void FaultInjection::DataLoading()
 	}
 
 
-	m_pDeviceDAO = new DataBase::DeviceDAO(m_app->m_outputPath);
+	m_pDeviceDAO = new DataBaseF::DeviceDAO(m_app->m_outputPath);
 	//获取故障参数parameter_info表信息
 	if (!m_pDeviceDAO->GetAllParameterInfoFrames())
 	{
@@ -164,8 +164,8 @@ void FaultInjection::DataLoading()
 
 
 	QHBoxLayout* hlayout = new QHBoxLayout;
-	m_centerOperate = new CenterOperate();
-	hlayout->addWidget(m_centerOperate);
+	m_CenterOperateF = new CenterOperateF();
+	hlayout->addWidget(m_CenterOperateF);
 	ui.center_wgt->setLayout(hlayout);
 
 	displayStatuInfo("加载故障数据完毕！");

@@ -25,6 +25,14 @@ using namespace std;
 #include "../Protocol/RocketDataFrame.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
+
+
+
+#include <QLabel>
+#include "../Model/Fault.h"
+#include "Database/FaultFrameInfo.h"
+using namespace DataBaseF;
+
 /**
 * @brief 应用程序的全局缓冲区 \n
 * 单例类。保存配置文件中的所有数据信息
@@ -68,6 +76,7 @@ public:
 	Software* m_soft;
 	LogInfo* m_logInfo;
 	OutputPath* m_outputPath;
+
 	PeerInfo* m_cmdReceiver; //测控指令接收端口
 	PeerInfo* m_responseSender; //测控回令发送端口
 	PeerInfo* m_yaoCeSender; //箭上数据发送端口
@@ -95,6 +104,34 @@ public:
 	QString GetStatus();
 
 	void UpdateSysDeviceInfo();
+
+	/// <summary>
+	/// 故障注入添加的
+	/// </summary>
+	PeerInfo* m_cmdSender; //命令发送
+	PeerInfo* m_paramSender;//参数发送
+	PeerInfo* m_paramResponseReceiver;//参数故障回令接收
+	PeerInfo* m_cmdResponseReceiver;//指令故障回令接收
+	vector<Fault*> m_allFault;
+
+	map<int, Command*> m_allFaultCommad;//测发指令(用于数据接收和发送解析)
+
+	int m_rockedType;//火箭型号
+
+	map<int, FaultRocketInfo*> m_RocketInfoframes;//rocked_info表格的id和对应项
+	map<int, FaultCommandInfo*> m_CommandInfoframes;//command_info表格的id和对应项
+	map<int, FaultCommandParamInfo*> m_CommandParamInfoframes;//command_param_info表格的id和对应项
+
+	map<int, FaultFaultParamInfo*> m_FaultParamInfoFrames;//fault_param_info表格的id和对应项
+	map<int, FaultFaultCommandInfo*> m_FaultCommandInfoFrames;//fault_command_info表格的id和对应项
+
+	map<int, FaultParameterInfo*> m_FaultParameterInfoFrames;//parameter_info表格的id和对应项
+	map<int, FaultDeviceInfo*> m_FaultDeviceInfoFrames;//device_info表格的id和对应项
+	map<int, FaultDeviceParamInfo*> m_FaultDeviceParamInfoFrames;//device_param_info表格的id和对应项
+	map<int, vector<int>> m_DeviceIDParamID;//设备id和参数id对应项
+	//map<int, DeviceParam*> m_allDeviceParam;//设备参数
+	//map<int, RocketType*> m_allRocketType;//火箭型号
+	//RocketType* m_CurrentRocketType;//当前火箭型号
 #pragma endregion
 
 private:
@@ -126,6 +163,13 @@ private:
 	bool GetBaseInfo();
 	bool GetOutputPath();
 	bool GetNetworkPeer();
+
+
+	//bool OpenConfig();
+	//bool GetLogConfig();
+	//bool GetBaseInfo();
+	//bool GetOutputPath();
+	bool GetCmdSender();
 };
 
 

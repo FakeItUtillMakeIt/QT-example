@@ -249,7 +249,9 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 	connect(opCfgCmdBtn, &QPushButton::clicked, this, [=]() {
 		//获取当前火箭型号
 		AllInfoConfigWidget* w = AllInfoConfigWidget::getInstance();
+		w->setInfoWidgetCfg(AppCache::instance()->m_CurrentRocketType->m_id, -1, configInfoTable->item(opCfgCmdBtn->property("row").toInt(), 0)->text().toInt());
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::COMMAND_WIDGET);
+		w->setWindowTitle(configInfoTable->item(opCfgCmdBtn->property("row").toInt(), 3)->text() + QString("-指令配置"));
 
 		w->show();
 		});
@@ -364,6 +366,7 @@ void CommandManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::COMMAND_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增指令"));
+	addRocketTypeW->setCommandInfo(0, "", "", "", "");
 	addRocketTypeW->show();
 #endif // NEW_UI
 

@@ -14,7 +14,7 @@
 /**
 
 	@class   AddRocketTypeWidget
-	@brief   优化的设备管理新增界面
+	@brief   优化的设备管理新增界面单例类
 	@details ~
 
 **/
@@ -110,6 +110,11 @@ private:
 	void paramInfoDisplay(bool flag);
 	void deviceInfoDisplay(bool flag);
 	void commandInfoDisplay(bool flag);
+
+	void opRocketInfo(DeviceCommonVaries::DeviceModule wid);
+	void opParamInfo(DeviceCommonVaries::DeviceModule wid);
+	void opDeviceInfo(DeviceCommonVaries::DeviceModule wid);
+	void opCommandInfo(DeviceCommonVaries::DeviceModule wid);
 
 protected:
 	void mouseMoveEvent(QMouseEvent* event);
