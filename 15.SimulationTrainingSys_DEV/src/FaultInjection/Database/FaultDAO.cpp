@@ -5,7 +5,7 @@
 #include <vector>
 using namespace std;
 
-#define MAXCODE 100000
+#define MAXCODE 65535
 
 namespace DataBaseF
 {

@@ -1,7 +1,7 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "FaultParamDAO.h"
 #include <boost\lexical_cast.hpp>
- 
+
 namespace DataBaseF
 {
 	FaultParamDAO::FaultParamDAO(OutputPath* path)
@@ -82,7 +82,7 @@ namespace DataBaseF
 					oneFrame->m_rocketID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
 					oneFrame->m_name = sql_row[2];
 					oneFrame->m_faultType = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_FaultCommandID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_FaultCommandCode = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
 					oneFrame->m_deviceParamInfoID = (sql_row[5] == nullptr) ? -1 : atoi(sql_row[5]);
 					oneFrame->m_createTime = sql_row[6];
 					oneFrame->m_lastUpdateTime = sql_row[7];
@@ -118,11 +118,11 @@ namespace DataBaseF
 				return false;
 		}
 		stringstream ss;
-		ss << "insert into fault_param_info(name,rocketID,fault_type,command_id,device_param_info_id) values ('";
+		ss << "insert into fault_param_info(name,rocketID,fault_type,command_code,device_param_info_id) values ('";
 		ss << boost::lexical_cast<string>(fameInfo->m_name) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_rocketID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_faultType) + "','";
-		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandID) + "','";
+		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandCode) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_deviceParamInfoID) + "')";
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
@@ -214,7 +214,7 @@ namespace DataBaseF
 		if (!res)
 		{
 			//更新记录map
-			map<int, FaultFaultParamInfo*> tempFrames ;
+			map<int, FaultFaultParamInfo*> tempFrames;
 			for (map<int, FaultFaultParamInfo*>::iterator iter = m_app->m_FaultParamInfoFrames.begin(); iter != m_app->m_FaultParamInfoFrames.end(); iter++)
 			{
 				if (iter->second->m_name != name)
@@ -268,7 +268,7 @@ namespace DataBaseF
 					oneFrame->m_rocketID = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
 					oneFrame->m_name = sql_row[2];
 					oneFrame->m_faultType = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_FaultCommandID = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_FaultCommandCode = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
 					oneFrame->m_responseCommandID = (sql_row[5] == nullptr) ? -1 : atoi(sql_row[5]);
 					oneFrame->m_createTime = sql_row[6];
 					oneFrame->m_lastUpdateTime = sql_row[6];
@@ -277,7 +277,7 @@ namespace DataBaseF
 					{
 						m_app->m_FaultCommandInfoFrames.insert(pair<int, FaultFaultCommandInfo*>(id, oneFrame));
 					}
-					
+
 				}
 			}
 			else
@@ -305,11 +305,11 @@ namespace DataBaseF
 				return false;
 		}
 		stringstream ss;
-		ss << "insert into fault_command_info(name,rocketID,fault_type,fault_command_id,response_command_id) values ('";
+		ss << "insert into fault_command_info(name,rocketID,fault_type,fault_command_code,response_command_id) values ('";
 		ss << boost::lexical_cast<string>(fameInfo->m_name) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_rocketID) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_faultType) + "','";
-		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandID) + "','";
+		ss << boost::lexical_cast<string>(fameInfo->m_FaultCommandCode) + "','";
 		ss << boost::lexical_cast<string>(fameInfo->m_responseCommandID) + "')";
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式

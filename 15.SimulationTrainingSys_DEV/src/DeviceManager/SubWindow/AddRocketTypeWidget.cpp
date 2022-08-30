@@ -9,12 +9,12 @@ AddRocketTypeWidget::AddRocketTypeWidget(QWidget* parent)
 
 	currentModule = DeviceCommonVaries::ADD_MODULE;
 
+	itemDelegate = new ItemDelegate(this);
+
 	windowName = "新增火箭型号";
 	InitUILayout();
+	initConnect();
 
-	connect(windowCloseBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickWindowClose);
-	connect(CancelBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeCancel);
-	connect(OkBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeOk);
 
 }
 
@@ -45,12 +45,23 @@ void AddRocketTypeWidget::InitUILayout() {
 	userInputDescript = new QLineEdit;
 	userInputDescript->setValidator(new QRegExpValidator(QRegExp("\\S+")));
 	//参数部分
+	paramRocket = new QLabel(QString("所属型号"));
+	paramRocketType = new QLineEdit();
+	paramRocketType->setText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
+	paramRocketType->setEnabled(false);
 	paramName = new QLabel(QString("参数名称:"));
 	userInputParamName = new QLineEdit;
 	paramType = new QLabel(QString("参数类型:"));
 	userSelectParamType = new QComboBox;
 	paramUnit = new QLabel(QString("参数单位:"));
 	userInputParamUnit = new QLineEdit;
+	paramTable = new QLabel(QString("所属参数表"));
+	paramTableType = new QComboBox;
+	paramTableType->setItemDelegate(itemDelegate);
+	paramTableType->setEditable(true);
+	paramTableType->addItem(QString("控制参数表"));
+	paramTableType->addItem(QString("测控参数表"));
+	paramTableType->addItem(QString("动力参数表"));
 	//设备部分
 	rocketType = new QLabel(QString("火箭型号:"));
 	userSelectRocketType = new QComboBox;
@@ -65,6 +76,14 @@ void AddRocketTypeWidget::InitUILayout() {
 	userInputCmdName = new QLineEdit;
 	cmdBackCmd = new QLabel(QString("测发回令:"));
 	userSelectBackCmd = new QComboBox;
+	cmdTable = new QLabel(QString("所属指令表"));
+	cmdTableType = new QComboBox;
+	cmdTableType->setEditable(true);
+	cmdTableType->setItemDelegate(itemDelegate);
+	cmdTableType->addItem(QString("控制参数表"));
+	cmdTableType->addItem(QString("测控参数表"));
+	cmdTableType->addItem(QString("动力参数表"));
+
 
 	//
 	CancelBtn = new QPushButton(QString("取消"));
@@ -103,12 +122,16 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(rocketDescript, row++, column, 1, 3);
 	UIGrid->addWidget(userInputDescript, row++, column, 1, 3);
 	//参数部分
+	UIGrid->addWidget(paramRocket, row++, column, 1, 3);
+	UIGrid->addWidget(paramRocketType, row++, column, 1, 3);
 	UIGrid->addWidget(paramName, row++, column, 1, 3);
 	UIGrid->addWidget(userInputParamName, row++, column, 1, 3);
 	UIGrid->addWidget(paramType, row++, column, 1, 3);
 	UIGrid->addWidget(userSelectParamType, row++, column, 1, 3);
 	UIGrid->addWidget(paramUnit, row++, column, 1, 3);
 	UIGrid->addWidget(userInputParamUnit, row++, column, 1, 3);
+	UIGrid->addWidget(paramTable, row++, column, 1, 3);
+	UIGrid->addWidget(paramTableType, row++, column, 1, 3);
 	//设备部分
 	UIGrid->addWidget(rocketType, row++, column, 1, 3);
 	UIGrid->addWidget(userSelectRocketType, row++, column, 1, 3);
@@ -123,6 +146,8 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(userInputCmdName, row++, column, 1, 3);
 	UIGrid->addWidget(cmdBackCmd, row++, column, 1, 3);
 	UIGrid->addWidget(userSelectBackCmd, row++, column, 1, 3);
+	UIGrid->addWidget(cmdTable, row++, column, 1, 3);
+	UIGrid->addWidget(cmdTableType, row++, column, 1, 3);
 
 	UIGrid->setRowStretch(row, 3);
 
@@ -273,6 +298,7 @@ void AddRocketTypeWidget::setInfoWidget(int type) {
 		commandInfoDisplay(false);
 		break;
 	case DeviceCommonVaries::PARAM_WIDGET:
+		tableType = TableType::PARAM;
 		rocketInfoDisplay(false);
 		paramInfoDisplay(true);
 		deviceInfoDisplay(false);
@@ -285,6 +311,7 @@ void AddRocketTypeWidget::setInfoWidget(int type) {
 		commandInfoDisplay(false);
 		break;
 	case DeviceCommonVaries::COMMAND_WIDGET:
+		tableType = TableType::COMMAND;
 		rocketInfoDisplay(false);
 		paramInfoDisplay(false);
 		deviceInfoDisplay(false);
@@ -321,6 +348,7 @@ void AddRocketTypeWidget::setRocketInfo(int rocketId, QString rocketName, QStrin
 **/
 void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit) {
 	paramID = paramId;
+
 	userInputParamName->setText(paramName);
 	userSelectParamType->setCurrentText(paramType);
 	userInputParamUnit->setText(paramUnit);
@@ -382,6 +410,7 @@ void AddRocketTypeWidget::rocketInfoDisplay(bool flag) {
 		userInputRocketName->show();
 		rocketDescript->show();
 		userInputDescript->show();
+
 	}
 	else
 	{
@@ -398,21 +427,29 @@ void AddRocketTypeWidget::rocketInfoDisplay(bool flag) {
 void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
 	if (flag)
 	{
+		paramRocket->show();
+		paramRocketType->show();
 		paramName->show();
 		userInputParamName->show();
 		paramType->show();
 		userSelectParamType->show();
 		paramUnit->show();
 		userInputParamUnit->show();
+		paramTable->show();
+		paramTableType->show();
 	}
 	else
 	{
+		paramRocket->hide();
+		paramRocketType->hide();
 		paramName->hide();
 		userInputParamName->hide();
 		paramType->hide();
 		userSelectParamType->hide();
 		paramUnit->hide();
 		userInputParamUnit->hide();
+		paramTable->hide();
+		paramTableType->hide();
 	}
 }
 /**
@@ -422,6 +459,8 @@ void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
 void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
 	if (flag)
 	{
+		paramRocket->show();
+		paramRocketType->show();
 		rocketType->show();
 		userSelectRocketType->show();
 		deviceName->show();
@@ -431,6 +470,8 @@ void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
 	}
 	else
 	{
+		paramRocket->hide();
+		paramRocketType->hide();
 		rocketType->hide();
 		userSelectRocketType->hide();
 		deviceName->hide();
@@ -446,25 +487,33 @@ void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
 void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
 	if (flag)
 	{
-		rocketType->show();
-		userSelectRocketType->show();
+		/*rocketType->show();
+		userSelectRocketType->show();*/
+		paramRocket->show();
+		paramRocketType->show();
 		commandType->show();
 		userSelectCmdType->show();
 		commandName->show();
 		userInputCmdName->show();
 		cmdBackCmd->show();
 		userSelectBackCmd->show();
+		cmdTable->show();
+		cmdTableType->show();
 	}
 	else
 	{
-		rocketType->hide();
-		userSelectRocketType->hide();
+		/*rocketType->hide();
+		userSelectRocketType->hide();*/
+		paramRocket->hide();
+		paramRocketType->hide();
 		commandType->hide();
 		userSelectCmdType->hide();
 		commandName->hide();
 		userInputCmdName->hide();
 		cmdBackCmd->hide();
 		userSelectBackCmd->hide();
+		cmdTable->hide();
+		cmdTableType->hide();
 	}
 }
 
@@ -543,6 +592,8 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 	@param wid -
 **/
 void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
+
+
 	if (userInputCmdName->text().isEmpty())
 	{
 		QMessageBox::warning(this, QString("警告"), QString("指令名称不能为空"));
@@ -593,6 +644,21 @@ void AddRocketTypeWidget::widgetConfig() {
 	@brief 初始化信号与槽
 **/
 void AddRocketTypeWidget::initConnect() {
+	connect(itemDelegate, &ItemDelegate::deleteItem, this, [=](const QModelIndex& index) {
+		//区分是那个类型表
+		if (tableType == TableType::PARAM)
+		{
+			paramTableType->removeItem(index.row());
+		}
+		else
+		{
+			cmdTableType->removeItem(index.row());
+		}
+		});
+
+	connect(windowCloseBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickWindowClose);
+	connect(CancelBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeCancel);
+	connect(OkBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeOk);
 
 }
 

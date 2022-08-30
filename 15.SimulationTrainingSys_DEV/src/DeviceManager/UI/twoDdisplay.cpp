@@ -721,8 +721,8 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				QString objname = "singleModue_";
 				objname.append(QString::number(module_basenum));
 				singleModule->setObjectName(objname);
-				singleModule->setMinimumSize(QSize(272, 187));
-				singleModule->setMaximumSize(QSize(272, 187));
+				singleModule->setMinimumSize(QSize(272, 213));
+				singleModule->setMaximumSize(QSize(272, 213));
 
 				QVBoxLayout* layout = new QVBoxLayout(singleModule);
 				layout->setSpacing(0);
@@ -830,7 +830,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				QString objname7 = "thumbnail_";
 				objname7.append(QString::number(module_basenum));
 				thumbnail->setObjectName(objname7);
-				thumbnail->setGeometry(QRect(0, 0, 272, 150));
+				thumbnail->setGeometry(QRect(0, 0, 272, 176));
 				thumbnail->setStyleSheet("border-image:url(\":/twoDdisplay/select\")");
 				QFile* f=new QFile(thumbnail_originpath);
 				f->copy(thumbnail_originpath, thumbnail_exepath);
@@ -843,7 +843,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				QString objname8 = "thumbnail_";
 				objname8.append(QString::number(module_basenum));
 				thumbnailbtn->setObjectName(objname8);
-				thumbnailbtn->setGeometry(QRect(0, 0, 272, 150));
+				thumbnailbtn->setGeometry(QRect(0, 0, 272, 176));
 				thumbnailbtn->setCursor(QCursor(Qt::PointingHandCursor));
 				layout->addWidget(thumbnailW);
 				ui.leftpart_ho->addWidget(singleModule);

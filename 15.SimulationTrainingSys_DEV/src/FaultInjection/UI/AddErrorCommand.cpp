@@ -63,7 +63,7 @@ void AddErrorCommand::Init()
     ui.le_searchedit->setLayout(pSearchLayout);
     ui.le_searchedit->setStyleSheet("height:29px;border:1px solid #eaeaea;background-color: rgb(255, 255, 255);border-radius:14px;");
     connect(ui.pb_searchButton, &QPushButton::clicked, this, &AddErrorCommand::SearchFaults);
-    
+
     //设置树状显示列表
     m_hlayout = new QHBoxLayout;
     m_myFaultTree = new MyFaultTree();
@@ -98,7 +98,7 @@ void AddErrorCommand::Init()
 
 void AddErrorCommand::InitTable()
 {
-    
+
 }
 
 /// <summary>
@@ -113,7 +113,7 @@ void AddErrorCommand::SearchFaults()
         m_myFaultTree->InitFaultTree(m_faultItems);
         return;
     }
-        
+
     //存放收索到的数据
     for (int i = 0; i < m_faultItems.size(); i++)
     {
@@ -147,7 +147,7 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     m_editFaults.clear();
     m_tempParamId.clear();
     m_tempCommandId.clear();
-    
+
     this->move(420, 100);    //设置位置
 
 
@@ -165,11 +165,11 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     default:
         break;
     }
-    
+
     ui.le_faultgroup->setText(indexStr);
     str = indexStr.append("编辑");
     ui.lb_title->setText(str);
-    
+
 
     m_myFaultTree->InitFaultTree(m_faultItems);
 
@@ -217,7 +217,7 @@ void AddErrorCommand::AddFault()
 
     m_tempParamId.clear();
     m_tempCommandId.clear();
-    ShowParamsTable(0,0);//参数故障，在进行设备筛选
+    ShowParamsTable(0, 0);//参数故障，在进行设备筛选
 }
 
 /// <summary>
@@ -248,7 +248,7 @@ void AddErrorCommand::OnFaultNode(QString name, int deviceid)
             if (item.type == 1)
             {
                 m_tempParamId = item.deviceParamInfoID;//参数故障
-                
+
                 for (auto item2 : m_indexDevice)
                 {
                     if (item2.second == item.deviceID)
@@ -266,7 +266,7 @@ void AddErrorCommand::OnFaultNode(QString name, int deviceid)
             ui.cb_faultType->setCurrentIndex(item.type - 1);
 
             //表格显示
-            FlashParamTable(name,deviceid);
+            FlashParamTable(name, deviceid);
         }
     }
 }
@@ -313,7 +313,7 @@ void AddErrorCommand::DelFault()
     AddOneFaultInfo oneFault;
     oneFault.m_name = delFault.Name.toStdString();
     oneFault.m_Type = delFault.type;
-    oneFault.m_FaultCommandID = delFault.FaultCommandID;
+    oneFault.m_FaultCommandCode = delFault.FaultCommandID;
     oneFault.m_deviceParamInfoID = delFault.deviceParamInfoID;
     oneFault.m_responseCommandID = delFault.responseCommandID;
 
@@ -360,7 +360,7 @@ void AddErrorCommand::EditFault()
 
         IsEnable(true);
 
-        ShowParamsTable(ui.cb_faultType->currentIndex(),ui.cb_deciveType->currentIndex());//表格中全显示
+        ShowParamsTable(ui.cb_faultType->currentIndex(), ui.cb_deciveType->currentIndex());//表格中全显示
     }
     else
     {
@@ -381,7 +381,7 @@ void AddErrorCommand::EditFault()
                 return;
             }
         }
-       
+
 
         //添加故障  TODO注意指令故障和参数故障同时存在的情况（要考虑两个表的故障名称是否重名，一个故障信息对两个表进行同时操作）
         if (m_isAddFault == true)
@@ -407,7 +407,7 @@ void AddErrorCommand::EditFault()
             oneFault.faultType = m_faultType;
             oneFault.m_name = addFault.Name.toStdString();
             oneFault.m_Type = addFault.type;
-            oneFault.m_FaultCommandID = addFault.FaultCommandID;
+            oneFault.m_FaultCommandCode = addFault.FaultCommandID;
             oneFault.m_deviceParamInfoID = addFault.deviceParamInfoID;
             oneFault.m_responseCommandID = addFault.responseCommandID;
             m_addFaults.push_back(oneFault);
@@ -443,13 +443,13 @@ void AddErrorCommand::EditFault()
             oneFault.faultType = m_faultType;
             oneFault.m_name = editFault.Name.toStdString();
             oneFault.m_Type = editFault.type;
-            oneFault.m_FaultCommandID = editFault.FaultCommandID;
+            oneFault.m_FaultCommandCode = editFault.FaultCommandID;
             oneFault.m_deviceParamInfoID = editFault.deviceParamInfoID;
             oneFault.m_responseCommandID = editFault.responseCommandID;
 
             m_editFaults.push_back(oneFault);
         }
-     
+
         IsEnable(false);
         m_isAddFault = false;
         ui.pb_edit->setText("编辑");
@@ -473,7 +473,7 @@ bool AddErrorCommand::AddFaultValidity()
 {
     string faultName = ui.le_errorName->text().toStdString() + "指令";
 
-    for (auto item: m_app->m_CommandInfoframes)
+    for (auto item : m_app->m_CommandInfoframes)
     {
         if (item.second->m_name == faultName)
         {
@@ -496,7 +496,7 @@ void AddErrorCommand::onFaultTypeChanged(QString tempName)
         ui.cb_deciveType->setVisible(true);
         ui.lb_device->setVisible(true);
 
-        ShowParamsTable(0,ui.cb_deciveType->currentIndex());
+        ShowParamsTable(0, ui.cb_deciveType->currentIndex());
     }
     else if (tempName == "指令故障")
     {
@@ -543,7 +543,7 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
     ui.tv_paramInfo->setMinimumSize(700, 500);
     ui.tv_paramInfo->verticalHeader()->hide(); //隐藏头
 
-    QStandardItemModel*  m_tableModel = new QStandardItemModel(this);
+    QStandardItemModel* m_tableModel = new QStandardItemModel(this);
     QStringList columnTitles;
     columnTitles << "序号" << "ID" << "名称" << "创建时间" << "最后更新时间" << "选择";
     m_tableModel->setHorizontalHeaderLabels(columnTitles);
@@ -741,7 +741,7 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
                             {
                                 m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_name)));
                                 m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_createTime)));
-                                m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_lastUpdateTime)));                  
+                                m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_lastUpdateTime)));
                                 m_tableModel->setItem(i, tableitem++, new QStandardItem("选择"));
 
                                 m_tempParamId.push_back(item.first);//获取device_param_info id
@@ -807,7 +807,7 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
             ui.tv_paramInfo->setColumnWidth(i, 200);//设定表格第i列宽度setAlternatingRowColors(true);
     }
 
-     //设置表格属性
+    //设置表格属性
     ui.tv_paramInfo->setEditTriggers(QAbstractItemView::NoEditTriggers);  //设置表格属性只读，不能编辑
     ui.tv_paramInfo->horizontalHeader()->setDefaultAlignment(Qt::AlignCenter);        //表头信息显示居中
     ui.tv_paramInfo->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);  //设定表头列宽不可变
@@ -860,7 +860,7 @@ void AddErrorCommand::IsChooseParam()
 
         //（当时参数指令的时候，指令和）根据选择的设备和参数来共同确定 device_param_info
         int deviceid = m_indexDevice[ui.cb_deciveType->currentIndex()];
-        for (auto item: m_app->m_FaultDeviceParamInfoFrames)
+        for (auto item : m_app->m_FaultDeviceParamInfoFrames)
         {
             if ((item.second->m_deviceID == deviceid) && (item.second->m_parameterID == paramId))
             {
@@ -921,7 +921,7 @@ void AddErrorCommand::IsEnable(bool isOk)
     {
         ui.cb_faultType->setEnabled(true);
     }
-    
+
 }
 
 /// <summary>

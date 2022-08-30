@@ -313,7 +313,7 @@ void AddErrorCommand::DelFault()
     AddOneFaultInfo oneFault;
     oneFault.m_name = delFault.Name.toStdString();
     oneFault.m_Type = delFault.type;
-    oneFault.m_FaultCommandID = delFault.FaultCommandID;
+    oneFault.m_FaultCommandCode = delFault.FaultCommandID;
     oneFault.m_deviceParamInfoID = delFault.deviceParamInfoID;
     oneFault.m_responseCommandID = delFault.responseCommandID;
 
@@ -407,7 +407,7 @@ void AddErrorCommand::EditFault()
             oneFault.faultType = m_faultType;
             oneFault.m_name = addFault.Name.toStdString();
             oneFault.m_Type = addFault.type;
-            oneFault.m_FaultCommandID = addFault.FaultCommandID;
+            oneFault.m_FaultCommandCode = addFault.FaultCommandID;
             oneFault.m_deviceParamInfoID = addFault.deviceParamInfoID;
             oneFault.m_responseCommandID = addFault.responseCommandID;
             m_addFaults.push_back(oneFault);
@@ -443,7 +443,7 @@ void AddErrorCommand::EditFault()
             oneFault.faultType = m_faultType;
             oneFault.m_name = editFault.Name.toStdString();
             oneFault.m_Type = editFault.type;
-            oneFault.m_FaultCommandID = editFault.FaultCommandID;
+            oneFault.m_FaultCommandCode = editFault.FaultCommandID;
             oneFault.m_deviceParamInfoID = editFault.deviceParamInfoID;
             oneFault.m_responseCommandID = editFault.responseCommandID;
 

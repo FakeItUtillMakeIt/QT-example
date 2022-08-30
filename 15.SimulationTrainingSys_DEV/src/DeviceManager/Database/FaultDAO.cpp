@@ -5,7 +5,7 @@
 #include <vector>
 using namespace std;
 
-#define MAXCODE 100000
+#define MAXCODE 65535
 
 namespace DataBaseF
 {
@@ -236,7 +236,7 @@ namespace DataBaseF
 					{
 						continue;
 					}
-					m_app->m_CommandInfoframes.insert(pair<int, FaultCommandInfo*>(id, oneFrame));
+					m_app->m_CommandInfoframes.insert(pair<int, FaultCommandInfo*>(oneFrame->m_code, oneFrame));
 				}
 			}
 			else

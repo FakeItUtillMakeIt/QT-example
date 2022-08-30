@@ -15,7 +15,7 @@ CenterOperateF::CenterOperateF(QWidget* parent)
     m_app = AppCache::instance();
 
     Init();
-} 
+}
 
 
 /// <summary>
@@ -27,14 +27,14 @@ void CenterOperateF::timerEvent(QTimerEvent* event)
     bool isOK = true;
     if (event->timerId() == m_TimerID)
     {
-        QMessageBox::warning(nullptr, QString("提示"), "接收故障回令超时！","确定");
+        QMessageBox::warning(nullptr, QString("提示"), "接收故障回令超时！", "确定");
         killTimer(m_TimerID);//关闭定时器
     }
 }
 
 
 void CenterOperateF::Init()
-{ 
+{
     //指令故障回令
     m_pReceiveCMDDataF = new ReceiveCMDDataF(m_app->m_cmdResponseReceiver->m_strIP, m_app->m_cmdResponseReceiver->m_iPort);
     connect(m_pReceiveCMDDataF, &ReceiveCMDDataF::receiverCMD, this, &CenterOperateF::receiverCMD);
@@ -48,7 +48,7 @@ void CenterOperateF::Init()
     connect(ui.pb_addMeasurementFault, &QPushButton::clicked, this, &CenterOperateF::AddMeasurementFaultClicked);
     connect(ui.pb_addPowerFault, &QPushButton::clicked, this, &CenterOperateF::AddPowerFaultClicked);
 
-    m_controlError = new AddErrorCommand(); 
+    m_controlError = new AddErrorCommand();
     connect(m_controlError, &AddErrorCommand::AddFaultItem, this, &CenterOperateF::AddFaultItem);
     connect(m_controlError, &AddErrorCommand::DelFaultItem, this, &CenterOperateF::DelFaultItem);
     connect(m_controlError, &AddErrorCommand::EditFaultItem, this, &CenterOperateF::EditFaultItem);
@@ -76,7 +76,7 @@ void CenterOperateF::FlashFualtInfo()
             {
                 for (int i = 0; i < m_AllFaultItems[k][j].deviceParamInfoID.size(); i++)
                 {
-                    if (m_AllFaultItems[k][j].FaultCommandID == it.second->m_FaultCommandID && m_AllFaultItems[k][j].Name == QString::fromStdString(it.second->m_name))
+                    if (m_AllFaultItems[k][j].FaultCommandID == it.second->m_FaultCommandCode && m_AllFaultItems[k][j].Name == QString::fromStdString(it.second->m_name))
                     {
                         m_AllFaultItems[k][j].deviceParamInfoID.push_back(it.second->m_deviceParamInfoID);//同一个故障影响的不同参数进行合并
                         isexist = true;
@@ -95,7 +95,7 @@ void CenterOperateF::FlashFualtInfo()
         //绑定故障指令code
         for (auto itemf : m_app->m_CommandInfoframes)
         {
-            if (itemf.first == it.second->m_FaultCommandID)
+            if (itemf.first == it.second->m_FaultCommandCode)
             {
                 oneItem.code = itemf.second->m_code;
                 break;
@@ -104,7 +104,7 @@ void CenterOperateF::FlashFualtInfo()
 
         oneItem.type = ParamFault;//参数故障
         oneItem.Name = QString::fromStdString(it.second->m_name);
-        oneItem.FaultCommandID = it.second->m_FaultCommandID;//故障指令id
+        oneItem.FaultCommandID = it.second->m_FaultCommandCode;//故障指令id
         oneItem.deviceParamInfoID.push_back(it.second->m_deviceParamInfoID);//参数id  device_param_info_id
 
         for (auto itemd : m_app->m_FaultDeviceParamInfoFrames)
@@ -150,7 +150,7 @@ void CenterOperateF::FlashFualtInfo()
             {
                 for (int i = 0; i < m_AllFaultItems[k][j].responseCommandID.size(); i++)
                 {
-                    if (m_AllFaultItems[k][j].FaultCommandID == it.second->m_FaultCommandID && m_AllFaultItems[k][j].Name == QString::fromStdString(it.second->m_name))
+                    if (m_AllFaultItems[k][j].FaultCommandID == it.second->m_FaultCommandCode && m_AllFaultItems[k][j].Name == QString::fromStdString(it.second->m_name))
                     {
                         m_AllFaultItems[k][j].responseCommandID.push_back(it.second->m_responseCommandID);//同一个故障影响的不同参数进行合并
                         isexist = true;
@@ -167,9 +167,9 @@ void CenterOperateF::FlashFualtInfo()
         oneItem.ID = it.first;
 
         //绑定故障指令code
-        for (auto itemf: m_app->m_CommandInfoframes)
+        for (auto itemf : m_app->m_CommandInfoframes)
         {
-            if (itemf.first == it.second->m_FaultCommandID)
+            if (itemf.first == it.second->m_FaultCommandCode)
             {
                 oneItem.code = itemf.second->m_code;
                 break;
@@ -179,7 +179,7 @@ void CenterOperateF::FlashFualtInfo()
         oneItem.type = CommandFault;//指令故障
         oneItem.Name = QString::fromStdString(it.second->m_name);
 
-        oneItem.FaultCommandID = it.second->m_FaultCommandID;//故障指令id
+        oneItem.FaultCommandID = it.second->m_FaultCommandCode;//故障指令id
         oneItem.responseCommandID.push_back(it.second->m_responseCommandID);//受影响指令id
         //oneItem.deviceParamInfoID = "";//参数id (是参数故障的参数)
         oneItem.deviceID = 0;//TODO设备id
@@ -272,7 +272,7 @@ void CenterOperateF::AddPowerFaultClicked()
 {
     m_systemIndex = PowerFault;
     m_controlError->SetAddIndex(m_systemIndex, m_AllFaultItems[m_systemIndex]);
-    m_controlError->show(); 
+    m_controlError->show();
 }
 
 
@@ -287,7 +287,7 @@ void CenterOperateF::isEnabledFault(QString name, int code, int type, int faultT
 {
     //TODO 这里UDP组播发送故障指令
     m_faultType = faultType;
-    sendCMD(code,type);
+    sendCMD(code, type);
 }
 
 /// <summary>
@@ -299,7 +299,7 @@ void CenterOperateF::AddFaultItem(vector<AddOneFaultInfo> addFaults)
 {
     if (addFaults.size() <= 0) return;
 
-    int commandID = 0; 
+    int commandcode = 0;
     for (int i = 0; i < addFaults.size(); i++)
     {
         //先添加故障回令和故障指令
@@ -317,7 +317,7 @@ void CenterOperateF::AddFaultItem(vector<AddOneFaultInfo> addFaults)
         oneCommandInfo->m_code = m_pFaultDAO2->GetNewCode();;
         m_pFaultDAO2->InsertCommandInfo(oneCommandInfo);
 
-        commandID = oneCommandInfo->m_id;//得到指令id
+        commandcode = oneCommandInfo->m_code;//得到指令code
 
         //再添加 1：参数故障；2：指令故障
         if (addFaults[i].m_Type == 1)
@@ -327,29 +327,29 @@ void CenterOperateF::AddFaultItem(vector<AddOneFaultInfo> addFaults)
             {
                 FaultFaultParamInfo* oneControlFault = new FaultFaultParamInfo();
                 oneControlFault->m_name = addFaults[i].m_name;
-                oneControlFault ->m_rocketID = m_app->m_rockedType;
+                oneControlFault->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
-                oneControlFault->m_FaultCommandID = commandID;//addFaults[i].m_FaultCommandID;
+                oneControlFault->m_FaultCommandCode = commandcode;//addFaults[i].m_FaultCommandCode;
                 oneControlFault->m_deviceParamInfoID = item;
                 m_pFaultParamDAO2->InsertFaultParamInfo(oneControlFault);
             }
         }
         else
         {
-            
+
             for (auto item : addFaults[i].m_responseCommandID)
             {
                 FaultFaultCommandInfo* oneCommanFault = new FaultFaultCommandInfo();
                 oneCommanFault->m_name = addFaults[i].m_name;
                 oneCommanFault->m_rocketID = m_app->m_rockedType;
                 oneCommanFault->m_faultType = m_systemIndex;//控制、测量、动力分类
-                oneCommanFault->m_FaultCommandID = commandID;//addFaults[i].m_FaultCommandID;
+                oneCommanFault->m_FaultCommandCode = commandcode;//addFaults[i].m_FaultCommandCode;
                 oneCommanFault->m_responseCommandID = item;
                 m_pFaultParamDAO2->InsertFaultCommandInfoFrame(oneCommanFault);
             }
         }
     }
-    
+
     //刷新界面
     FlashFualtInfo();
 
@@ -386,7 +386,7 @@ void CenterOperateF::EditFaultItem(vector<AddOneFaultInfo> editFaults)
                 oneControlFault->m_name = editFaults[i].m_name;
                 oneControlFault->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
-                oneControlFault->m_FaultCommandID = editFaults[i].m_FaultCommandID;
+                oneControlFault->m_FaultCommandCode = editFaults[i].m_FaultCommandCode;
                 oneControlFault->m_deviceParamInfoID = item;
                 m_pFaultParamDAO2->InsertFaultParamInfo(oneControlFault);
             }
@@ -401,14 +401,14 @@ void CenterOperateF::EditFaultItem(vector<AddOneFaultInfo> editFaults)
                 {
                     m_pFaultParamDAO2->DelFaultCommandInfoFrame(editFaults[i].m_name);
                     isDel = 1;
-                }             
+                }
 
                 //写入
                 FaultFaultCommandInfo* oneControlFault = new FaultFaultCommandInfo();
                 oneControlFault->m_name = editFaults[i].m_name;
                 oneControlFault->m_rocketID = m_app->m_rockedType;
                 oneControlFault->m_faultType = m_systemIndex;//控制、测量、动力分类
-                oneControlFault->m_FaultCommandID = editFaults[i].m_FaultCommandID;
+                oneControlFault->m_FaultCommandCode = editFaults[i].m_FaultCommandCode;
                 oneControlFault->m_responseCommandID = item;
                 m_pFaultParamDAO2->InsertFaultCommandInfoFrame(oneControlFault);
             }
@@ -462,17 +462,17 @@ void CenterOperateF::receiverCMD(QByteArray oneCommand)
     //防止一发多收，似的注入状态未变的情况
     if (m_isSendOne == false)
         return;
-    int backCode = 0, sendCode = 0; 
+    int backCode = 0, sendCode = 0;
     memcpy(&backCode, oneCommand.data() + 2, 2);//测发指令code 
     memcpy(&sendCode, oneCommand.data() + 5, 2);//测发指令code  
     if (backCode != m_BackCode)
         return;
     if (sendCode != m_sendCode)
-        return; 
+        return;
     if (oneCommand.at(4) == 0x01)
-        emit backOnFaultClick(m_faultType,true);//故障设定成功
+        emit backOnFaultClick(m_faultType, true);//故障设定成功
     else
-        emit backOnFaultClick(m_faultType,false);//故障设定失败
+        emit backOnFaultClick(m_faultType, false);//故障设定失败
 
     m_isSendOne = false;
     killTimer(m_TimerID);//关闭定时器
@@ -482,9 +482,9 @@ void CenterOperateF::receiverCMD(QByteArray oneCommand)
 /// 测控指令发送
 /// </summary>
 /// <param name="cmd_id"></param>
-void CenterOperateF::sendCMD(int cmd_id, int type)
+void CenterOperateF::sendCMD(int code, int type)
 {
-    if (m_app->m_CommandInfoframes.find(cmd_id) == m_app->m_CommandInfoframes.end())
+    if (m_app->m_CommandInfoframes.find(code) == m_app->m_CommandInfoframes.end())
     {
         return;
     }
@@ -495,13 +495,13 @@ void CenterOperateF::sendCMD(int cmd_id, int type)
     if (type == 1)
     {
         sendPeerInfo = m_app->m_paramSender;
-        command = m_app->m_CommandInfoframes[cmd_id];
+        command = m_app->m_CommandInfoframes[code];
     }
     else
     {
         headType = 0x66;//指令故障
         sendPeerInfo = m_app->m_cmdSender;
-        command = m_app->m_CommandInfoframes[cmd_id];
+        command = m_app->m_CommandInfoframes[code];
     }
 
     //FaultCommandInfo* command = m_app->m_CommandInfoframes[cmd_id];
@@ -518,7 +518,7 @@ void CenterOperateF::sendCMD(int cmd_id, int type)
     m_pBuff[9] = 0x00;
 
     m_sendCode = command->m_code;
-    for (auto item: m_app->m_CommandInfoframes)
+    for (auto item : m_app->m_CommandInfoframes)
     {
         if (item.second->m_id == command->m_backID)
         {
@@ -526,7 +526,7 @@ void CenterOperateF::sendCMD(int cmd_id, int type)
             break;
         }
     }
-    
+
     unsigned char vdata1[FRAMELENGTH];
     for (int i = 0; i < FRAMELENGTH; i++)
     {
@@ -535,7 +535,7 @@ void CenterOperateF::sendCMD(int cmd_id, int type)
     unsigned short checksum = CRC::CalCRC16(vdata1 + 2, FRAMELENGTH - 4);
     memcpy(m_pBuff.data() + FRAMELENGTH - 2, &checksum, 2);//填充校验位
 
-    int SendLen = m_pSocket->writeDatagram(m_pBuff, QHostAddress(sendPeerInfo->m_strIP.c_str()), sendPeerInfo->m_iPort); 
+    int SendLen = m_pSocket->writeDatagram(m_pBuff, QHostAddress(sendPeerInfo->m_strIP.c_str()), sendPeerInfo->m_iPort);
     if (SendLen != m_pBuff.size())
     {
         QMessageBox::warning(this, tr("提示"), tr("故障指令发送失败！"));
@@ -544,7 +544,7 @@ void CenterOperateF::sendCMD(int cmd_id, int type)
 
     m_isSendOne = true;
     m_TimerID = this->startTimer(5000);//3秒没有收到，就是设置失败
-    
+
     //测试
     //receiverCMD("");
 }

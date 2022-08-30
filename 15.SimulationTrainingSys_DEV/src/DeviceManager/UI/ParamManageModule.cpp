@@ -13,7 +13,7 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 
 	configInfoTable->setColumnHidden(0, true);
 
-	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});
@@ -222,7 +222,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-});
+		});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);

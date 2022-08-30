@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/DeviceManager">
+    <file>icon/dlt.png</file>
     <file>icon/squareBl1.png</file>
     <file>bt_disable.png</file>
     <file>bt_normal.png</file>

@@ -12,7 +12,7 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 
 	configInfoTable->setColumnHidden(0, true);
 
-	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});
@@ -26,6 +26,9 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 		InitDisplayData();
 
 		});
+
+	qDebug() << this->parent()->parent()->parent()->parent()->parent()->objectName();
+	qDebug() << this->parent()->parent()->parent()->parent()->parent()->parent()->parent()->objectName();
 
 }
 

@@ -43,7 +43,7 @@ public:
 	DeviceManager(QWidget* parent = Q_NULLPTR);
 	void displayStatuInfo(QString info, bool is_alarm = false);
 	void Init();
-	void DataLoading();
+	void DataFaultLoad();
 	void ShowMinimized();
 private:
 	Ui::DeviceManagerClass ui;
@@ -65,6 +65,7 @@ private:
 	DataBaseF::FaultParamDAO* m_pFaultParamDAOF;
 	DataBaseF::DeviceDAO* m_pDeviceDAOF;
 	CenterOperateF* m_CenterOperateF;
+	QHBoxLayout* m_hlayoutF;
 
 
 protected:

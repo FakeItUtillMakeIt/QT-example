@@ -9,8 +9,13 @@
 #include "../UI/WidgetStyleSheet.h"
 #include "../Database/DeviceDBConfigInfo.h"
 #include "../CommonVaries/DeviceCommonVaries.h"
+#include "ItemDelegate.h"//代理类  装饰QComboBox
 
-
+enum class TableType
+{
+	PARAM = 0,
+	COMMAND = 1
+};
 /**
 
 	@class   AddRocketTypeWidget
@@ -52,6 +57,10 @@ public:
 	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd);
 
 private:
+
+
+	TableType tableType;
+
 	int rocketID, paramID, deviceID, commandID;
 	DeviceCommonVaries::DeviceModule currentModule;
 	int currentDealType;
@@ -71,15 +80,19 @@ private:
 	QLabel* rocketDescript;
 	QLineEdit* userInputDescript;
 
-
+	ItemDelegate* itemDelegate;
 
 	//参数部分
+	QLabel* paramRocket;
+	QLineEdit* paramRocketType;
 	QLabel* paramName;
 	QLineEdit* userInputParamName;
 	QLabel* paramType;
 	QComboBox* userSelectParamType;
 	QLabel* paramUnit;
 	QLineEdit* userInputParamUnit;
+	QLabel* paramTable;
+	QComboBox* paramTableType;
 	//设备部分
 	QLabel* rocketType;
 	QComboBox* userSelectRocketType;
@@ -94,6 +107,8 @@ private:
 	QLineEdit* userInputCmdName;
 	QLabel* cmdBackCmd;
 	QComboBox* userSelectBackCmd;
+	QLabel* cmdTable;
+	QComboBox* cmdTableType;
 
 	//
 	QPushButton* OkBtn;

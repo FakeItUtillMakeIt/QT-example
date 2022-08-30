@@ -33,5 +33,9 @@
         <file>images/指令2.png</file>
         <file>images/中间件@1x.png</file>
         <file>images/左边装饰@1x.png</file>
+        <file>images/关闭-点击.png</file>
+        <file>images/关闭-默认.png</file>
+        <file>images/关闭-悬浮.png</file>
+        <file>images/Fault_cbg.png</file>
     </qresource>
 </RCC>

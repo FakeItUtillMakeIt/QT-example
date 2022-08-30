@@ -64,7 +64,13 @@ namespace DataBaseF
 		MYSQL_ROW sql_row;
 		int res;
 		string sql;
-		sql.append("select * from parameter_info;");
+		sql.append("SELECT "
+			"parameter_info.id,parameter_info.type,parameter_info.name,parameter_info.unit,"
+			"`parameter_ rocket_info`.rocket_id,parameter_info.createTime,parameter_info.lastUpdateTime "
+			"FROM "
+			"parameter_info "
+			"INNER JOIN "
+			"`parameter_ rocket_info` ON parameter_info.id = `parameter_ rocket_info`.`parameter_ id`;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -78,12 +84,17 @@ namespace DataBaseF
 					FaultParameterInfo* oneFrame = new FaultParameterInfo();
 					int id = atoi(sql_row[0]);
 					oneFrame->m_id = id;
-					oneFrame->m_name = sql_row[1];
-					oneFrame->m_type = (sql_row[2] == nullptr) ? -1 : atoi(sql_row[2]);
-					oneFrame->m_unit = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_createTime = sql_row[4];
-					oneFrame->m_lastUpdateTime = sql_row[5];
+					oneFrame->m_rocketId = atoi(sql_row[1]);
+					oneFrame->m_name = sql_row[2];
+					oneFrame->m_type = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
+					oneFrame->m_unit = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_createTime = sql_row[5];
+					oneFrame->m_lastUpdateTime = sql_row[6];
 				 
+					if (oneFrame->m_rocketId != m_app->m_rockedType)
+					{
+						continue;
+					}
 					m_app->m_FaultParameterInfoFrames.insert(pair<int, FaultParameterInfo*>(id, oneFrame));
 				}
 			}

@@ -17,7 +17,7 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	configInfoTable->setColumnHidden(0, true);
 
 	//更改ui.comboBox时更新窗口内容
-	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
+	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
 		InitDisplayData();
 		});

@@ -5,6 +5,8 @@
 DeviceManager::DeviceManager(QWidget* parent)
 	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
+	, m_CenterOperateF(nullptr)
+	, m_hlayoutF(nullptr)
 	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
 	, m_pRocketDataDAO(nullptr)
@@ -29,8 +31,6 @@ DeviceManager::DeviceManager(QWidget* parent)
 
 void DeviceManager::Init()
 {
-
-
 	//将CenterOperate设置为DeviceManager的主界面
 	//m_centeralWidget = new CenterOperate(ui.center_wgt);
 	connect(ui.pb_close, &QPushButton::clicked, this, &DeviceManager::CloseWindow);
@@ -58,6 +58,8 @@ void DeviceManager::Init()
 
 		m_app->m_CurrentRocketType = m_app->m_allRocketType[ui.comboBox->currentData().toUInt()];
 		emit rocketTypeChanged();
+
+		DataFaultLoad();//故障重新加载
 		});
 
 	//初始化调试信息显示区
@@ -157,7 +159,7 @@ void DeviceManager::Init()
 	qDebug() << "加载基础数据用时:" << timer1.elapsed();
 	
 	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);
-	DataLoading();//故障加载
+	DataFaultLoad();//故障加载
 	new twoDdisplay(ui.tab_Display);
 
 	QElapsedTimer timer2;
@@ -173,7 +175,7 @@ void DeviceManager::Init()
 /// <summary>
 /// 获取故障注入所需要的数据
 /// </summary>
-void DeviceManager::DataLoading()
+void DeviceManager::DataFaultLoad()
 {
 	m_app->m_rockedType = m_app->m_CurrentRocketType->m_id;//选择火箭类型
 
@@ -261,11 +263,19 @@ void DeviceManager::DataLoading()
 		//return;
 	}
 
-	//m_centeralWidget = new CenterOperate(ui.tab_faultInjection);
-	QHBoxLayout* hlayout = new QHBoxLayout;
+	if (m_hlayoutF != nullptr)
+	{
+		delete m_CenterOperateF;
+		m_CenterOperateF = nullptr;
+
+		delete m_hlayoutF;
+		m_hlayoutF = nullptr;
+	}
 	m_CenterOperateF = new CenterOperateF();
-	hlayout->addWidget(m_CenterOperateF);
-	ui.tab_faultInjection->setLayout(hlayout);
+	m_hlayoutF = new QHBoxLayout;
+	m_hlayoutF->setContentsMargins(0, 0, 0, 0);
+	m_hlayoutF->addWidget(m_CenterOperateF);
+	ui.tab_faultInjection->setLayout(m_hlayoutF);
 
 	displayStatuInfo("加载故障数据完毕！");
 	displayStatuInfo("系统启动完毕！");

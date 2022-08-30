@@ -119,13 +119,13 @@ public:
 	int m_rockedType;//火箭型号
 
 	map<int, FaultRocketInfo*> m_RocketInfoframes;//rocked_info表格的id和对应项
-	map<int, FaultCommandInfo*> m_CommandInfoframes;//command_info表格的id和对应项
+	map<int, FaultCommandInfo*> m_CommandInfoframes;//command_info表格的code和对应项
 	map<int, FaultCommandParamInfo*> m_CommandParamInfoframes;//command_param_info表格的id和对应项
 
 	map<int, FaultFaultParamInfo*> m_FaultParamInfoFrames;//fault_param_info表格的id和对应项
 	map<int, FaultFaultCommandInfo*> m_FaultCommandInfoFrames;//fault_command_info表格的id和对应项
 
-	map<int, FaultParameterInfo*> m_FaultParameterInfoFrames;//parameter_info表格的id和对应项
+	map<int, FaultParameterInfo*> m_FaultParameterInfoFrames;//parameter_info表格的id和对应项 (只有对应火箭型号的数据)
 	map<int, FaultDeviceInfo*> m_FaultDeviceInfoFrames;//device_info表格的id和对应项
 	map<int, FaultDeviceParamInfo*> m_FaultDeviceParamInfoFrames;//device_param_info表格的id和对应项
 	map<int, vector<int>> m_DeviceIDParamID;//设备id和参数id对应项

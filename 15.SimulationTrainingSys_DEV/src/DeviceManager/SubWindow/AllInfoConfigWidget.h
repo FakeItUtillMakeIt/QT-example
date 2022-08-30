@@ -103,6 +103,7 @@ private:
 	QVector<QWidget*> deviceParamList;
 	QGridLayout* devStatusLayout;
 	QScrollArea* scrollAreaStat;
+	QPushButton* addNewStat;
 	//右侧2设备参数
 	QLineEdit* searchDevParam;
 	QGridLayout* devParamLayout;

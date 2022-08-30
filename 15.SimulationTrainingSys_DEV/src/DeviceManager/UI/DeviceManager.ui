@@ -103,6 +103,9 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
+         <zorder>title</zorder>
+         <zorder>tabWidget</zorder>
+         <zorder>tabWidget</zorder>
         </widget>
        </item>
        <item>
@@ -680,7 +683,7 @@ QPushButton {
     <item>
      <widget class="QWidget" name="center_wgt" native="true">
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(170, 170, 255);</string>
+       <string notr="true">background-color: rgb(255, 255, 255);</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
@@ -700,25 +703,39 @@ QPushButton {
        </property>
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
          </property>
          <widget class="QWidget" name="tab_DeviceManagement">
           <attribute name="title">
-           <string>设备管理</string>
+           <string>任务模型配置</string>
           </attribute>
          </widget>
          <widget class="QWidget" name="tab_faultInjection">
           <attribute name="title">
-           <string>故障注入</string>
+           <string>故障模型配置</string>
           </attribute>
          </widget>
          <widget class="QWidget" name="tab_Display">
           <attribute name="title">
-           <string>展示</string>
+           <string>知识库配置</string>
+          </attribute>
+         </widget>
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string>任务岗位配置</string>
           </attribute>
          </widget>
         </widget>
@@ -787,6 +804,7 @@ background-color: rgb(85, 170, 255);</string>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="DeviceManager.qrc"/>
+  <include location="FaultInjection.qrc"/>
  </resources>
  <connections/>
 </ui>
