@@ -15,6 +15,7 @@ using namespace std;
 #include "../../Model/DeviceParam.h"
 #include "../../Model/DeviceStatus.h"
 #include "../../Model/RocketType.h"
+#include "../../Model/TaskManageInfo.h"
 #include "mysql.h" 
 
 namespace DataBase

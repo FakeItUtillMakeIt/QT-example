@@ -105,7 +105,6 @@ void ControlMonitor::Init()
 	connect(flowDisplayWidget, &FlowDisplayWidget::sendMainflowchange, this, &ControlMonitor::acceptchage);
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlMonitor::changeResize);
 
-
 	//指示灯初始化
 	lightnumber = 0;
 	lightflag = true;
@@ -203,9 +202,18 @@ void ControlMonitor::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
+	QString msg;
+	if (!m_pCommandDAO->StartNotify(msg))
+	{
+		displayStatuInfo(msg, true);
+		return;
+	}
 	displayStatuInfo("加载指令参数数据完毕！");
 	displayStatuInfo("加载用户数据完毕！");
 	displayStatuInfo("系统启动完毕！");
+	displayStatuInfo("更新启动状态完毕！");
+
+	
 }
 
 //指示灯加载
@@ -473,6 +481,12 @@ void ControlMonitor::timecount()
 }
 void ControlMonitor::CloseWindow()
 {
+	QString msg;
+	if (!m_pCommandDAO->StopNotify(msg))
+	{
+		displayStatuInfo(msg, true);
+		return;
+	}
 	this->close();
 }
 void ControlMonitor::ShowMinimized()

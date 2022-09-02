@@ -6,7 +6,7 @@
 #include "stylebutton.h"
 
 ConfigNameSpaceStart
-
+class ConfigScene;
 class ConfigButton:public QPushButton
 {
     Q_OBJECT
@@ -29,11 +29,11 @@ public:
     QString GetID();
     bool  m_ingroup = false;
     ConfigNameSpace::StyleButton * m_styleinfo = nullptr;
-
+    ConfigScene* m_scene = nullptr;
     bool SelectStyle(StyleButton *&istyleinfo);
     void UpdatePropertyByStyle();
     void setState(RunState state);
-
+    void Schedule();
     int m_width = 0;
     int m_height = 0;
     int m_xPos = 0;

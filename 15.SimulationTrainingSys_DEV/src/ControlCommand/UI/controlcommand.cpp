@@ -206,6 +206,21 @@ void ControlCommand::Init()
 		return;
 	}
 	displayStatuInfo("加载帧协议参数数据完毕！");
+
+	QString msg, curtime;
+	if (!m_pRocketDataDAO->initConfig(msg))//初始化数据库保存配置文件的表，如果不存在就创建
+	{
+		QString info = "创建配置文件数据表失败";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("配置文件数据表初始化完成！");
+	if (m_pRocketDataDAO->ReadConfigTime(msg, curtime))//读取配置表更新时间，如果配置已有，则返回其时间，否则返回失败
+	{
+		if (m_pRocketDataDAO->ReadConfigFromDb(msg, curtime))
+			displayStatuInfo("读取组态配置文件成功！");
+	}
+
 	//协议帧排序
 	for (auto item : m_app->m_RocketDataFrame)
 	{

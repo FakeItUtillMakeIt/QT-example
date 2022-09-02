@@ -4,7 +4,8 @@
 #include <QMimeData>
 #include <QDebug>
 #include "configcurve.h"
-
+#include "configalarm.h"
+#include "booldialog.h"
 ConfigNameSpaceStart
 ConfigScene::ConfigScene(QWidget *parent):QWidget(parent)
 {
@@ -14,13 +15,182 @@ ConfigScene::ConfigScene(QWidget *parent):QWidget(parent)
 void ConfigScene::AutoCreateOpBtn(QString scenename)
 {
     selbutton = new QPushButton(scenename);
+    AddContextMenuToBtn(selbutton);
     delbutton = new QPushButton();
+}
+void ConfigScene::AddContextMenuToBtn(QPushButton* selbtn)
+{    
+    selbutton->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(selbutton, &QPushButton::customContextMenuRequested, [=](const QPoint& pos)
+        {
+            QMenu  menu;
+            QAction* action = menu.addAction("修改名称");
+            connect(action, &QAction::triggered, [=]() {
+                bool  ok;
+                QString text = QInputDialog::getText(nullptr, "请输入软件名称", "软件名称", QLineEdit::Normal, QDir::home().dirName(), &ok);
+                if (ok && !text.isEmpty())
+                {
+                    SetName(text);
+                    selbutton->setText(text);
+                    XmlStore::UpdateSceneNameToFile(this);
+                }
+                });
+            action = menu.addAction("监测并使用控制流程");
+            action->setCheckable(true);
+            action->setChecked(userSchedule);
+            connect(action, &QAction::triggered, [=]() {
+                BoolDialog  dlg;
+                dlg.setWindowTitle("是否使用控制流程");
+                int result = dlg.exec();
+                if (result == QDialog::Accepted)
+                {
+                    userSchedule = true;
+                }
+                else
+                {
+                    userSchedule = false;
+                }
+                XmlStore::UpdateSceneSchedule(this);
+                SetScheduleEabled(userSchedule);
+                });
+            menu.exec(QCursor::pos());
+        });
+}
+void ConfigScene::SetScheduleEabled(bool eabled)
+{
+    if (!eabled)
+    {
+        for (ConfigButton* btn : sceneButtonList)
+        {
+            btn->setDisabled(false);
+        }
+    }
+    else
+    {   
+        for (ConfigButton* btn : sceneButtonList)
+        {
+            int btncmd = atoi(btn->m_CmdSourceID);
+            if(ConfigGlobal::mainSchedule.contains(btncmd))
+                btn->setDisabled(true);
+        }
+        for (GroupElement* group : sceneGroupList)
+        {
+            for (ConfigButton* btn : group->buttonlist)
+            {
+                int btncmd = atoi(btn->m_CmdSourceID);
+                if (ConfigGlobal::mainSchedule.contains(btncmd))
+                    btn->setDisabled(true);
+            }
+        }
+        int  firstcmd = -1;
+        for (int cmdid : ConfigGlobal::mainSchedule)
+        {
+            for (ConfigButton* btn : sceneButtonList)
+            {
+                int btncmd = atoi(btn->m_CmdSourceID);
+                if ((firstcmd != -1) && (btncmd == firstcmd))
+                {
+                    btn->setDisabled(false);
+                }
+                if((firstcmd == -1)&&(btncmd == cmdid))
+                {
+                    btn->setDisabled(false);
+                   // return;
+                    firstcmd = cmdid;
+                }
+            }
+            for (GroupElement* group : sceneGroupList)
+            {
+                for (ConfigButton* btn : group->buttonlist)
+                {
+                    int btncmd = atoi(btn->m_CmdSourceID);
+                    if ((firstcmd != -1) && (btncmd == firstcmd))
+                    {
+                        btn->setDisabled(false);
+                    }
+                    if ((firstcmd == -1) && (btncmd == cmdid))
+                    {
+                        btn->setDisabled(false);
+                        // return;
+                        firstcmd = cmdid;
+                    }
+                   
+                }
+            }
+            if (firstcmd != -1)
+            {
+                break;
+            }
+
+        }
+    }
+}
+void ConfigScene::SetBtnScheduled(ConfigButton* curbtn)
+{
+    int curcmd = atoi(curbtn->m_CmdSourceID);
+    bool  findcurrent = false;
+    int findcmdid = -1;
+    for (int cmdid : ConfigGlobal::mainSchedule)
+    {
+        for (ConfigButton* btn : sceneButtonList)
+        {
+            int btncmd = atoi(btn->m_CmdSourceID);
+            if (btncmd == curcmd)
+            {
+                findcurrent = true;
+                continue;
+            }
+            else if ((findcmdid != -1) && (findcmdid == cmdid))
+            {
+                btn->setDisabled(false);
+            }
+            else
+            {
+                if(findcurrent)
+                { 
+                    btn->setDisabled(false);
+                    findcmdid = cmdid;
+                   // return;
+                }
+            }
+        }
+        for (GroupElement* group : sceneGroupList)
+        {
+            for (ConfigButton* btn : group->buttonlist)
+            {
+                int btncmd = atoi(btn->m_CmdSourceID);
+                if (btncmd == curcmd)
+                {
+                    findcurrent = true;
+                    continue;
+                }
+                else if ((findcmdid != -1) && (findcmdid == cmdid))
+                {
+                    btn->setDisabled(false);
+                }
+                else
+                {
+                    if (findcurrent)
+                    {
+                        btn->setDisabled(false);
+                        findcmdid = cmdid;
+                       // return;
+                    }
+                }
+            }
+        }
+        if (findcmdid != -1)
+        {
+            break;
+        }
+    }
 }
 void ConfigScene::RestoreSceneInfo(SceneInfo &sceneinfo)
 {
     m_path = sceneinfo.scenepath;
     m_sceneName = sceneinfo.scenename;
     m_sceneid = sceneinfo.sceneid;
+    userSchedule = sceneinfo.useschedule;
     for(auto& buttoninfo: sceneinfo.buttonInfolist)
     {
         AddButtonElement(buttoninfo);
@@ -37,7 +207,12 @@ void ConfigScene::RestoreSceneInfo(SceneInfo &sceneinfo)
     {
         AddCurveElement(curceinfo);
     }
+    for (auto& alarminfo : sceneinfo.alarmInfolist)
+    {
+        AddAlarmElement(alarminfo);
+    }
     AutoCreateOpBtn(m_sceneName);
+    SetScheduleEabled(userSchedule);
 }
 
 //int ConfigScene::RemoveGroupElement( QString elementid)
@@ -95,15 +270,26 @@ int ConfigScene::DeleteElementByIdFromOut(ControlType ctrtype, QString elementid
         return  RemoveElement<ConfigButton>(elementid, sceneButtonList, ctrtype);
     else if (ctrtype == cConfigCurve)
         return   RemoveElement<ConfigCurve>(elementid, sceneCurveList, ctrtype);
+    else if (ctrtype == cConfigAlarm)
+        return   RemoveElement<ConfigAlarm>(elementid, sceneAlarmList, ctrtype);
     else
         return -3;
 }
 void  ConfigScene::AddButtonElement(QMap<QString,QString>& buttoninfo)
 {
     ConfigButton* btn = new ConfigButton("按钮",this);
+    btn->m_scene = this;
     btn->InitFromXmlInfo(buttoninfo);
     btn->show();
     sceneButtonList.push_back(btn);
+}
+void ConfigScene::AddAlarmElement(QMap<QString, QString>& Alarminfo)
+{
+    ConfigAlarm* alarm = new ConfigAlarm(this);
+    alarm->InitFromXmlInfo(Alarminfo);
+    alarm->show();
+    alarm->updateGeometryData();
+    sceneAlarmList.push_back(alarm);
 }
 void  ConfigScene::AddPairLabelElement(QMap<QString,QString>& PairLabelinfo)
 {
@@ -116,6 +302,7 @@ void  ConfigScene::AddPairLabelElement(QMap<QString,QString>& PairLabelinfo)
 void  ConfigScene::AddGroupElement(GroupElementInfo& groupElementInfo)
 {
     GroupElement*  groupElement = new GroupElement(this);
+    groupElement->m_scene = this;
     groupElement->InitFromXmlInfo(groupElementInfo);
     groupElement->show();
     groupElement->updateGeometryData();
@@ -189,6 +376,8 @@ void ConfigScene::CreateNewElement(ControlType  ctrltype,QPoint pos)
     if (ctrltype == cConfigGroup)
     {
         GroupElement* groupElement = new GroupElement(this);
+        groupElement->m_scene = this;
+
         groupElement->InitFromDefaultStyle();
         groupElement->resize(500, 200);
         groupElement->move(pos);
@@ -200,6 +389,7 @@ void ConfigScene::CreateNewElement(ControlType  ctrltype,QPoint pos)
     else if (ctrltype == cConfigButton)
     {
         ConfigButton* btn = new ConfigButton("按钮", this);
+        btn->m_scene = this;
         btn->InitFromDefaultStyle();
         btn->resize(200, 50);
         btn->move(pos);
@@ -238,6 +428,16 @@ void ConfigScene::CreateNewElement(ControlType  ctrltype,QPoint pos)
         sceneCurveList.push_back(curve);
 
     }
+    else if (ctrltype == cConfigAlarm)
+    {
+        ConfigAlarm* alarm = new ConfigAlarm(this);
+        alarm->InitFromDefaultStyle();
+        alarm->move(pos);
+        alarm->resize(500, 200);
+        alarm->show();
+        alarm->updateGeometryData();
+        sceneAlarmList.push_back(alarm);
+    }
     update();
 
 }
@@ -260,6 +460,8 @@ void ConfigScene::CopyElement(ControlType  ctrltype, QPoint pos,QString copyedid
     if (ctrltype == cConfigGroup)
     {
         GroupElement* groupElement = new GroupElement(this);
+        groupElement->m_scene = this;
+
         groupElement->InitFromDefaultStyle();
        
         groupElement->updateGeometryData();

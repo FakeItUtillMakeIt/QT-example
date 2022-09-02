@@ -24,6 +24,7 @@ public:
     void displayStatuInfo(QString info, bool is_alarm = false);
     bool InitFrame();
     void CreatConfigInterface();
+    bool RestoreFromDataBase();
 
 private:
     Ui::EquivalentSoftClass ui;

@@ -3,6 +3,7 @@
 #include "stylecurve.h"
 #include "stylegroup.h"
 #include "stylepairlabel.h"
+#include "stylealarm.h"
 #include <QGridLayout>
 #include <QPushButton>
 ConfigNameSpaceStart
@@ -73,7 +74,18 @@ void ConfigTypeSelector::UpdateTyleInfo(QList<StyleButton *>& stylebuttons)
         listwidget->addItem(google_item);
     }
 }
+void ConfigTypeSelector::UpdateTyleInfo(QList<StyleAlarm*>& stylealarm)
+{
+    int  styleindex = 0;
+    for (auto style : stylealarm)
+    {
+        listwidget->setIconSize(QSize(500, 500));
+        QListWidgetItem* google_item = new QListWidgetItem(QIcon(style->grab()), style->m_infomap[StyleAlarm::Alarm_Style_Name].second);
+        google_item->setData(Qt::UserRole + 1, styleindex++);
+        listwidget->addItem(google_item);
+    }
 
+}
 void ConfigTypeSelector::UpdateTyleInfo(QList<StyleCurve *>& stylebuttons)
 {
     int  styleindex = 0;

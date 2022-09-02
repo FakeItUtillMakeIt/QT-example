@@ -13,7 +13,6 @@
 #include "../../ConfigInterface/configinterface.h"
 #include "../../ConfigInterface/xmlstore.h"
 #include "../../ConfigInterface/configglobal.h"
-
 #define LABEL_LEFT(name) leftlabel##name
 #define LABEL_RIGHT(name) rightlabel##name
 #define DXQ_CLOSE(name) dxqclose##name
@@ -62,31 +61,56 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 }
 void EquivalentSoft::CreatConfigInterface()
 {
+	if (ConfigNameSpace::ConfigGlobal::monitorRunning)
+	{
+		if (m_pRocketDataDAO->getMainSchedule(m_app->m_CurrentRocketType->m_id, ConfigNameSpace::ConfigGlobal::mainSchedule))//读取配置表更新时间，如果配置已有，则返回其时间，否则返回失败
+		{
+			displayStatuInfo("读取C3I流程完成！");
+		}
+		displayStatuInfo("读取C3流程失败！");
+	}
+
 	gCenterOperate = m_pCenterOperate;
 	ConfigNameSpace::ConfigGlobal::cmdhandler = processCMD;
 
 	QList<QPushButton* >  functionBtnList;
-	functionBtnList.push_back(ui.configedit);
-	functionBtnList.push_back(ui.configstyle);
-	functionBtnList.push_back(ui.configsave);
-	functionBtnList.push_back(ui.configcurve);
-	functionBtnList.push_back(ui.configlabel);
-	functionBtnList.push_back(ui.confitbtn);
-	functionBtnList.push_back(ui.configgroup);
-	functionBtnList.push_back(ui.configdelete);
+	functionBtnList.push_back(ui.configedit); //0
+	functionBtnList.push_back(ui.configstyle);//1
+	functionBtnList.push_back(ui.configsave);//2
+	functionBtnList.push_back(ui.configcurve);//3
+	functionBtnList.push_back(ui.configlabel);//4
+	functionBtnList.push_back(ui.confitbtn);//5
+	functionBtnList.push_back(ui.configgroup);//6
+	functionBtnList.push_back(ui.configdelete);//7
+	functionBtnList.push_back(ui.configdbsave); //8
+	functionBtnList.push_back(ui.configalarm);//9
 
-	//	m_allDeviceParam = m_app->m_allDeviceParam;
+	connect(ui.configdbsave, &QPushButton::clicked, [=]() {
+		QString msg;
+		bool bret = m_pRocketDataDAO->Compress(msg);
+		if(bret)
+			bret = m_pRocketDataDAO->SaveConfigToDb(msg);
+		if(!bret)
+			QMessageBox::warning(nullptr, ("错误"), msg);
+		else
+			QMessageBox::warning(nullptr, ("提示"), "保存成功");
+
+		});
+	ConfigNameSpace::ConfigGlobal::currentSoftWare = m_app->m_softName;
+	ConfigNameSpace::ConfigGlobal::currentSoftWareID = m_app->m_softID;
+	ui.softwarename->setText(m_app->m_softName);
 	ConfigNameSpace::ConfigGlobal::m_allDeviceParamPtr = &m_app->m_allDeviceParam;
 	ConfigNameSpace::ConfigGlobal::m_allCommadPrt = &m_app->m_allCommad;
 	ConfigNameSpace::ConfigGlobal::m_allFaultCommnd = &m_app->m_allFaultCommnd;
 
-	ConfigNameSpace::XmlStore::InitRocketFile(false);
+	ConfigNameSpace::XmlStore::InitRocketFile(false);//创建 rocket.xml并初始化
 	QString exepath = QApplication::applicationDirPath();
 	QList<ConfigNameSpace::SceneInfo>  sceneinfolist;
 
 	QString  filepath = exepath + "/rocket/" + QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()) + "/scenes.xml";
 	ConfigNameSpace::ConfigGlobal::currentRocket = QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str());
 	ConfigNameSpace::ConfigGlobal::currentRocketID = m_app->m_CurrentRocketType->m_id;
+
 	int result = ConfigNameSpace::XmlStore::ReadSceneFile(filepath.toLocal8Bit().data(), sceneinfolist);
 	//样式管理器
 	ConfigNameSpace::StyleManager* stylemanager = new   ConfigNameSpace::StyleManager;
@@ -107,6 +131,23 @@ void EquivalentSoft::CreatConfigInterface()
 	ui.display_wgt->setLayout(hlayout);
 	hlayout->setMargin(0);
 }
+
+bool EquivalentSoft::RestoreFromDataBase()
+{
+	QString filepath = QApplication::applicationDirPath();
+	filepath += ("/config/time");
+	QFile file(filepath);
+	bool bret = false;
+	bret = file.open(QIODevice::ReadWrite);
+	if (!bret)
+	{
+		return false;
+	}
+	QByteArray filecontent = file.readAll();
+	if(filecontent.isNull())
+	QMessageBox::warning(nullptr, tr("内容"), "内容为空");
+}
+
 bool EquivalentSoft::InitFrame()
 {
 	//设置协议帧
@@ -170,6 +211,18 @@ void EquivalentSoft::Init()
 	hbj2->setGeometry(0, 0, 1920, 1080);
 	hbj2->setStyleSheet("background-color:rgba(0,0,0,0.2)");
 	ui.sc_dxqdialog->setParent(hbj2);
+	connect(ui.comboBox, static_cast<void (QComboBox::*)(int index)>(&QComboBox::currentIndexChanged), [=](int index) {
+		if (index == 7)
+		{
+			ui.comboBox->setItemText(7, "");
+			ui.comboBox->setEditable(true);
+		}
+		else
+		{
+			ui.comboBox->setEditable(false);
+			ui.comboBox->setItemText(7, "自定义软件");
+		}
+		});
 	ui.sc_dxqdialog->setGeometry(768, 420, 384, 240);
 	hbj2->hide();
 	//等效器相关槽函数绑定
@@ -237,6 +290,9 @@ void EquivalentSoft::Init()
 		displayStatuInfo(info, true);
 		return;
 	}
+	QString msg;	
+	ConfigNameSpace::ConfigGlobal::monitorRunning = m_pCommandDAO->GetMonitorState(msg);
+	
 	displayStatuInfo("加载指令数据完毕！");
 	if (!m_pCommandDAO->getCommandParam())
 	{
@@ -260,6 +316,15 @@ void EquivalentSoft::Init()
 		return;
 	}
 	displayStatuInfo("加载箭上遥测数据帧协议数据完毕！");
+
+	if (!m_pRocketDataDAO->GetTaskInfo())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("加载获取岗位信息数据完毕！");
+
 	if (!m_pRocketDataDAO->getRocketParam())
 	{
 		QString info = "建立数据库连接失败，请检查数据库配置文件";
@@ -267,6 +332,20 @@ void EquivalentSoft::Init()
 		return;
 	}
 	displayStatuInfo("加载帧协议参数数据完毕！");
+	QString curtime;
+	if (!m_pRocketDataDAO->initConfig(msg))//初始化数据库保存配置文件的表，如果不存在就创建
+	{
+		QString info = "创建配置文件数据表失败";
+		displayStatuInfo(info, true);
+		return;
+	}
+	displayStatuInfo("配置文件数据表初始化完成！");
+	if (m_pRocketDataDAO->ReadConfigTime(msg, curtime))//读取配置表更新时间，如果配置已有，则返回其时间，否则返回失败
+	{
+		if(m_pRocketDataDAO->ReadConfigFromDb(msg, curtime))
+			displayStatuInfo("读取组态配置文件成功！");
+	}
+	displayStatuInfo("从数据库同步配置文件完成！");	
 	//协议帧排序
 	for (auto item : m_app->m_RocketDataFrame)
 	{
@@ -279,7 +358,8 @@ void EquivalentSoft::Init()
 //添加等效器弹框界面
 void EquivalentSoft::adddxq()
 {
-
+	ui.comboBox->setItemText(7,"自定义软件");
+	ui.comboBox->setCurrentIndex(0);
 	hbj->show();
 
 }

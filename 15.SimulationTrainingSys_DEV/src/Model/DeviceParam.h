@@ -24,6 +24,7 @@ public:
 	int m_id;//这个是唯一标识符，用于绑定组态控件
 	int m_deviceId;
 	int m_rockcketid;
+	int m_type;
 	string m_deviceName;
 	int m_subParameterId;//外键引用parameter_info.id
 	string m_subParameterName;

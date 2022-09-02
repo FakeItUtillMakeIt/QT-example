@@ -11,8 +11,10 @@
 #include "configbutton.h"
 #include "configglobal.h"
 #include "configpairlabel.h"
+#include "configalarm.h"
 
 ConfigNameSpaceStart
+class ConfigScene;
 class GroupElement : public QWidget
 {
     Q_OBJECT
@@ -48,10 +50,14 @@ public:
     explicit GroupElement(QWidget *parent = 0);
     CtrolFactory* ctrlfactory;
     QString GetID();
+    ConfigScene* m_scene = nullptr;
 
     QList<ConfigPairLabel*> pairlabellist;
+    QList<ConfigAlarm*>     alarmlist;
+
     QList<ConfigButton*> buttonlist;
     QList<ConfigPairLabel*>& getPairLabelList();
+    QList<ConfigAlarm*>& getAlarmList();
     QList<ConfigButton*>& getButtonList();
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -161,9 +167,12 @@ private:
     bool UpdateStyleByStyleId(QString styleid);
     void RestoreButtonFromXml(GroupElementInfo &groupElementInfo);
     void RestorePairLabelFromXml(GroupElementInfo &groupElementInfo);
+    void RestoreAlarmFromXml(GroupElementInfo& groupElementInfo);
     void AddButtonElement(QMap<QString, QString> &buttoninfo);
     RectInfo &GetRectInfoByGeometry(QRect rect);
     void AddPairLabelElement(QMap<QString, QString> &buttoninfo);
+    void AddAlarmElement(QMap<QString, QString>& alarminfo);
+
     void DefaultUiInit();
     void drawIconEntry(QPainter &painter);
 };

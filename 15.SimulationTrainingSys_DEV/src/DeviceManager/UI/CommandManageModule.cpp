@@ -45,8 +45,8 @@ void CommandManageModule::InitUILayout() {
 
 	QGridLayout* mainUILay = new QGridLayout;
 
-	QLabel* deviceParamLabel = new QLabel(QString("指令名称查询:"));
-	QComboBox* deviceCombox = new QComboBox();
+	QLabel* deviceParamLabel = new QLabel(QString("指令表:"));
+	deviceCombox = new QComboBox();
 	QLabel* paramNameLabel = new QLabel(QString("指令名称:"));
 	QLineEdit* paramInputName = new QLineEdit;
 
@@ -77,11 +77,22 @@ void CommandManageModule::InitUILayout() {
 	expandButton->hide();
 
 
+
+	QHBoxLayout* cmdTableLayout = new QHBoxLayout;
+	cmdTableLayout->addWidget(deviceParamLabel);
+	cmdTableLayout->addWidget(deviceCombox);
+	cmdTableLayout->addSpacing(20);
+	cmdTableLayout->addWidget(paramNameLabel);
+	cmdTableLayout->addWidget(paramInputName);
 	//mainUILay->addWidget(deviceParamLabel, 0, 0, 1, 1);
 	//mainUILay->addWidget(deviceCombox, 0, 1, 1, 1);
+
 	mainUILay->setColumnStretch(0, 2);
-	mainUILay->addWidget(paramNameLabel, 0, 1, 1, 1);
-	mainUILay->addWidget(paramInputName, 0, 2, 1, 1);
+	//mainUILay->addWidget(paramNameLabel, 0, 1, 1, 1);
+	//mainUILay->addWidget(paramInputName, 0, 2, 1, 1);
+	mainUILay->addLayout(cmdTableLayout, 0, 1, 1, 1);
+	mainUILay->setColumnStretch(0, 1);
+
 	mainUILay->addWidget(new QLabel("   "), 0, 3, 1, 1);
 	mainUILay->addWidget(insertButton, 0, 4, 1, 1);
 	mainUILay->addWidget(deleteButton, 0, 5, 1, 1);
@@ -91,6 +102,9 @@ void CommandManageModule::InitUILayout() {
 	mainUILay->addWidget(expandButton, 0, 9, 1, 1);
 	mainUILay->addWidget(configInfoTable, 1, 0, 4, 10);
 
+
+	deviceCombox->setStyleSheet(QString("QComboBox{border-radius:5px;height:30px;width:200px;border:1px solid darkgray;font:10pt bold;selection-background-color:rgb(0,170,255);font:12pt 微软雅黑;}"));
+	deviceParamLabel->setStyleSheet(wss->labelStyleSheet.arg("QLabel"));
 	paramNameLabel->setStyleSheet(wss->labelStyleSheet.arg("QLabel"));
 	paramInputName->setStyleSheet(wss->lineEditStyleSheet.arg("QLineEdit"));
 	insertButton->setStyleSheet(QString("QPushButton{color:white;}") + wss->insertButtonStyleSheet.arg("QPushButton"));
@@ -99,6 +113,24 @@ void CommandManageModule::InitUILayout() {
 	settingButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
 	collapseButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
 	expandButton->setStyleSheet(wss->iconButtonStyleSheet.arg("QPushButton"));
+
+	//加载指令表信息
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
+		FROM\
+		command_table_info\
+		"));
+
+	deviceCombox->clear();
+	auto aaa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : aaa)
+	{
+		auto bb = QString::fromStdString(ele.second[1]);
+		deviceCombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
+	}
 
 	//configInfoTable->setVerticalHeaderItem(0, new QTableWidgetItem("序号"));
 	for (int col = 0; col < configInfoTable->columnCount(); col++)
@@ -175,6 +207,69 @@ void CommandManageModule::InitUILayout() {
 				rowData.push_back(QString::fromStdString(ele->second[6]));
 				insertOneRow(searchRow++, rowData);
 			}
+		}
+		});
+
+	connect(deviceCombox, QOverload<int>::of(&QComboBox::activated), this, [=](int index) {
+		configInfoTable->clearContents();
+		configInfoTable->setRowCount(0);
+		QString paramQString = QString("SELECT\
+			command_info.id,\
+			command_info.rocket_id,\
+			command_info.back_id,\
+			command_info.`name`,\
+			command_info.`code`,\
+			command_info.type,\
+			command_info.prefix,\
+			command_info.createTime,\
+			command_info.lastUpdateTime\
+			FROM\
+			`command_ commandtable_info`\
+			INNER JOIN command_info ON `command_ commandtable_info`.command_id = command_info.id\
+			WHERE\
+			`command_ commandtable_info`.command_table_id = %1 AND\
+			command_info.rocket_id = %2")
+			.arg(deviceCombox->currentData().toInt()).arg(AppCache::instance()->m_CurrentRocketType->m_id);
+		auto idevcbx = deviceCombox->currentData().toInt();
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(paramQString);
+		int searchRow = 0;
+		auto tmpbbb = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele : tmpbbb)
+		{
+			QVector<QString> rowData;
+			rowData.push_back(QString::fromStdString(ele.second[0]));
+			//rowData.push_back(QString::fromStdString(ele->second[1]));
+			QString tmpp1, tmpp2;
+
+			if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
+			{
+				tmpp1 = QString::fromStdString(ele.second[1]);
+
+			}
+			else
+			{
+				tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())][1]);
+
+			}
+			rowData.push_back(tmpp1);
+			//rowData.push_back(QString::fromStdString(ele->second[1]));
+			//rowData.push_back(QString::fromStdString(ele->second[2]));
+			if (atoi(ele.second[2].c_str()) == 0)
+			{
+				tmpp2 = QString("无回令");
+			}
+			else
+			{
+				tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele.second[2].c_str())][3]);
+			}
+			//rowData.push_back(QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele->second[2].c_str())][3]));
+			rowData.push_back(tmpp2);
+			rowData.push_back(QString::fromStdString(ele.second[3]));
+			rowData.push_back(QString::fromStdString(ele.second[4]));
+			//rowData.push_back(QString::fromStdString(ele->second[5]));
+			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+			rowData.push_back(QString::fromStdString(ele.second[6]));
+			insertOneRow(searchRow++, rowData);
 		}
 		});
 }
@@ -344,6 +439,7 @@ void CommandManageModule::InitDisplayData() {
 			insertOneRow(row++, rowData);
 		}
 	}
+
 }
 
 

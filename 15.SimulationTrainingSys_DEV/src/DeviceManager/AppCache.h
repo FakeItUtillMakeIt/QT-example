@@ -30,6 +30,7 @@ using namespace std;
 
 #include <QLabel>
 #include "../Model/Fault.h"
+#include "../Model/TaskManageInfo.h"
 #include "Database/FaultFrameInfo.h"
 using namespace DataBaseF;
 
@@ -104,10 +105,9 @@ public:
 	QString GetStatus();
 
 	void UpdateSysDeviceInfo();
+#pragma endregion
 
-	/// <summary>
-	/// 故障注入添加的
-	/// </summary>
+#pragma region 故障注入添模块使用
 	PeerInfo* m_cmdSender; //命令发送
 	PeerInfo* m_paramSender;//参数发送
 	PeerInfo* m_paramResponseReceiver;//参数故障回令接收
@@ -132,6 +132,11 @@ public:
 	//map<int, DeviceParam*> m_allDeviceParam;//设备参数
 	//map<int, RocketType*> m_allRocketType;//火箭型号
 	//RocketType* m_CurrentRocketType;//当前火箭型号
+#pragma endregion
+
+#pragma region 岗位配置模块使用
+	map<int, TaskManageInfo*> m_TaskManageInfoFrames;//任务岗位配置表格和id对应
+
 #pragma endregion
 
 private:

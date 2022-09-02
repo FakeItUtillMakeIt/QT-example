@@ -217,6 +217,26 @@ void ConfigPairLabel::updataDataFromTool()
     }
    updataGeometryFromData();
 }
+void ConfigPairLabel::updateText(QString text, int error)
+{
+    if (ConfigGlobal::isEditing) return;
+    if ((error == 3) && (errorstate != error))
+    {
+        QString stylecolor = QString("color:rgb(%1,%2,%3);").arg(m_textcolor.red()).arg(m_textcolor.green()).arg(m_textcolor.blue());
+        paramnamelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_error_namelabelstyle).arg(stylecolor));
+        paramvaluelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_error_valuelabelstyle).arg(stylecolor));
+        errorstate = error;
+    }
+    else if ((error != 3) && (errorstate != error))
+    {
+        QString stylecolor = QString("color:rgb(%1,%2,%3);").arg(m_textcolor.red()).arg(m_textcolor.green()).arg(m_textcolor.blue());
+        paramnamelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_namelabelstyle).arg(stylecolor));
+        paramvaluelabel->setStyleSheet(QString("border-image: url(%1);%2").arg(m_valuelabelstyle).arg(stylecolor));
+        errorstate = error;
+    }
+    paramvaluelabel->setText(text);
+}
+
 void ConfigPairLabel::updateValue(double value,int error)
 {
     if (ConfigGlobal::isEditing) return;
@@ -376,7 +396,6 @@ void ConfigPairLabel::mouseMoveEvent(QMouseEvent *ev)
            }
         }
     }
-
     QWidget::mouseMoveEvent(ev);
 }
 

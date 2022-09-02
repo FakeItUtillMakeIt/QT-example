@@ -1,5 +1,6 @@
 #include "CenterOperate.h" 
 #include "../../ConfigInterface/configbutton.h"
+#include "../../ConfigInterface/configscene.h"
 #define FRAMELENGTH 10
 CenterOperate::CenterOperate(QWidget *parent)
     : QWidget(parent)
@@ -33,7 +34,10 @@ void CenterOperate::receiverCMD(QVariant oneCommand)
     //    QString("测发控软件收到测发回令指令,code等于%1，执行%2！").arg(command->m_iCode).arg(command->m_iBackId == 1 ? "成功" : "失败"));
     ConfigNameSpace::RunState  state = (command->m_iBackId == 1 ? ConfigNameSpace::StateSuccess : ConfigNameSpace::StateFailed);
     if (btnfrominterface)
+    {
         btnfrominterface->setState(state);
+        btnfrominterface->Schedule();
+    }
     btnfrominterface = nullptr;
 }
 

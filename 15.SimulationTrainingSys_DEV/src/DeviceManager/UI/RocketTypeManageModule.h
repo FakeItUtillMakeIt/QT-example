@@ -11,6 +11,8 @@
 #include "../SubWindow/AddRocketTypeWidget.h"
 #include "../SubWindow/AllInfoConfigWidget.h"
 
+#include "ImportComPramData.h"
+
 class RocketTypeManageModule : public QWidget
 {
 	Q_OBJECT
@@ -28,12 +30,15 @@ private:
 	QVector<QString> columnNameList;
 	int selectedRowNum;
 
+	ImportComPramData* m_importComPramData;
+
 private:
 	void InitUILayout();
 	void InitDisplayData();
 	void insertOneRow(int insertRow, QVector<QString> rowData);
 
 	void removeOneRow(int removeRow);
+	void ImportData(int rowNumber);
 	void editOneRow(int rocketID, QString rocketName, QString  rocketCode);
 
 private:

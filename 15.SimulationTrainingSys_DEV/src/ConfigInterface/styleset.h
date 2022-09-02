@@ -16,7 +16,7 @@ class StyleButton;
 class StyleGroup;
 class StyleCurve;
 class StylePairLabel;
-
+class StyleAlarm;
 
 class StyleSet:public QWidget
 {
@@ -28,6 +28,7 @@ public:
     void SetElement(StyleGroup *groupEx);   
     void SetElement(StyleCurve *curveEx);
     void SetElement(StylePairLabel *pairlabelEx);
+    void SetElement(StyleAlarm* alarmEx);
 
     void addIconSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle);
     void addFontSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle);
@@ -42,6 +43,7 @@ public:
     void initcurveSetEntry();
     void initPairLabelSetEntry();
     void initStackWidget();
+    void iniAlarmSetEntry();
 private:
     QStackedWidget* stackwidget = nullptr;
     QWidget* labelSetEntry;
@@ -49,6 +51,7 @@ private:
     QWidget* grouoSetEntry;
     QWidget* curveSetEntry;
     QWidget* pairLabelSetEntry;
+    QWidget* alarmSetEntry;
 
     QMap<ControlType,QMap<int,QLabel*>>  m_tbmap;
 
@@ -57,6 +60,8 @@ private:
     StyleGroup* m_groupEx = nullptr;
     StyleCurve* m_curveEx = nullptr;
     StylePairLabel* m_pairlabelEx = nullptr;
+    StyleAlarm* m_alarmEx = nullptr;
+
     QWidget  * initwidget;
 
     void update_property(ControlType ctrltyle, int enumvalue, QString result);

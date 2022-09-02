@@ -15,6 +15,8 @@ using namespace std;
 #include "../../Protocol/RocketDataParam.h"
 #include "mysql.h" 
 
+#include "../../Model/TaskManageInfo.h"
+
 namespace DataBase
 {
 	class RocketDataDAO
@@ -28,6 +30,15 @@ namespace DataBase
 		bool test();
 		bool getRocketData(); 
 		bool getRocketParam();
+		bool initConfig(QString& msg);
+		bool removeFolderContent(const QString& folderDir);
+		bool Compress(QString& msg);
+		bool SaveConfigToDb(QString& msg);
+		bool ReadConfigTime(QString& msg, QString& curtime);
+		bool ReadConfigFromDb(QString& msg, QString curtime);
+		bool getMainSchedule(int rocketid, QVector<int>& schedue);
+
+		bool GetTaskInfo();//获取岗位信息
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

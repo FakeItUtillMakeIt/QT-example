@@ -12,6 +12,7 @@
 #include "propertyset.h"
 #include <qdrag.h>
 #include <qmimedata.h>
+#include "configscene.h"
 ConfigNameSpaceStart
 GroupElement::GroupElement(QWidget *parent) : QWidget(parent)
 {
@@ -83,6 +84,7 @@ void GroupElement::InitFromXmlInfo(GroupElementInfo& groupElementInfo)
 
     RestoreButtonFromXml(groupElementInfo);
     RestorePairLabelFromXml(groupElementInfo);
+    RestoreAlarmFromXml(groupElementInfo);
 }
 void GroupElement::RestoreButtonFromXml(GroupElementInfo& groupElementInfo)
 {
@@ -91,7 +93,6 @@ void GroupElement::RestoreButtonFromXml(GroupElementInfo& groupElementInfo)
     {
         AddButtonElement(buttoninfo);
     }
-
 }
 void GroupElement::RestorePairLabelFromXml(GroupElementInfo& groupElementInfo)
 {
@@ -102,7 +103,14 @@ void GroupElement::RestorePairLabelFromXml(GroupElementInfo& groupElementInfo)
         AddPairLabelElement(pairlabelInfo);
     }
 }
-
+void GroupElement::RestoreAlarmFromXml(GroupElementInfo& groupElementInfo)
+{
+    QList<QMap<QString, QString>>& alarmInfoList = groupElementInfo.alarmInfolist;
+    for (auto& alarmInfo : alarmInfoList)
+    {
+        AddAlarmElement(alarmInfo);
+    }
+}
 GroupElement::RectInfo&  GroupElement::GetRectInfoByGeometry(QRect rect)
 {
     GroupElement::RectInfo  rectinfo;
@@ -119,6 +127,7 @@ GroupElement::RectInfo&  GroupElement::GetRectInfoByGeometry(QRect rect)
 void  GroupElement::AddButtonElement(QMap<QString,QString>& buttoninfo)
 {
     ConfigButton* btn = new ConfigButton("按钮",this);
+    btn->m_scene = m_scene;
     buttonlist.push_back(btn);
     btn->m_ingroup = true;
     btn->setRole(cRealControl);
@@ -130,7 +139,21 @@ void  GroupElement::AddButtonElement(QMap<QString,QString>& buttoninfo)
     widgetmap[rectinfo.index]= btn;
     widgetmap[rectinfo.index]->setProperty("type", cConfigButton);
 }
+void GroupElement::AddAlarmElement(QMap<QString, QString>& alarminfo)
+{
+    ConfigAlarm* alarm = new ConfigAlarm(this);
+    alarmlist.push_back(alarm);
+    alarm->m_ingroup = true;
+    alarm->setRole(cRealControl);
+    alarm->setGroupId(m_uuid);
+    alarm->InitFromXmlInfo(alarminfo);
+    RectInfo& rectinfo = GetRectInfoByGeometry(alarm->geometry());
+    alarm->setProperty("index", rectinfo.index);
+    alarm->show();
+    widgetmap[rectinfo.index] = alarm;
+    widgetmap[rectinfo.index]->setProperty("type", cConfigAlarm);
 
+}
 void  GroupElement::AddPairLabelElement(QMap<QString,QString>& pairLabelInfo)
 {
     ConfigPairLabel*  pairlabel  = new ConfigPairLabel(this);
@@ -175,7 +198,10 @@ QString GroupElement::GetID()
 {
     return m_uuid;
 }
-
+QList<ConfigAlarm*>& GroupElement::getAlarmList()
+{
+    return alarmlist;
+}
 QList<ConfigPairLabel *> &GroupElement::getPairLabelList()
 {
    return pairlabellist;
@@ -248,6 +274,16 @@ void GroupElement::removeWidgetFromList(QWidget* widget)
             if (pairlabellist[i] == widget)
             {
                 pairlabellist.removeAt(i);
+                break;
+            }
+        }
+        break;
+    case cConfigAlarm:
+        for (int i = 0; i < alarmlist.size(); i++)
+        {
+            if (alarmlist[i] == widget)
+            {
+                alarmlist.removeAt(i);
                 break;
             }
         }
@@ -438,6 +474,7 @@ void GroupElement::addElement(RectInfo&  rectinfo,QString text,ControlType ctrlt
     ConfigLabel* label = nullptr;
     ControlRole ctrlrole = cRealControl;
     ConfigPairLabel* pairlabel = nullptr;
+    ConfigAlarm* alarm = nullptr;
     QString groupuuid = m_uuid;
     QWidget* parent = this;
     switch (ctrltype) {
@@ -467,6 +504,15 @@ void GroupElement::addElement(RectInfo&  rectinfo,QString text,ControlType ctrlt
         pairlabel->setRole(ctrlrole);
         pairlabel->setGroupId(groupuuid);
         newwidget = pairlabel;
+        break;
+    case cConfigAlarm:
+        alarm = new ConfigAlarm(parent);
+        alarm->InitFromDefaultStyle();
+        alarmlist.push_back(alarm);
+        alarm->m_ingroup = true;
+        alarm->setRole(ctrlrole);
+        alarm->setGroupId(groupuuid);
+        newwidget = alarm;
         break;
     default:
         newwidget = new QWidget(parent);

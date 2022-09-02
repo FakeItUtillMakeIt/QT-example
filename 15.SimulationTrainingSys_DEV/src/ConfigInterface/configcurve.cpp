@@ -7,7 +7,8 @@
 #include "moveableframe.h"
 #include "configtypeselector.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
-
+#include "multiinputget.h"
+#include "qaction.h"
 ConfigNameSpaceStart
 
 ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
@@ -27,10 +28,10 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
 
     colorlist << QColor(250,0,0) <<QColor(0,250,0) <<QColor(0,0,250);
 
- //   addGraph();
+ //  addGraph();
 
     //曲线测试
-  //  startTimer(1000);
+ //startTimer(1000);
 }
 
 //void ConfigCurve::timerEvent(QTimerEvent* event)
@@ -59,6 +60,93 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
 //    updateGraph0Value(1, itime, ivalue);
 //}
 
+
+
+void ConfigCurve::contextMenuEvent(QContextMenuEvent* event)
+{
+    
+    QAction  act_is_roll(this);
+    act_is_roll.setText("曲线滚动");
+    act_is_roll.setCheckable(true);
+    act_is_roll.setChecked(xrool);
+    connect(&act_is_roll, &QAction::triggered, [=](bool checked)
+    {
+            if (xrange == -1)
+            {
+                bool ok;
+                double a = QInputDialog::getDouble(this, "输入", "请输入X轴滚动范围", 10, 0.01, 100000, 2, &ok);
+                qDebug() << "value:" << a << " bool:" << ok;
+                if (!ok)
+                    return;
+                xrool = checked;
+                xrange = a;
+            }
+            else
+            {
+                xrool = checked;
+            }
+            update_customplot_range();
+            replot(QCustomPlot::rpQueuedReplot);
+        
+    });
+
+    QAction act_set_roll_range(this);
+    act_set_roll_range.setText("设置滚动范围");
+   // connect(&act_set_roll_range, SIGNAL(triggered()), this, SLOT(setrollchange()));
+    connect(&act_set_roll_range, &QAction::triggered, [=](bool checked)
+        {
+            bool ok;
+            double currentvalue = 10;
+            if (xrange != -1)
+                currentvalue = xrange;
+            double a = QInputDialog::getDouble(nullptr, "输入", "请输入X轴滚动范围", currentvalue, 0.01, 100000, 2, &ok);
+            if (!ok)
+                return;
+            qDebug() << "value:" << a << " bool:" << ok;
+            xrool = true;
+            xrange = a;
+            update_customplot_range();
+            replot(QCustomPlot::rpQueuedReplot);
+
+        });
+  //  QAction act_set_tmp_range(this);
+  //  act_set_tmp_range.setText("设置临时显示范围");
+  ////  connect(&act_set_tmp_range, SIGNAL(triggered()), this, SLOT(settmprange()));
+  //  connect(&act_set_tmp_range, &QAction::triggered, [=](bool checked)
+  //      {
+  //          MultiInputGet  multiinputget;
+  //          multiinputget.setWindowTitle("请输入范围");
+  //          multiinputget.update_range(xvalueMin, xvalueMax, yvalueMin, yvalueMax);
+  //          if (multiinputget.exec() == QDialog::Rejected)
+  //              return;
+
+  //          double xmin, xmax, ymin, ymax;
+  //          if (multiinputget.get_x_range(xmin, xmax))
+  //          {
+  //              xAxis->setRange(xmin, xmax);
+  //          }
+  //          if (multiinputget.get_y_range(ymin, ymax))
+  //          {
+  //              yAxis->setRange(ymin, ymax);
+  //          }
+  //          replot();
+  //      });
+
+    QMenu menu;
+    act_is_roll.setChecked(xrool);
+    menu.addAction(&act_is_roll);
+   // menu.addSeparator();
+    menu.addAction(&act_set_roll_range);
+  //  menu.addSeparator();
+  //  menu.addAction(&act_set_tmp_range);
+    //menu.addSeparator();
+    //act_stop_refresh->setChecked(curcustomplot->is_replot_suspend);
+   // menu.addAction(act_stop_refresh);
+
+  //  menu.addSeparator();
+    menu.exec(event->globalPos());
+
+}
 
 void ConfigCurve::AddTitle(QString title)
 {
@@ -180,8 +268,7 @@ void ConfigCurve::setBaseTime(double basetime)
     m_base_time = basetime;
 }
 void ConfigCurve::updateGraph0Value(int ikey, double itime, double ivalue)
-{
-  
+{  
     if (!firstinit)
     {
         m_base_time = itime;

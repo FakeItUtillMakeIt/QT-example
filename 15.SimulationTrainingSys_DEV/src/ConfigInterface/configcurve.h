@@ -50,11 +50,11 @@ protected:
     void mousePressEvent(QMouseEvent *ev);
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void contextMenuEvent(QContextMenuEvent* event);
 private:
     QString m_uuid;
     void init_value_set();
     QList<QString>  dataSourceList;
-    bool xrool = false;
 
     int m_width;
     int m_height;
@@ -66,16 +66,18 @@ private:
     void AddTitle(QString title);
     QList<QColor>  colorlist;
     QMap<QString,QCPGraph*>  curvelist; //key 是  参数索引
-   // void timerEvent(QTimerEvent* event);
+  //  void timerEvent(QTimerEvent* event);
 
     //记录范围
-    double xvalueMax;
-    double xvalueMin;
-    double yvalueMax;
-    double yvalueMin;
+    double xvalueMax = 0;
+    double xvalueMin =0;
+    double yvalueMax = 0;
+    double yvalueMin = 0;
     bool firstinit = false;
-    double xrange = -1;
     double m_base_time;
+
+    bool xrool = true;
+    double xrange = 20;
 
 };
 ConfigNameSpaceEnd

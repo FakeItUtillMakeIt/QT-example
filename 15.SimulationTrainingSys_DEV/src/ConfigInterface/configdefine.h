@@ -41,7 +41,8 @@ enum ControlType
     cConfigButton,
     cConfigCurve,
     cConfigGroup,
-    cConfigPairLabel
+    cConfigPairLabel,
+    cConfigAlarm
 };
 
 QString  get_uuid();
@@ -85,6 +86,7 @@ struct GroupElementInfo
     QMap<QString,QString>   groupinfo;
     QList<QMap<QString,QString>>  buttonInfolist;
     QList<QMap<QString,QString>>  PairLabelInfolist;
+    QList<QMap<QString, QString>>  alarmInfolist;
 };
 
 struct SceneInfo
@@ -92,9 +94,11 @@ struct SceneInfo
   QString sceneid;
   QString scenename;
   QString scenepath;
+  bool  useschedule;
   QList<QMap<QString,QString>>  buttonInfolist;
   QList<QMap<QString,QString>>  PairLabelInfolist;
   QList<QMap<QString,QString>>  curveInfolist;
+  QList<QMap<QString, QString>>  alarmInfolist;
 
   QList<GroupElementInfo>  groupinfolist;
 };

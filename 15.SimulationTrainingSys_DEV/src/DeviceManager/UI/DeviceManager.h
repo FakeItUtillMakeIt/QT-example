@@ -25,6 +25,7 @@
 #include "../Database/DeviceDAOF.h"
 #include "../Database/FaultParamDAO.h"
 #include "CenterOperateF.h" 
+#include "TaskConfiguration.h"
 
 #define NEW_UI//优化后的UI
 #ifndef NEW_UI
@@ -44,6 +45,7 @@ public:
 	void displayStatuInfo(QString info, bool is_alarm = false);
 	void Init();
 	void DataFaultLoad();
+	void TaskManagement();
 	void ShowMinimized();
 private:
 	Ui::DeviceManagerClass ui;
@@ -66,6 +68,10 @@ private:
 	DataBaseF::DeviceDAO* m_pDeviceDAOF;
 	CenterOperateF* m_CenterOperateF;
 	QHBoxLayout* m_hlayoutF;
+
+	//加载任务岗位配置
+	TaskConfiguration* m_taskConfiguration;
+	QHBoxLayout* m_hlayouttask;
 
 
 protected:

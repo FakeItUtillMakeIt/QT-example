@@ -5,10 +5,12 @@
 
 RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
+	, m_importComPramData(nullptr)
 {
 	selectedRowNum = -1;
 	columnNameList << QString("火箭ID") << QString("火箭型号名称") << QString("火箭型号描述") << QString("操作");
 
+	m_importComPramData = new ImportComPramData(this);
 
 	InitUILayout();
 
@@ -173,6 +175,8 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 	opDeleteBtn->setProperty("row", insertRow);
 	QPushButton* opCfgDataBtn = new QPushButton(QString("配置"));
 	opCfgDataBtn->setProperty("row", insertRow);
+	QPushButton* opImpotDataBtn = new QPushButton(QString("导入"));
+	opImpotDataBtn->setProperty("row", insertRow);
 
 	//#ifdef NEW_UI
 	//	opCfgDataBtn->show();
@@ -197,8 +201,10 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opCfgDataBtn);
+	hbox->addWidget(opCfgDataBtn); 
+	hbox->addWidget(opImpotDataBtn);
 	hbox->addWidget(opDeleteBtn);
+	
 
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
@@ -214,6 +220,10 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		editW->setRocketInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
 			configInfoTable->item(curRow, 2)->text());
 		editW->show();
+		});
+
+	connect(opImpotDataBtn, &QPushButton::clicked, this, [=]() {
+		ImportData(opImpotDataBtn->property("row").toInt());
 		});
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
@@ -232,6 +242,21 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 }
 
+
+/// <summary>
+/// 导入参数和指令
+/// </summary>
+/// <param name="rowNumber"></param>
+void RocketTypeManageModule::ImportData(int rowNumber)
+{
+	int curRocketID = configInfoTable->item(rowNumber, 0)->text().toInt();
+
+	m_importComPramData->AddPramComDatas(curRocketID);
+	//QString qSqlString = QString("DELETE FROM `simulatedtraining`.`rocket_info` WHERE `id` = %1").arg(curRocketID);
+	//DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+
+
+}
 
 /**
 	@brief 删除一行

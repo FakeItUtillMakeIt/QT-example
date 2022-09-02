@@ -11,6 +11,7 @@ class StyleGroup;
 class StylePairLabel;
 class StyleButton;
 class StyleCurve;
+class StyleAlarm;
 class ConfigTypeSelector:public QDialog
 {
     Q_OBJECT
@@ -22,6 +23,8 @@ public:
     void UpdateTyleInfo(QList<StylePairLabel *> &stylepairlabel);
     void UpdateTyleInfo(QList<StyleButton *> &stylebuttons);
     void UpdateTyleInfo(QList<StyleCurve *> &stylebuttons);
+    void UpdateTyleInfo(QList<StyleAlarm*>& stylealarm);
+
 private:
     int  m_selectindex;
 };

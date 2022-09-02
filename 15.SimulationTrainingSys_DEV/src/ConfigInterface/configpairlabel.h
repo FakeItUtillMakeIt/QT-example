@@ -9,7 +9,7 @@
 #include "../Model/DeviceParam.h"
 
 ConfigNameSpaceStart
-class ConfigPairLabel:public QWidget
+class ConfigPairLabel :public QWidget
 {
     Q_OBJECT
 public:
@@ -41,6 +41,7 @@ public:
     void InitFromDefaultStyle();
     void InitFromDefineStyle(QString istyleid);
     void updateValue(double value, int error = 0);
+    void updateText(QString text, int error = 0);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

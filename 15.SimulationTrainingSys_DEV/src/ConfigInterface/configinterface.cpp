@@ -14,7 +14,6 @@
 #include <QDebug>
 #include <QButtonGroup>
 #include <QInputDialog>
-
 ConfigNameSpaceStart
 ConfigInterface::ConfigInterface(QWidget *parent) :
     QMainWindow(parent)
@@ -25,16 +24,25 @@ ConfigInterface::ConfigInterface(QWidget *parent) :
 
 void ConfigInterface::timerEvent(QTimerEvent* event)
 {
-    ConfigGlobal::updateDefaultState();
+  //  ConfigGlobal::updateDefaultState();
 
     if (!ConfigGlobal::m_allDeviceParamPtr) return;
 
     if (!ConfigGlobal::dataupdated) return;
-    ConfigNameSpace::ConfigGlobal::dataupdated = false;
+      ConfigNameSpace::ConfigGlobal::dataupdated = false;
     for (auto it = ConfigGlobal::m_allDeviceParamPtr->begin(); it != ConfigGlobal::m_allDeviceParamPtr->end(); it++)
     {
         DeviceParam* param = it->second;
-        ConfigGlobal::updateControlValue(param->m_Validity, param->m_id, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);
+        if (param->m_Validity == 0)
+        {
+            continue;
+        }
+        if(param->m_type == 1)
+            ConfigGlobal::updateControlValue(param->m_Validity, param->m_id, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);
+        else if (param->m_type == 2)
+        {
+            ConfigGlobal::updateControlText( param->m_id,  QString::fromStdString(param->m_iCurStr), param->m_curStatus.m_id);
+        }
     }
 
 }
@@ -88,7 +96,8 @@ void  ConfigInterface::firstinitFromOut(QList<QPushButton*> btnlist)
         //    labelselector->setGeometry(230,10,100,30);
         ConfigElementSelector* pairlabelselector = (ConfigElementSelector*)btnlist[4];
         pairlabelselector->setSelectorInfo(cConfigPairLabel,"参数标签");
-
+        ConfigElementSelector* alarmselector = (ConfigElementSelector*)btnlist[9];
+        alarmselector->setSelectorInfo(cConfigAlarm, "报警灯");
         ConfigElementSelector* curveselector = (ConfigElementSelector*)btnlist[3];
         curveselector->setSelectorInfo(cConfigCurve,"曲线");
 
@@ -107,22 +116,27 @@ void  ConfigInterface::firstinitFromOut(QList<QPushButton*> btnlist)
             configplatform->DeleteElementByIdFromOut(ctrtype, elementid);
          });
 
+        QPushButton* dbsaveBtn = btnlist[8];
+
         QGridLayout* gridlayout = new QGridLayout;
         SetBtnStyle(groupselector,":/rc/group.png","组");
         SetBtnStyle(btnselector,":/rc/button.png","按钮");
         SetBtnStyle(pairlabelselector,":/rc/label.png","标签");
+        SetBtnStyle(alarmselector, ":/rc/lampiconfailed.png", "报警灯");
         SetBtnStyle(curveselector,":/rc/curve.png","曲线");
         SetBtnStyle(savescene,":/rc/save.png","保存场景");
         SetBtnStyle(OpenStyleManager,":/rc/stylemanage.png","打开样式编辑器");
         SetBtnStyle(delelement, "://rc/delete_normal.png", "删除控件");
-
+        SetBtnStyle(dbsaveBtn, "://rc/save-database.png", "存数据库");
         editbtnlist.append(groupselector);
         editbtnlist.append(btnselector);
         editbtnlist.append(pairlabelselector);
+        editbtnlist.append(alarmselector);
         editbtnlist.append(curveselector);
         editbtnlist.append(savescene);
         editbtnlist.append(OpenStyleManager);
         editbtnlist.append(delelement);
+        editbtnlist.append(dbsaveBtn);
 
         gridlayout->addWidget(configplatform,1,0,10,10);
         mainwidget->setLayout(gridlayout);

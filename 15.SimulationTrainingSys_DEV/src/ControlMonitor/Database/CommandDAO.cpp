@@ -389,7 +389,67 @@ namespace DataBase
 			return false;
 		}
 	}
-	 
+	bool CommandDAO::StartNotify(QString & msg)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("CREATE TABLE  if not EXISTS `MonitorState` (\
+			`id` int NOT NULL,\
+			`updatetime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,\
+			 `state` int DEFAULT NULL,\
+			PRIMARY KEY(`id`)\
+			) ENGINE = InnoDB DEFAULT CHARSET = utf8; ");
+
+		bool bret = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "创建C3I状态表失败";
+			return false;
+		}
+		string updatesql = "update `MonitorState` set  updatetime=SYSDATE(),state=1 where id=1;";
+		 bret = exec_sql(updatesql);
+		if (!bret)
+		{
+			string insertsql = "INSERT INTO `monitor_state` VALUES ('1',SYSDATE(), '1');";
+			bret = exec_sql(insertsql);
+			if (!bret)
+			{
+				msg = "修改C3I状态表为启动失败";
+				return false;
+			}
+		}
+		return true;
+	}
+	bool CommandDAO::StopNotify(QString& msg)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		
+		string stopsql = "update `MonitorState` set  updatetime=SYSDATE(),state=0 where id=1;";
+		bool bret = exec_sql(stopsql);
+		if (!bret)
+		{
+			msg = "修改C3I状态表为退出失败";
+			return false;
+		}
+		return true;
+	
+	}
 }
 
 

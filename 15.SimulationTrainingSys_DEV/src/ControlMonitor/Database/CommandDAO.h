@@ -27,6 +27,9 @@ namespace DataBase
 		bool test();
 		bool getCommand(); 
 		bool getCommandParam();
+		bool StartNotify(QString& msg);
+		bool StopNotify(QString& msg);
+
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

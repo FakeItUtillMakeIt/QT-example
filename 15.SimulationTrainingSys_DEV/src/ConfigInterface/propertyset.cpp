@@ -1,6 +1,7 @@
 ﻿#include "configglobal.h"
 #include "configpairlabel.h"
 #include "configtypeselector.h"
+#include "configalarm.h"
 #include "groupelement.h"
 #include "propertyset.h"
 #include <QInputDialog>
@@ -305,6 +306,19 @@ void PropertySet::SelectStyle( ControlType  ictrltype,QTextBrowser* showlabel,Co
             configcurve->UpdatePropertyByStyle();
         }
     }
+    else if (ictrltype == cConfigAlarm)
+    {
+        StyleAlarm* stylealarm = nullptr;
+        ConfigAlarm* configalarm = (ConfigAlarm*)m_object;
+        if (configalarm->SelectStyle(stylealarm))
+        {
+            char* styleidinfo = (char*)configvalue->value;
+            memset(styleidinfo, 0, MaximumPathLength);
+            QString styleid = stylealarm->m_infomap[StyleAlarm::Alarm_Style_ID].second;
+            memcpy(styleidinfo, styleid.toStdString().c_str(), strlen(styleid.toStdString().c_str()));
+            showlabel->setPlainText(stylealarm->m_infomap[StyleAlarm::Alarm_Style_Name].second);
+        }
+    }
 }
 
 bool PropertySet::istimeavaiable()
@@ -454,6 +468,11 @@ void PropertySet::updateDataSource(QString datasourceid,QString datasourcename,i
      else if (m_ctrType == cConfigButton)
      {
          ((ConfigButton*)m_object)->updateDataSource(datasourceid, datasourcename, addordelete);
+
+     }
+     else if (m_ctrType == cConfigAlarm)
+     {
+         ((ConfigAlarm*)m_object)->updateDataSource(datasourceid, datasourcename, addordelete);
 
      }
 }

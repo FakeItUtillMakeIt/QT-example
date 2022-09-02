@@ -28,6 +28,7 @@ namespace DataBase
 		bool getCommand(); 
 		bool getCommandParam();
 		bool getFaultCommand();
+		bool GetMonitorState(QString& msg);
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

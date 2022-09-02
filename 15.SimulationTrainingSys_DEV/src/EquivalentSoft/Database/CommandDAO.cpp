@@ -438,7 +438,53 @@ namespace DataBase
 			return false;
 		}
 	}
-	 
+	bool CommandDAO::GetMonitorState(QString& msg)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		bool  bret = false;
+		string sql = "select state from  monitorstate where id = 1;";
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				sql_row = mysql_fetch_row(result);
+				if (sql_row)
+				{
+					if (sql_row[0])
+					{
+						int state = atoi(sql_row[0]);
+						bret = state;
+					}
+					else
+					{
+						msg = "数据库无最新数据";
+						bret =  false;
+					}
+				}				
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else {
+			LOG(INFO) << "获取数据失败";
+
+		}
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return bret;
+
+	}
 }
 
 

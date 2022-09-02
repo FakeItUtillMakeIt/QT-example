@@ -2,8 +2,8 @@
 ConfigNameSpaceStart
 BoolDialog::BoolDialog(QWidget *parent, Qt::WindowFlags f):QDialog(parent,f)
 {
-    okbtn.setText("显示");
-    cancelbtn.setText("不显示");
+    okbtn.setText("是");
+    cancelbtn.setText("否");
     hlayout.addWidget(&okbtn);
     hlayout.addWidget(&cancelbtn);
     hlayout.setSpacing(20);
@@ -14,5 +14,6 @@ BoolDialog::BoolDialog(QWidget *parent, Qt::WindowFlags f):QDialog(parent,f)
     connect(&cancelbtn,&QPushButton::clicked,[=](){
         this->reject();
     });
+    resize(300,50);
 }
 ConfigNameSpaceEnd

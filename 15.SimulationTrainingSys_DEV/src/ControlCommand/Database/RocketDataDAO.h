@@ -28,6 +28,14 @@ namespace DataBase
 		bool test();
 		bool getRocketData(); 
 		bool getRocketParam();
+
+		/* 组态界面配置文件在数据库中的存储与恢复*/
+		bool initConfig(QString& msg);
+		bool removeFolderContent(const QString& folderDir);
+		bool Compress(QString& msg);
+		bool SaveConfigToDb(QString& msg);
+		bool ReadConfigTime(QString& msg, QString& curtime);
+		bool ReadConfigFromDb(QString& msg, QString curtime);
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

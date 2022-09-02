@@ -103,9 +103,6 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
-         <zorder>title</zorder>
-         <zorder>tabWidget</zorder>
-         <zorder>tabWidget</zorder>
         </widget>
        </item>
        <item>
@@ -713,7 +710,7 @@ QPushButton {
           <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>3</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -733,7 +730,7 @@ QPushButton {
            <string>知识库配置</string>
           </attribute>
          </widget>
-         <widget class="QWidget" name="tab">
+         <widget class="QWidget" name="tab_taskManege">
           <attribute name="title">
            <string>任务岗位配置</string>
           </attribute>

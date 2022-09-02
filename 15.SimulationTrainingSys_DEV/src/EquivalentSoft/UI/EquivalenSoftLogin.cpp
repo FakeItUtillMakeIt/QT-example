@@ -11,6 +11,9 @@ EquivalenSoftLogin::EquivalenSoftLogin(EquivalentSoft *eq,QWidget *parent)
 	Init();
 	connect(ui.LoginBt, SIGNAL(clicked()), this, SLOT(LoginSlot()));
 	connect(ui.CloseBt, SIGNAL(clicked()), this, SLOT(CloseSlot()));
+
+	connect(ui.TypeComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged), this, &EquivalenSoftLogin::TypeComboBoxChange);
+
 }
 void EquivalenSoftLogin::LoginSlot()
 {
@@ -23,7 +26,9 @@ void EquivalenSoftLogin::LoginSlot()
 		QMessageBox::warning(qApp->activeWindow(), QObject::tr("警告"), "没有绑定箭上数据协议！");
 		this->close();
 	}
-	equivalentSoft->CreatConfigInterface();
+	m_app->m_softName = ui.TypeComboBox_2->currentText();
+	m_app->m_softID = ui.TypeComboBox_2->currentData().toInt();
+	equivalentSoft->CreatConfigInterface();	
 	equivalentSoft->show();
 	//ControlComPage.show();
 }
@@ -50,4 +55,33 @@ void EquivalenSoftLogin::Init()
 		ui.TypeComboBox->addItem(QString::fromStdString(Utils::GBKToUTF8(item.second->m_name.c_str())), item.first);
 	}
 	ui.TypeComboBox->setCurrentIndex(0);
+
+	//岗位展示
+	TypeComboBoxChange(ui.TypeComboBox->currentText());
+}
+
+
+/// <summary>
+/// 岗位展示
+/// </summary>
+/// <param name="rName"></param>
+void EquivalenSoftLogin::TypeComboBoxChange(QString rName)
+{
+	ui.TypeComboBox_2->clear();
+	for (auto itemR : m_app->m_allRocketType)
+	{
+		if (ui.TypeComboBox->currentText() != QString::fromLocal8Bit(itemR.second->m_name.c_str()))
+		{
+			continue;
+		}
+
+		for (auto itemT : m_app->m_TaskManageInfo)
+		{
+			if (itemR.second->m_id == itemT.second->m_rocketId)
+			{
+				ui.TypeComboBox_2->addItem(QString::fromStdString(itemT.second->m_roketSoftName), itemT.first);
+			}
+		}
+	}
+	ui.TypeComboBox_2->setCurrentIndex(0);
 }

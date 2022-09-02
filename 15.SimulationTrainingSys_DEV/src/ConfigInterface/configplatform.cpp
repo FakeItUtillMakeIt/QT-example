@@ -178,9 +178,8 @@ void ConfigPlatForm::addScene(QString text,QPushButton* selbtn,QPushButton* delb
     newscene->SetName(text);
     QString exepath = QApplication::applicationDirPath();
 
-    bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket.toLocal8Bit().data() + "/scenes.xml", newscene);
-   // bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/scene/scenes.xml", newscene);
-
+//    bool result = ConfigNameSpace::XmlStore::AddSceneToFile(exepath.toStdString() + "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket.toLocal8Bit().data() + "/scenes.xml", newscene);   
+    bool result = ConfigNameSpace::XmlStore::AddSoftWareSceneToFile(exepath.toStdString() + "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket.toLocal8Bit().data() + "/scenes.xml", newscene);
     if (m_showtype == 1)
     {
         sceneContainer->addWidget(newscene);
@@ -195,6 +194,7 @@ void ConfigPlatForm::addScene(QString text,QPushButton* selbtn,QPushButton* delb
     }
     newscene->selbutton = selbtn;
     newscene->delbutton = delbtn;
+    newscene->AddContextMenuToBtn(selbtn);
 }
 void ConfigPlatForm::getAutoCreatedBtn(QList<QPair<QPushButton*, QPushButton*>>& iautoCreateBtn)
 {

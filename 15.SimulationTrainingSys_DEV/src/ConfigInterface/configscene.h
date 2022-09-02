@@ -10,6 +10,7 @@
 #include "xmlstore.h"
 ConfigNameSpaceStart
 class ConfigCurve;
+class ConfigAlarm;
 class ConfigScene:public QWidget
 {
     Q_OBJECT
@@ -17,12 +18,16 @@ public:
     ConfigScene(QWidget* parent = nullptr);
     void RestoreSceneInfo(ConfigNameSpace::SceneInfo& sceneinfo);
     void AutoCreateOpBtn(QString scenename);
+    void AddContextMenuToBtn(QPushButton* selbtn);
+
     void SetName(QString scenename);
     QString GetName();
     void SetPath(QString path);
     QString GetPath();
     void SetID(QString id);
-
+    bool  userSchedule = false;
+    void SetScheduleEabled(bool eabled);
+    void SetBtnScheduled(ConfigButton* btn);
     QString GetID();
     QToolButton* selectbtn = nullptr;
     QPushButton* selbutton = nullptr;
@@ -33,6 +38,7 @@ public:
     QList<ConfigButton*>  sceneButtonList;
     QList<ConfigPairLabel*>  scenePairLabelList;
     QList<ConfigCurve*>  sceneCurveList;
+    QList<ConfigAlarm*>  sceneAlarmList;
 
     int DeleteElementByIdFromOut(ControlType ctrtype, QString elementid);
 
@@ -77,6 +83,7 @@ private:
     QString m_path;
     void AddButtonElement(QMap<QString, QString> &buttoninfo);
     void AddPairLabelElement(QMap<QString, QString> &PairLabelinfo);
+    void AddAlarmElement(QMap<QString, QString>& Alarminfo);
     void AddGroupElement(GroupElementInfo &groupElementInfo);
     void AddCurveElement(QMap<QString, QString> &PairLabelinfo);
     void CreateNewElement(ControlType  ctrltype, QPoint pos);

@@ -2,6 +2,7 @@
 #include "RocketDataDAO.h"
 #include <boost\lexical_cast.hpp>
 #include <stdlib.h>
+#include "../../ConfigInterface/quazip/include/JlCompress.h"
 
 namespace DataBase
 {
@@ -388,7 +389,259 @@ namespace DataBase
 			return false;
 		}
 	}
-	 
+	bool RocketDataDAO::initConfig(QString& msg)
+	{
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("CREATE TABLE  if not EXISTS`config_info` (\
+			`id` int NOT NULL,\
+			`updatetime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,\
+			`content` longblob,\
+			PRIMARY KEY(`id`)\
+			) ENGINE = InnoDB DEFAULT CHARSET = utf8; ");
+
+		bool bret = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "创建配置表失败";
+			return false;
+		}
+		return true;
+	}
+
+	bool RocketDataDAO::ReadConfigTime(QString& msg, QString& curtime)
+	{
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select updatetime,content from config_info where id =1;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				sql_row = mysql_fetch_row(result);
+				if (sql_row)
+				{
+					curtime = sql_row[0];
+					string content;
+					if (sql_row[1])
+					{
+						mysql_free_result(result);//释放结果资源  
+						return true;
+					}
+					else
+					{
+						msg = "数据库无最新数据";
+						mysql_free_result(result);//释放结果资源  
+						return false;
+					}
+				}
+				sql.clear();
+				sql.append("INSERT INTO config_info VALUES(1, SYSDATE(), NULL)");
+				bool bret = exec_sql(sql);
+				if (!bret)
+				{
+					msg = "插入初始数据失败";
+					return false;
+				}
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else {
+			LOG(INFO) << "获取数据失败";
+
+		}
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return false;
+	}
+	bool RocketDataDAO::removeFolderContent(const QString& folderDir)
+	{
+		QDir dir(folderDir);
+		QFileInfoList fileList;
+		QFileInfo curFile;
+		if (!dir.exists()) { return false; }//文件不存，则返回false
+		fileList = dir.entryInfoList(QDir::Dirs | QDir::Files
+			| QDir::Readable | QDir::Writable
+			| QDir::Hidden | QDir::NoDotAndDotDot
+			, QDir::Name);
+		while (fileList.size() > 0)
+		{
+			int infoNum = fileList.size();
+			for (int i = infoNum - 1; i >= 0; i--)
+			{
+				curFile = fileList[i];
+				if (curFile.isFile())//如果是文件，删除文件
+				{
+					QFile fileTemp(curFile.filePath());
+					fileTemp.remove();
+					fileList.removeAt(i);
+				}
+				if (curFile.isDir())//如果是文件夹
+				{
+					QDir dirTemp(curFile.filePath());
+					QFileInfoList fileList1 = dirTemp.entryInfoList(QDir::Dirs | QDir::Files
+						| QDir::Readable | QDir::Writable
+						| QDir::Hidden | QDir::NoDotAndDotDot
+						, QDir::Name);
+					if (fileList1.size() == 0)//下层没有文件或文件夹
+					{
+						dirTemp.rmdir(".");
+						fileList.removeAt(i);
+					}
+					else//下层有文件夹或文件
+					{
+						for (int j = 0; j < fileList1.size(); j++)
+						{
+							if (!(fileList.contains(fileList1[j])))
+								fileList.append(fileList1[j]);
+						}
+					}
+				}
+			}
+		}
+		dir.removeRecursively();
+		return true;
+	}
+	bool RocketDataDAO::ReadConfigFromDb(QString& msg, QString curtime)
+	{
+		bool  needupdate = false;
+		//{
+		QString filepath = QApplication::applicationDirPath();
+		filepath += ("/config/time");
+		QFile file(filepath);
+		bool bret = false;
+		bret = file.open(QIODevice::ReadWrite);
+		if (!bret)
+		{
+			return false;
+		}
+		QByteArray filecontent = file.readAll();
+		if (filecontent.isNull())
+			needupdate = true;
+		else
+		{
+			QDateTime dbtime = QDateTime::fromString(curtime, "yyyy-MM-dd hh:mm:ss");
+			QDateTime curtime = QDateTime::fromString(filecontent, "yyyy-MM-dd hh:mm:ss");
+			uint stime = dbtime.toTime_t();
+			uint ctime = curtime.toTime_t();
+			needupdate = (stime > ctime);
+		}
+		if (!needupdate)
+			return false;
+		//}
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		QString exepath = QApplication::applicationDirPath();
+		filepath = exepath + "/newrocket.zip";
+		QFile::remove(filepath);
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select content from config_info where id =1 into dumpfile\"");
+		sql.append(filepath.toStdString());
+		sql.append("\"");
+		bret = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "加载数据库组态配置失败";
+			return false;
+		}
+		QString compressdir = exepath + "/rocket";
+		bret = removeFolderContent(compressdir);
+		JlCompress::extractDir(filepath, compressdir);
+		file.write(curtime.toLatin1());
+		file.close();
+		return true;
+	}
+	bool RocketDataDAO::SaveConfigToDb(QString& msg)
+	{
+		QString exepath = QApplication::applicationDirPath();
+		QString rocketzip = exepath + "/rocket.zip";
+		QString stylezip = exepath + "/style.zip";
+
+		QFile  file(rocketzip);
+		if (!file.exists())
+		{
+			msg = "rocketzip file not exit";
+			return false;
+		}
+		QFile  file2(stylezip);
+
+		if (!file2.exists())
+		{
+			msg = "stylezip file not exit";
+			return false;
+		}
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		//string sql;
+		//sql.append("UPDATE config_info set updatetime=SYSDATE(),content=LOAD_FILE(\"");
+		//sql.append(filepath.toStdString());
+		//sql.append("\") where id = 1;");
+		QString sql = QString("UPDATE config_info set updatetime = SYSDATE(), scene = LOAD_FILE("%1"),style = LOAD_FILE("%2") where id =1;").arg(rocketzip).arg(stylezip);
+		//	sql.append("INSERT INTO config_info VALUES(1, SYSDATE(), NULL)");
+		bool bret = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "数据保存失败";
+			return false;
+		}
+
+		return true;
+	}
+
+	bool RocketDataDAO::Compress(QString& msg)
+	{
+		QString exepath = QApplication::applicationDirPath();
+		QString filepath = exepath + "/rocket.zip";
+		QString compressdir = exepath + "/rocket";
+		QFile  file(filepath);
+		if (file.exists())
+		{
+
+		}
+		bool bret = JlCompress::compressDir(filepath, compressdir);
+		if (!bret)
+		{
+			msg = "comppress failed";
+			return false;
+		}
+		return true;
+	}
 }
 
 

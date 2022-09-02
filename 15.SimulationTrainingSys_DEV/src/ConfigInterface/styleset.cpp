@@ -12,6 +12,7 @@
 #include "stylelabel.h"
 #include "stylecurve.h"
 #include "stylepairlabel.h"
+#include "stylealarm.h"
 #include "configglobal.h"
 
 ConfigNameSpaceStart
@@ -30,17 +31,21 @@ void StyleSet::initUi()
     grouoSetEntry = new QWidget();
     curveSetEntry = new QWidget();
     pairLabelSetEntry = new QWidget();
+    alarmSetEntry = new QWidget();
     stackwidget->addWidget(labelSetEntry);
     stackwidget->addWidget(buttonSetEntry);
     stackwidget->addWidget(grouoSetEntry);
     stackwidget->addWidget(curveSetEntry);
     stackwidget->addWidget(pairLabelSetEntry);
+    stackwidget->addWidget(alarmSetEntry);
 
     initlabelSetEntry();
     initbuttonSetEntry();
     initgroupSetEntry();
     initcurveSetEntry();
     initPairLabelSetEntry();
+    iniAlarmSetEntry();
+
     setLayout(hlayout);
     initwidget = new QWidget;
     stackwidget->addWidget(initwidget);
@@ -109,6 +114,26 @@ void StyleSet::initcurveSetEntry()
     curveSetEntry->setLayout(vlayout);
 }
 
+void StyleSet::iniAlarmSetEntry()
+{
+    QVBoxLayout* vlayout = new QVBoxLayout;
+ 
+    addTextEdit("设置类型名称", vlayout, StyleAlarm::Alarm_Style_Name, cConfigAlarm);
+    addBoolSel("是否使用背景图片", vlayout, StyleAlarm::Alarm_Diaplay_Type, cConfigAlarm);
+    addBoolSel("是否竖向排布", vlayout, StyleAlarm::Alarm_Text_Position, cConfigAlarm);
+    addIconSel("设置初始背景图片", vlayout, StyleAlarm::Alarm_Init_Img, cConfigAlarm);
+    addIconSel("设置正常背景图片", vlayout, StyleAlarm::Alarm_Normal_Img, cConfigAlarm);
+    addIconSel("设置错误背景图片", vlayout, StyleAlarm::Alarm_Err_Img, cConfigAlarm);
+    addTextColorSel("设置初始背景颜色", vlayout, StyleAlarm::Alarm_Init_Color, cConfigAlarm);
+    addTextColorSel("设置正常背景颜色", vlayout, StyleAlarm::Alarm_Normal_Color, cConfigAlarm);
+    addTextColorSel("设置错误背景颜色", vlayout, StyleAlarm::Alarm_Err_Color, cConfigAlarm);
+    addFontSel("设置文字字体", vlayout, StyleAlarm::ALarm_Font_Style, cConfigAlarm);
+    addTextColorSel("请选择字体颜色", vlayout, StyleAlarm::Alarm_Text_Color, cConfigAlarm);
+    vlayout->addStretch();
+    alarmSetEntry->setLayout(vlayout);
+
+}
+
 void StyleSet::initPairLabelSetEntry()
 {
     QVBoxLayout* vlayout = new QVBoxLayout;
@@ -157,6 +182,11 @@ void StyleSet::update_property( ControlType ctrltyle, int enumvalue,QString resu
     {
         m_pairlabelEx->m_infomap[enumvalue] = QPair<bool,QString>(true,result);
         m_pairlabelEx->updateStyle();
+    }
+    else if (ctrltyle == cConfigAlarm)
+    {
+        m_alarmEx->m_infomap[enumvalue] = QPair<bool, QString>(true, result);
+        m_alarmEx->updateStyle();
     }
 
 }
@@ -283,7 +313,7 @@ void StyleSet::addBoolSel(QString title, QVBoxLayout *vlayout, int enumvalue, Co
     textbrowser->setMaximumHeight(50);
     connect(lpath,&QPushButton::clicked,[=](){
        BoolDialog  dlg;
-       dlg.setWindowTitle("请选择是否显示");
+       dlg.setWindowTitle("请选择是或否");
        int result =  dlg.exec();
        QString resultstr = (result == QDialog::Accepted?"是":"否");
        textbrowser->setText(resultstr);
@@ -369,6 +399,21 @@ void StyleSet::SetElement(StylePairLabel *pairlabelEx)
         }
     }
     stackwidget->setCurrentWidget(pairLabelSetEntry);
+}
+void StyleSet::SetElement(StyleAlarm* alarmEx)
+{
+    m_alarmEx = alarmEx;
+    for (int enumi = 1; enumi < 12; enumi++)
+    {
+        if (alarmEx->m_infomap.contains(enumi))
+            m_tbmap[cConfigAlarm][enumi]->setText(m_alarmEx->m_infomap[enumi].second);
+        else
+        {
+            m_tbmap[cConfigAlarm][enumi]->clear();
+        }
+    }
+    stackwidget->setCurrentWidget(alarmSetEntry);
+
 }
 
 ConfigNameSpaceEnd

@@ -19,6 +19,8 @@ using namespace std;
 #include "../Protocol/RocketDataFrame.h"
 #include "glog/logging.h"
 #include "../Public/tinyxml2.h" 
+
+#include "../Model/TaskManageInfo.h"
 /**
 * @brief 应用程序的全局缓冲区 \n
 * 单例类。保存配置文件中的所有数据信息
@@ -83,6 +85,13 @@ public:
 	bool CheckStatus(bool isOpen);
 	void SetStatus(int status);
 	QString GetStatus();
+#pragma endregion
+
+#pragma region 岗位配置模块使用
+	map<int, TaskManageInfo*> m_TaskManageInfo;//任务岗位配置表格和id对应
+	QString m_softName;
+	int m_softID;
+
 #pragma endregion
 
 

@@ -144,6 +144,135 @@ namespace DataBase
 		return true;
 	}
 	 
+
+	/// <summary>
+	/// //获取岗位信息
+	/// </summary>
+	/// <returns></returns>
+	bool RocketDataDAO::GetTaskInfo()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select * from rocket_task_info;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			m_app->m_TaskManageInfoFrames.clear();
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				while (sql_row = mysql_fetch_row(result))
+				{
+					TaskManageInfo* oneTask = new TaskManageInfo();
+					oneTask->m_id = atoi(sql_row[0]);
+					oneTask->m_rocketId = atoi(sql_row[1]);
+					oneTask->m_taskName = sql_row[2];
+					oneTask->m_roketSoftName = sql_row[3];
+					oneTask->m_createTime = sql_row[4];
+					oneTask->m_lastUpdateTime = sql_row[5];
+
+					if (m_app->m_CurrentRocketType->m_id == oneTask->m_rocketId)
+					{
+						m_app->m_TaskManageInfoFrames.insert(pair<int, TaskManageInfo*>(oneTask->m_id, oneTask));
+					}
+				}
+			}
+			else
+			{
+				LOG(INFO) << "获取数据失败";
+				return false;
+			}	
+		}
+		else
+		{
+			LOG(INFO) << "获取数据失败";
+			return false;
+		}
+			
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
+
+	/// <summary>
+	/// 添加岗位信息
+	/// </summary>
+	/// <returns></returns>
+	bool RocketDataDAO::InsertTaskInfo(TaskManageInfo* taskInfo)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		stringstream ss;
+		ss << "insert into rocket_task_info(rocket_id,task_name,roket_softname) values ('";
+		ss << boost::lexical_cast<string>(taskInfo->m_rocketId) + "','";
+		ss << boost::lexical_cast<string>(taskInfo->m_taskName) + "','";
+		ss << boost::lexical_cast<string>(taskInfo->m_roketSoftName) + "')";
+
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		string sql = ss.str();
+		int res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+		{
+			GetTaskInfo();//查询一次
+		}
+		else
+		{
+			LOG(INFO) << "rocket_task_info:" << "插入数据库失败!" << sql;
+			return false;
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// 删除岗位信息
+	/// </summary>
+	/// <param name="taskInfo"></param>
+	/// <returns></returns>
+	bool RocketDataDAO::DeleteTaskInfo(TaskManageInfo* taskInfo)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("delete from rocket_task_info where id = '");
+		sql.append(boost::lexical_cast<string>(taskInfo->m_id) + "'; ");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+		{
+			m_app->m_TaskManageInfoFrames.erase(taskInfo->m_id);//更新记录map
+			return true;
+		}
+		else
+		{
+			LOG(INFO) << "rocket_task_info" << "删除数据失败!" << sql;
+			return false;
+		}
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	
+	}
+
 	///// <summary>
 	///// 获取所有帧
 	///// </summary>

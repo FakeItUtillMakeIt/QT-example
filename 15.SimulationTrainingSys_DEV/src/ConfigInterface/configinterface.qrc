@@ -28,6 +28,13 @@
         <file>rc/group.png</file>
         <file>rc/label.png</file>
         <file>rc/return.png</file>
-		<file>rc/search.png</file>
-	</qresource>
+        <file>rc/search.png</file>
+        <file>rc/lock-database.png</file>
+        <file>rc/remove-database.png</file>
+        <file>rc/save-database.png</file>
+        <file>rc/alarmError.png</file>
+        <file>rc/alarmInit.png</file>
+        <file>rc/alarmNormal.png</file>
+        <file>rc/lampiconfailed.png</file>
+    </qresource>
 </RCC>

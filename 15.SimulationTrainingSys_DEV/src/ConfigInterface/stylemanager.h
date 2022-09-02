@@ -21,6 +21,7 @@ class StyleButton;
 class StyleCurve;
 class StylePairLabel;
 class ConfigCurve;
+class StyleAlarm;
 class StyleManager:public QWidget
 {
     Q_OBJECT
@@ -40,6 +41,7 @@ private:
     StyleList* groupstylelist;
     StyleList* curvestylelist;
     StyleList* pairLabelstylelist;
+    StyleList* alarmstylelist;
 
     QStackedWidget* stylestack;
     void initStyleList();
@@ -48,6 +50,7 @@ private:
     void addGroup();
     void addCurve();
     void addPairLabel();
+    void addAlarm();
 
 private:
     QList<StyleGroup*>  grouplist;
@@ -55,6 +58,7 @@ private:
     QList<StyleButton*>  buttonlist;
     QList<StyleCurve*>  curvelist;
     QList<StylePairLabel*>  pairlabellist;
+    QList<StyleAlarm*>  alarmlist;
 
 
     //界面实时更新缓冲区
@@ -63,6 +67,7 @@ private:
     QList< QMap<int,QPair<bool,QString>>* > buttonStyleRecord;
     QList< QMap<int,QPair<bool,QString>>* > curveStyleRecord;
     QList< QMap<int,QPair<bool,QString>>* > pairLabelStyleRecord;
+    QList< QMap<int, QPair<bool, QString>>* > alarmStyleRecord;
 
     void restore_from_xml();
     void SetBtnStyle(QPushButton *btn, QString picture, QString tooltext);
@@ -72,6 +77,7 @@ public:
    QList<StylePairLabel *> &getPairLabelStyle();
    QList<StyleButton *> &getButtonStyle();
    QList<StyleCurve *> &getCurveStyle();
+   QList<StyleAlarm*>& getAlarmStyle();
 
    QString getStyleNameById(ControlType ctroltype, QString styleid);
    bool SelectCurveStyle(QString &styleid, QString &stylename, ConfigCurve *&object);

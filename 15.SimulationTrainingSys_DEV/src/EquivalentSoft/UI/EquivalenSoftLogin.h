@@ -15,12 +15,18 @@ public:
 public slots:
 	void LoginSlot();
 	void CloseSlot();
+	void TypeComboBoxChange(QString rName);
+
+
 signals:
 	void LoginSignal();
+
+
 private:
 	Ui::EquivalenSoftLoginClass ui;
 	EquivalentSoft* equivalentSoft;
 	void Init();
 	AppCache* m_app;
 	DataBase::DeviceDAO* m_pDeviceDAO;
+	
 };

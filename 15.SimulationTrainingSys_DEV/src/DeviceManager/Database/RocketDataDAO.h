@@ -15,6 +15,8 @@ using namespace std;
 #include "../../Protocol/RocketDataParam.h"
 #include "mysql.h" 
 
+#include "../../Model/TaskManageInfo.h"
+
 namespace DataBase
 {
 	class RocketDataDAO
@@ -28,6 +30,10 @@ namespace DataBase
 		bool test();
 		bool getRocketData(); 
 		bool getRocketParam();
+
+		bool GetTaskInfo();//获取岗位信息
+		bool InsertTaskInfo(TaskManageInfo* taskInfo);//添加岗位信息
+		bool DeleteTaskInfo(TaskManageInfo* taskInfo);//删除岗位信息
 	private:
 		OutputPath* m_path;
 		MYSQL my_connection;

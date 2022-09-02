@@ -2,6 +2,7 @@
 #include "RocketDataDAO.h"
 #include <boost\lexical_cast.hpp>
 #include <stdlib.h>
+#include "../../../tools/quazip/include/JlCompress.h"
 
 namespace DataBase
 {
@@ -139,6 +140,138 @@ namespace DataBase
 		}
 		else
 			LOG(INFO) << "获取数据失败";
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+	}
+	
+	bool RocketDataDAO::SaveConfigToDb(QString& msg)
+	{
+		QString exepath = QApplication::applicationDirPath();
+		QString rocketzip = exepath + "/rocket.zip";
+		QFile  file(rocketzip);
+		if (!file.exists())
+		{
+			msg = "zip file not exit";
+			return false;
+		}
+		QString stylezip = exepath + "/style.zip";
+		QFile  file2(stylezip);
+		if (!file2.exists())
+		{
+			msg = "zip file not exit";
+			return false;
+		}
+
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		string sql;
+		sql.append("UPDATE config_info set updatetime=SYSDATE(),scene=LOAD_FILE(\"");
+		sql.append(rocketzip.toStdString());
+		sql.append("\")");
+		sql.append(",style=LOAD_FILE(\"");
+		sql.append(stylezip.toStdString());
+		sql.append("\") where id = 1;");
+	//	sql.append("INSERT INTO config_info VALUES(1, SYSDATE(), NULL)");
+		bool bret = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "数据保存失败";
+			return false;
+		}
+
+		return true;
+	}
+
+	bool RocketDataDAO::Compress(QString& msg)
+	{
+		QString exepath = QApplication::applicationDirPath();
+		QString rocketzip = exepath + "/rocket.zip";
+		QString rocketdir = exepath + "/rocket";
+		QFile  file(rocketzip);
+		if (file.exists())
+		{
+			QFile::remove(rocketzip);
+		}
+		bool bret = JlCompress::compressDir(rocketzip, rocketdir);
+		if (!bret)
+		{
+			msg = "comppress failed";
+			return false;
+		}
+		QString stylezip = exepath + "/style.zip";
+		QString styledir = exepath + "/style";
+		QFile  filestyle(stylezip);
+		if (filestyle.exists())
+		{
+			QFile::remove(stylezip);
+		}
+		bret = JlCompress::compressDir(stylezip, styledir);
+		if (!bret)
+		{
+			msg = "comppress failed";
+			return false;
+		}
+		return true;
+	}
+
+
+
+	/// <summary>
+	/// //获取岗位信息
+	/// </summary>
+	/// <returns></returns>
+	bool RocketDataDAO::GetTaskInfo()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select * from rocket_task_info;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			m_app->m_TaskManageInfo.clear();
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				while (sql_row = mysql_fetch_row(result))
+				{
+					TaskManageInfo* oneTask = new TaskManageInfo();
+					oneTask->m_id = atoi(sql_row[0]);
+					oneTask->m_rocketId = atoi(sql_row[1]);
+					oneTask->m_taskName = sql_row[2];
+					oneTask->m_roketSoftName = sql_row[3];
+					oneTask->m_createTime = sql_row[4];
+					oneTask->m_lastUpdateTime = sql_row[5];
+
+					m_app->m_TaskManageInfo.insert(pair<int, TaskManageInfo*>(oneTask->m_id, oneTask));
+				}
+			}
+			else
+			{
+				LOG(INFO) << "获取数据失败";
+				return false;
+			}
+		}
+		else
+		{
+			LOG(INFO) << "获取数据失败";
+			return false;
+		}
+
 		if (result)
 			mysql_free_result(result);//释放结果资源  
 		return true;
@@ -388,7 +521,277 @@ namespace DataBase
 			return false;
 		}
 	}
-	 
+	bool RocketDataDAO::initConfig(QString& msg)
+   {
+   		if (!connected())
+   		{
+   			LOG(INFO) << "创建数据库连接";
+   			if (!connect())
+   				return false;
+   		}
+
+   		MYSQL_RES* result = nullptr;
+   		MYSQL_ROW sql_row;
+   		int res;
+   		string sql;
+   		sql.append("CREATE TABLE  if not EXISTS`config_info` (\
+			`id` int NOT NULL,\
+			`updatetime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,\
+			`scene` longblob,\
+			`style` longblob,\
+			PRIMARY KEY(`id`)\
+			) ENGINE = InnoDB DEFAULT CHARSET = utf8; ");
+ 
+		bool bret  = exec_sql(sql);
+		if (!bret)
+		{
+			msg = "创建配置表失败";
+			return false;
+		}
+		return true;
+   }
+
+	bool RocketDataDAO::ReadConfigTime(QString& msg,QString& curtime)
+	{
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("select updatetime,scene from config_info where id =1;");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				sql_row = mysql_fetch_row(result);
+				if (sql_row)
+				{
+					curtime = sql_row[0];
+					string content;
+					if (sql_row[1])
+					{
+						mysql_free_result(result);//释放结果资源  
+						return true;
+					}
+					else
+					{
+						msg = "数据库无最新数据";
+						mysql_free_result(result);//释放结果资源  
+						return false;
+					}
+				}
+				sql.clear();
+				sql.append("INSERT INTO config_info VALUES(1, SYSDATE(), NULL,NULL)");
+				bool bret = exec_sql(sql);
+				if (!bret)
+				{
+					msg = "插入初始数据失败";
+					return false;
+				}
+			}
+			else
+				LOG(INFO) << "获取数据失败";
+		}
+		else {
+			LOG(INFO) << "获取数据失败";
+		
+		}
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return false;
+	}
+	bool RocketDataDAO::removeFolderContent(const QString& folderDir)
+	{
+		QDir dir(folderDir);
+		QFileInfoList fileList;
+		QFileInfo curFile;
+		if (!dir.exists()) { return false; }//文件不存，则返回false
+		fileList = dir.entryInfoList(QDir::Dirs | QDir::Files
+			| QDir::Readable | QDir::Writable
+			| QDir::Hidden | QDir::NoDotAndDotDot
+			, QDir::Name);
+		while (fileList.size() > 0)
+		{
+			int infoNum = fileList.size();
+			for (int i = infoNum - 1; i >= 0; i--)
+			{
+				curFile = fileList[i];
+				if (curFile.isFile())//如果是文件，删除文件
+				{
+					QFile fileTemp(curFile.filePath());
+					fileTemp.remove();
+					fileList.removeAt(i);
+				}
+				if (curFile.isDir())//如果是文件夹
+				{
+					QDir dirTemp(curFile.filePath());
+					QFileInfoList fileList1 = dirTemp.entryInfoList(QDir::Dirs | QDir::Files
+						| QDir::Readable | QDir::Writable
+						| QDir::Hidden | QDir::NoDotAndDotDot
+						, QDir::Name);
+					if (fileList1.size() == 0)//下层没有文件或文件夹
+					{
+						dirTemp.rmdir(".");
+						fileList.removeAt(i);
+					}
+					else//下层有文件夹或文件
+					{
+						for (int j = 0; j < fileList1.size(); j++)
+						{
+							if (!(fileList.contains(fileList1[j])))
+								fileList.append(fileList1[j]);
+						}
+					}
+				}
+			}
+		}
+		dir.removeRecursively();
+		return true;
+	}
+	bool RocketDataDAO::ReadConfigFromDb(QString& msg, QString curtime)
+	{
+		bool  needupdate = false;
+		//{
+			QString filepath = QApplication::applicationDirPath();
+			filepath += ("/config/time");
+			QFile file(filepath);
+			bool bret = false;
+			bret = file.open(QIODevice::ReadWrite);
+			if (!bret)
+			{
+				return false;
+			}
+			QByteArray filecontent = file.readAll();
+			if (filecontent.isNull())
+				needupdate = true;
+			else
+			{
+				QDateTime dbtime = QDateTime::fromString(curtime, "yyyy-MM-dd hh:mm:ss");
+				QDateTime curtime = QDateTime::fromString(filecontent, "yyyy-MM-dd hh:mm:ss");
+				uint stime = dbtime.toTime_t();
+				uint ctime = curtime.toTime_t();
+				needupdate = (stime > ctime);
+			}
+			if (!needupdate)
+				return false;
+		//}
+
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		{
+			QString exepath = QApplication::applicationDirPath();
+			filepath = exepath + "/newrocket.zip";
+			QFile::remove(filepath);
+			MYSQL_RES* result = nullptr;
+			MYSQL_ROW sql_row;
+			int res;
+			string sql;
+			sql.append("select scene from config_info where id =1 into dumpfile\"");
+			sql.append(filepath.toStdString());
+			sql.append("\"");
+			bret = exec_sql(sql);
+			if (!bret)
+			{
+				msg = "加载数据库组态配置失败";
+				return false;
+			}
+			QString compressdir = exepath + "/rocket";
+			QString backdir = exepath + "/backrocket";
+			bret = removeFolderContent(backdir);
+			rename(compressdir.toStdString().data(), backdir.toStdString().data());
+			JlCompress::extractDir(filepath, compressdir);
+			
+		}
+		{
+			QString exepath = QApplication::applicationDirPath();
+			filepath = exepath + "/newstyle.zip";
+			QFile::remove(filepath);
+			MYSQL_RES* result = nullptr;
+			MYSQL_ROW sql_row;
+			int res;
+			string sql;
+			sql.append("select style from config_info where id =1 into dumpfile\"");
+			sql.append(filepath.toStdString());
+			sql.append("\"");
+			bret = exec_sql(sql);
+			if (!bret)
+			{
+				msg = "加载数据库组态配置失败";
+				return false;
+			}
+			QString compressdir = exepath + "/style";
+			QString backdir = exepath + "/backstyle";
+			bret = removeFolderContent(backdir);
+			rename(compressdir.toStdString().data(), backdir.toStdString().data());
+			JlCompress::extractDir(filepath, compressdir);
+
+		}
+		file.close();
+		bret = file.open(QIODevice::WriteOnly);
+		if (!bret)
+		{
+			return false;
+		}
+		file.write(curtime.toLatin1());
+		file.close();
+		return true;
+	}
+	bool RocketDataDAO::getMainSchedule(int rocketid,QVector<int>&  schedue)
+	{
+		bool bret = true;
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		QString  sql = QString("select s.command_id from main_flow_info as m LEFT JOIN sub_flow_info as s on m.id=s.main_id where m.rocket_id=%1 ORDER BY s.main_id ").arg(rocketid);
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.toLocal8Bit().data());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				while (sql_row = mysql_fetch_row(result))
+				{
+					int id = atoi(sql_row[0]);
+					schedue.push_back(id);
+				}
+			}
+			else
+			{
+				LOG(INFO) << "获取数据失败";
+				bret = false;
+			}
+		}
+		else
+		{
+			LOG(INFO) << "获取数据失败";
+			bret = false;
+		}
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return bret;
+	}
+
 }
 
 

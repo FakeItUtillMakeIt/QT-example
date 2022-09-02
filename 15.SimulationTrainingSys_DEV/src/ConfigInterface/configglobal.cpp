@@ -7,6 +7,7 @@
 #include "configcurve.h"
 #include "configbutton.h"
 #include "configpairlabel.h"
+#include "configalarm.h"
 #include <qmessagebox.h>
 ConfigNameSpaceStart
 
@@ -21,16 +22,21 @@ map<int, Command*>*  ConfigGlobal::m_allCommadPrt;//测发指令
 map<int, DeviceParam*>*  ConfigGlobal::m_allDeviceParamPtr = nullptr;
 map<int, Command*>* ConfigGlobal::m_allFaultCommnd = nullptr;//当前故障指令
 
-//
-QMap<int, QList<ConfigPairLabel*>> ConfigGlobal::labelmap;//测发指令
-QMap<int, QList<ConfigCurve*>>  ConfigGlobal::curvemap;//测发指令
-QMap<int, ConfigButton*>  ConfigGlobal::buttonmap;//测发指令
+
+QMap<int, QList<ConfigPairLabel*>> ConfigGlobal::labelmap;
+QMap<int, QList<ConfigCurve*>>  ConfigGlobal::curvemap;
+QMap<int, QList<ConfigAlarm*>>  ConfigGlobal::alarmmap;
+QMap<int, ConfigButton*>  ConfigGlobal::buttonmap;
 
 QMap<ConfigCurve*, QList<QString>>  ConfigGlobal::reversecurvemap;//以curve 做key，记录其包含的所有参数
 bool  ConfigGlobal::dataupdated = false;
 
 QString ConfigGlobal::currentRocket;
 int ConfigGlobal::currentRocketID;
+QString ConfigGlobal::currentSoftWare = "大家的";
+int ConfigGlobal::currentSoftWareID = 2;
+bool ConfigGlobal::monitorRunning;
+QVector<int> ConfigGlobal::mainSchedule;
 
 void(*ConfigGlobal::cmdhandler)(int, ConfigNameSpace::ConfigButton*) = nullptr;
 
@@ -74,10 +80,10 @@ void   ConfigGlobal::updateControlValue(int validity,int key,double itime,double
         return;
     }
 
-    if (key == 0x13)
-    {
-        qDebug() << "value:" << value;
-    }
+    //if (key == 0x13)
+    //{
+    //    qDebug() << "value:" << value;
+    //}
     if (labelmap.contains(key))
     {
         for (auto label : labelmap[key])
@@ -90,6 +96,25 @@ void   ConfigGlobal::updateControlValue(int validity,int key,double itime,double
         for (auto curve : curvemap[key])
         {
             curve->updateValue(key,itime,value);
+        }
+    }
+}
+void  ConfigGlobal::updateControlText(int key,QString  text, int error)
+{
+   
+    if (labelmap.contains(key))
+    {
+        for (auto label : labelmap[key])
+        {
+            label->updateText(text, error);
+        }
+    }
+    if (alarmmap.contains(key))
+    {
+        for (auto alarm : alarmmap[key])
+        {
+            RunState runstate = (error == 3?StateFailed:StateSuccess);
+            alarm->setState(runstate);       
         }
     }
 }
@@ -119,7 +144,21 @@ void   ConfigGlobal::updateButtonMap(int key, ConfigButton* btn)
     }
     buttonmap[key] = btn;   
 }
-
+void   ConfigGlobal::updateAlarmMap(int key, ConfigAlarm* alarm)
+{
+    for (auto key : alarmmap.keys())
+    {
+        for (int i = 0; i < alarmmap[key].size(); i++)
+        {
+            if (alarmmap[key][i] == alarm)
+            {
+                alarmmap[key].removeAt(i);
+                break;
+            }
+        }
+    }
+    alarmmap[key].push_back(alarm);
+}
 
 void   ConfigGlobal::updateLabelMap(int key, ConfigPairLabel* label)
 {   

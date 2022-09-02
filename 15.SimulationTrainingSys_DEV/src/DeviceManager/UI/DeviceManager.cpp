@@ -6,7 +6,9 @@ DeviceManager::DeviceManager(QWidget* parent)
 	: QMainWindow(parent)
 	, m_pCenterOperate(nullptr)
 	, m_CenterOperateF(nullptr)
+	, m_taskConfiguration(nullptr)
 	, m_hlayoutF(nullptr)
+	, m_hlayouttask(nullptr)
 	, m_pDeviceDAO(nullptr)
 	, m_pCommandDAO(nullptr)
 	, m_pRocketDataDAO(nullptr)
@@ -60,6 +62,7 @@ void DeviceManager::Init()
 		emit rocketTypeChanged();
 
 		DataFaultLoad();//故障重新加载
+		TaskManagement();//任务岗位配置
 		});
 
 	//初始化调试信息显示区
@@ -158,9 +161,10 @@ void DeviceManager::Init()
 
 	qDebug() << "加载基础数据用时:" << timer1.elapsed();
 	
-	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);
+	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);//设备管理
 	DataFaultLoad();//故障加载
-	new twoDdisplay(ui.tab_Display);
+	new twoDdisplay(ui.tab_Display);//二维展示
+	TaskManagement();//任务岗位配置
 
 	QElapsedTimer timer2;
 	displayStatuInfo("加载基础数据完毕！");
@@ -278,7 +282,35 @@ void DeviceManager::DataFaultLoad()
 	ui.tab_faultInjection->setLayout(m_hlayoutF);
 
 	displayStatuInfo("加载故障数据完毕！");
-	displayStatuInfo("系统启动完毕！");
+}
+
+/// <summary>
+/// 加载任务岗位配置m_pRocketDataDAO
+/// </summary>
+void DeviceManager::TaskManagement()
+{
+	//m_app->m_rockedType = m_app->m_CurrentRocketType->m_id;//选择火箭类型
+
+	if (!m_pRocketDataDAO->GetTaskInfo())
+	{
+		QString info = "获取岗位信息失败";
+		displayStatuInfo(info, true);
+		return;
+	}
+
+	if (m_hlayouttask != nullptr)
+	{
+		delete m_taskConfiguration;
+		m_taskConfiguration = nullptr;
+
+		delete m_hlayouttask;
+		m_hlayouttask = nullptr;
+	}
+	m_taskConfiguration = new TaskConfiguration(this);
+	m_hlayouttask = new QHBoxLayout;
+	m_hlayouttask->setContentsMargins(0, 0, 0, 0);
+	m_hlayouttask->addWidget(m_taskConfiguration);
+	ui.tab_taskManege->setLayout(m_hlayouttask);
 }
 
 void DeviceManager::timeUpdate() {

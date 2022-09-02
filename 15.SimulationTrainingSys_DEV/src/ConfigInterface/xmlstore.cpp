@@ -11,6 +11,8 @@
 using namespace tinyxml2;
 
 ConfigNameSpaceStart
+
+QMap<int, QString> XmlStore::rocketmap;
 XmlStore::XmlStore()
 {
 
@@ -55,11 +57,53 @@ bool XmlStore::InitStylePath()
     return true;
 }
 
+bool XmlStore::UpdateRocketName(int rocketid, QString  rocketname)
+{
+    if (rocketmap.contains(rocketid)&& (rocketmap[rocketid] != rocketname))
+    {
+        QString exepath = QApplication::applicationDirPath();
+        QString rocketpath  = exepath +  "/rocket/" + rocketmap[rocketid];
+        QString newrocketpath = exepath + "/rocket/" +  rocketname;
+        QDir  dir(rocketpath);
+        if (dir.exists())
+        {
+            dir.rename(rocketpath, newrocketpath);
+        }
+;    }
+    return true;
+}
+
+bool XmlStore::ReadRocketFile(QString  rocketfile)
+{
+    tinyxml2::XMLDocument doc;//定义doc对象
+    int error = doc.LoadFile(rocketfile.toLocal8Bit().data());
+    if (error)
+    {
+        qDebug() << "打开配置文件‘" << rocketfile << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* rocketsElement = doc.FirstChildElement("rockets");
+    if (rocketsElement == nullptr)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* rocketElement = rocketsElement->FirstChildElement("rocket");
+    while (rocketElement)
+    {
+        int rocketid = rocketElement->IntAttribute("id");
+        QString rocketname = QString::fromLocal8Bit(rocketElement->Attribute("name"));
+        rocketmap[rocketid] = rocketname;
+        rocketElement = rocketElement->NextSiblingElement("rocket");
+    }
+    return true;
+}
+
 bool XmlStore::InitRocketFile( bool adddefault)
 {
      QString filename;
+     bool  fileexit = false;
+
     {//场景文件初始化
-        bool  fileexit = false;
         QString exepath = QApplication::applicationDirPath();
         exepath += "/rocket/";
         QDir  dir;
@@ -74,6 +118,8 @@ bool XmlStore::InitRocketFile( bool adddefault)
         {
             qDebug() << "文件存在";
             fileexit = true;
+            //读取 rocket.xml，并建立 rocket的 ID name map，在后面发现有变化时，将对应rocket目录名称修改
+            ReadRocketFile(filename);
         }
         else
         {
@@ -97,18 +143,120 @@ bool XmlStore::InitRocketFile( bool adddefault)
         XMLElement* rocketlement = doc.NewElement("rocket");
         rocketlement->SetAttribute("id", item.first);
         rocketlement->SetAttribute("name", item.second->m_name.c_str());
+        UpdateRocketName(item.second->m_id,QString::fromLocal8Bit(item.second->m_name.c_str()));
         rocketlement->SetAttribute("code", item.second->m_code.c_str());
         rocketlement->SetAttribute("path", ("/rocket/" + item.second->m_name + "/scenes.xml").c_str());
         groupeslement->InsertEndChild(rocketlement);
         //生成场景文件
-        InitSceneFile( QString::fromLocal8Bit(("/rocket/" + item.second->m_name + "/").c_str()), "scenes.xml", adddefault);
+      //  InitSceneFile( QString::fromLocal8Bit(("/rocket/" + item.second->m_name + "/").c_str()), "scenes.xml", adddefault);
+       // InitSoftWareSceneFile(QString::fromLocal8Bit(("/rocket/" + item.second->m_name + "/").c_str()), "scenes.xml");
     }
+    //为当前登录火箭及软件创建场景文件，并将软件添加入其中
+    InitSoftWareSceneFile(QString::fromLocal8Bit(("/rocket/" + AppCache::instance()->m_CurrentRocketType->m_name + "/").c_str()), "scenes.xml");
     //<5.保存至文件中
     result = doc.SaveFile(filename.toStdString().data());//会清除原来文件中的内容
     qDebug() << "result:" << result << " filename:" << filename;
     return true;
 }
 
+bool XmlStore::AppenSoftWareIfNotExist(QString filename)
+{
+    tinyxml2::XMLDocument doc;//定义doc对象
+    int error = doc.LoadFile(filename.toLocal8Bit().data());
+    if (error)
+    {
+        QToolTip::showText(QCursor::pos(), QString("打开配置文件 %1 时出错（%2）,请确认配置文件路径是否正确").arg(filename).arg(error));
+
+        qDebug() << "打开配置文件‘" << filename << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    bool  softwareExit =  false;
+    while (softwareElement)
+    {
+        QString  softName = QString::fromLocal8Bit(softwareElement->Attribute("name"));
+        int softId  = softwareElement->IntAttribute("id");
+        if (softId == ConfigGlobal::currentSoftWareID)
+        {
+            if (softName != ConfigGlobal::currentSoftWare)
+            {
+                softwareElement->SetAttribute("name", ConfigGlobal::currentSoftWare.toLocal8Bit().data());
+                int result = doc.SaveFile(filename.toLocal8Bit().data());
+                if (result == 0)
+                    QToolTip::showText(QCursor::pos(), QString("场景文件初始化成功"));
+                else
+                    QToolTip::showText(QCursor::pos(), QString("场景文件初始化时软件名称更新失败，不影响继续使用"));
+            }
+            softwareExit = true;
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+    }
+    if (!softwareExit)
+    {
+        tinyxml2::XMLElement* softwareElement = doc.NewElement("software");
+        softwareElement->SetAttribute("name", ConfigGlobal::currentSoftWare.toLocal8Bit().data());
+        softwareElement->SetAttribute("id", ConfigGlobal::currentSoftWareID);
+        doc.InsertEndChild(softwareElement);
+        tinyxml2::XMLElement* sceneElement = doc.NewElement("scenes");
+        softwareElement->InsertEndChild(sceneElement);
+        int result = doc.SaveFile(filename.toLocal8Bit().data());
+        if (result == 0)
+            QToolTip::showText(QCursor::pos(), QString("场景文件初始化成功"));
+        else
+            QToolTip::showText(QCursor::pos(), QString("场景文件初始化失败"));
+    }
+    return true;
+}
+
+bool XmlStore::InitSoftWareSceneFile(QString path, QString ifilename)
+{
+    QString filename;
+    bool  fileexit = false;
+    {//场景文件初始化
+        QString exepath = QApplication::applicationDirPath();
+        exepath += path;
+        QString dirneeded = QString("%1/%2").arg(exepath).arg(ConfigGlobal::currentSoftWareID);
+        QDir  dir;
+        if (!dir.exists(dirneeded))
+        {
+            dir.mkpath(dirneeded);
+        }
+        filename = exepath + ifilename;
+        QFile  file(filename);
+        if (file.exists())
+        {
+            qDebug() << "文件存在";
+            fileexit = true;
+        }
+        else
+        {
+            file.open(QIODevice::WriteOnly);
+            file.close();
+        }
+    }
+    if (fileexit)
+    {
+        //判断是否有当前软件，没有则添加
+        AppenSoftWareIfNotExist(filename);
+        return true;
+    }
+    tinyxml2::XMLDocument doc;//定义doc对象
+    const char* declaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    XMLError result = doc.Parse(declaration);
+    //添加当前软件
+    XMLElement* softwarelement = doc.NewElement("software");
+    softwarelement->SetAttribute("name",ConfigGlobal::currentSoftWare.toLocal8Bit().data());
+    softwarelement->SetAttribute("id", ConfigGlobal::currentSoftWareID);
+    doc.InsertEndChild(softwarelement);
+    //<2.添加节点
+    XMLElement* groupeslement = doc.NewElement("scenes");
+    softwarelement->InsertEndChild(groupeslement);
+    //<5.保存至文件中
+    result = doc.SaveFile(filename.toLocal8Bit().data());//会清除原来文件中的内容
+  //  qDebug() << "result:" <<result << " filename:" << filename;
+    return true;
+}
 bool XmlStore::InitSceneFile(QString path,QString ifilename,bool adddefault)
 {
     QString filename;
@@ -220,6 +368,11 @@ bool  XmlStore::ReadGroupElementInfo(tinyxml2::XMLDocument& doc,QString groupnam
             {
                 ReadElementInfo(pairLabelsElement,"PairLabel",elementinfo.PairLabelInfolist);
             }
+            tinyxml2::XMLElement* alarmsElement = groupElement->FirstChildElement("Alarms");
+            if (alarmsElement != nullptr)
+            {
+                ReadElementInfo(alarmsElement, "Alarm", elementinfo.alarmInfolist);
+            }            
         }
 
         groupinfolist.push_back(elementinfo);
@@ -248,7 +401,11 @@ bool  XmlStore::ReadSceneInfoFile(QString filename,SceneInfo& sceneinfolist)
     {
         ReadElementInfo(pairLabelsElement,"PairLabel",sceneinfolist.PairLabelInfolist);
     }
-
+    tinyxml2::XMLElement* alarmsElement = doc.FirstChildElement("Alarms");
+    if (alarmsElement != nullptr)
+    {
+        ReadElementInfo(alarmsElement, "Alarm", sceneinfolist.alarmInfolist);
+    }
     tinyxml2::XMLElement* curvesElement = doc.FirstChildElement("Curves");
     if(curvesElement != nullptr)
     {
@@ -272,23 +429,38 @@ bool  XmlStore::ReadSceneFile(std::string  filename,QList<SceneInfo>& sceneinfol
        //qDebug() << "打开配置文件‘" << filename.c_str() << "’时出错,请确认配置文件路径是否正确:" <<error;
         return false;
     }
-    tinyxml2::XMLElement* groupElement = doc.FirstChildElement("scenes");
-    if(groupElement == nullptr)
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    while (softwareElement)
     {
-        return false;
-    }
-    XMLElement* idNode =  groupElement->FirstChildElement("scene");
+        int softwareid = softwareElement->IntAttribute("id");
+        if (ConfigGlobal::currentSoftWareID == softwareid)
+        {
+            tinyxml2::XMLElement* groupElement = softwareElement->FirstChildElement("scenes");
+            if (groupElement == nullptr)
+            {
+                return false;
+            }
+            XMLElement* idNode = groupElement->FirstChildElement("scene");
+            while (idNode != nullptr)
+            {
+                SceneInfo  sceneinfo;
+                sceneinfo.scenename = QString::fromLocal8Bit(idNode->Attribute("name"));
+                sceneinfo.sceneid = QString::fromLocal8Bit(idNode->Attribute("id"));
+                sceneinfo.scenepath = QString::fromLocal8Bit(idNode->Attribute("path"));
+                if (idNode->FindAttribute("useschedule"))
+                    sceneinfo.useschedule = idNode->BoolAttribute("useschedule");
+                else
+                    sceneinfo.useschedule = false;
 
-    while(idNode != nullptr)
-    {
+                sceneinfolist.push_back(sceneinfo);
+                idNode = idNode->NextSiblingElement("scene");
+            }
 
-        SceneInfo  sceneinfo;
-        sceneinfo.scenename =  QString::fromLocal8Bit(idNode->Attribute("name"));
-        sceneinfo.sceneid = QString::fromLocal8Bit(idNode->Attribute("id"));
-        sceneinfo.scenepath = QString::fromLocal8Bit(idNode->Attribute("path"));
-        sceneinfolist.push_back(sceneinfo);
-        idNode = idNode->NextSiblingElement("scene");
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
     }
+
     for(auto&  sceneinfo:sceneinfolist)
     {
         ReadSceneInfoFile(sceneinfo.scenepath,sceneinfo);
@@ -306,6 +478,52 @@ QString XmlStore::handlePath(QString  aimStr)
 {   
     aimStr.replace("\/", "\\");
     return   aimStr;
+}
+
+bool XmlStore::AddSoftWareSceneToFile(std::string filename, ConfigScene* scene)
+{
+    tinyxml2::XMLDocument doc;//定义doc对象
+   // filename = handlePath(filename);
+    int error = doc.LoadFile(filename.c_str());
+    if (error)
+    {
+        QToolTip::showText(QCursor::pos(), QString("打开配置文件 %1 时出错（%2）,请确认配置文件路径是否正确").arg(filename.c_str()).arg(error));
+
+        qDebug() << "打开配置文件‘" << filename.c_str() << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    while(softwareElement)
+    {
+        int  softwareid = softwareElement->IntAttribute("id");
+        if (ConfigGlobal::currentSoftWareID == softwareid)
+        {
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+    }
+    if (!softwareElement)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* groupElement = softwareElement->FirstChildElement("scenes");
+    if (groupElement == nullptr)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* sceneElement = doc.NewElement("scene");
+    sceneElement->SetAttribute("name", scene->GetName().toLocal8Bit().data());
+    sceneElement->SetAttribute("id", scene->GetID().toLocal8Bit().data());
+    QString filepath =QString("/rocket/%1/%2/%3.xml").arg(ConfigNameSpace::ConfigGlobal::currentRocket).arg(QString::number(ConfigGlobal::currentSoftWareID)).arg(scene->GetName());
+    scene->SetPath(filepath);
+    sceneElement->SetAttribute("path", filepath.toLocal8Bit().data());
+    groupElement->InsertEndChild(sceneElement);
+    int result = doc.SaveFile(filename.c_str());
+    if (result == 0)
+        QToolTip::showText(QCursor::pos(), QString("场景添加完成,路径%1").arg(filepath));
+    else
+        QToolTip::showText(QCursor::pos(), QString("场景添加失败,错误%1 路径:%2").arg(result).arg(filepath));
+    return true;
 }
 bool XmlStore::AddSceneToFile(std::string filename, ConfigScene *scene)
 {
@@ -339,6 +557,139 @@ bool XmlStore::AddSceneToFile(std::string filename, ConfigScene *scene)
     return true;
 }
 
+bool XmlStore::UpdateSceneNameToFile(ConfigScene* scene)
+{
+    QString  exepath = QApplication::applicationDirPath();
+    QString rocketpath = exepath + "/rocket/" + ConfigGlobal::currentRocket;
+    QString scenesxmlpath = rocketpath + "/scenes.xml";
+    QString pripath;
+    tinyxml2::XMLDocument doc;//定义doc对象
+   // filename = handlePath(filename);
+    int error = doc.LoadFile(scenesxmlpath.toLocal8Bit().data());
+    if (error)
+    {
+        QToolTip::showText(QCursor::pos(), QString("打开配置文件 %1 时出错（%2）,请确认配置文件路径是否正确").arg(scenesxmlpath).arg(error));
+
+        qDebug() << "打开配置文件‘" << scenesxmlpath << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    bool  softwareExit = false;
+    while (softwareElement)
+    {
+        QString  softName = QString::fromLocal8Bit(softwareElement->Attribute("name"));
+        int softId = softwareElement->IntAttribute("id");
+        if (softId == ConfigGlobal::currentSoftWareID)
+        {           
+            softwareExit = true;
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+    }
+    if (!softwareExit)
+    {
+        return false;
+    }
+
+    tinyxml2::XMLElement* groupElement = softwareElement->FirstChildElement("scenes");
+    if (groupElement == nullptr)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* sceneElement = groupElement->FirstChildElement("scene");
+    while(sceneElement)
+    {
+        QString sceneid = sceneElement->Attribute("id");
+        if (sceneid == scene->GetID())
+        {
+            pripath = QString::fromLocal8Bit(sceneElement->Attribute("path"));
+            sceneElement->SetAttribute("name",scene->GetName().toLocal8Bit().data());
+            QString filepath = QString("/rocket/%1/%2/%3.xml").arg(ConfigNameSpace::ConfigGlobal::currentRocket).arg(QString::number(ConfigGlobal::currentSoftWareID)).arg(scene->GetName());
+         //   QString filepath = "/rocket/" + ConfigNameSpace::ConfigGlobal::currentRocket + "/" + scene->GetName() + ".xml";
+            scene->SetPath(filepath);
+            sceneElement->SetAttribute("path", filepath.toLocal8Bit().data());
+            break;
+        }
+        sceneElement = sceneElement->NextSiblingElement("scene");
+    }
+ 
+    int result = doc.SaveFile(scenesxmlpath.toLocal8Bit().data());
+    if (result == 0)
+    {
+        QToolTip::showText(QCursor::pos(), QString("场景更新完成,路径%1").arg(scenesxmlpath));
+        pripath = exepath + pripath;
+        QString newpath = exepath + scene->GetPath();
+        QFile  file(pripath);
+        if (file.exists())
+            file.rename(newpath);
+    }
+    else
+    {
+        QToolTip::showText(QCursor::pos(), QString("场景更新失败,错误%1 路径:%2").arg(result).arg(scenesxmlpath));
+    }
+    return true;
+}
+bool XmlStore::UpdateSceneSchedule(ConfigScene* scene)
+{
+    QString  exepath = QApplication::applicationDirPath();
+    QString rocketpath = exepath + "/rocket/" + ConfigGlobal::currentRocket;
+    QString scenesxmlpath = rocketpath + "/scenes.xml";
+    QString pripath;
+    tinyxml2::XMLDocument doc;//定义doc对象
+   // filename = handlePath(filename);
+    int error = doc.LoadFile(scenesxmlpath.toLocal8Bit().data());
+    if (error)
+    {
+        QToolTip::showText(QCursor::pos(), QString("打开配置文件 %1 时出错（%2）,请确认配置文件路径是否正确").arg(scenesxmlpath).arg(error));
+
+        qDebug() << "打开配置文件‘" << scenesxmlpath << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    bool  softwareExit = false;
+    while (softwareElement)
+    {
+        QString  softName = QString::fromLocal8Bit(softwareElement->Attribute("name"));
+        int softId = softwareElement->IntAttribute("id");
+        if (softId == ConfigGlobal::currentSoftWareID)
+        {
+            softwareExit = true;
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+    }
+    if (!softwareExit)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* groupElement = softwareElement->FirstChildElement("scenes");
+    if (groupElement == nullptr)
+    {
+        return false;
+    }
+    tinyxml2::XMLElement* sceneElement = groupElement->FirstChildElement("scene");
+    while (sceneElement)
+    {
+        QString sceneid = sceneElement->Attribute("id");
+        if (sceneid == scene->GetID())
+        {  
+            sceneElement->SetAttribute("useschedule", scene->userSchedule);
+            break;
+        }
+        sceneElement = sceneElement->NextSiblingElement("scene");
+    }
+
+    int result = doc.SaveFile(scenesxmlpath.toLocal8Bit().data());
+    if (result == 0)
+    {
+        QToolTip::showText(QCursor::pos(), QString("流程使能完成,"));      
+    }
+    else
+    {
+        QToolTip::showText(QCursor::pos(), QString("流程使能失败,错误%1").arg(result));
+    }
+    return true;
+}
 bool XmlStore::ReadElement(tinyxml2::XMLDocument &doc, QMap<QString, QList<QMap<QString,QString>>>& sceneinfo,QString group,QString elementname)
 {
     tinyxml2::XMLElement* ctrlgroupElement = doc.FirstChildElement(group.toLocal8Bit().data());
@@ -417,7 +768,26 @@ bool XmlStore::SaveSceneCurves(tinyxml2::XMLDocument& doc, XMLElement*& curvesEl
       }
     return true;
 }
-
+bool XmlStore::SaveSceneAlarms(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement*& alarmsElement, QList<ConfigAlarm*>& sceneAlarmList)
+{
+    for (auto alarm : sceneAlarmList)
+    {
+        QMap<QString, ConfigValueSet>& m_valueSetMap = alarm->getPropertyMap();
+        XMLElement* alarmElement = doc.NewElement("Alarm");
+        alarmElement->SetAttribute("uuid", alarm->GetID().toLocal8Bit().data());
+        for (auto setkey : m_valueSetMap.keys())
+        {
+            for (auto valuekey : m_valueSetMap[setkey].valuelist.keys())
+            {
+                QString  attributekey = setkey + ":" + QString("%1").arg(valuekey);
+                QString  strvalue = m_valueSetMap[setkey].valuelist[valuekey]->getStrValue();
+                alarmElement->SetAttribute(attributekey.toLocal8Bit().data(), strvalue.toLocal8Bit().data());
+            }
+        }
+        alarmsElement->InsertEndChild(alarmElement);
+    }
+    return true;
+}
 bool XmlStore::SaveScenePairLabels(tinyxml2::XMLDocument& doc,XMLElement*& pairLabelsElement,QList<ConfigPairLabel*>&  scenePairLabelList)
 {
      for(auto pairlabel: scenePairLabelList)
@@ -440,7 +810,6 @@ bool XmlStore::SaveScenePairLabels(tinyxml2::XMLDocument& doc,XMLElement*& pairL
 }
 bool XmlStore::SaveSceneGroups(tinyxml2::XMLDocument& doc,XMLElement*& groupsElement,QList<GroupElement*>&  sceneGroupList)
 {
-
      for(auto group: sceneGroupList)
      {
          //存储分组基本属性
@@ -458,14 +827,21 @@ bool XmlStore::SaveSceneGroups(tinyxml2::XMLDocument& doc,XMLElement*& groupsEle
          }
          XMLElement* ButtonsElement = doc.NewElement("Buttons");
          XMLElement* PairLabelsElement = doc.NewElement("PairLabels");
+         XMLElement* alarmsElement = doc.NewElement("Alarms");
+
          groupElement->InsertEndChild(ButtonsElement);
          groupElement->InsertEndChild(PairLabelsElement);
+         groupElement->InsertEndChild(alarmsElement);
+
          //存储分组按钮成员
          QList<ConfigButton *> & buttonList  =  group->getButtonList();
          SaveSceneButtons(doc,ButtonsElement,buttonList);
          //存储分组标签成员
          QList<ConfigPairLabel *> & pairLabelList  =  group->getPairLabelList();
          SaveScenePairLabels(doc,PairLabelsElement,pairLabelList);
+         //存储报警灯
+         QList<ConfigAlarm*>& alarmList = group->getAlarmList();
+         SaveSceneAlarms(doc, alarmsElement, alarmList);
          groupsElement->InsertEndChild(groupElement);
       }
     return true;
@@ -559,7 +935,6 @@ bool XmlStore::SaveSceneToFile(ConfigScene *scene)
 {
     QString exepath  = QApplication::applicationDirPath();
     QString  filepath  = exepath + scene->GetPath();
-
     qDebug() << "scene file path:" << filepath;
     tinyxml2::XMLDocument doc;//定义doc对象
     const char* declaration="<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -581,6 +956,10 @@ bool XmlStore::SaveSceneToFile(ConfigScene *scene)
    XMLElement* curvesElement = doc.NewElement("Curves");
    doc.InsertEndChild(curvesElement);
    SaveSceneCurves(doc,curvesElement,scene->sceneCurveList);
+
+   XMLElement* alarmsElement = doc.NewElement("Alarms");
+   doc.InsertEndChild(alarmsElement);
+   SaveSceneAlarms(doc, alarmsElement, scene->sceneAlarmList);
     //<5.保存至文件中
     result = doc.SaveFile(filepath.toLocal8Bit().data());//会清除原来文件中的内容
     if(result == 0)

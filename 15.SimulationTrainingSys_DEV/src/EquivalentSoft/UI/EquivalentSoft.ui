@@ -1103,6 +1103,25 @@ border:0px;</string>
            </widget>
           </item>
           <item>
+           <widget class="ConfigNameSpace::ConfigElementSelector" name="configalarm">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="ConfigNameSpace::ConfigElementSelector" name="configcurve">
             <property name="minimumSize">
              <size>
@@ -1123,6 +1142,25 @@ border:0px;</string>
           </item>
           <item>
            <widget class="QPushButton" name="configsave">
+            <property name="minimumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="configdbsave">
             <property name="minimumSize">
              <size>
               <width>20</width>
@@ -1353,19 +1391,19 @@ color: #262626;</string>
                 <x>30</x>
                 <y>50</y>
                 <width>331</width>
-                <height>36</height>
+                <height>50</height>
                </rect>
               </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
-                <height>36</height>
+                <height>50</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>36</height>
+                <height>50</height>
                </size>
               </property>
               <property name="toolTipDuration">
@@ -1395,6 +1433,9 @@ QComboBox::down-arrow{
 	width:10px;
     height:10px
 }</string>
+              </property>
+              <property name="editable">
+               <bool>false</bool>
               </property>
               <property name="currentText">
                <string>地面等效器</string>
@@ -1439,7 +1480,7 @@ QComboBox::down-arrow{
               </item>
               <item>
                <property name="text">
-                <string>自定义等效器</string>
+                <string>自定义软件</string>
                </property>
               </item>
               <item>

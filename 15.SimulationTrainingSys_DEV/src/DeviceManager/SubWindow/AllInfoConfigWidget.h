@@ -115,10 +115,12 @@ private:
 	QPushButton* addCmdCfg;
 	QListWidget* cmdCfgList;
 	//ср1
+	unordered_map<int, vector<string>> cmdDevStatInfo;
 	QLabel* deviceLabel;
 	QComboBox* deviceCombox;
 	QGridLayout* deviceStatLayout;
 	QScrollArea* scrollAreaDevStat;
+	QListWidget* hadSelectDevStat;
 	//ср2
 	QLineEdit* searchCmdFrame;
 	QLabel* cmdFrameLabel;

@@ -17,8 +17,9 @@
 #include "stylelabel.h"
 #include "stylecurve.h"
 #include "stylepairlabel.h"
-#include "configtypeselector.h"
+#include "stylealarm.h"
 
+#include "configtypeselector.h"
 ConfigNameSpaceStart
 StyleManager::StyleManager(QWidget* parent)
  :QWidget(parent)
@@ -46,11 +47,12 @@ void StyleManager::initStyleList()
     groupstylelist = new StyleList;
     curvestylelist = new StyleList;
     pairLabelstylelist = new StyleList;
+    alarmstylelist = new StyleList;
     stylestack->addWidget(buttonstylelist);
     stylestack->addWidget(labelstylelist);
     stylestack->addWidget(groupstylelist);
     stylestack->addWidget(curvestylelist);
-    stylestack->addWidget(pairLabelstylelist);
+    stylestack->addWidget(alarmstylelist);
 }
 
 void StyleManager::initUI()
@@ -65,6 +67,8 @@ void StyleManager::initUI()
     types->addItem("标签");
     types->addItem("组");
     types->addItem("曲线");
+    types->addItem("报警灯");
+
     types->setMaximumWidth(200);
     connect(types,&QComboBox::currentTextChanged,[=](const QString & text){
         if(text == "按钮")
@@ -92,6 +96,11 @@ void StyleManager::initUI()
             stylestack->setCurrentWidget(pairLabelstylelist);
 
         }
+        else if (text == "报警灯")
+        {
+            stylestack->setCurrentWidget(alarmstylelist);
+
+        }
         styleset->initStackWidget();
     });
     QPushButton* addbtn = new QPushButton("");
@@ -117,6 +126,10 @@ void StyleManager::initUI()
         else if(text == "标签")
         {
             addPairLabel();
+        }
+        else if (text == "报警灯")
+        {
+            addAlarm();
         }
     });
 
@@ -147,6 +160,10 @@ void StyleManager::initUI()
         else if(text == "标签")
         {
             XmlStore::saveStyle(exepath.toStdString()+ "/style/pairlabel.xml","PairLabel",pairLabelStyleRecord);
+        }
+        else if (text == "报警灯")
+        {
+            XmlStore::saveStyle(exepath.toStdString() + "/style/alarm.xml", "Alarms", alarmStyleRecord);
         }
     });
     QPushButton* retBtn = new QPushButton("返回");
@@ -227,6 +244,17 @@ void StyleManager::addPairLabel()
     pairLabelStyleRecord.push_back(&stylelabel->m_infomap);
 }
 
+void StyleManager::addAlarm()
+{
+    StyleAlarm* stylealarm = new  StyleAlarm();
+    stylealarm->resize(400, 100);
+
+    stylealarm->styleset = styleset;
+    stylealarm->setTypeName(QString("报警灯样式%1").arg(alarmlist.size() + 1));
+    alarmstylelist->addWidget(stylealarm->m_namelabel, stylealarm);
+    alarmlist.append(stylealarm);
+    alarmStyleRecord.push_back(&stylealarm->m_infomap);
+}
 void StyleManager::restore_from_xml()
 {
     QString exepath  = QApplication::applicationDirPath();
@@ -280,12 +308,27 @@ void StyleManager::restore_from_xml()
         stylepairlabel->m_infomap = info;
         stylepairlabel->updateStyle();
     }
+
+    QList< QMap<int, QPair<bool, QString>> > alarmStyleListRestore;
+    XmlStore::restoreStyle(exepath.toStdString() + "/style/alarm.xml", "Alarms", alarmStyleListRestore);
+    for (auto info : alarmStyleListRestore)
+    {
+        addAlarm();
+        StyleAlarm* stylealarm = alarmlist.last();
+        stylealarm->m_infomap = info;
+        stylealarm->updateStyle();
+    }
 }
 
 QList<StyleGroup *>& StyleManager::getGroupStyle()
 {
     qDebug() << "grouplist:" <<grouplist.size();
     return grouplist;
+}
+QList<StyleAlarm*>& StyleManager::getAlarmStyle()
+{
+    qDebug() << "alarmlist:" << alarmlist.size();
+    return alarmlist;
 }
 QList<StylePairLabel *>& StyleManager::getPairLabelStyle()
 {
@@ -410,6 +453,19 @@ QString  StyleManager::getStyleNameById(ControlType ctroltype,QString styleid)
             if(curveinfo->m_infomap[StyleCurve::Curve_Style_ID].second == styleid)
             {
                 return  curveinfo->m_infomap[StyleCurve::Curve_Style_Name].second;
+            }
+
+        }
+        return "";
+
+    }
+    else if (ctroltype == cConfigAlarm)
+    {
+        for (auto alarminfo : alarmlist)
+        {
+            if (alarminfo->m_infomap[StyleAlarm::Alarm_Style_ID].second == styleid)
+            {
+                return  alarminfo->m_infomap[StyleAlarm::Alarm_Style_Name].second;
             }
 
         }

@@ -11,11 +11,13 @@
 #include <qaction.h>
 #include <qmenu.h>
 #include "paramselect.h"
+#include "configscene.h"
 ConfigNameSpaceStart
 ConfigButton::ConfigButton(const QString &text, QWidget *parent):
     QPushButton(text,parent)
 {
   //  DefaultUiInit();
+    memset(m_CmdSourceID,0, MaximumPathLength);
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showListMenu(const QPoint&)));
     m_uuid = get_uuid();
@@ -30,6 +32,7 @@ void ConfigButton::handleEvent()
     {
         ConfigNameSpace::ConfigGlobal::cmdhandler(datasourceid.toInt(), this);
     }
+    Schedule();
 }
 
 void ConfigButton::setState(RunState state)
@@ -76,6 +79,14 @@ void ConfigButton::showListMenu(const QPoint& point) {
         }
   });
     cmenu->exec(QCursor::pos());  // 当前鼠标位置
+}
+void ConfigButton::Schedule()
+{
+    if (m_scene)
+    {
+        m_scene->SetBtnScheduled(this);
+    }
+
 }
 void ConfigButton::DefaultUiInit()
 {
@@ -196,7 +207,7 @@ void ConfigButton::InitFromXmlInfo(QMap<QString, QString> &buttoninfo)
 
 void ConfigButton::setState(ControlOperateState state)
 {
-    m_state = state;
+    m_state = state;   
 }
 void ConfigButton::setRole(ControlRole role)
 {

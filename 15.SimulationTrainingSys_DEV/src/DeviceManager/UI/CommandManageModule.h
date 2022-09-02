@@ -18,6 +18,7 @@ public:
 public:
 	QTableWidget* configInfoTable;
 	QVector<QString> columnNameList;
+	QComboBox* deviceCombox;
 	int selectedRowNum;
 private:
 	void InitUILayout();

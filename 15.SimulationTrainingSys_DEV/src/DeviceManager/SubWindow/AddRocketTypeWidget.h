@@ -57,7 +57,7 @@ public:
 	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd);
 
 private:
-
+	bool tableInfoInput = false;
 
 	TableType tableType;
 
@@ -135,6 +135,10 @@ protected:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
+
+
+	bool eventFilter(QObject* watched, QEvent* event);
+
 
 private slots:
 	void clickRocketTypeOk();

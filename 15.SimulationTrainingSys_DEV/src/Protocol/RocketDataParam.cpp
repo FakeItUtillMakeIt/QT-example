@@ -16,6 +16,7 @@ void RocketDataParam::DeSerialize(unsigned char* const buff)
 	memcpy(&m_id, buff + PARAM_ADDR_ID, 4);
 	memcpy(&m_deviceParam->m_Validity, buff + PARAM_ADDR_Valid, 4);
 	memcpy(&m_deviceParam->m_iCurValue, buff + PARAM_ADDR_VALUE, 8);
+	memcpy(&m_deviceParam->m_curStatus.m_id, buff + PARAM_ADDR_STATUS, 1);
 	m_deviceParam->setStatus(buff[PARAM_ADDR_STATUS]);
 }
 
