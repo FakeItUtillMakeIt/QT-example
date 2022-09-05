@@ -4,12 +4,13 @@
 #include <QtCore/qfile.h>
 #include <QtCore/qdir.h>
 #include <QtWidgets/qfiledialog.h>
-
 #include <qfiledialog.h>
-//#include <ActiveQt/qaxobject.h>
 #include <QtWidgets/qmessagebox.h>
 
-//#include <QAxObject>
+//#include <ActiveQt/qaxobject.h>
+
+#include "xlsxdocument.h"
+
 
 #pragma execution_character_set("utf-8")
 
@@ -27,14 +28,56 @@ ImportComPramData::~ImportComPramData()
 /// </summary>
 void ImportComPramData::AddPramComDatas(int rocketID)
 {
-
-
 	//读取excel文件
 	QString readFile = QFileDialog::getOpenFileName(nullptr, QStringLiteral("选择Excel文件"), "", tr("Exel file(*.xls *.xlsx)"));
 	int row_count, col_count;
 	QStringList str;
 
-#if 0
+	QXlsx::Document* m_xlsx = nullptr;
+	if (!m_xlsx)
+	{
+		m_xlsx = new QXlsx::Document(readFile, this);// 打开EXCEL_NAME文件，将所有数据读取到内存中，然后关闭excel文件
+	}
+	if (m_xlsx->load())//判断文件是否打开成功
+	{
+		qInfo() << "excel打开成功!";
+	}
+	else
+	{
+		QMessageBox::warning(nullptr,"提示","文件打开失败！","确定");
+		return;
+	}
+
+	int rowLen = m_xlsx->dimension().rowCount();           // 获取最大行数
+	int columnLen = m_xlsx->dimension().columnCount();     // 获取最大列数
+	for (int i = 1; i <= rowLen; i++)                       // 遍历每一行
+	{
+		QString data = QString("第%1行：").arg(i);
+		for (int j = 1; j <= columnLen; j++)                // 遍历每一个单元格(列)
+		{
+#if 1
+			QVariant value = m_xlsx->read(i, j);                                         // 通过单元格行号、列号读取数据
+#else
+			QVariant value = m_xlsx->read(QString("%1%2").arg((char)(64 + i)).arg(j));   // 通过单元格引用读取数据
+#endif
+			if (!value.isNull())
+			{
+				data.append(value.toString()).append(" ");
+			}
+			else
+			{
+				data.append("NULL ");
+			}
+		}
+		qInfo() << data;
+	}
+
+	//20220902后续需要完成，得到excel文件数据，对6个数据库表格进行协同写入。
+
+
+
+#if 0 
+	//qt的存在问题，选择了使用上面的方法
 	if (!readFile.isEmpty())
 	{
 		QAxObject excel("Excel.Application");
@@ -75,53 +118,4 @@ void ImportComPramData::AddPramComDatas(int rocketID)
 	}
 
 #endif
-
-
-	//QString filename = readFile;
-	//QFile f(filename);
-
-	//if (f.exists())
-	//{
-	//	int flag = 0;
-
-	//	QAxObject excel("Excel.Application"); // 连接excel控件
-	//	excel.setProperty("Visible", false); // 不显示窗体
-
-	//	QAxObject* workbooks = excel.querySubObject("WorkBooks"); //获取工作簿集合
-
-	//	workbooks->dynamicCall("Open(const QString&)", filename); // 打开文件
-
-	//	QAxObject* workbook = excel.querySubObject("ActiveWorkBook");
-	//	//QAxObject* sheets = workbook->querySubObject("Sheets");
-	//	QAxObject* sheet = workbook->querySubObject("Sheets(int)", 1);
-	//	QAxObject* range = sheet->querySubObject("UsedRange");
-	//	QAxObject* rows = range->querySubObject("Rows");
-	//	QAxObject* columns = range->querySubObject("Columns");
-
-	//	// 注意行、列中多余的（如：列标题）数据的排除
-	//	int rowStart = range->property("Row").toInt();
-	//	int columnStart = range->property("Column").toInt();
-
-	//	int nRow = rows->property("Count").toInt();
-	//	int nColumn = columns->property("Count").toInt();
-
-	//	// 实测上面获取到的列数会不正确，因此需要自己重新判断
-
-	//// 打印每行的第2列的元素
-	//	for (int i = rowStart; i <= nRow; i++)
-	//	{
-	//		QAxObject* cell = range->querySubObject("Cells(int,int)", i, 2);
-	//		QString strValue = cell->property("Value").toString();
-	//		if (strValue != "")
-	//		{
-	//			qDebug() << strValue;
-	//		}
-
-	//	}
-
-	//	workbook->dynamicCall("Close(Boolen)", false); // 关闭文件
-	//	excel.dynamicCall("Quit(void)");              // 退出
-
-	//}
-
 }

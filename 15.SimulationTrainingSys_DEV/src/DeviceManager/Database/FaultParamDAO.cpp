@@ -341,7 +341,7 @@ namespace DataBaseF
 			LOG(INFO) << "FaultParamDAO[fault_command_info]:" << "插入数据库失败!" << sql;
 			return false;
 		}
-		return false;
+		return true;
 	}
 
 	/// <summary>

@@ -115,7 +115,6 @@ public:
 	vector<Fault*> m_allFault;
 
 	map<int, Command*> m_allFaultCommad;//测发指令(用于数据接收和发送解析)
-
 	int m_rockedType;//火箭型号
 
 	map<int, FaultRocketInfo*> m_RocketInfoframes;//rocked_info表格的id和对应项
@@ -129,14 +128,11 @@ public:
 	map<int, FaultDeviceInfo*> m_FaultDeviceInfoFrames;//device_info表格的id和对应项
 	map<int, FaultDeviceParamInfo*> m_FaultDeviceParamInfoFrames;//device_param_info表格的id和对应项
 	map<int, vector<int>> m_DeviceIDParamID;//设备id和参数id对应项
-	//map<int, DeviceParam*> m_allDeviceParam;//设备参数
-	//map<int, RocketType*> m_allRocketType;//火箭型号
-	//RocketType* m_CurrentRocketType;//当前火箭型号
 #pragma endregion
+
 
 #pragma region 岗位配置模块使用
 	map<int, TaskManageInfo*> m_TaskManageInfoFrames;//任务岗位配置表格和id对应
-
 #pragma endregion
 
 private:

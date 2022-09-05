@@ -224,10 +224,10 @@ void CommandManageModule::InitUILayout() {
 			command_info.createTime,\
 			command_info.lastUpdateTime\
 			FROM\
-			`command_ commandtable_info`\
-			INNER JOIN command_info ON `command_ commandtable_info`.command_id = command_info.id\
+			`command_commandtable_info`\
+			INNER JOIN command_info ON `command_commandtable_info`.command_id = command_info.id\
 			WHERE\
-			`command_ commandtable_info`.command_table_id = %1 AND\
+			`command_commandtable_info`.command_table_id = %1 AND\
 			command_info.rocket_id = %2")
 			.arg(deviceCombox->currentData().toInt()).arg(AppCache::instance()->m_CurrentRocketType->m_id);
 		auto idevcbx = deviceCombox->currentData().toInt();

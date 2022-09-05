@@ -14,6 +14,7 @@ using namespace std;
 #include "../../Model/Command.h"
 #include "mysql.h" 
 
+
 namespace DataBase
 {
 	class CommandDAO

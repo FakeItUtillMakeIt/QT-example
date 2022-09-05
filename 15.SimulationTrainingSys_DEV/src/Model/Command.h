@@ -23,6 +23,7 @@ public:
 	int m_iRocketId; //火箭型号
 	string m_sRocketName; //火箭型号名称
 	int m_iBackId;//测发回令ID
+	int m_commandTableId;
 	vector<CommandParam*> m_vCommandParam;//参数列表
 
 
