@@ -93,6 +93,7 @@ private:
 	QLineEdit* userInputParamUnit;
 	QLabel* paramTable;
 	QComboBox* paramTableType;
+	QPushButton* addParamTable;
 	//设备部分
 	QLabel* rocketType;
 	QComboBox* userSelectRocketType;
@@ -109,6 +110,7 @@ private:
 	QComboBox* userSelectBackCmd;
 	QLabel* cmdTable;
 	QComboBox* cmdTableType;
+	QPushButton* addCmdTable;
 
 	//
 	QPushButton* OkBtn;

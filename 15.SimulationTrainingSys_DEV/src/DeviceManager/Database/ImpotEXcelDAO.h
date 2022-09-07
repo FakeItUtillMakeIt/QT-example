@@ -1,7 +1,7 @@
 #pragma once
 #ifndef IMPORTEXCELDAO_H
 #define IMPORTEXCELDAO_H
-
+//#pragma execution_character_set("utf-8")
 
 #include <string>
 #include <unordered_map>
@@ -9,7 +9,7 @@ using namespace std;
 
 #include "../AppCache.h"
 //#include "../../Public/log.h"
-#include "../../Public/Utils.h" 
+//#include "../../Public/Utils.h" 
 //#include "../../Model/Device.h"
 //#include "../../Model/DeviceParam.h"
 //#include "../../Model/DeviceStatus.h"
@@ -45,12 +45,15 @@ namespace DataBase
     //注意》》所有：表示当前火箭的所有
 	class ImpotEXcelDAO
 	{
+
 	public:
 		ImpotEXcelDAO(OutputPath* path);
 		~ImpotEXcelDAO();
 
 		bool connected();
 		bool connect();
+
+		void Init(string name);
 
 		bool GetRocketType();//获取全部火箭型号
 
@@ -59,28 +62,18 @@ namespace DataBase
 		bool GetAllParamtable();//获取所有参数表
 		bool GetAllCommandtable();//获取所有指令表
 
-		bool ParamtableIsExist(string pTableName);//判断当前参数表是否存在，不存在则写入
-		bool InsertNewParam(ParamInfo* oneParamInfo);//写入新的参数
+		int ParamtableIsExist(string pTableName);//判断当前参数表是否存在，不存在则写入
+		int NowParamExist(ParamInfo* oneParamInfo, bool& isExit);//判断当前参数是否存在,不存在则写入新的参数
 		bool InsertParamParamtable(ParamInfo* oneParamInfo);//写入参数和参数对应关系表
 
-		bool CommandtableIsExist(string cTableName);//判断当前指令表是否存在，不存在则写入
-
-		bool InsertNewCommand(Command* oneCommand);//写入新的指令 
-		bool InsertNewCommandBack(Command* oneCommandBack);//写入当前新指令的回令 (需要先写回令)
-
+		int CommandtableIsExist(string cTableName);//判断当前指令表是否存在，不存在则写入
+		int NowCommandExist(Command* oneCommand);//判断当前命令是否存在,不存在则写入新的指令 
+		int NowCommandBackExist(Command* oneCommandBack, bool& isExit);//写入当前新指令的回令 (需要先写回令)
 		bool InsertCommandCommandtable(Command* oneCommand);//写入指令和指令对应关系表
 
-		inline void SetImportRocketID(string name)
-		{ 
-			for (auto item : m_allRocketTypeI)
-			{
-				if (item.second->m_name == name)
-				{
-					m_importRocketName = name;
-					m_importRocketId = item.second->m_id;
-					return;
-				}
-			}
+		inline int GetRocketID()
+		{
+			return m_importRocketId;
 		}
 
 	private:
@@ -88,6 +81,8 @@ namespace DataBase
 		MYSQL my_connection;
 		bool is_connected;
 		AppCache* m_app;
+
+	public:
 
 		map<int, RocketType*> m_allRocketTypeI;//全部的火箭型号
 		string m_importRocketName;//需要导入的火箭型号名称

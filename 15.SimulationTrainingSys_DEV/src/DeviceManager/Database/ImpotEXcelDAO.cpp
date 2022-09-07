@@ -1,4 +1,4 @@
-#pragma execution_character_set("utf-8")
+//#pragma execution_character_set("utf-8")
 #include "ImpotEXcelDAO.h"
 #include <boost\lexical_cast.hpp>
 
@@ -7,6 +7,7 @@ namespace DataBase
 	ImpotEXcelDAO::ImpotEXcelDAO(OutputPath* path)
 		: m_path(path)
 		, is_connected(false)
+		, m_importRocketId(-1)
 	{
 		m_app = AppCache::instance();
 	}
@@ -17,6 +18,27 @@ namespace DataBase
 		{
 			mysql_close(&my_connection);//断开连接  
 			is_connected = false;
+		}
+	}
+
+
+	void ImpotEXcelDAO::Init(string name)
+	{
+		GetRocketType();//获取全部火箭型号
+
+		for (auto item : m_allRocketTypeI)
+		{
+			if (item.second->m_name.compare(name) == 0)
+			{
+				m_importRocketName = name;
+				m_importRocketId = item.second->m_id;
+
+				GetAllParamInfo();//获取所有参数
+				GetCommandInfo();//获取所有指令
+				GetAllParamtable();//获取所有参数表
+				GetAllCommandtable();//获取所有指令表
+				return;
+			}
 		}
 	}
 
@@ -76,8 +98,8 @@ namespace DataBase
 				{
 					RocketType* oneDeviceParam = new RocketType();
 					oneDeviceParam->m_id = atoi(sql_row[0]);
-					oneDeviceParam->m_name = Utils::UTF8ToGBK(sql_row[1]);
-					oneDeviceParam->m_code = Utils::UTF8ToGBK(sql_row[2]);
+					oneDeviceParam->m_name = sql_row[1];
+					oneDeviceParam->m_code = sql_row[2];
 					m_allRocketTypeI.insert(pair<int, RocketType*>(oneDeviceParam->m_id, oneDeviceParam));
 				}
 			}
@@ -119,11 +141,10 @@ namespace DataBase
 			"parameter_info.type,"
 			"parameter_info.unit,"
 			"parameter_rocket_info.rocket_id,"
-			"parameter_rocket_info.param_table_id"
+			"parameter_rocket_info.param_table_id "
 			"FROM "
 			"parameter_info "
-			"INNER JOIN "
-			"parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id");
+			"INNER JOIN parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id");
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
@@ -137,9 +158,9 @@ namespace DataBase
 				{
 					ParamInfo* oneParam = new ParamInfo();
 					oneParam->m_id = atoi(sql_row[0]);
-					oneParam->m_name = Utils::UTF8ToGBK(sql_row[1]);
+					oneParam->m_name = sql_row[1];
 					oneParam->m_type = atoi(sql_row[2]);
-					oneParam->m_unit = Utils::UTF8ToGBK(sql_row[3]);
+					oneParam->m_unit = sql_row[3];
 					oneParam->m_rocketid = atoi(sql_row[4]);
 					oneParam->m_paramtableid = atoi(sql_row[5]);
 
@@ -197,9 +218,10 @@ namespace DataBase
 					Command* oneCommand = new Command();
 					oneCommand->m_id = atoi(sql_row[0]);
 					oneCommand->m_iRocketId = atoi(sql_row[1]);
-					oneCommand->m_sName = Utils::UTF8ToGBK(sql_row[2]);
-					oneCommand->m_iCode = atoi(sql_row[3]);
-					oneCommand->m_iType = atoi(sql_row[4]);
+					oneCommand->m_iBackId = atoi(sql_row[2]);
+					oneCommand->m_sName = sql_row[3];
+					oneCommand->m_iCode = atoi(sql_row[4]);
+					oneCommand->m_iType = atoi(sql_row[5]);
 
 					if (oneCommand->m_iRocketId == m_importRocketId)
 					{
@@ -253,7 +275,7 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
-					onetable->m_tableName = Utils::UTF8ToGBK(sql_row[1]);
+					onetable->m_tableName = sql_row[1];
 
 					m_allCommandtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
 				}
@@ -304,7 +326,7 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
-					onetable->m_tableName = Utils::UTF8ToGBK(sql_row[1]);
+					onetable->m_tableName = sql_row[1];
 
 					m_allParamtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
 				}
@@ -327,25 +349,22 @@ namespace DataBase
 	}
 
 	/// <summary>
-	/// 判断当前参数表是否存在，不存在则写入
+	/// 判断当前参数表是否存在，不存在则写入,返回当前参数参数表的id
 	/// </summary>
+	/// return -1：错误；0：已存在
 	/// <returns></returns>
-	bool ImpotEXcelDAO::ParamtableIsExist(string pTableName)
+	int ImpotEXcelDAO::ParamtableIsExist(string pTableName)
 	{
-		bool isexist = false;
+		int tableNameId = -1;
+
+		//判断是否存在
 		for(auto item : m_allParamtableI)
 		{
-			if (item.second->m_tableName == pTableName)
+			if (item.second->m_tableName.compare(pTableName) == 0)
 			{
-				isexist = true;
-				break;
+				tableNameId = item.first;
+				return tableNameId;
 			}
-		}
-
-		//存在
-		if (isexist)
-		{
-			return true;
 		}
 
 		//不存在则数据库中添加
@@ -353,7 +372,7 @@ namespace DataBase
 		{
 			LOG(INFO) << "创建数据库连接";
 			if (!connect())
-				return false;
+				return tableNameId;
 		}
 		stringstream ss;
 		ss << "insert into param_table_info(name) values ('";
@@ -381,29 +400,41 @@ namespace DataBase
 					oneTable->m_tableName = pTableName;
 
 					m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
-					return true;
+					tableNameId = oneTable->m_id;
+					return tableNameId;
 				}
 			}
 		}
 		else
 		{
 			LOG(INFO) << "插入参数表失败!" << sql;
-			return false;
+			return tableNameId;
 		}
-		return true;
+		return tableNameId;
 	}
 
 	/// <summary>
 	/// 写入新的参数
 	/// </summary>
 	/// <returns></returns>
-	bool ImpotEXcelDAO::InsertNewParam(ParamInfo* oneParamInfo)
+	int ImpotEXcelDAO::NowParamExist(ParamInfo* oneParamInfo, bool& isExit)
 	{
+		int paramId = -1;
+		for (auto item : m_allParamI)
+		{
+			if (item.second->m_name.compare(oneParamInfo->m_name) == 0)
+			{
+				paramId = item.first;
+				isExit = true;
+				return paramId;
+			}
+		}
+
 		if (!connected())
 		{
 			LOG(INFO) << "创建数据库连接";
 			if (!connect())
-				return false;
+				return paramId;
 		}
 		stringstream ss;
 		ss << "insert into parameter_info(name,type,unit) values ('";
@@ -416,18 +447,51 @@ namespace DataBase
 		int res = mysql_query(&my_connection, sql.c_str());
 		if (!res)
 		{
+			int res1;
+			mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+			res1 = mysql_query(&my_connection, "select @@IDENTITY");
+			if (!res1)
+			{
+				MYSQL_RES* result = nullptr;
+				MYSQL_ROW sql_row;
+				result = mysql_store_result(&my_connection);
+				if (result)
+				{
+					sql_row = mysql_fetch_row(result);
+
+					PCTable* oneTable = new PCTable();
+					oneTable->m_id = atoi(sql_row[0]);
+					
+
+					//m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
+					paramId = oneTable->m_id;
+					return paramId;
+				}
+			}
+
 			//每次更新用于后续查重
-			if (GetAllParamtable())
-				return true;
+			/*if (GetAllParamInfo())
+			{
+				for (auto item : m_allParamI)
+				{
+					if (item.second->m_name == oneParamInfo->m_name)
+					{
+						paramId = item.first;
+						return paramId;
+					}
+				}
+				return paramId;
+			}
 			else
-				return false;
+				return paramId;*/
+
 		}
 		else
 		{
 			LOG(INFO) << "插入参数失败!" << sql;
-			return false;
+			return paramId;
 		}
-		return true;
+		return paramId;
 	}
 
 	/// <summary>
@@ -467,22 +531,17 @@ namespace DataBase
 	/// 判断当前指令表是否存在，不存在则写入
 	/// </summary>
 	/// <returns></returns>
-	bool ImpotEXcelDAO::CommandtableIsExist(string cTableName)
+	int ImpotEXcelDAO::CommandtableIsExist(string cTableName)
 	{
-		bool isexist = false;
+		int cmdTableId = -1;
+		//判断是否存在
 		for (auto item : m_allCommandtableI)
 		{
-			if (item.second->m_tableName == cTableName)
+			if (item.second->m_tableName.compare(cTableName) == 0)
 			{
-				isexist = true;
-				break;
+				cmdTableId = item.first;
+				return cmdTableId;
 			}
-		}
-
-		//存在
-		if (isexist)
-		{
-			return true;
 		}
 
 		//不存在则数据库中添加
@@ -490,7 +549,7 @@ namespace DataBase
 		{
 			LOG(INFO) << "创建数据库连接";
 			if (!connect())
-				return false;
+				return cmdTableId;
 		}
 		stringstream ss;
 		ss << "insert into command_table_info(name) values ('";
@@ -518,16 +577,17 @@ namespace DataBase
 					oneTable->m_tableName = cTableName;
 
 					m_allCommandtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
-					return true;
+					cmdTableId = oneTable->m_id;
+					return cmdTableId;
 				}
 			}
 		}
 		else
 		{
 			LOG(INFO) << "插入指令表失败!" << sql;
-			return false;
+			return cmdTableId;
 		}
-		return true;
+		return cmdTableId;
 	}
 
 
@@ -535,8 +595,19 @@ namespace DataBase
 	/// 写入新的指令 
 	/// </summary>
 	/// <returns></returns>
-	bool ImpotEXcelDAO::InsertNewCommand(Command* oneCommand)
+	int ImpotEXcelDAO::NowCommandExist(Command* oneCommand)
 	{
+		int cmdId = -1;
+		//判断是否存在
+		for (auto item : m_allCommadI)
+		{
+			if (item.second->m_sName.compare(oneCommand->m_sName) == 0)
+			{
+				cmdId = item.first;
+				return cmdId;
+			}
+		}
+
 		if (!connected())
 		{
 			LOG(INFO) << "创建数据库连接";
@@ -558,29 +629,51 @@ namespace DataBase
 		{
 			//每次更新用于后续查重
 			if (GetCommandInfo())
-				return true;
+			{
+				for (auto item : m_allCommadI)
+				{
+					if (item.second->m_sName == oneCommand->m_sName)
+					{
+						cmdId = item.first;
+						return cmdId;
+					}
+				}
+				return cmdId;
+			}
 			else
-				return false;
+				return cmdId;
 		}
 		else
 		{
 			LOG(INFO) << "插入指令失败!" << sql;
-			return false;
+			return cmdId;
 		}
-		return true;
+		return cmdId;
 	}
 
 	/// <summary>
 	/// 写入当前新指令的回令 
 	/// </summary>
 	/// <returns></returns>
-	bool ImpotEXcelDAO::InsertNewCommandBack(Command* oneCommandBack)
+	int ImpotEXcelDAO::NowCommandBackExist(Command* oneCommandBack, bool& isExit)
 	{
+		int cmdBackId = -1;
+		//判断是否存在
+		for (auto item : m_allCommadI)
+		{
+			if (item.second->m_sName.compare(oneCommandBack->m_sName) == 0)
+			{
+				cmdBackId = item.first;
+				isExit = true;
+				return cmdBackId;//指令存在返回 0
+			}
+		}
+
 		if (!connected())
 		{
 			LOG(INFO) << "创建数据库连接";
 			if (!connect())
-				return false;
+				return cmdBackId;
 		}
 		stringstream ss;
 		ss << "insert into command_info(rocket_id,back_id,name,code,type) values ('";
@@ -607,21 +700,33 @@ namespace DataBase
 				{
 					sql_row = mysql_fetch_row(result);
 					oneCommandBack->m_id = atoi(sql_row[0]);//得到回令的id 用于写指令的时候使用   TODO注意释放result
+					cmdBackId = oneCommandBack->m_id;
+					return cmdBackId;
 				}
 			}
 
-			//每次更新用于后续查重
-			if (GetCommandInfo())
-				return true;
-			else
-				return false;
+			////每次更新用于后续查重
+			//if (GetCommandInfo())
+			//{
+			//	for (auto item : m_allCommadI)
+			//	{
+			//		if (item.second->m_sName.compare(oneCommandBack->m_sName) == 0)
+			//		{
+			//			cmdBackId = item.first;
+			//			return cmdBackId;
+			//		}
+			//	}
+			//	return cmdBackId;
+			//}
+			//else
+			//	return cmdBackId;
 		}
 		else
 		{
 			LOG(INFO) << "插入指令回令失败!" << sql;
-			return false;
+			return cmdBackId;
 		}
-		return true;
+		return cmdBackId;
 	}
 
 
@@ -638,9 +743,10 @@ namespace DataBase
 				return false;
 		}
 		stringstream ss;
-		ss << "insert into command_ commandtable_info(command_id,command_table_id) values ('";
+		ss << "insert into command_commandtable_info(command_id,command_table_id) values ('";
 		ss << boost::lexical_cast<string>(oneCommand->m_id) + "','";
 		ss << boost::lexical_cast<string>(oneCommand->m_commandTableId) + "')";
+
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		string sql = ss.str();

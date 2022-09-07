@@ -511,7 +511,7 @@ void DeviceDBConfigInfo::customRunSql(QString qSqlString) {
 	bool opRet = deviceManageDBOp->exec_sql(sqlString);
 	if (!opRet)
 	{
-		qDebug() << "É¾³ý±íÊý¾ÝÊ§°Ü!!!";
+		qDebug() << "Ö´ÐÐÓï¾äÊ§°Ü!!!";
 	}
 }
 

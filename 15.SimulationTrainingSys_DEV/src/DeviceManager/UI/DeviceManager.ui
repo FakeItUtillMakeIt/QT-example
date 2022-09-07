@@ -97,7 +97,7 @@
            <string notr="true">border-image:&quot;transpant&quot;;font-size:36px;color:white</string>
           </property>
           <property name="text">
-           <string>设备管理软件</string>
+           <string>教学管理软件</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>

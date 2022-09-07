@@ -73,6 +73,9 @@ private:
 	TaskConfiguration* m_taskConfiguration;
 	QHBoxLayout* m_hlayouttask;
 
+	//记录之前的型号
+	QString preRocket;
+	QString curSelectedText;
 
 protected:
 	void mouseMoveEvent(QMouseEvent* event);

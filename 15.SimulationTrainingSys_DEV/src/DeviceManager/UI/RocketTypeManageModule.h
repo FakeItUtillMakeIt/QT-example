@@ -11,7 +11,7 @@
 #include "../SubWindow/AddRocketTypeWidget.h"
 #include "../SubWindow/AllInfoConfigWidget.h"
 
-#include "ImportComPramData.h"
+#include "../Database/ImportComPramData.h"
 
 class RocketTypeManageModule : public QWidget
 {
@@ -47,6 +47,10 @@ private:
 private slots:
 	void insertOneRowData();
 	void deleteOneRowData();
+
+signals:
+	void rocketInfoChanged();
+
 };
 
 /**
@@ -69,6 +73,9 @@ private:
 	QTableWidget* scrollArea;
 private slots:
 	void getDataInfoCfgData();
+
+signals:
+	void rocketInfoChanged();
 
 };
 

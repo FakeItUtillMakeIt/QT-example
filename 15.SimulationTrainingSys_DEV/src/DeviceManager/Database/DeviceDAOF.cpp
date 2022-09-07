@@ -66,11 +66,11 @@ namespace DataBaseF
 		string sql;
 		sql.append("SELECT "
 			"parameter_info.id,parameter_info.type,parameter_info.name,parameter_info.unit,"
-			"`parameter_ rocket_info`.rocket_id,parameter_info.createTime,parameter_info.lastUpdateTime "
+			"`parameter_rocket_info`.rocket_id,parameter_info.createTime,parameter_info.lastUpdateTime "
 			"FROM "
 			"parameter_info "
 			"INNER JOIN "
-			"`parameter_ rocket_info` ON parameter_info.id = `parameter_ rocket_info`.`parameter_ id`;");
+			"`parameter_rocket_info` ON parameter_info.id = `parameter_rocket_info`.`parameter_id`;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)

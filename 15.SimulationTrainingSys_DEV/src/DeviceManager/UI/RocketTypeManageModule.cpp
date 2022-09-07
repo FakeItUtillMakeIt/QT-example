@@ -31,6 +31,7 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 		});
 
 	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateRocketInfos, this, [=]() {
+		emit rocketInfoChanged();
 		InitDisplayData();
 
 		});
@@ -201,10 +202,10 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
-	hbox->addWidget(opCfgDataBtn); 
+	hbox->addWidget(opCfgDataBtn);
 	hbox->addWidget(opImpotDataBtn);
 	hbox->addWidget(opDeleteBtn);
-	
+
 
 	w1->setLayout(hbox);
 	w1->setStyleSheet("*{border:none;color:blue;}");
@@ -220,6 +221,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		editW->setRocketInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
 			configInfoTable->item(curRow, 2)->text());
 		editW->show();
+		emit rocketInfoChanged();
 		});
 
 	connect(opImpotDataBtn, &QPushButton::clicked, this, [=]() {
@@ -228,6 +230,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
 		removeOneRow(opDeleteBtn->property("row").toInt());
+		emit rocketInfoChanged();
 		});
 
 	connect(opCfgDataBtn, &QPushButton::clicked, this, [=]() {

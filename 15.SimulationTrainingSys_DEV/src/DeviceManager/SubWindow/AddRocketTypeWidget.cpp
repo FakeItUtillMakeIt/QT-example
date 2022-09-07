@@ -59,7 +59,10 @@ void AddRocketTypeWidget::InitUILayout() {
 	paramTable = new QLabel(QString("所属参数表"));
 	paramTableType = new QComboBox;
 	paramTableType->setItemDelegate(itemDelegate);
-	paramTableType->setEditable(true);
+	paramTableType->setEditable(false);
+	addParamTable = new QPushButton();
+	addParamTable->setStyleSheet("QPushButton{height:30px;border:none;image:url(:/FaultInjection/images/addFault (2).png);}\
+								QPushButton::hover{image:url(:/FaultInjection/images/addFault.png);}");
 
 	//设备部分
 	rocketType = new QLabel(QString("火箭型号:"));
@@ -77,12 +80,11 @@ void AddRocketTypeWidget::InitUILayout() {
 	userSelectBackCmd = new QComboBox;
 	cmdTable = new QLabel(QString("所属指令表"));
 	cmdTableType = new QComboBox;
-	cmdTableType->setEditable(true);
+	cmdTableType->setEditable(false);
 	cmdTableType->setItemDelegate(itemDelegate);
-	cmdTableType->addItem(QString("控制参数表"));
-	cmdTableType->addItem(QString("测控参数表"));
-	cmdTableType->addItem(QString("动力参数表"));
-
+	addCmdTable = new QPushButton();
+	addCmdTable->setStyleSheet("QPushButton{height:30px;border:none;image:url(:/FaultInjection/images/addFault (2).png);}\
+								QPushButton::hover{image:url(:/FaultInjection/images/addFault.png);}");
 
 	//
 	CancelBtn = new QPushButton(QString("取消"));
@@ -130,7 +132,10 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(paramUnit, row++, column, 1, 3);
 	UIGrid->addWidget(userInputParamUnit, row++, column, 1, 3);
 	UIGrid->addWidget(paramTable, row++, column, 1, 3);
-	UIGrid->addWidget(paramTableType, row++, column, 1, 3);
+	UIGrid->addWidget(paramTableType, row, column, 1, 3);
+	UIGrid->addWidget(addParamTable, row++, column + 3, 1, 1);
+
+
 	//设备部分
 	UIGrid->addWidget(rocketType, row++, column, 1, 3);
 	UIGrid->addWidget(userSelectRocketType, row++, column, 1, 3);
@@ -146,7 +151,8 @@ void AddRocketTypeWidget::InitUILayout() {
 	UIGrid->addWidget(cmdBackCmd, row++, column, 1, 3);
 	UIGrid->addWidget(userSelectBackCmd, row++, column, 1, 3);
 	UIGrid->addWidget(cmdTable, row++, column, 1, 3);
-	UIGrid->addWidget(cmdTableType, row++, column, 1, 3);
+	UIGrid->addWidget(cmdTableType, row, column, 1, 3);
+	UIGrid->addWidget(addCmdTable, row++, column + 3, 1, 1);
 
 	UIGrid->setRowStretch(row, 3);
 
@@ -348,6 +354,7 @@ void AddRocketTypeWidget::setRocketInfo(int rocketId, QString rocketName, QStrin
 void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit) {
 	paramID = paramId;
 
+	paramRocketType->setText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 	userInputParamName->setText(paramName);
 	userSelectParamType->setCurrentText(paramType);
 	userInputParamUnit->setText(paramUnit);
@@ -360,11 +367,47 @@ void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString p
 					FROM\
 					param_table_info"));
 	paramTableType->clear();
+	paramTableType->addItem("", -1);
 	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
 
 		paramTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
+
+#ifdef IDENTIFY_ROCKET_//预留给需要根据火箭类型区别参数表的情况
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		parameter_info.id,\
+		param_table_info.id,\
+		param_table_info.`name`,\
+		parameter_info.createTime,\
+		parameter_info.lastUpdateTime\
+		FROM\
+		param_table_info\
+		INNER JOIN parameter_rocket_info ON parameter_rocket_info.param_table_id = param_table_info.id\
+		INNER JOIN parameter_info ON parameter_info.id = parameter_rocket_info.parameter_id\
+		WHERE\
+		parameter_rocket_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+	paramTableType->clear();
+	paramTableType->addItem("", -1);
+	map<int, string> curRocketParamTypeTable;
+	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		if (curRocketParamTypeTable.count(atoi(ele.second[1].c_str())) > 0)
+		{
+			continue;
+		}
+		else
+		{
+			curRocketParamTypeTable[atoi(ele.second[1].c_str())] = ele.second[2];
+		}
+
+	}
+	for (auto elem : curRocketParamTypeTable)
+	{
+		paramTableType->addItem(QString::fromStdString(elem.second), elem.first);
+	}
+#endif
 
 	if (paramId != 0)
 	{
@@ -381,7 +424,11 @@ void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString p
 **/
 void AddRocketTypeWidget::setDevInfo(int devId, QString rocketType, QString devName, QString devType) {
 	deviceID = devId;
-	userSelectRocketType->setCurrentText(rocketType);
+	auto aaa = QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str());
+
+	paramRocketType->setText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
+	userSelectRocketType->setCurrentText(aaa);
+	userSelectRocketType->setEnabled(false);
 	userInputDevName->setText(devName);
 	userSelectDevType->setCurrentText(devType);
 	if (devId != 0)
@@ -401,10 +448,13 @@ void AddRocketTypeWidget::setDevInfo(int devId, QString rocketType, QString devN
 void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd) {
 
 	commandID = cmdId;
-	userSelectRocketType->setCurrentText(rocketType);
+
+	paramRocketType->setText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
+	userSelectRocketType->setCurrentText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 	userSelectCmdType->setCurrentText(cmdType);
 	userInputCmdName->setText(cmdName);
 	userSelectBackCmd->setCurrentText(backCmd);
+
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 					command_table_info.id,\
 					command_table_info.`name`,\
@@ -413,11 +463,45 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 					FROM\
 					command_table_info"));
 	cmdTableType->clear();
+	cmdTableType->addItem("", -1);
 	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
 
 		cmdTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
+
+#ifdef IDENTIFY_ROCKET_////预留给需要根据火箭类型区别参数表的情况
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_info.id,\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
+		FROM\
+		command_table_info\
+		INNER JOIN command_commandtable_info ON command_commandtable_info.command_table_id = command_table_info.id\
+		INNER JOIN command_info ON command_info.id = command_commandtable_info.command_id\
+		WHERE\
+		command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+	cmdTableType->clear();
+	cmdTableType->addItem("", -1);
+	map<int, string> curRocketCmdTypeTable;
+	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		if (curRocketCmdTypeTable.count(atoi(ele.second[1].c_str())) > 0)
+		{
+			continue;
+		}
+		else
+		{
+			curRocketCmdTypeTable[atoi(ele.second[1].c_str())] = ele.second[2];
+		}
+	}
+	for (auto elem : curRocketCmdTypeTable)
+	{
+		cmdTableType->addItem(QString::fromStdString(elem.second), elem.first);
+	}
+#endif
 	if (cmdId != 0)
 	{
 		currentModule = DeviceCommonVaries::UPDATE_MODULE;
@@ -431,6 +515,7 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 	@param flag -
 **/
 void AddRocketTypeWidget::rocketInfoDisplay(bool flag) {
+
 	if (flag)
 	{
 		rocketName->show();
@@ -452,8 +537,10 @@ void AddRocketTypeWidget::rocketInfoDisplay(bool flag) {
 	@param flag -
 **/
 void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
+
 	if (flag)
 	{
+
 		paramRocket->show();
 		paramRocketType->show();
 		paramName->show();
@@ -464,6 +551,7 @@ void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
 		userInputParamUnit->show();
 		paramTable->show();
 		paramTableType->show();
+		addParamTable->show();
 	}
 	else
 	{
@@ -477,6 +565,7 @@ void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
 		userInputParamUnit->hide();
 		paramTable->hide();
 		paramTableType->hide();
+		addParamTable->hide();
 	}
 }
 /**
@@ -484,12 +573,13 @@ void AddRocketTypeWidget::paramInfoDisplay(bool flag) {
 	@param flag -
 **/
 void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
+
 	if (flag)
 	{
 		paramRocket->show();
 		paramRocketType->show();
-		rocketType->show();
-		userSelectRocketType->show();
+		rocketType->hide();
+		userSelectRocketType->hide();
 		deviceName->show();
 		userInputDevName->show();
 		deviceType->show();
@@ -497,8 +587,8 @@ void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
 	}
 	else
 	{
-		paramRocket->hide();
-		paramRocketType->hide();
+		/*paramRocket->hide();
+		paramRocketType->hide();*/
 		rocketType->hide();
 		userSelectRocketType->hide();
 		deviceName->hide();
@@ -512,6 +602,7 @@ void AddRocketTypeWidget::deviceInfoDisplay(bool flag) {
 	@param flag -
 **/
 void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
+
 	if (flag)
 	{
 		/*rocketType->show();
@@ -526,13 +617,14 @@ void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
 		userSelectBackCmd->show();
 		cmdTable->show();
 		cmdTableType->show();
+		addCmdTable->show();
 	}
 	else
 	{
 		/*rocketType->hide();
 		userSelectRocketType->hide();*/
-		paramRocket->hide();
-		paramRocketType->hide();
+		/*paramRocket->hide();
+		paramRocketType->hide();*/
 		commandType->hide();
 		userSelectCmdType->hide();
 		commandName->hide();
@@ -541,6 +633,7 @@ void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
 		userSelectBackCmd->hide();
 		cmdTable->hide();
 		cmdTableType->hide();
+		addCmdTable->hide();
 	}
 }
 
@@ -555,19 +648,36 @@ void AddRocketTypeWidget::opRocketInfo(DeviceCommonVaries::DeviceModule wid) {
 		QMessageBox::warning(this, QString("警告"), QString("火箭型号或描述不能为空"));
 		return;
 	}
+	//检查表中是否有同名数据
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		rocket_info.id,\
+		rocket_info.createTime,\
+		rocket_info.lastUpdateTime\
+		FROM\
+		rocket_info\
+		WHERE\
+		rocket_info.`name` = '%1'").arg(userInputRocketName->text()));
+
+
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
+		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("火箭型号已存在"));
+			return;
+		}
 		DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(userInputRocketName->text(), userInputDescript->text());
 	}
 	else
 	{
 		DeviceDBConfigInfo::getInstance()->updateRocketInfo2DB(rocketID, userInputRocketName->text(), userInputDescript->text());
 	}
+	instance->close();
 	emit updateRocketInfos();
 }
 
 /**
-	@brief
+	@brief 参数
 	@param wid -
 **/
 void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
@@ -577,8 +687,25 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 		QMessageBox::warning(this, QString("警告"), QString("参数名称或单位不能为空"));
 		return;
 	}
+
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		parameter_info.id,\
+		parameter_info.createTime,\
+		parameter_info.lastUpdateTime\
+		FROM\
+		parameter_info\
+		INNER JOIN parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id\
+		WHERE\
+		parameter_rocket_info.rocket_id = %1 AND\
+		parameter_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputParamName->text()));
+
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
+		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("参数已存在"));
+			return;
+		}
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 			parameter_info.id,\
 			parameter_info.`name`,\
@@ -624,6 +751,7 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 		QString qSqlString = QString("UPDATE `simulatedtraining`.`parameter_rocket_info` SET `param_table_id` = %1 WHERE `parameter_rocket_info`.`parameter_id`=%2").arg(paramTableType->currentData().toInt()).arg(paramID);
 		DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
 	}
+	instance->close();
 	emit updateParamInfos();
 }
 
@@ -638,8 +766,24 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 		QMessageBox::warning(this, QString("警告"), QString("设备名称不能为空"));
 		return;
 	}
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		device_info.id,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1\
+		AND device_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputDevName->text()));
+
+
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
+		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+		{
+			QMessageBox::warning(this, QString("警告"), QString("设备已存在"));
+			return;
+		}
 		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
 
 	}
@@ -648,6 +792,7 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 		DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(deviceID, userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
 
 	}
+	instance->close();
 	emit updateDeviceInfos();
 }
 
@@ -663,17 +808,40 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		QMessageBox::warning(this, QString("警告"), QString("指令名称不能为空"));
 		return;
 	}
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_info.id,\
+		command_info.createTime,\
+		command_info.lastUpdateTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.rocket_id = %1 AND\
+		command_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputCmdName->text()));
+
 	int cmdcode = 1;
 
 	QVector<int> savedCode;
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
+		//查火箭型号下指令是否已存在
+		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0) {
+			QMessageBox::warning(this, QString("警告"), QString("该火箭型号下指令已存在"));
+			return;
+		}
+		//同一火箭型号下指令code唯一
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			command_info.id,\
+			command_info.`code`,\
+			command_info.createTime,\
+			command_info.lastUpdateTime\
+			FROM\
+			command_info\
+			WHERE\
+			command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
-		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
-
-		for (pair<int, vector<string>> eachele : DeviceDBConfigInfo::getInstance()->commandInfo)
+		for (pair<int, vector<string>> eachele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 		{
-			savedCode.push_back(atoi(eachele.second[4].c_str()));
+			savedCode.push_back(atoi(eachele.second[1].c_str()));
 		}
 		for (int i = 0; i < 0xffff; i++)
 		{
@@ -684,45 +852,26 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 			}
 		}
 
-		//查看指令表中是否有相关指令
+
+		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+
+		//获取当前新增指令的ID
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 			command_info.id,\
-			command_info.`name`,\
 			command_info.createTime,\
 			command_info.lastUpdateTime\
 			FROM\
 			command_info\
 			WHERE\
-			command_info.rocket_id = 1 AND\
-			command_info.`name` = '%1'").arg(userInputCmdName->text()));
-		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+			command_info.rocket_id = %1 AND\
+			command_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputCmdName->text()));
+		int cmdIID;
+		for (auto elem : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 		{
-			QMessageBox::warning(this, QString("警告"), QString("数据表中已经存在该同名指令"));
-			return;
+			cmdIID = elem.first;
 		}
-		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
-		//写指令表  按照指令类型进行分类
-		/*DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
-			parameter_info.id,\
-			parameter_info.`name`,\
-			parameter_info.createTime,\
-			parameter_info.lastUpdateTime\
-			FROM\
-			parameter_info\
-			WHERE\
-			parameter_info.`name` = '%1'").arg(userInputParamName->text()));
-		int paramID1 = -1;
-		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
-		{
-			paramID1 = ele.first;
-		}
-		if (paramID1 == -1)
-		{
-			return;
-		}
-
-		QString qSqlString = QString("INSERT INTO `simulatedtraining`.`parameter_ rocket_info`(`parameter_ id`, `rocket_id`, `param_classfy_name`) VALUES (%1, %2, '%3')").arg(paramID1).arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(paramTableType->currentText());
-		DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);*/
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`command_commandtable_info`( `command_id`, `command_table_id`) VALUES ( %1, %2)")
+			.arg(cmdIID).arg(cmdTableType->currentData().toInt()));
 
 	}
 	else
@@ -730,9 +879,36 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
 		cmdcode = atoi(DeviceDBConfigInfo::getInstance()->commandInfo[commandID][4].c_str());
 		DeviceDBConfigInfo::getInstance()->updateCommandInfo2DB(commandID, userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+		//先查询表中是否存在
+		//若存在则修改，不存在则添加
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			command_commandtable_info.id,\
+			command_commandtable_info.command_id,\
+			command_commandtable_info.command_table_id,\
+			command_commandtable_info.createTime,\
+			command_commandtable_info.lastUpdateTime\
+			FROM\
+			command_commandtable_info\
+			INNER JOIN command_info ON command_commandtable_info.command_id = command_info.id\
+			WHERE\
+			command_info.rocket_id = %1 AND\
+			command_commandtable_info.command_id = %2")
+			.arg(AppCache::instance()->m_CurrentRocketType->m_id)
+			.arg(commandID));
+		int queryRet = DeviceDBConfigInfo::getInstance()->customReadInfoMap.size();
+		if (queryRet != 0)
+		{
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("UPDATE `simulatedtraining`.`command_commandtable_info` SET  `command_table_id` = %1 WHERE command_commandtable_info.command_id=%2")
+				.arg(cmdTableType->currentData().toInt()).arg(commandID));
+		}
+		else
+		{
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`command_commandtable_info`( `command_id`, `command_table_id`) VALUES ( %1, %2)")
+				.arg(commandID).arg(cmdTableType->currentData().toInt()));
 
+		}
 	}
-
+	instance->close();
 	emit updateCommandInfos();
 }
 
@@ -768,7 +944,12 @@ void AddRocketTypeWidget::initConnect() {
 	connect(CancelBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeCancel);
 	connect(OkBtn, &QPushButton::clicked, this, &AddRocketTypeWidget::clickRocketTypeOk);
 
-
+	connect(addParamTable, &QPushButton::clicked, this, [=]() {
+		paramTableType->setEditable(true);
+		});
+	connect(addCmdTable, &QPushButton::clicked, this, [=]() {
+		cmdTableType->setEditable(true);
+		});
 }
 
 /**
@@ -806,7 +987,7 @@ void AddRocketTypeWidget::clickRocketTypeOk() {
 	}
 
 	currentModule = DeviceCommonVaries::ADD_MODULE;
-	instance->close();
+	//instance->close();
 }
 
 /**
@@ -912,7 +1093,7 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 
 					paramTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 				}
-
+				paramTableType->setEditable(false);
 				return true;
 			}
 			if (watched == cmdTableType)
@@ -954,6 +1135,7 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 
 					cmdTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 				}
+				cmdTableType->setEditable(false);
 				return true;
 			}
 		}

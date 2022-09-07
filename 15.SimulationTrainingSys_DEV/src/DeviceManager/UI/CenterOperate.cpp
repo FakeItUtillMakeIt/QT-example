@@ -364,6 +364,7 @@ void CenterOperate::InitUILayout() {
 	commandManageUI = new CommandManageModule(this);
 	ui.gridLayout->addWidget(commandManageUI, 0, 3);
 	rocketManageUI = new RocketTypeManageModule(this);
+	rocketManageUI->setObjectName("rocketUI");
 	ui.gridLayout->addWidget(rocketManageUI, 0, 4);
 	paramManageUI->hide();
 	deviceManageUI->hide();

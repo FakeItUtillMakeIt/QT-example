@@ -141,9 +141,9 @@ background-image: url(:/EquivalentSoft/images/comboxDropDown.png);
   <widget class="QLabel" name="SoftTypeLable">
    <property name="geometry">
     <rect>
-     <x>960</x>
+     <x>940</x>
      <y>68</y>
-     <width>221</width>
+     <width>241</width>
      <height>60</height>
     </rect>
    </property>
@@ -155,7 +155,7 @@ background-image: url(:/EquivalentSoft/images/comboxDropDown.png);
    </property>
    <property name="maximumSize">
     <size>
-     <width>221</width>
+     <width>1000</width>
      <height>60</height>
     </size>
    </property>
@@ -166,7 +166,7 @@ background-image: url(:/EquivalentSoft/images/comboxDropDown.png);
     </font>
    </property>
    <property name="text">
-    <string>等效器软件</string>
+    <string>任务模拟软件</string>
    </property>
    <property name="textFormat">
     <enum>Qt::AutoText</enum>

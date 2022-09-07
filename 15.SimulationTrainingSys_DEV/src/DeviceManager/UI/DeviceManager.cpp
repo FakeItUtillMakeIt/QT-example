@@ -29,6 +29,8 @@ DeviceManager::DeviceManager(QWidget* parent)
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
 	timer->start(1000);
+
+
 }
 
 void DeviceManager::Init()
@@ -53,16 +55,16 @@ void DeviceManager::Init()
 	ui.comboBox->setFont(f);
 	ui.curtime->setFont(f);
 
-	connect(ui.comboBox, &QComboBox::currentTextChanged, this, [=]() {
+	connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), this, [=]() {
 
-		//m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toUInt();
-		//m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
-
-		m_app->m_CurrentRocketType = m_app->m_allRocketType[ui.comboBox->currentData().toUInt()];
+		m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toInt();
+		m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
+		//m_app->m_CurrentRocketType = m_app->m_allRocketType[ui.comboBox->currentData().toUInt()];
 		emit rocketTypeChanged();
 
 		DataFaultLoad();//故障重新加载
 		TaskManagement();//任务岗位配置
+		preRocket = ui.comboBox->currentText();
 		});
 
 	//初始化调试信息显示区
@@ -73,6 +75,9 @@ void DeviceManager::Init()
 		tb_show->show();
 
 		});
+
+
+
 	if (tb_show != nullptr)
 	{
 		delete tb_show;
@@ -160,8 +165,36 @@ void DeviceManager::Init()
 	}
 
 	qDebug() << "加载基础数据用时:" << timer1.elapsed();
-	
+
 	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);//设备管理
+
+	connect(this->findChild<RocketTypeManageModule*>("rocketUI"), &RocketTypeManageModule::rocketInfoChanged, this, [=]() {
+
+		ui.comboBox->disconnect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
+		curSelectedText = ui.comboBox->currentText();
+		ui.comboBox->clear();
+
+		DeviceDBConfigInfo::getInstance()->readRocketDB2UI();
+		for (auto elem : DeviceDBConfigInfo::getInstance()->rocketInfo)
+		{
+			ui.comboBox->addItem(QString::fromStdString(elem.second[1]), elem.first);
+		}
+
+		ui.comboBox->setCurrentText(curSelectedText);
+		connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), this, [=]() {
+
+			m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toInt();
+			m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
+			//m_app->m_CurrentRocketType = m_app->m_allRocketType[ui.comboBox->currentData().toUInt()];
+			emit rocketTypeChanged();
+
+			DataFaultLoad();//故障重新加载
+			TaskManagement();//任务岗位配置
+			preRocket = ui.comboBox->currentText();
+			});
+
+		});
+
 	DataFaultLoad();//故障加载
 	new twoDdisplay(ui.tab_Display);//二维展示
 	TaskManagement();//任务岗位配置
@@ -173,6 +206,7 @@ void DeviceManager::Init()
 	qDebug() << "初始化设备用时:" << timer2.elapsed();
 
 	emit deviceLoadOver();
+
 }
 
 
@@ -353,19 +387,7 @@ void DeviceManager::InitDevice()
 	connect(initWorker, &WorkThread::workFinished, this, [=]() {
 		QMessageBox::information(nullptr, "信息", "数据加载完毕！");
 		});
-	////把设备的状态及相应参数的配置进行初始化
-	//QString initStat = QString("断电");
-	//for (Device* eachDev : m_app->m_allDevice)
-	//{
-	//	eachDev->m_sCurStatus = initStat.toStdString();
-	//}
 
-
-
-	//DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
-	//QString statusFilePath;
-	//auto curPath = QCoreApplication::applicationDirPath();
-	//statusFilePath = curPath + "/device/";
 	////设备参数初始化  四个需要初始化的值
 	for (auto ele = m_app->m_allDeviceParam.begin(); ele != m_app->m_allDeviceParam.end(); ele++)
 	{
@@ -423,21 +445,7 @@ void DeviceManager::changeResize()
 
 	}
 
-	//ui.lb_title->setGeometry(QRect((ui.wgt_title_middle->width() - 250) / 2, 5, 250, 16));
 
-	/*ui.pb_resize->setStyleSheet(QString("QPushButton:hover{\n"
-		"background-color:transparent;\n"
-		"background-image:url(:/DeviceManager/images/%1);\n"
-		"border:0px;}\n"
-		"QPushButton:pressed{\n"
-		"background-color:transparent;\n"
-		"background-image:url(:/DeviceManager/images/%2);\n"
-		"border:0px;}\n"
-		"QPushButton {\n"
-		"background-color:transparent;\n"
-		"background-image: url(:/DeviceManager/images/%3);\n"
-		"border:0px;\n"
-		"}").arg(hoverMark).arg(pressMark).arg(mark));*/
 }
 
 void DeviceManager::paintEvent(QPaintEvent* event)

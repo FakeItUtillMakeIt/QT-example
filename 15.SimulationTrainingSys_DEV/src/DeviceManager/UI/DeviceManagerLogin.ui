@@ -174,7 +174,7 @@ QComboBox QAbstractItemView::item:selected{
     </font>
    </property>
    <property name="text">
-    <string>设备管理软件</string>
+    <string>教学管理软件</string>
    </property>
    <property name="textFormat">
     <enum>Qt::AutoText</enum>

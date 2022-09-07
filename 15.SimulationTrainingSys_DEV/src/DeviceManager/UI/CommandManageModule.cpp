@@ -23,6 +23,26 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 
 		});
 	connect(AddRocketTypeWidget::getInstance(), &AddRocketTypeWidget::updateCommandInfos, this, [=]() {
+		//更新commandModule.devCombox
+		//加载指令表信息
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
+		FROM\
+		command_table_info\
+		"));
+
+		deviceCombox->clear();
+		deviceCombox->addItem("", -1);
+		auto aaa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele : aaa)
+		{
+			auto bb = QString::fromStdString(ele.second[1]);
+			deviceCombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
+		}
+
 		InitDisplayData();
 
 		});
@@ -125,6 +145,7 @@ void CommandManageModule::InitUILayout() {
 		"));
 
 	deviceCombox->clear();
+	deviceCombox->addItem("", -1);
 	auto aaa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
 	for (auto ele : aaa)
 	{
@@ -211,6 +232,12 @@ void CommandManageModule::InitUILayout() {
 		});
 
 	connect(deviceCombox, QOverload<int>::of(&QComboBox::activated), this, [=](int index) {
+		if (deviceCombox->currentData().toInt() == -1)
+		{
+			configInfoTable->clearContents();
+			InitDisplayData();
+			return;
+		}
 		configInfoTable->clearContents();
 		configInfoTable->setRowCount(0);
 		QString paramQString = QString("SELECT\
@@ -397,42 +424,42 @@ void CommandManageModule::InitDisplayData() {
 	commandInfoDB->readCommandDB2UI();
 	//configInfoTable->setRowCount(commandInfoDB->commandInfo.size());
 	int row = 0;
-	for (auto ele = commandInfoDB->commandInfo.begin(); ele != commandInfoDB->commandInfo.end(); ele++)
+	for (auto ele : commandInfoDB->commandInfo)
 	{
 
 		QVector<QString> rowData;
-		rowData.push_back(QString::fromStdString(ele->second[0]));
+		rowData.push_back(QString::fromStdString(ele.second[0]));
 		//rowData.push_back(QString::fromStdString(ele->second[1]));
 		QString tmpp1, tmpp2;
 
-		if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())].size() < 3)
+		if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
 		{
-			tmpp1 = QString::fromStdString(ele->second[1]);
+			tmpp1 = QString::fromStdString(ele.second[1]);
 
 		}
 		else
 		{
-			tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())][1]);
+			tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())][1]);
 
 		}
 		rowData.push_back(tmpp1);
 		//rowData.push_back(QString::fromStdString(ele->second[1]));
 		//rowData.push_back(QString::fromStdString(ele->second[2]));
-		if (atoi(ele->second[2].c_str()) == 0)
+		if (atoi(ele.second[2].c_str()) == 0)
 		{
 			tmpp2 = QString("无回令");
 		}
 		else
 		{
-			tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele->second[2].c_str())][3]);
+			tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele.second[2].c_str())][3]);
 		}
 		//rowData.push_back(QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele->second[2].c_str())][3]));
 		rowData.push_back(tmpp2);
-		rowData.push_back(QString::fromStdString(ele->second[3]));
-		rowData.push_back(QString::fromStdString(ele->second[4]));
+		rowData.push_back(QString::fromStdString(ele.second[3]));
+		rowData.push_back(QString::fromStdString(ele.second[4]));
 		//rowData.push_back(QString::fromStdString(ele->second[5]));
-		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele->second[5].c_str())].c_str()));
-		rowData.push_back(QString::fromStdString(ele->second[6]));
+		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+		rowData.push_back(QString::fromStdString(ele.second[6]));
 
 		if (tmpp1 == QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()))
 		{
@@ -453,7 +480,7 @@ void CommandManageModule::paintEvent(QPaintEvent* event) {
 
 	configInfoTable->horizontalHeader()->setStretchLastSection(true);
 	configInfoTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
-}
+	}
 
 /**
 	@brief 增加一行数据
