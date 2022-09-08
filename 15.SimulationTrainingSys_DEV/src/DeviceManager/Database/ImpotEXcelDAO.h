@@ -23,8 +23,10 @@ namespace DataBase
 	{
 	public:
 		PCTable() {};
+		PCTable(int id, int rid, string name) { m_id = id; m_roketID = rid; m_tableName = name;};
 		~PCTable() {};
 		int m_id;
+		int m_roketID;
 		string m_tableName;// 名称
 	};
 
@@ -56,17 +58,19 @@ namespace DataBase
 		void Init(string name);
 
 		bool GetRocketType();//获取全部火箭型号
+		//bool GetWholeParamInfo();//获取当前所有参数
 
-		bool GetAllParamInfo();//获取所有参数
-		bool GetCommandInfo();//获取所有指令
-		bool GetAllParamtable();//获取所有参数表
-		bool GetAllCommandtable();//获取所有指令表
+		bool GetAllParamInfo();//获取当前所有参数
+		bool GetCommandInfo();//获取当前所有指令
+		bool GetAllParamtable();//获取当前所有参数表
+		bool GetAllCommandtable();//获取当前所有指令表
 
-		int ParamtableIsExist(string pTableName);//判断当前参数表是否存在，不存在则写入
-		int NowParamExist(ParamInfo* oneParamInfo, bool& isExit);//判断当前参数是否存在,不存在则写入新的参数
+		int ParamtableIsExist(PCTable pTable);//判断当前参数表是否存在，不存在则写入
+		//bool NowParamExist(ParamInfo* oneParamInfo,int& ParamId);//判断整个参数表中是否存在该参数，不存在则写入
+		int NowRocketParamExist(ParamInfo* oneParamInfo , bool& isExit);//判断当前参数是否存在,不存在则写入新的参数
 		bool InsertParamParamtable(ParamInfo* oneParamInfo);//写入参数和参数对应关系表
 
-		int CommandtableIsExist(string cTableName);//判断当前指令表是否存在，不存在则写入
+		int CommandtableIsExist(PCTable cTable);//判断当前指令表是否存在，不存在则写入
 		int NowCommandExist(Command* oneCommand);//判断当前命令是否存在,不存在则写入新的指令 
 		int NowCommandBackExist(Command* oneCommandBack, bool& isExit);//写入当前新指令的回令 (需要先写回令)
 		bool InsertCommandCommandtable(Command* oneCommand);//写入指令和指令对应关系表
@@ -88,11 +92,13 @@ namespace DataBase
 		string m_importRocketName;//需要导入的火箭型号名称
 		int m_importRocketId;//需要导入的火箭型号ID
 
-		map<int, Command*> m_allCommadI;//所有指令
-		map<int, ParamInfo*> m_allParamI;//所有参数
+		//map<int, ParamInfo*> m_wholeParamI;//全部参数
 
-		map<int, PCTable*> m_allCommandtableI;//所有指令表
-		map<int, PCTable*> m_allParamtableI;//所有参数表
+		map<int, Command*> m_allCommadI;//当前火箭所有指令
+		map<int, ParamInfo*> m_allParamI;//当前火箭所有参数
+
+		map<int, PCTable*> m_allCommandtableI;//当前火箭所有指令表
+		map<int, PCTable*> m_allParamtableI;//当前火箭所有参数表
 
 
 	};

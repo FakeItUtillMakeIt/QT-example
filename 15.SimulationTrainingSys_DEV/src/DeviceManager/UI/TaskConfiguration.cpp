@@ -142,11 +142,9 @@ void TaskConfiguration::FalshTableView()
 
     if (m_isAdd)
     {
-        ui.tv_taskView->selectRow(temp - 1);//选择了没有效果！！！
+        ui.tv_taskView->selectRow(temp - 1);//选择！！！
         m_isAdd = false;
     }
-    
-
 }
 
 /// <summary>

@@ -210,13 +210,24 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 		newWidget->setMouseTracking(false);
 		QVBoxLayout* newVbox = new QVBoxLayout;
 		auto cmdInfoList = subFlowInfo_[mainFlowInfo_[i][3].toInt()];
+		flowInfoOp->customReadTableInfo(QString("SELECT\
+				command_info.id,\
+				command_info.`name`,\
+				command_info.createTime,\
+				command_info.lastUpdateTime\
+				FROM\
+				command_info\
+				WHERE\
+				command_info.type = 1 AND\
+				command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 		for (auto cmdInfo : cmdInfoList)
 		{
 			QComboBox* combo1 = new QComboBox;
 			cmdComboBoxList.push_back(combo1);
-			for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
+			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
-				combo1->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+				//newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+				combo1->addItem(QString::fromStdString(ele.second[1]), ele.first);
 			}
 			combo1->setCurrentText(cmdInfo);
 			newVbox->addWidget(combo1);
@@ -463,11 +474,21 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 			cmdComboBoxList.push_back(newcombox);
 			//获取数据表指令信息
 			auto flowInfoOp = FlowInfoConfig2DB::getInstance();
-			flowInfoOp->commandInfo.clear();
-			flowInfoOp->readCommandDB2FlowEdit();
-			for (auto ele = flowInfoOp->commandInfo.begin(); ele != flowInfoOp->commandInfo.end(); ele++)
+
+			flowInfoOp->customReadTableInfo(QString("SELECT\
+				command_info.id,\
+				command_info.`name`,\
+				command_info.createTime,\
+				command_info.lastUpdateTime\
+				FROM\
+				command_info\
+				WHERE\
+				command_info.type = 1 AND\
+				command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
-				newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+				//newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
+				newcombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
 			}
 			auto cellW = rightTable->cellWidget(row, 2);
 			cellW->layout()->addWidget(newcombox);

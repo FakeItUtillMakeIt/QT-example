@@ -475,7 +475,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		{
 			ui.imgprew_editbtn->show();
 			ui.save_edit->show();
-			ui.editbtn->setIcon((QIcon(":/twoDdisplay/noedit")));
+			ui.editbtn->setIcon((QIcon(":/twoDdisplay/edit")));
 			ui.editbtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			ui.editbtn->setIconSize(QSize(40, 40));
 			editflag = true;
@@ -488,7 +488,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			ui.save_edit->hide();
 
 
-			ui.editbtn->setIcon((QIcon(":/twoDdisplay/edit")));
+			ui.editbtn->setIcon((QIcon(":/twoDdisplay/noedit")));
 			ui.editbtn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 			ui.editbtn->setIconSize(QSize(40, 40));
 			editflag = false;

@@ -46,7 +46,10 @@ void DeviceManager::Init()
 	f.setFamily(s[0]);
 	f.setPixelSize(20);
 	ui.title->setFont(f);
-
+	ui.rtlabel->setFont(f);
+	ui.ctlabel->setFont(f);
+	ui.ctlabel->setStyleSheet("color:#98b8f9;font-size:28px;");
+	ui.rtlabel->setStyleSheet("color:#98b8f9;font-size:28px;");
 	for each (auto var in m_app->m_allRocketType)
 	{
 		ui.comboBox->addItem(QString::fromLocal8Bit(var.second->m_name.c_str()), var.second->m_id);
@@ -76,6 +79,13 @@ void DeviceManager::Init()
 
 		});
 
+	connect(ui.tabWidget, &QTabWidget::currentChanged, this, [=](int index) 
+		{
+			if (index == 1)
+			{
+				DataFaultLoad();//故障重新加载
+			}
+		});
 
 
 	if (tb_show != nullptr)
@@ -203,7 +213,7 @@ void DeviceManager::Init()
 	displayStatuInfo("加载基础数据完毕！");
 	displayStatuInfo("系统启动完毕！");
 	InitDevice();
-	qDebug() << "初始化设备用时:" << timer2.elapsed();
+	//qDebug() << "初始化设备用时:" << timer2.elapsed();
 
 	emit deviceLoadOver();
 

@@ -82,7 +82,7 @@ void ControlMonitor::Init()
 	QWidget* one = new QWidget();
 	m_pCenterOperate = new CenterOperate(one);
 	ui.rokect_type->setText(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()));
-	new twoDdisplay(ui.page2);
+
 	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
 	flowDisplayWidget->setRocketType(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
 	flowDisplayWidget->setGeometry(0, 0, 1920, 768);
@@ -442,7 +442,7 @@ void ControlMonitor::zhukongclick()
 	//调用流程编排
 	if (flowDisplayWidget == nullptr)
 	{
-		ui.page2->hide();
+
 		ui.page1->setStyleSheet("background-color:rgb(245,245,245);");
 		//ui.page1->setStyleSheet("background-image:url(:/flowload/images/Flow/白底20%透明@2x.png);");
 		//进来就自动先加载流程

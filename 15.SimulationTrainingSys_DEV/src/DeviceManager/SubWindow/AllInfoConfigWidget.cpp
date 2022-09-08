@@ -192,9 +192,6 @@ void AllInfoConfigWidget::initRocketConfigLayout() {
 void AllInfoConfigWidget::initDeviceConfigLayout() {
 
 
-	QWidget* scrollAreaStatContent = new QWidget;
-	QWidget* scrollAreaParamContent = new QWidget;
-
 	QGridLayout* midUILayout = new QGridLayout;
 	//左侧
 	QVBoxLayout* leftVlayout = new QVBoxLayout;
@@ -206,160 +203,29 @@ void AllInfoConfigWidget::initDeviceConfigLayout() {
 	//右侧1  状态
 	scrollAreaStat->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	scrollAreaStat->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	QGridLayout* rightVBox = new QGridLayout;
-	QGridLayout* rightGird = new QGridLayout;
-	//rightGird->setContentsMargins(120, 40, 20, 60);
-	rightGird->setContentsMargins(0, 0, 0, 0);
-	int rightGridColumnC = 1;
-	int curInd = 0;
-	deviceStatList.clear();
-	DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
 
-	for (auto ele : DeviceDBConfigInfo::getInstance()->statusInfo)
-	{
-		QWidget* widget = new QWidget;
-		//widget->setFixedWidth(330);
-		widget->setObjectName("widget");
-		QHBoxLayout* statusHbox = new QHBoxLayout;
-		QLabel* lab = new QLabel(QString::fromStdString(ele.second[1]));
-		lab->setFixedWidth(200);
-		lab->setProperty("id", ele.first);
-		lab->setObjectName("status");
-		statusHbox->addWidget(lab);
-
-		QLabel* fileLab = new QLabel;
-		fileLab->setFixedWidth(500);
-		fileLab->setObjectName("fileLab");
-		statusHbox->addWidget(fileLab);
-		statusHbox->addStretch(1);
-		QPushButton* fileSlctBtn = new QPushButton(QString("选择文件"));
-		statusHbox->addWidget(fileSlctBtn);
-
-		statusHbox->addStretch(1);
-
-		QCheckBox* statusCheck = new QCheckBox;
-		statusHbox->addStretch(1);
-		statusHbox->addWidget(statusCheck);
-		statusCheck->setObjectName("checkbox");
-
-		widget->setLayout(statusHbox);
-		rightGird->addWidget(widget, curInd / rightGridColumnC, curInd % rightGridColumnC);
-		rightGird->setRowStretch(curInd / rightGridColumnC, 1);
-		widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
-		deviceStatList.push_back(widget);
-		widget->setFixedHeight(40);
-		curInd++;
-
-		connect(fileSlctBtn, &QPushButton::clicked, this, [=]() {
-			//过滤格式txt
-			QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
-			if (filepath1.isEmpty())
-			{
-				return;
-			}
-			filepath1 = filepath1.split("/device/")[1];
-			fileLab->setWordWrap(true);
-			fileLab->setText(filepath1);
-			});
-
-	}
-
-	rightGird->setVerticalSpacing(20);
-
-	addNewStat = new QPushButton;
-	addNewStat->setStyleSheet(QString("QPushButton{width:330px;height:58px;border:1px solid gray;border-radius:5px;background-color:rgba(255,255,255,1);image:url(:/icon/icon/+hao.png);}"));
-	addNewStat->setFixedHeight(40);
-	addNewStat->setFixedWidth(330);
-	QHBoxLayout* hwbox = new QHBoxLayout;
-	hwbox->addWidget(addNewStat);
-	hwbox->setContentsMargins(0, 40, 20, 0);
-	rightVBox->setContentsMargins(60, 40, 20, 60);
-	rightVBox->addLayout(rightGird, 0, 0, 3, 2);
-	rightVBox->addLayout(hwbox, 4, 0, 1, 1);
-	scrollAreaStatContent->setLayout(rightVBox);
-	scrollAreaStat->setWidget(scrollAreaStatContent);
-	scrollAreaStatContent->setObjectName("content");
-
-	scrollAreaStat->setWidgetResizable(true);
-
-	connect(addNewStat, &QPushButton::clicked, this, [=]() {
-		//需要输入一个状态名
-		QWidget* newStatW = new QWidget;
-		QVBoxLayout* newStatWLayout = new QVBoxLayout;
-		QLabel* statName = new QLabel(QString("状态名:"));
-		QLineEdit* lineStat = new QLineEdit;
-		QPushButton* okStat = new QPushButton(QString("确定"));
-		newStatWLayout->addWidget(statName);
-		newStatWLayout->addWidget(lineStat);
-		newStatWLayout->addWidget(okStat);
-		newStatW->setLayout(newStatWLayout);
-		newStatW->show();
-
-		connect(okStat, &QPushButton::clicked, this, [=]() {
-			newStatW->deleteLater();
-
-			QWidget* widget = new QWidget;
-			//widget->setFixedWidth(330);
-			widget->setObjectName("widget");
-			QHBoxLayout* statusHbox = new QHBoxLayout;
-			QLabel* statLabb = new QLabel(lineStat->text());
-			statLabb->setObjectName("status");
-			statLabb->setFixedWidth(200);
-			statusHbox->addWidget(statLabb);
-
-			QLabel* fileLab = new QLabel;
-			fileLab->setFixedWidth(500);
-			fileLab->setObjectName("fileLab");
-			statusHbox->addWidget(fileLab);
-			statusHbox->addStretch(1);
-			QPushButton* fileSlctBtn = new QPushButton(QString("选择文件"));
-			statusHbox->addWidget(fileSlctBtn);
-
-			statusHbox->addStretch(1);
-
-			QCheckBox* statusCheck = new QCheckBox;
-
-			statusHbox->addWidget(statusCheck);
-			statusCheck->setObjectName("checkbox");
-			widget->setFixedHeight(40);
-			widget->setLayout(statusHbox);
-			widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
-			rightGird->addWidget(widget);
-			//同步至数据表
-			DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`status_info`(`name`) VALUES ('%1')").arg(lineStat->text()));
-			//将新增的状态ID设置为属性
-			DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT status_info.id,status_info.createTime,status_info.lastUpdateTime FROM status_info WHERE status_info.`name` = '%1'").arg(lineStat->text()));
-			auto onlyData = DeviceDBConfigInfo::getInstance()->customReadInfoMap.begin();
-			statLabb->setProperty("id", onlyData->first);
-
-			connect(fileSlctBtn, &QPushButton::clicked, this, [=]() {
-				//过滤格式txt
-				QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
-				if (filepath1.isEmpty())
-				{
-					return;
-				}
-				filepath1 = filepath1.split("/device/")[1];
-				fileLab->setWordWrap(true);
-				fileLab->setText(filepath1);
-				});
-
-			});
-
-
-		});
 
 	//右侧2  参数
 	scrollAreaParam->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-	scrollAreaParam->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 	QGridLayout* rightGird2 = new QGridLayout;
 	rightGird2->setContentsMargins(60, 40, 20, 60);
 	int rightGridColumnC2 = 1;
 	int curInd2 = 0;
 	deviceParamList.clear();
-	DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		parameter_info.id,\
+		parameter_info.`name`,\
+		parameter_info.createTime,\
+		parameter_info.lastUpdateTime\
+		FROM\
+		parameter_info\
+		INNER JOIN parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id\
+		WHERE\
+		parameter_rocket_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
-	for (auto ele : DeviceDBConfigInfo::getInstance()->paramInfo)
+	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
 		QWidget* widget = new QWidget;
 		widget->setObjectName("widget");
@@ -389,15 +255,12 @@ void AllInfoConfigWidget::initDeviceConfigLayout() {
 		curInd2++;
 	}
 
-	//
-	scrollAreaParamContent->setLayout(rightGird2);
-	scrollAreaParam->setWidget(scrollAreaParamContent);
 	scrollAreaParam->setWidgetResizable(true);
 	//右侧2上
 	QHBoxLayout* rightTopLayout = new QHBoxLayout;
 
 	rightTopLayout->addWidget(searchDevParam);
-	rightGird2->setVerticalSpacing(20);
+
 	rightTopLayout->setContentsMargins(0, 0, 0, 0);
 	searchDevParam->setFixedWidth(300);
 
@@ -529,7 +392,7 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 		int addCode = 1;
 		for (int i = 1; i < 255; i++)
 		{
-			if (!thisRocketCodes.contains(i))
+			if (thisRocketCodes.count(i) == 0)
 			{
 				addCode = i;
 				break;
@@ -568,7 +431,10 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
 	auto allDev2Param = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
 
-	qSqlString = QString("SELECT\
+	//没有协议时
+	if (rocketComProtoList->count() != 0)
+	{
+		qSqlString = QString("SELECT\
 			rockect_param_info.device_parameter_id,\
 			rockect_param_info.createTime,\
 			rockect_param_info.lastUpdateTime\
@@ -578,45 +444,47 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 			WHERE\
 			rockect_param_info.rocket_data_id = %1 AND\
 		rocket_data_info.rocket_id = %2").arg(rocketComProtoList->item(0)->data(Qt::UserRole).toInt()).arg(rocketID);
-	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
-	auto protoOwnDevParam = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		auto protoOwnDevParam = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
 
-	deviceParamTree->clear();
-	deviceParamTree->setColumnCount(2);
-	deviceParamTree->headerItem()->setHidden(true);
+		deviceParamTree->clear();
+		deviceParamTree->setColumnCount(2);
+		deviceParamTree->headerItem()->setHidden(true);
 
-	for (pair<int, vector< string>> ele1 : allDev2Param)
-	{
-		QTreeWidgetItem* eachItem = new QTreeWidgetItem;
-
-		eachItem->setData(0, Qt::UserRole, ele1.first);
-		eachItem->setText(0, QString::fromStdString(ele1.second[1]));
-		eachItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-		QList<QTreeWidgetItem*> childList;
-		for (int i = 0; i < ele1.second.size() / 4; i++)
+		for (pair<int, vector< string>> ele1 : allDev2Param)
 		{
-			QTreeWidgetItem* subItem = new QTreeWidgetItem;
-			int tmpDevParamId = atoi(ele1.second[2 + 4 * i].c_str());
-			subItem->setData(1, Qt::UserRole, tmpDevParamId);
-			if (!protoOwnDevParam[tmpDevParamId].empty())
-			{
-				subItem->setCheckState(1, Qt::Checked);
-				QListWidgetItem* selctDevParamItem = new QListWidgetItem(QString::fromStdString(ele1.second[3 + 4 * i]));
-				selctDevParamItem->setData(Qt::UserRole, tmpDevParamId);
-				hadSelectedParamsL->addItem(selctDevParamItem);
-			}
-			else
-			{
-				subItem->setCheckState(1, Qt::Unchecked);
-			}
-			subItem->setText(1, QString::fromStdString(ele1.second[3 + 4 * i]));
+			QTreeWidgetItem* eachItem = new QTreeWidgetItem;
 
-			childList.append(subItem);
+			eachItem->setData(0, Qt::UserRole, ele1.first);
+			eachItem->setText(0, QString::fromStdString(ele1.second[1]));
+			eachItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+			QList<QTreeWidgetItem*> childList;
+			for (int i = 0; i < ele1.second.size() / 4; i++)
+			{
+				QTreeWidgetItem* subItem = new QTreeWidgetItem;
+				int tmpDevParamId = atoi(ele1.second[2 + 4 * i].c_str());
+				subItem->setData(1, Qt::UserRole, tmpDevParamId);
+				if (!protoOwnDevParam[tmpDevParamId].empty())
+				{
+					subItem->setCheckState(1, Qt::Checked);
+					QListWidgetItem* selctDevParamItem = new QListWidgetItem(QString::fromStdString(ele1.second[3 + 4 * i]));
+					selctDevParamItem->setData(Qt::UserRole, tmpDevParamId);
+					hadSelectedParamsL->addItem(selctDevParamItem);
+				}
+				else
+				{
+					subItem->setCheckState(1, Qt::Unchecked);
+				}
+				subItem->setText(1, QString::fromStdString(ele1.second[3 + 4 * i]));
+
+				childList.append(subItem);
+			}
+			eachItem->addChildren(childList);
+			deviceParamTree->addTopLevelItem(eachItem);
 		}
-		eachItem->addChildren(childList);
-		deviceParamTree->addTopLevelItem(eachItem);
+		deviceParamTree->expandAll();
 	}
-	deviceParamTree->expandAll();
+
 
 	//点击树状结构
 	connect(deviceParamTree, &QTreeWidget::itemClicked, this, [=](QTreeWidgetItem* item1, int column) {
@@ -766,11 +634,134 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 **/
 void AllInfoConfigWidget::loadDeviceInfoData() {
 	deviceCfgList->clear();
+
 	//list
 	deviceCfgList->addItem(QString("    设备状态"));
 	deviceCfgList->addItem(QString("    设备参数绑定"));
 	deviceCfgList->item(0)->setSelected(true);
 	deviceCfgList->setCurrentRow(0);
+	deviceCfgList->setFocusPolicy(Qt::NoFocus);
+	//进入时默认显示状态内容
+	deviceStatContentUpdate();
+	QString ss = QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;}\
+				QListWidget::item{border-radius:5px;padding:10px;image:url(:/icon/icon/bb.png);image-position:left;margin:0 0 10 0;min-height:30px;}\
+				QListWidget::item:hover{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}\
+				QListWidget::item:selected{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}");
+
+	deviceCfgList->setStyleSheet(ss);
+
+	connect(deviceCfgList, &QListWidget::currentTextChanged,
+		[=](const QString& text) {
+			if (text == QString("    设备状态"))
+			{
+				deviceStatContentUpdate();
+
+				scrollAreaStat->show();//进入时默认显示
+				searchDevParam->hide();
+				scrollAreaParam->hide();
+			}
+			else
+			{
+				deviceParamContentUpdate();
+
+				scrollAreaStat->hide();//进入时默认不显示
+				searchDevParam->show();
+				scrollAreaParam->show();
+
+			}
+		});
+
+
+	//设备显示
+	rocketWidget->hide();
+	commandWidget->hide();
+	deviceWidget->show();
+	scrollAreaParam->hide();
+	searchDevParam->hide();
+
+	windowTitle->setText(QString("-设备配置"));
+}
+
+/**
+	@brief 设备状态内容
+**/
+void AllInfoConfigWidget::deviceStatContentUpdate() {
+	QGridLayout* rightVBox = new QGridLayout;
+	QGridLayout* rightGird = new QGridLayout;
+	//rightGird->setContentsMargins(120, 40, 20, 60);
+	rightGird->setContentsMargins(0, 0, 0, 0);
+	int rightGridColumnC = 1;
+	int curInd = 0;
+	deviceStatList.clear();
+	DeviceDBConfigInfo::getInstance()->readStatusInfoDB2UI();
+
+	for (auto ele : DeviceDBConfigInfo::getInstance()->statusInfo)
+	{
+		QWidget* widget = new QWidget;
+		//widget->setFixedWidth(330);
+		widget->setObjectName("widget");
+		QHBoxLayout* statusHbox = new QHBoxLayout;
+		QLabel* lab = new QLabel(QString::fromStdString(ele.second[1]));
+		lab->setFixedWidth(200);
+		lab->setProperty("id", ele.first);
+		lab->setObjectName("status");
+		statusHbox->addWidget(lab);
+
+		QLabel* fileLab = new QLabel;
+		fileLab->setFixedWidth(500);
+		fileLab->setObjectName("fileLab");
+		statusHbox->addWidget(fileLab);
+		statusHbox->addStretch(1);
+		QPushButton* fileSlctBtn = new QPushButton(QString("选择文件"));
+		statusHbox->addWidget(fileSlctBtn);
+
+		statusHbox->addStretch(1);
+
+		QCheckBox* statusCheck = new QCheckBox;
+		statusHbox->addStretch(1);
+		statusHbox->addWidget(statusCheck);
+		statusCheck->setObjectName("checkbox");
+
+		widget->setLayout(statusHbox);
+		rightGird->addWidget(widget, curInd / rightGridColumnC, curInd % rightGridColumnC);
+		rightGird->setRowStretch(curInd / rightGridColumnC, 1);
+		widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		deviceStatList.push_back(widget);
+		widget->setFixedHeight(40);
+		curInd++;
+
+		connect(fileSlctBtn, &QPushButton::clicked, this, [=]() {
+			//过滤格式txt
+			QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
+			if (filepath1.isEmpty())
+			{
+				return;
+			}
+			filepath1 = filepath1.split("/device/")[1];
+			fileLab->setWordWrap(true);
+			fileLab->setText(filepath1);
+			});
+
+	}
+
+	rightGird->setVerticalSpacing(20);
+
+	addNewStat = new QPushButton;
+	addNewStat->setStyleSheet(QString("QPushButton{width:330px;height:58px;border:1px solid gray;border-radius:5px;background-color:rgba(255,255,255,1);image:url(:/icon/icon/+hao.png);}"));
+	addNewStat->setFixedHeight(40);
+	addNewStat->setFixedWidth(330);
+	QHBoxLayout* hwbox = new QHBoxLayout;
+	hwbox->addWidget(addNewStat);
+	hwbox->setContentsMargins(0, 40, 20, 0);
+	rightVBox->setContentsMargins(60, 40, 20, 60);
+	rightVBox->addLayout(rightGird, 0, 0, 3, 2);
+	rightVBox->addLayout(hwbox, 4, 0, 1, 1);
+	QWidget* scrollAreaStatContent = new QWidget;
+	scrollAreaStatContent->setLayout(rightVBox);
+	scrollAreaStat->setWidget(scrollAreaStatContent);
+	scrollAreaStatContent->setObjectName("content");
+
+	scrollAreaStat->setWidgetResizable(true);
 
 	//设备已有状态绑定
 	//根据当前设备设置选中项
@@ -781,8 +772,10 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 		device_status_info.lastUpdateTime\
 		FROM\
 		device_status_info\
+		INNER JOIN device_info ON device_status_info.device_id = device_info.id\
 		WHERE\
-		device_status_info.device_id = %1").arg(deviceID);
+		device_status_info.device_id = %1 AND\
+		device_info.rocket_id = %2").arg(deviceID).arg(AppCache::instance()->m_CurrentRocketType->m_id);
 
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
 	auto deviceHadStatInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
@@ -805,11 +798,138 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 		{
 			checkBox->setCheckState(Qt::Unchecked);
 		}
-
 	}
 
+	connect(addNewStat, &QPushButton::clicked, this, [=]() {
+		//需要输入一个状态名
+		QWidget* newStatW = new QWidget;
+		QVBoxLayout* newStatWLayout = new QVBoxLayout;
+		QLabel* statName = new QLabel(QString("状态名:"));
+		QLineEdit* lineStat = new QLineEdit;
+		QPushButton* okStat = new QPushButton(QString("确定"));
+		newStatWLayout->addWidget(statName);
+		newStatWLayout->addWidget(lineStat);
+		newStatWLayout->addWidget(okStat);
+		newStatW->setLayout(newStatWLayout);
+		newStatW->show();
+
+		connect(okStat, &QPushButton::clicked, this, [=]() {
+			newStatW->deleteLater();
+
+			QWidget* widget = new QWidget;
+			//widget->setFixedWidth(330);
+			widget->setObjectName("widget");
+			QHBoxLayout* statusHbox = new QHBoxLayout;
+			QLabel* statLabb = new QLabel(lineStat->text());
+			statLabb->setObjectName("status");
+			statLabb->setFixedWidth(200);
+			statusHbox->addWidget(statLabb);
+
+			QLabel* fileLab = new QLabel;
+			fileLab->setFixedWidth(500);
+			fileLab->setObjectName("fileLab");
+			statusHbox->addWidget(fileLab);
+			statusHbox->addStretch(1);
+			QPushButton* fileSlctBtn = new QPushButton(QString("选择文件"));
+			statusHbox->addWidget(fileSlctBtn);
+
+			statusHbox->addStretch(1);
+
+			QCheckBox* statusCheck = new QCheckBox;
+
+			statusHbox->addWidget(statusCheck);
+			statusCheck->setObjectName("checkbox");
+			widget->setFixedHeight(40);
+			widget->setLayout(statusHbox);
+			widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+			rightGird->addWidget(widget);
+			//同步至数据表
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`status_info`(`name`) VALUES ('%1')").arg(lineStat->text()));
+			//将新增的状态ID设置为属性
+			DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT status_info.id,status_info.createTime,status_info.lastUpdateTime FROM status_info WHERE status_info.`name` = '%1'").arg(lineStat->text()));
+			auto onlyData = DeviceDBConfigInfo::getInstance()->customReadInfoMap.begin();
+			statLabb->setProperty("id", onlyData->first);
+
+			connect(fileSlctBtn, &QPushButton::clicked, this, [=]() {
+				//过滤格式txt
+				QString filepath1 = QFileDialog::getOpenFileName(nullptr, QString(), QString(), QString(tr("*.txt")));
+				if (filepath1.isEmpty())
+				{
+					return;
+				}
+				filepath1 = filepath1.split("/device/")[1];
+				fileLab->setWordWrap(true);
+				fileLab->setText(filepath1);
+				});
+
+			});
+
+
+		});
+
+}
+
+
+
+/**
+	@brief 设备参数内容更新
+**/
+void AllInfoConfigWidget::deviceParamContentUpdate() {
+	QGridLayout* rightGird2 = new QGridLayout;
+	rightGird2->setContentsMargins(60, 40, 20, 60);
+	int rightGridColumnC2 = 1;
+	int curInd2 = 0;
+	deviceParamList.clear();
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		parameter_info.id,\
+		parameter_info.`name`,\
+		parameter_info.createTime,\
+		parameter_info.lastUpdateTime\
+		FROM\
+		parameter_info\
+		INNER JOIN parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id\
+		WHERE\
+		parameter_rocket_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
+	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		QWidget* widget = new QWidget;
+		widget->setObjectName("widget");
+		//widget->setFixedSize(600, 40);
+		widget->setFixedHeight(40);
+		QHBoxLayout* statusHbox = new QHBoxLayout;
+		QLabel* lab = new QLabel(QString::fromStdString(ele.second[1]));
+		lab->setObjectName("paramlab");
+		lab->setProperty("id", ele.first);
+		statusHbox->addWidget(lab);
+
+		//QPushButton* selectFileBtn = new QPushButton(QString("绑定文件"));
+
+		QCheckBox* statusCheck = new QCheckBox;
+		statusCheck->setObjectName("checkbox");
+
+		statusHbox->addStretch(1);
+		statusHbox->addWidget(statusCheck);
+		//statusHbox->setAlignment(Qt::Alignm);
+
+		widget->setLayout(statusHbox);
+		rightGird2->addWidget(widget, curInd2 / rightGridColumnC2, curInd2 % rightGridColumnC2);
+		rightGird2->setRowStretch(curInd2 / rightGridColumnC2, 1);
+		widget->setStyleSheet(QString("QWidget#widget{width:600px;height:40px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		deviceParamList.push_back(widget);
+
+		curInd2++;
+	}
+	rightGird2->setRowStretch(curInd2, 1);
+	QWidget* scrollAreaParamContent = new QWidget;
+	//
+	rightGird2->setVerticalSpacing(20);
+	scrollAreaParamContent->setLayout(rightGird2);
+	scrollAreaParam->setWidget(scrollAreaParamContent);
+
 	//设备已有参数绑定
-	qSqlString = QString("SELECT\
+	QString qSqlString11 = QString("SELECT\
 		device_param_info.parameter_id,\
 		device_param_info.createTime,\
 		device_param_info.lastUpdateTime\
@@ -817,7 +937,7 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 		device_param_info\
 		WHERE\
 		device_param_info.device_id = %1").arg(deviceID);
-	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString11);
 	auto deviceHadParamInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
 
 	for (auto firW : scrollAreaParam->widget()->children())
@@ -837,40 +957,6 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 			checkBox->setCheckState(Qt::Unchecked);
 		}
 	}
-
-	deviceCfgList->setFocusPolicy(Qt::NoFocus);
-
-	QString ss = QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;}\
-				QListWidget::item{border-radius:5px;padding:10px;image:url(:/icon/icon/bb.png);image-position:left;margin:0 0 10 0;min-height:30px;}\
-				QListWidget::item:hover{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}\
-				QListWidget::item:selected{image:url(:/icon/icon/ww.png);background-color:rgba(63,144,255,1);}");
-
-	deviceCfgList->setStyleSheet(ss);
-
-	connect(deviceCfgList, &QListWidget::currentTextChanged,
-		[=](const QString& text) {
-			if (text == QString("    设备状态"))
-			{
-				scrollAreaStat->show();//进入时默认不显示
-				searchDevParam->hide();
-				scrollAreaParam->hide();
-			}
-			else
-			{
-				scrollAreaStat->hide();//进入时默认不显示
-				searchDevParam->show();
-				scrollAreaParam->show();
-			}
-		});
-
-	//设备显示
-	rocketWidget->hide();
-	commandWidget->hide();
-	deviceWidget->show();
-	scrollAreaParam->hide();
-	searchDevParam->hide();
-
-	windowTitle->setText(QString("-设备配置"));
 }
 
 void AllInfoConfigWidget::loadCmdInfoData() {

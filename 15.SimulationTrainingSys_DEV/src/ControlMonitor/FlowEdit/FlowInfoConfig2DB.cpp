@@ -165,6 +165,18 @@ void FlowInfoConfig2DB::clearSubFlowDB(vector<int> v) {
 			qDebug() << "往sub_flow_info数据库写入失败!!!";
 		}
 	}
+}
 
-
+/**
+	@brief 自定义读取
+	@param qSqlString -
+**/
+void FlowInfoConfig2DB::customReadTableInfo(QString qSqlString) {
+	string sqlString = qSqlString.toStdString();
+	customReadInfoMap.clear();
+	bool opRet = flowInfoDBOp->queryMysql(sqlString, customReadInfoMap);
+	if (!opRet)
+	{
+		qDebug() << "获取自定义数据失败!!!";
+	}
 }

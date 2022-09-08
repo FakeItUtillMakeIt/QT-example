@@ -118,6 +118,64 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
+
+
+	/// <summary>
+	/// 获取全部的参数
+	/// </summary>
+	/// <returns></returns>
+	//bool ImpotEXcelDAO::GetWholeParamInfo()
+	//{
+	//	if (!connected())
+	//	{
+	//		LOG(INFO) << "创建数据库连接";
+	//		if (!connect())
+	//			return false;
+	//	}
+	//	MYSQL_RES* result = nullptr;
+	//	MYSQL_ROW sql_row;
+	//	int res;
+	//	string sql;
+	//	sql.append("SELECT * FROM parameter_info");
+
+	//	mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+	//	res = mysql_query(&my_connection, sql.c_str());//查询
+	//	if (!res)
+	//	{
+	//		result = mysql_store_result(&my_connection);
+	//		if (result)
+	//		{
+	//			m_wholeParamI.clear();
+	//			while (sql_row = mysql_fetch_row(result))
+	//			{
+	//				ParamInfo* oneParam = new ParamInfo();
+	//				oneParam->m_id = atoi(sql_row[0]);
+	//				oneParam->m_name = sql_row[1];
+	//				oneParam->m_type = atoi(sql_row[2]);
+	//				oneParam->m_unit = sql_row[3];
+
+	//				if (oneParam->m_rocketid == m_importRocketId)
+	//				{
+	//					m_wholeParamI.insert(pair<int, ParamInfo*>(oneParam->m_id, oneParam));
+	//				}
+	//			}
+	//		}
+	//		else
+	//		{
+	//			LOG(INFO) << "获取参数数据失败";
+	//			return false;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		LOG(INFO) << "获取参数数据失败";
+	//		return false;
+	//	}
+	//	if (result)
+	//		mysql_free_result(result);//释放结果资源  
+	//	return true;
+	//}
+
 	
 	/// <summary>
 	/// 获取当前所有的参数
@@ -275,7 +333,7 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
-					onetable->m_tableName = sql_row[1];
+					onetable->m_tableName = sql_row[2];
 
 					m_allCommandtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
 				}
@@ -326,7 +384,7 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
-					onetable->m_tableName = sql_row[1];
+					onetable->m_tableName = sql_row[2];
 
 					m_allParamtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
 				}
@@ -353,14 +411,14 @@ namespace DataBase
 	/// </summary>
 	/// return -1：错误；0：已存在
 	/// <returns></returns>
-	int ImpotEXcelDAO::ParamtableIsExist(string pTableName)
+	int ImpotEXcelDAO::ParamtableIsExist(PCTable pTable)
 	{
 		int tableNameId = -1;
 
 		//判断是否存在
 		for(auto item : m_allParamtableI)
 		{
-			if (item.second->m_tableName.compare(pTableName) == 0)
+			if (item.second->m_tableName.compare(pTable.m_tableName) == 0)
 			{
 				tableNameId = item.first;
 				return tableNameId;
@@ -375,8 +433,9 @@ namespace DataBase
 				return tableNameId;
 		}
 		stringstream ss;
-		ss << "insert into param_table_info(name) values ('";
-		ss << boost::lexical_cast<string>(pTableName) + "')";
+		ss << "insert into param_table_info(rocket_id,name) values ('";
+		ss << boost::lexical_cast<string>(pTable.m_roketID) + "','";
+		ss << boost::lexical_cast<string>(pTable.m_tableName) + "')";
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		string sql = ss.str();
@@ -397,7 +456,7 @@ namespace DataBase
 
 					PCTable* oneTable = new PCTable();
 					oneTable->m_id = atoi(sql_row[0]);
-					oneTable->m_tableName = pTableName;
+					oneTable->m_tableName = pTable.m_tableName;
 
 					m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
 					tableNameId = oneTable->m_id;
@@ -413,11 +472,73 @@ namespace DataBase
 		return tableNameId;
 	}
 
+
 	/// <summary>
-	/// 写入新的参数
+	/// 判断整个参数表中是否存在该参数，不存在则写入
+	/// 返回参数id
 	/// </summary>
 	/// <returns></returns>
-	int ImpotEXcelDAO::NowParamExist(ParamInfo* oneParamInfo, bool& isExit)
+	//bool ImpotEXcelDAO::NowParamExist(ParamInfo* oneParamInfo, int& ParamId)
+	//{
+	//	for (auto item : m_wholeParamI)
+	//	{
+	//		if (item.second->m_name.compare(oneParamInfo->m_name) == 0)
+	//		{
+	//			ParamId = item.first;
+	//			return true;
+	//		}
+	//	}
+
+	//	if (!connected())
+	//	{
+	//		LOG(INFO) << "创建数据库连接";
+	//		if (!connect())
+	//			return false;
+	//	}
+	//	stringstream ss;
+	//	ss << "insert into parameter_info(name,type,unit) values ('";
+	//	ss << boost::lexical_cast<string>(oneParamInfo->m_name) + "','";
+	//	ss << boost::lexical_cast<string>(oneParamInfo->m_type) + "','";
+	//	ss << boost::lexical_cast<string>(oneParamInfo->m_unit) + "')";
+
+	//	mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+	//	string sql = ss.str();
+	//	int res = mysql_query(&my_connection, sql.c_str());
+	//	if (!res)
+	//	{
+	//		int res1;
+	//		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+	//		res1 = mysql_query(&my_connection, "select @@IDENTITY");
+	//		if (!res1)
+	//		{
+	//			MYSQL_RES* result = nullptr;
+	//			MYSQL_ROW sql_row;
+	//			result = mysql_store_result(&my_connection);
+	//			if (result)
+	//			{
+	//				sql_row = mysql_fetch_row(result);
+
+	//				PCTable* oneTable = new PCTable();
+	//				oneTable->m_id = atoi(sql_row[0]);
+	//				//m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
+	//				ParamId = oneTable->m_id;
+	//				return true;
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		LOG(INFO) << "插入参数失败!" << sql;
+	//		return false;
+	//	}
+	//	return true;
+	//}
+
+	/// <summary>
+	/// 判断当前火箭是否绑定该参数
+	/// </summary>
+	/// <returns></returns>
+	int ImpotEXcelDAO::NowRocketParamExist(ParamInfo* oneParamInfo,bool& isExit)
 	{
 		int paramId = -1;
 		for (auto item : m_allParamI)
@@ -429,7 +550,6 @@ namespace DataBase
 				return paramId;
 			}
 		}
-
 		if (!connected())
 		{
 			LOG(INFO) << "创建数据库连接";
@@ -461,30 +581,11 @@ namespace DataBase
 
 					PCTable* oneTable = new PCTable();
 					oneTable->m_id = atoi(sql_row[0]);
-					
-
 					//m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
 					paramId = oneTable->m_id;
 					return paramId;
 				}
 			}
-
-			//每次更新用于后续查重
-			/*if (GetAllParamInfo())
-			{
-				for (auto item : m_allParamI)
-				{
-					if (item.second->m_name == oneParamInfo->m_name)
-					{
-						paramId = item.first;
-						return paramId;
-					}
-				}
-				return paramId;
-			}
-			else
-				return paramId;*/
-
 		}
 		else
 		{
@@ -492,6 +593,7 @@ namespace DataBase
 			return paramId;
 		}
 		return paramId;
+
 	}
 
 	/// <summary>
@@ -531,13 +633,13 @@ namespace DataBase
 	/// 判断当前指令表是否存在，不存在则写入
 	/// </summary>
 	/// <returns></returns>
-	int ImpotEXcelDAO::CommandtableIsExist(string cTableName)
+	int ImpotEXcelDAO::CommandtableIsExist(PCTable cTable)
 	{
 		int cmdTableId = -1;
 		//判断是否存在
 		for (auto item : m_allCommandtableI)
 		{
-			if (item.second->m_tableName.compare(cTableName) == 0)
+			if (item.second->m_tableName.compare(cTable.m_tableName) == 0)
 			{
 				cmdTableId = item.first;
 				return cmdTableId;
@@ -552,8 +654,9 @@ namespace DataBase
 				return cmdTableId;
 		}
 		stringstream ss;
-		ss << "insert into command_table_info(name) values ('";
-		ss << boost::lexical_cast<string>(cTableName) + "')";
+		ss << "insert into command_table_info(rocket_id,name) values ('";
+		ss << boost::lexical_cast<string>(cTable.m_roketID) + "','";
+		ss << boost::lexical_cast<string>(cTable.m_tableName) + "')";
 
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		string sql = ss.str();
@@ -574,7 +677,7 @@ namespace DataBase
 
 					PCTable* oneTable = new PCTable();
 					oneTable->m_id = atoi(sql_row[0]);
-					oneTable->m_tableName = cTableName;
+					oneTable->m_tableName = cTable.m_tableName;
 
 					m_allCommandtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
 					cmdTableId = oneTable->m_id;

@@ -105,6 +105,7 @@ private:
 	QScrollArea* scrollAreaStat;
 	QPushButton* addNewStat;
 	//右侧2设备参数
+
 	QLineEdit* searchDevParam;
 	QGridLayout* devParamLayout;
 	QScrollArea* scrollAreaParam;
@@ -143,7 +144,8 @@ private:
 	void initDeviceConfigLayout();
 	void initCommandConfigLayout();
 
-
+	void deviceStatContentUpdate();
+	void deviceParamContentUpdate();
 
 protected:
 	void mouseMoveEvent(QMouseEvent* event);

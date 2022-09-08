@@ -922,6 +922,7 @@ void AddErrorCommand::IsEnable(bool isOk)
         ui.cb_faultType->setEnabled(true);
     }
     
+    ui.cb_faultType->setEnabled(false);//只能选择第一项，只能进行参数故障设置 2022.9.8。
 }
 
 /// <summary>

@@ -218,7 +218,7 @@ background:transparent</string>
          </property>
          <property name="icon">
           <iconset resource="twoDdisplay.qrc">
-           <normaloff>:/twoDdisplay/edit</normaloff>:/twoDdisplay/edit</iconset>
+           <normaloff>:/twoDdisplay/noedit</normaloff>:/twoDdisplay/noedit</iconset>
          </property>
          <property name="iconSize">
           <size>

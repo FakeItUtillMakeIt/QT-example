@@ -166,10 +166,7 @@ void GenerateFlowCmdWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
 
 	subFlowCmdID_.clear();
 	//backCmdListWidget->clear();
-
 	subFlowCmdID_ = subFlowCmdID;
-
-
 	//responseRecieveCmd(1, QString::fromLocal8Bit("集装箱配电"), QString::fromLocal8Bit("集装箱已配电"));
 }
 
@@ -181,7 +178,6 @@ void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
 	//commandListWidget->clearSelection();
 	backCmdListWidget->clearFocus();
 	backCmdListWidget->clearSelection();
-
 	commandListWidget->clear();
 
 	clickedItem->setSelected(true);
@@ -204,8 +200,6 @@ void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
 		newCmdItem->setTextAlignment(Qt::AlignCenter);
 		commandListWidget->addItem(newCmdItem);
 	}
-
-
 
 }
 

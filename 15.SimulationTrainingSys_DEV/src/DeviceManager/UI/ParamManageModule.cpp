@@ -15,6 +15,27 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
+		//加载参数表信息
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		param_table_info.id,\
+		param_table_info.`name`,\
+		param_table_info.createTime,\
+		param_table_info.lastUpdateTime\
+		FROM\
+		param_table_info WHERE\
+		param_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
+
+		deviceCombox->clear();
+		deviceCombox->addItem("", -1);
+		auto aaa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele : aaa)
+		{
+			auto bb = QString::fromStdString(ele.second[1]);
+			deviceCombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
+		}
+
 		InitDisplayData();
 		});
 
@@ -32,8 +53,9 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 		param_table_info.createTime,\
 		param_table_info.lastUpdateTime\
 		FROM\
-		param_table_info\
-		"));
+		param_table_info WHERE\
+		param_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
 		deviceCombox->clear();
 		deviceCombox->addItem("", -1);
@@ -175,8 +197,10 @@ void ParamManageModule::InitUILayout() {
 		param_table_info.createTime,\
 		param_table_info.lastUpdateTime\
 		FROM\
-		param_table_info\
-		"));
+		param_table_info WHERE\
+		param_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
 
 	deviceCombox->clear();
 	deviceCombox->addItem("", -1);
@@ -315,7 +339,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-});
+		});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);

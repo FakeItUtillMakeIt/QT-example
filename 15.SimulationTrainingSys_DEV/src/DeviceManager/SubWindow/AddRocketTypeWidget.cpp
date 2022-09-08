@@ -273,13 +273,16 @@ void AddRocketTypeWidget::InitUILayout() {
 		FROM\
 		command_info\
 		WHERE\
-		command_info.type = %1").arg(DeviceCommonVaries::getInstance()->commandType[string(QString("测发回令").toLocal8Bit())]);
+		command_info.type = %1 AND\
+		command_info.rocket_id = %2")
+		.arg(DeviceCommonVaries::getInstance()->commandType[string(QString("测发回令").toLocal8Bit())])
+		.arg(AppCache::instance()->m_CurrentRocketType->m_id);
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	userSelectBackCmd->addItem(QString("无回令"), 0);
 	for (pair<int, vector<string>> ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
 		userSelectBackCmd->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
-	userSelectBackCmd->addItem(QString("无回令"), 0);
 
 }
 
@@ -365,7 +368,9 @@ void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString p
 					param_table_info.createTime,\
 					param_table_info.lastUpdateTime\
 					FROM\
-					param_table_info"));
+					param_table_info WHERE\
+					param_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 	paramTableType->clear();
 	paramTableType->addItem("", -1);
 	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
@@ -453,6 +458,23 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 	userSelectRocketType->setCurrentText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 	userSelectCmdType->setCurrentText(cmdType);
 	userInputCmdName->setText(cmdName);
+
+	userSelectBackCmd->clear();
+	userSelectBackCmd->addItem("无回令", 0);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_info.id,\
+		command_info.`name`,\
+		command_info.prefix,\
+		command_info.createTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.type = %1 AND\
+		command_info.rocket_id = %2").arg(2).arg(AppCache::instance()->m_CurrentRocketType->m_id));
+	for (auto elem : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+	{
+		userSelectBackCmd->addItem(QString::fromStdString(elem.second[1]), elem.first);
+	}
 	userSelectBackCmd->setCurrentText(backCmd);
 
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
@@ -461,12 +483,13 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 					command_table_info.createTime,\
 					command_table_info.lastUpdateTime\
 					FROM\
-					command_table_info"));
+					command_table_info WHERE\
+					command_table_info.rocket_id = %1")
+		.arg(AppCache::instance()->m_CurrentRocketType->m_id));
 	cmdTableType->clear();
 	cmdTableType->addItem("", -1);
 	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
-
 		cmdTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
 
@@ -690,23 +713,25 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 		parameter_info.id,\
+		parameter_info.`name`,\
 		parameter_info.createTime,\
 		parameter_info.lastUpdateTime\
 		FROM\
 		parameter_info\
-		INNER JOIN parameter_rocket_info ON parameter_info.id = parameter_rocket_info.parameter_id\
+		INNER JOIN parameter_rocket_info ON parameter_rocket_info.parameter_id = parameter_info.id\
 		WHERE\
 		parameter_rocket_info.rocket_id = %1 AND\
-		parameter_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputParamName->text()));
+		parameter_info.`name` = '%2'")
+		.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputParamName->text()));
 
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
 		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
 		{
-			QMessageBox::warning(this, QString("警告"), QString("参数已存在"));
+			QMessageBox::warning(this, QString("警告"), QString("该型号下参数已存在"));
 			return;
 		}
-		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		/*DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 			parameter_info.id,\
 			parameter_info.`name`,\
 			parameter_info.createTime,\
@@ -719,7 +744,7 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 		{
 			QMessageBox::warning(this, QString("警告"), QString("数据表中已经存在该同名参数"));
 			return;
-		}
+		}*/
 		DeviceDBConfigInfo::getInstance()->paramConfigOp2DB(userInputParamName->text(), userSelectParamType->currentData().toInt(), userInputParamUnit->text());
 		//写参数表
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
@@ -845,7 +870,7 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		}
 		for (int i = 0; i < 0xffff; i++)
 		{
-			if (!savedCode.contains(i))
+			if (savedCode.count(i) == 0)
 			{
 				cmdcode = i;
 				break;
@@ -1044,7 +1069,7 @@ void AddRocketTypeWidget::mouseReleaseEvent(QMouseEvent* event)
 
 
 /**
-	@brief 控制参数表的增加
+	@brief 参数表的增加
 	@param  watched -
 	@param  event   -
 	@retval         -
@@ -1070,7 +1095,9 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 					param_table_info.createTime,\
 					param_table_info.lastUpdateTime\
 					FROM\
-					param_table_info"));
+					param_table_info WHERE\
+					param_table_info.rocket_id = %1")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id));
 				for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 				{
 					if (QString::fromStdString(ele.second[1]) == paramTableType->currentText())
@@ -1079,14 +1106,17 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 						return true;
 					}
 				}
-				DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`param_table_info`(`name`) VALUES ('%1')").arg(paramTableType->currentText()));
+				DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`param_table_info`(`rocket_id`, `name`) VALUES (%1, '%2')")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(paramTableType->currentText()));
 				DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 					param_table_info.id,\
 					param_table_info.`name`,\
 					param_table_info.createTime,\
 					param_table_info.lastUpdateTime\
 					FROM\
-					param_table_info"));
+					param_table_info WHERE\
+					param_table_info.rocket_id = %1")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id));
 				paramTableType->clear();
 				for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 				{
@@ -1111,7 +1141,9 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 					command_table_info.createTime,\
 					command_table_info.lastUpdateTime\
 					FROM\
-					command_table_info"));
+					command_table_info WHERE\
+					command_table_info.rocket_id = %1")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id));
 				for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 				{
 					if (QString::fromStdString(ele.second[1]) == cmdTableType->currentText())
@@ -1120,7 +1152,8 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 						return true;
 					}
 				}
-				DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`command_table_info`(`name`) VALUES ('%1')").arg(cmdTableType->currentText()));
+				DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`command_table_info`(`rocket_id`, `name`) VALUES (%1, '%2')")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(cmdTableType->currentText()));
 
 				DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 					command_table_info.id,\
@@ -1128,7 +1161,9 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 					command_table_info.createTime,\
 					command_table_info.lastUpdateTime\
 					FROM\
-					command_table_info"));
+					command_table_info WHERE\
+					command_table_info.rocket_id = %1")
+					.arg(AppCache::instance()->m_CurrentRocketType->m_id));
 				cmdTableType->clear();
 				for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 				{

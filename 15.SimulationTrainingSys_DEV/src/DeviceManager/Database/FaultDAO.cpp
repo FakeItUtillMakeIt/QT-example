@@ -290,7 +290,7 @@ namespace DataBaseF
 					sql_row = mysql_fetch_row(result);
 					int id = atoi(sql_row[0]);
 					fameInfo->m_id = id;
-					m_app->m_CommandInfoframes.insert(pair<int, FaultCommandInfo*>(id, fameInfo));//更新记录map
+					m_app->m_CommandInfoframes.insert(pair<int, FaultCommandInfo*>(fameInfo->m_code, fameInfo));//更新记录map
 					return true;
 				} 
 			} 

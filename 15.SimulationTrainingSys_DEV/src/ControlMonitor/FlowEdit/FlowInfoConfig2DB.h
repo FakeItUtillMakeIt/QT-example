@@ -59,6 +59,7 @@ public:
 	unordered_map<int, vector<string>> customSearchInfo;
 
 	unordered_map<int, vector<string>> customSearchInfo1;
+	unordered_map<int, vector<string>> customReadInfoMap;
 public:
 	void readCommandDB2FlowEdit();
 	void readRocketDB2FlowEdit();
@@ -77,6 +78,8 @@ public:
 	//É¾³ýÊý¾Ý¿â
 	void clearMainFlowDB(int rocketID);
 	void clearSubFlowDB(vector<int> v);
+	void customReadTableInfo(QString qSqlString);
+
 
 private:
 	DataBase::UserDAO* flowInfoDBOp;

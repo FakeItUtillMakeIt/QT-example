@@ -14,7 +14,29 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
+		//加载指令表信息
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
+		FROM\
+		command_table_info WHERE\
+		command_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
+
+		deviceCombox->clear();
+		deviceCombox->addItem("", -1);
+		auto aaa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele : aaa)
+		{
+			auto bb = QString::fromStdString(ele.second[1]);
+			deviceCombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
+		}
+
 		InitDisplayData();
+
 		});
 
 	connect(CommandInfoConfig::InfoConfigWidget::getInstance(), &CommandInfoConfig::InfoConfigWidget::updateCommandInfos, this, [=]() {
@@ -31,8 +53,9 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 		command_table_info.createTime,\
 		command_table_info.lastUpdateTime\
 		FROM\
-		command_table_info\
-		"));
+		command_table_info WHERE\
+		command_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
 		deviceCombox->clear();
 		deviceCombox->addItem("", -1);
@@ -141,8 +164,10 @@ void CommandManageModule::InitUILayout() {
 		command_table_info.createTime,\
 		command_table_info.lastUpdateTime\
 		FROM\
-		command_table_info\
-		"));
+		command_table_info WHERE\
+		command_table_info.rocket_id = %1\
+		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
 
 	deviceCombox->clear();
 	deviceCombox->addItem("", -1);
@@ -480,7 +505,7 @@ void CommandManageModule::paintEvent(QPaintEvent* event) {
 
 	configInfoTable->horizontalHeader()->setStretchLastSection(true);
 	configInfoTable->horizontalHeader()->sectionResizeMode(QHeaderView::Stretch);
-	}
+}
 
 /**
 	@brief 增加一行数据
