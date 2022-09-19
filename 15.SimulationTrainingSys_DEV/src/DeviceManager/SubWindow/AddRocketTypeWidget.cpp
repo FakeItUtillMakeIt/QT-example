@@ -809,12 +809,12 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 			QMessageBox::warning(this, QString("警告"), QString("设备已存在"));
 			return;
 		}
-		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
+		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(AppCache::instance()->m_CurrentRocketType->m_id, userInputDevName->text(), userSelectDevType->currentData().toInt());
 
 	}
 	else
 	{
-		DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(deviceID, userSelectRocketType->currentData().toInt(), userInputDevName->text(), userSelectDevType->currentData().toInt());
+		DeviceDBConfigInfo::getInstance()->updateDeviceInfo2DB(deviceID, AppCache::instance()->m_CurrentRocketType->m_id, userInputDevName->text(), userSelectDevType->currentData().toInt());
 
 	}
 	instance->close();
@@ -878,7 +878,7 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		}
 
 
-		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), AppCache::instance()->m_CurrentRocketType->m_id, userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
 
 		//获取当前新增指令的ID
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
@@ -903,7 +903,7 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 	{
 		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
 		cmdcode = atoi(DeviceDBConfigInfo::getInstance()->commandInfo[commandID][4].c_str());
-		DeviceDBConfigInfo::getInstance()->updateCommandInfo2DB(commandID, userInputCmdName->text(), userSelectRocketType->currentData().toInt(), userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+		DeviceDBConfigInfo::getInstance()->updateCommandInfo2DB(commandID, userInputCmdName->text(), AppCache::instance()->m_CurrentRocketType->m_id, userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
 		//先查询表中是否存在
 		//若存在则修改，不存在则添加
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\

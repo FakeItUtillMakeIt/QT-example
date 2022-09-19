@@ -79,11 +79,11 @@ void DeviceManager::Init()
 
 		});
 
-	connect(ui.tabWidget, &QTabWidget::currentChanged, this, [=](int index) 
+	connect(ui.tabWidget, &QTabWidget::currentChanged, this, [=](int index)
 		{
 			if (index == 1)
 			{
-				DataFaultLoad();//故障重新加载
+				//DataFaultLoad();//故障重新加载
 			}
 		});
 
@@ -509,7 +509,7 @@ void DeviceManager::mouseReleaseEvent(QMouseEvent* event)
 }
 
 void DeviceManager::mouseDoubleClickEvent(QMouseEvent* event) {
-	if (Qt::LeftButton == event->button())
-		changeResize();//此处调用最大化/还原按钮点击槽
-	event->ignore();
+	//if (Qt::LeftButton == event->button())
+	//	changeResize();//此处调用最大化/还原按钮点击槽
+	//event->ignore();
 }

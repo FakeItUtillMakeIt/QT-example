@@ -894,7 +894,8 @@ int XmlStore::RemoveSceneFromFile(ConfigScene* scene)
 {
 
     QString exepath = QApplication::applicationDirPath();
-    QString totalpath = exepath + "/scene/scenes.xml";
+  //  QString totalpath = exepath + "/scene/scenes.xml";
+    QString totalpath = exepath + "/rocket/" + ConfigGlobal::currentRocket + "/scenes.xml";
     tinyxml2::XMLDocument doc;//定义doc对象
 // filename = handlePath(filename);
     int error = doc.LoadFile(totalpath.toLocal8Bit().data());
@@ -904,7 +905,23 @@ int XmlStore::RemoveSceneFromFile(ConfigScene* scene)
 
         return error;
     }
-    tinyxml2::XMLElement* scenesElement = doc.FirstChildElement("scenes");
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    tinyxml2::XMLElement* currentsoftwareElement = nullptr;
+    int softwareid = -1;
+    while (softwareElement)
+    {
+        softwareid = softwareElement->IntAttribute("id");
+        if (softwareid == ConfigGlobal::currentSoftWareID)
+        {
+            currentsoftwareElement = softwareElement;
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+
+    }
+    if (!currentsoftwareElement)
+        return 4;
+    tinyxml2::XMLElement* scenesElement = currentsoftwareElement->FirstChildElement("scenes");
     if (scenesElement == nullptr)
     {
         return false;
@@ -933,6 +950,8 @@ int XmlStore::RemoveSceneFromFile(ConfigScene* scene)
 
 bool XmlStore::SaveSceneToFile(ConfigScene *scene)
 {
+    if (scene == nullptr)
+        return false;
     QString exepath  = QApplication::applicationDirPath();
     QString  filepath  = exepath + scene->GetPath();
     qDebug() << "scene file path:" << filepath;

@@ -28,7 +28,7 @@ GenerateFlowCmdWidget::GenerateFlowCmdWidget(QWidget* parent)
 
 	execProgramListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
 	commandListWidget->setSelectionMode(QAbstractItemView::MultiSelection);
-	backCmdListWidget->setSelectionMode(QAbstractItemView::NoSelection);
+	backCmdListWidget->setSelectionMode(QAbstractItemView::SingleSelection);
 
 	//禁用用户鼠标点击
 	execProgramListWidget->setAttribute(Qt::WA_Disabled, QIODevice::ReadOnly);
@@ -73,7 +73,7 @@ void GenerateFlowCmdWidget::InitLayout() {
 	commandListWidget = new QListWidget;
 	backCmdListWidget = new QListWidget;
 
-	execProgramTitle = new QLabel(QString::fromLocal8Bit("       执行程序列表"));
+	execProgramTitle = new QLabel(QString::fromLocal8Bit("       阶段"));
 	commandTitle = new QLabel(QString::fromLocal8Bit("       指令列表"));
 	backCmdTitle = new QLabel(QString::fromLocal8Bit("       回令列表"));
 
@@ -174,11 +174,7 @@ void GenerateFlowCmdWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
 	@brief 点击主流程相关信息，加载子流程指令
 **/
 void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
-	commandListWidget->clearFocus();
-	//commandListWidget->clearSelection();
-	backCmdListWidget->clearFocus();
-	backCmdListWidget->clearSelection();
-	commandListWidget->clear();
+
 
 	clickedItem->setSelected(true);
 	execProgramListWidget->scrollToItem(clickedItem);
@@ -192,14 +188,23 @@ void GenerateFlowCmdWidget::clickExeProgramItem(QListWidgetItem* clickedItem) {
 			break;
 		}
 	}
-
-	auto cmdInfoList = subFlowInfo_[currentSelectMainID];
-	for (auto cmdInfo : cmdInfoList)
+	if (curMainFlowName != clickedItem->text())
 	{
-		auto newCmdItem = new QListWidgetItem(cmdInfo);
-		newCmdItem->setTextAlignment(Qt::AlignCenter);
-		commandListWidget->addItem(newCmdItem);
+		curMainFlowName = clickedItem->text();
+		commandListWidget->clearFocus();
+		//commandListWidget->clearSelection();
+		backCmdListWidget->clearFocus();
+		backCmdListWidget->clearSelection();
+		commandListWidget->clear();
+		auto cmdInfoList = subFlowInfo_[currentSelectMainID];
+		for (auto cmdInfo : cmdInfoList)
+		{
+			auto newCmdItem = new QListWidgetItem(cmdInfo);
+			newCmdItem->setTextAlignment(Qt::AlignCenter);
+			commandListWidget->addItem(newCmdItem);
+		}
 	}
+
 
 }
 
@@ -232,6 +237,7 @@ void GenerateFlowCmdWidget::responseRecieveCmd(int mainFlowIndex, QString curRun
 	QListWidgetItem* backInfoItem = new QListWidgetItem(backCmdInfo);
 	backInfoItem->setTextAlignment(Qt::AlignCenter);
 
+	backInfoItem->setSelected(true);
 	backCmdListWidget->addItem(backInfoItem);
 	backCmdListWidget->setCurrentItem(backInfoItem);
 	backCmdListWidget->scrollToItem(backInfoItem);

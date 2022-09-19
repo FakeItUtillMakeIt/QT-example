@@ -101,7 +101,8 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql; 
-		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit,b.rocket_id,c.type FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
+		//sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit,b.rocket_id,c.type FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id");
+		sql.append("SELECT a.id, b.id as device_id, b.name as device_name,c.id as subparameter_id, c.name as subparameter_name, c.unit,b.rocket_id,c.type,d.param_table_id as table_id,e.name as table_name FROM device_param_info a left join device_info b on a.device_id = b.id left join parameter_info c on a.parameter_id = c.id left join parameter_rocket_info d on c.id = d.parameter_id left join param_table_info e on d.param_table_id = e.id");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -121,6 +122,9 @@ namespace DataBase
 					oneDeviceParam->m_unit = Utils::UTF8ToGBK(sql_row[5]);
 					oneDeviceParam->m_rockcketid = atoi(sql_row[6]);
 					oneDeviceParam->m_type = atoi(sql_row[7]);
+					oneDeviceParam->m_tableId = (sql_row[8] == nullptr) ? -1 : atoi(sql_row[8]);
+					oneDeviceParam->m_tableName = (sql_row[9] == nullptr) ? "" : Utils::UTF8ToGBK(sql_row[9]);
+		
 					m_app->m_allDeviceParam.insert(pair<int, DeviceParam*>(oneDeviceParam->m_id, oneDeviceParam));
 				}
 			}
@@ -159,7 +163,9 @@ namespace DataBase
 					RocketType* oneDeviceParam = new RocketType();
 					oneDeviceParam->m_id = atoi(sql_row[0]);
 					oneDeviceParam->m_name = Utils::UTF8ToGBK(sql_row[1]);
-					oneDeviceParam->m_code = Utils::UTF8ToGBK(sql_row[2]);
+					oneDeviceParam->m_code = Utils::UTF8ToGBK(sql_row[2]);//此转换存在问题，显示插入到m_app->m_allRocketType调试显示数量有问题
+					//oneDeviceParam->m_name = sql_row[1];
+					//oneDeviceParam->m_code = sql_row[2];
 					m_app->m_allRocketType.insert(pair<int, RocketType*>(oneDeviceParam->m_id, oneDeviceParam));
 				}
 			}

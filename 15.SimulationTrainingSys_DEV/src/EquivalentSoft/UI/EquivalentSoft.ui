@@ -639,20 +639,7 @@
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="3" column="7">
-           <widget class="QLabel" name="lb_user">
-            <property name="styleSheet">
-             <string notr="true">color:white;font-family:&quot;Microsoft Yahei&quot;</string>
-            </property>
-            <property name="text">
-             <string>admin</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="7">
+          <item row="0" column="5">
            <widget class="QPushButton" name="pb_min">
             <property name="minimumSize">
              <size>
@@ -695,35 +682,32 @@ QPushButton {
            </widget>
           </item>
           <item row="3" column="3">
-           <widget class="QPushButton" name="edit">
+           <widget class="QWidget" name="widget_11" native="true">
             <property name="minimumSize">
              <size>
-              <width>30</width>
-              <height>30</height>
+              <width>40</width>
+              <height>20</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>30</width>
-              <height>30</height>
+              <width>40</width>
+              <height>20</height>
              </size>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="autoFillBackground">
-             <bool>false</bool>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border-image:url(&quot;:/EquivalentSoft/edit&quot;);
-border:none</string>
-            </property>
-            <property name="text">
-             <string/>
             </property>
            </widget>
           </item>
-          <item row="0" column="8">
+          <item row="2" column="2">
+           <widget class="QFrame" name="frame_2">
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
            <widget class="QPushButton" name="pb_close">
             <property name="minimumSize">
              <size>
@@ -765,83 +749,7 @@ QPushButton {
             </property>
            </widget>
           </item>
-          <item row="3" column="8">
-           <widget class="QLabel" name="label_3">
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
-            </property>
-            <property name="contextMenuPolicy">
-             <enum>Qt::CustomContextMenu</enum>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="EquivalentSoft.qrc">:/EquivalentSoft/xiala</pixmap>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QWidget" name="widget_9" native="true"/>
-          </item>
-          <item row="3" column="5">
-           <widget class="QPushButton" name="pb_min_1">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="cursor">
-             <cursorShape>PointingHandCursor</cursorShape>
-            </property>
-            <property name="toolTip">
-             <string>当前用户</string>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-	background-color:transparent;
-	background-image: url(:/EquivalentSoft/images/用户1.png);
-    border:0px;
-margin-right：10px;
-}
-
-</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="3">
-           <widget class="QFrame" name="frame_2">
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="6">
+          <item row="3" column="4">
            <widget class="QWidget" name="widget_10" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -859,22 +767,6 @@ margin-right：10px;
              <size>
               <width>20</width>
               <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="4">
-           <widget class="QWidget" name="widget_11" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>40</width>
-              <height>20</height>
              </size>
             </property>
            </widget>

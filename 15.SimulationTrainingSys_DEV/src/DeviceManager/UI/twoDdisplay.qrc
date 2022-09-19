@@ -54,5 +54,15 @@
         <file alias="video_default">images/twoDdisplay/video_icon_normal.png</file>
         <file alias="videoplay">images/twoDdisplay/video_icon.png</file>
         <file>word/word.ttf</file>
+        <file alias="comp">images/twoDdisplay/comp_icon.png</file>
+        <file alias="dcomp">images/twoDdisplay/component.png</file>
+        <file alias="Darea">images/twoDdisplay/goto.png</file>
+        <file alias="h_line">images/twoDdisplay/h_line.png</file>
+        <file alias="v_line">images/twoDdisplay/v_line.png</file>
+        <file alias="Dcomp">images/twoDdisplay/文字bg_icon.png</file>
+        <file>images/twoDdisplay/文字bg_icon@2x.png</file>
+        <file alias="dlineh">images/twoDdisplay/dragline_h.png</file>
+        <file alias="dlinev">images/twoDdisplay/dragline_v.png</file>
+        <file alias="gotoarea">images/twoDdisplay/goto_area.png</file>
     </qresource>
 </RCC>

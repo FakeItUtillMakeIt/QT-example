@@ -79,7 +79,11 @@ namespace DataBase
 					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[4]);
 					oneCommnd->m_iCode = atoi(sql_row[5]);
 					oneCommnd->m_iType = atoi(sql_row[6]);
-					m_app->m_allCommad.insert(pair<int, Command*>(oneCommnd->m_id, oneCommnd));
+
+					if (oneCommnd->m_iRocketId == m_app->m_CurrentRocketType->m_id)
+					{
+						m_app->m_allCommad.insert(pair<int, Command*>(oneCommnd->m_id, oneCommnd));
+					}
 				}
 			}
 			else

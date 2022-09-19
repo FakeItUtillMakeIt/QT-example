@@ -26,6 +26,8 @@ public:
     void CreatConfigInterface();
     bool RestoreFromDataBase();
 
+    void GetRocketData();
+
 private:
     Ui::EquivalentSoftClass ui;
     AppCache* m_app; 
@@ -70,6 +72,6 @@ private slots:
     void adddxq_ok();
     void delete_ok();
     void selected();
-    void editdxq();
+    //void editdxq();
    
 };

@@ -6,7 +6,7 @@ DeviceParam::DeviceParam() :
 {
 	curIndex = 0;
 	paramData = { 0 };
-
+	faultCount = 0;
 	timer = new QTimer();
 	connect(timer, &QTimer::timeout, this, &DeviceParam::timerUpdateParam);
 }
@@ -39,7 +39,7 @@ void DeviceParam::updateParamRealVal() {
 **/
 void DeviceParam::timerUpdateParam() {
 
-	qDebug() << QString::fromLocal8Bit(m_deviceName.c_str()) << QString::fromLocal8Bit(m_subParameterName.c_str());
+	//qDebug() << QString::fromLocal8Bit(m_deviceName.c_str()) << QString::fromLocal8Bit(m_subParameterName.c_str());
 	if (QString::fromStdString(m_status) == QString("³õÊ¼»¯") || paramData.size() <= 0)
 	{
 		return;
@@ -50,5 +50,5 @@ void DeviceParam::timerUpdateParam() {
 		curIndex = 0;
 
 	}
-	qDebug() << curIndex << m_iCurValue << timer->timerId() << m_subParameterId;
+	//qDebug() << curIndex << m_iCurValue << timer->timerId() << m_subParameterId;
 }

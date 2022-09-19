@@ -7,16 +7,16 @@
 
 using namespace DataBase;
 
-class ImportComPramData  : public QObject
+class ImportComPramData : public QObject
 {
 	Q_OBJECT
 
 public:
-	ImportComPramData(QObject *parent);
+	ImportComPramData(QObject* parent);
 	~ImportComPramData();
 
 	void AddPramComDatas(int rocketID);
-
+	void AddPramComDatasV1(int rocketID);
 private:
 	AppCache* m_app;
 	ImpotEXcelDAO* m_EXcelDAO;

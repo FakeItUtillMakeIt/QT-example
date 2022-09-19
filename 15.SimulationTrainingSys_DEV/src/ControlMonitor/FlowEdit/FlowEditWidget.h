@@ -93,6 +93,7 @@ private:
 
 	void loadDBSavedFlow();
 	void loadFlowDisplayFlow();
+	bool eventFilter(QObject* obj, QEvent* event);
 
 private slots:
 	void addNewFlow();

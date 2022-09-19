@@ -7,6 +7,7 @@
 #define POWER_NAME "配电"
 #define POWER_ID 1
 
+#define __USE_MUTLI_FAULT__
 
 CenterOperate::CenterOperate(QWidget* parent)
 	: QWidget(parent)
@@ -206,8 +207,8 @@ void CenterOperate::dealFaultCmd(Command* command) {
 		fault_param_info\
 		INNER JOIN device_param_info ON fault_param_info.device_param_info_id = device_param_info.id\
 		WHERE\
-		fault_param_info.command_id = %1;";
-	qSqlString = qSqlString.arg(command->m_id);
+		fault_param_info.command_code = %1;";
+	qSqlString = qSqlString.arg(command->m_iCode);
 
 
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
@@ -239,8 +240,9 @@ void CenterOperate::dealFaultCmd(Command* command) {
 				//设备参数中参数ID等于故障指令中影响的设备参数ID
 				if (m_app->m_allDeviceParam[eleDevParam]->m_subParameterId == eleParamID) {
 					DeviceParam* deviceParam = m_app->m_allDeviceParam[eleDevParam];
-					//参数状态和设备状态保持一致
-					//第二次点击故障
+#ifdef __USE_SINGLE_FAULT__
+					/*参数状态和设备状态保持一致
+					第二次点击故障*/
 					if (deviceParam->m_curStatus.m_id == FAULT_ID)
 					{
 						//恢复为前置状态
@@ -275,6 +277,59 @@ void CenterOperate::dealFaultCmd(Command* command) {
 						deviceParam->m_curStatus.m_id = FAULT_ID;
 						deviceParam->m_curStatus.m_name = deviceParam->m_status;
 					}
+
+#endif __USE_SINGLE_FAULT__
+#ifdef  __USE_MUTLI_FAULT__
+					//
+					if (deviceParam->m_curStatus.m_id == FAULT_ID)
+					{
+						if (command->isAddFault == true)
+						{
+							deviceParam->faultCount++;
+						}
+						else
+						{
+							deviceParam->faultCount--;
+						}
+						if (deviceParam->faultCount == 0)//没有故障时恢复为故障之前的状态
+						{
+							//恢复为前置状态
+							deviceParam->m_status = deviceParam->m_preStatus.m_name;
+							deviceParam->updateParamRealVal();
+							auto curID = deviceParam->m_curStatus.m_id;
+							auto curName = deviceParam->m_curStatus.m_name;
+							deviceParam->m_curStatus.m_id = deviceParam->m_preStatus.m_id;
+							deviceParam->m_curStatus.m_name = deviceParam->m_preStatus.m_name;
+							//更换前置状态
+							deviceParam->m_preStatus.m_id = curID;
+							deviceParam->m_preStatus.m_name = curName;
+						}
+
+					}
+					else
+					{
+						if (deviceParam->m_Validity == 0)
+						{
+							//记录前置状态
+							deviceParam->m_preStatus.m_id = POWER_ID;//POWER_ID;//配电索引
+							deviceParam->m_preStatus.m_name = Utils::UTF8ToGBK(POWER_NAME);//Utils::UTF8ToGBK(POWER_NAME);//配电
+						}
+						else
+						{
+							//记录前置状态
+							deviceParam->m_preStatus.m_id = deviceParam->m_curStatus.m_id;
+							deviceParam->m_preStatus.m_name = deviceParam->m_curStatus.m_name;
+						}
+
+						//第一次点击故障
+						deviceParam->m_status = Utils::UTF8ToGBK(FAULT_NAME);
+						deviceParam->updateParamRealVal();
+						deviceParam->m_curStatus.m_id = FAULT_ID;
+						deviceParam->m_curStatus.m_name = deviceParam->m_status;
+					}
+#endif __USE_MUTLI_FAULT__
+
+
 				}
 			}
 		}

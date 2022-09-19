@@ -53,6 +53,7 @@ void ReceiveCMDData::receiveData()
 		{
 			vdata1[i] = (unsigned char)datagram[i];
 		}
+
 		unsigned short checksum = CRC::CalCRC16(vdata1 + 2, FRAMELENGTH - 4);
 		memcpy(&crc_val, datagram.data() + FRAMELENGTH - 2, 2);
 		if (crc_val != checksum)
@@ -63,7 +64,12 @@ void ReceiveCMDData::receiveData()
 		command->m_iType = 1;
 		command->m_iCode = 0;
 		command->m_iBackId = 0;
-		memcpy(&command->m_iCode, datagram.data() + 2, 2); //²â·¢Ö¸Áîcode  
+		memcpy(&command->m_iCode, datagram.data() + 2, 2); //²â·¢Ö¸Áîcode 
+		command->isAddFault = false;
+		if (vdata1[4] == 1)//1 ¹ÊÕÏ£º¹ÊÕÏ+1  0£º¼õÉÙ¹ÊÕÏ-1
+		{
+			command->isAddFault = true;
+		}
 		for (auto it = m_app->m_allCommad.begin(); it != m_app->m_allCommad.end(); it++)
 		{
 			if (it->second->m_iCode == command->m_iCode)
@@ -71,6 +77,7 @@ void ReceiveCMDData::receiveData()
 				command->m_iType = it->second->m_iType;
 				command->m_iBackId = it->second->m_iBackId;
 				command->m_id = it->second->m_id;
+
 				break;
 			}
 		}

@@ -84,10 +84,10 @@ namespace DataBaseF
 					FaultParameterInfo* oneFrame = new FaultParameterInfo();
 					int id = atoi(sql_row[0]);
 					oneFrame->m_id = id;
-					oneFrame->m_rocketId = atoi(sql_row[1]);
+					oneFrame->m_type = atoi(sql_row[1]);
 					oneFrame->m_name = sql_row[2];
-					oneFrame->m_type = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
-					oneFrame->m_unit = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
+					oneFrame->m_unit = (sql_row[3] == nullptr) ? -1 : atoi(sql_row[3]);
+					oneFrame->m_rocketId = (sql_row[4] == nullptr) ? -1 : atoi(sql_row[4]);
 					oneFrame->m_createTime = sql_row[5];
 					oneFrame->m_lastUpdateTime = sql_row[6];
 				 

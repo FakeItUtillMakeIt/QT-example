@@ -130,32 +130,42 @@ void DeviceManageModule::InitUILayout() {
 
 		configInfoTable->clearContents();
 		configInfoTable->setRowCount(0);
-		DeviceDBConfigInfo::getInstance()->readDeviceDB2UI();
-		DeviceDBConfigInfo::getInstance()->readRocketDB2UI();
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			device_info.id,\
+			device_info.rocket_id,\
+			device_info.`name`,\
+			device_info.isVirtual,\
+			device_info.createTime,\
+			device_info.lastUpdateTime\
+			FROM\
+			device_info\
+			WHERE\
+			device_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
 		int searchRow = 0;
-		for (auto ele = DeviceDBConfigInfo::getInstance()->deviceInfo.begin(); ele != DeviceDBConfigInfo::getInstance()->deviceInfo.end(); ele++)
+		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 		{
-			if (QString::fromStdString(ele->second[2]).contains(paramInputName->text()))
+			if (QString::fromStdString(ele.second[2]).contains(paramInputName->text()))
 			{
 				QVector<QString> rowData;
-				rowData.push_back(QString::fromStdString(ele->second[0]));
+				rowData.push_back(QString::fromStdString(ele.second[0]));
 
 				QString tmpp1, tmpp2;
 
-				if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())].size() < 3)
+				if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
 				{
-					tmpp1 = QString::fromStdString(ele->second[1]);
+					tmpp1 = QString::fromStdString(ele.second[1]);
 
 				}
 				else
 				{
-					tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele->second[1].c_str())][1]);
+					tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())][1]);
 
 				}
 				rowData.push_back(tmpp1);
-				tmpp2 = QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->deviceIndex2Type[atoi(ele->second[3].c_str())].c_str());
+				tmpp2 = QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->deviceIndex2Type[atoi(ele.second[3].c_str())].c_str());
 				//rowData.push_back(QString::fromStdString(ele->second[1]));
-				rowData.push_back(QString::fromStdString(ele->second[2]));
+				rowData.push_back(QString::fromStdString(ele.second[2]));
 				rowData.push_back(tmpp2);
 				insertOneRow(searchRow++, rowData);
 			}

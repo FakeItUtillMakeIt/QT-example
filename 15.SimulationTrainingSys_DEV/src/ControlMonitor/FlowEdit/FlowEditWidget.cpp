@@ -58,8 +58,8 @@ void FlowEditWidget::InitLayout() {
 
 	rightTopD3->setMaximumWidth(20);
 	rightTopD4->setMaximumWidth(20);
-	rightTopD3->setPixmap(QPixmap(":/ControlMonitor/images/Flow/update.png"));
-	rightTopD4->setPixmap(QPixmap(":/ControlMonitor/images/Flow/sort.png"));
+	//rightTopD3->setPixmap(QPixmap(":/ControlMonitor/images/Flow/update.png"));
+	//rightTopD4->setPixmap(QPixmap(":/ControlMonitor/images/Flow/sort.png"));
 
 	rightTable->verticalHeader()->hide();
 	rightTable->horizontalHeader()->show();
@@ -223,6 +223,8 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 		for (auto cmdInfo : cmdInfoList)
 		{
 			QComboBox* combo1 = new QComboBox;
+			combo1->setEditable(true);
+			combo1->installEventFilter(this);
 			cmdComboBoxList.push_back(combo1);
 			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
@@ -471,6 +473,8 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 		{//插入口令 
 			//插入口令
 			QComboBox* newcombox = new QComboBox;
+			newcombox->setEditable(true);
+			newcombox->installEventFilter(this);
 			cmdComboBoxList.push_back(newcombox);
 			//获取数据表指令信息
 			auto flowInfoOp = FlowInfoConfig2DB::getInstance();
@@ -666,4 +670,18 @@ void FlowEditWidget::clickOKButton() {
 void FlowEditWidget::clickCancelButton() {
 
 	this->close();
+}
+/**
+	@brief 屏蔽滚轮事件
+**/
+bool FlowEditWidget::eventFilter(QObject* obj, QEvent* event)
+{
+	if ( obj->inherits("QComboBox")) {
+
+		if (event->type() == QEvent::Wheel)
+		{
+			return true;
+		}
+	}
+	return false;
 }

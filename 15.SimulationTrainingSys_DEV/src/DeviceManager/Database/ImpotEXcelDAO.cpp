@@ -37,6 +37,7 @@ namespace DataBase
 				GetCommandInfo();//获取所有指令
 				GetAllParamtable();//获取所有参数表
 				GetAllCommandtable();//获取所有指令表
+				GetAllDeviceInfo();//获取新设备表信息
 				return;
 			}
 		}
@@ -113,7 +114,7 @@ namespace DataBase
 		{
 			LOG(INFO) << "获取数据失败";
 			return false;
-		}		
+		}
 		if (result)
 			mysql_free_result(result);//释放结果资源  
 		return true;
@@ -176,7 +177,7 @@ namespace DataBase
 	//	return true;
 	//}
 
-	
+
 	/// <summary>
 	/// 获取当前所有的参数
 	/// </summary>
@@ -285,7 +286,7 @@ namespace DataBase
 					{
 						m_allCommadI.insert(pair<int, Command*>(oneCommand->m_id, oneCommand));
 					}
-					
+
 				}
 			}
 			else
@@ -333,23 +334,27 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
+					onetable->m_roketID = atoi(sql_row[1]);
 					onetable->m_tableName = sql_row[2];
 
-					m_allCommandtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
+					if (onetable->m_roketID == m_importRocketId)
+					{
+						m_allCommandtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
+					}
 				}
 			}
 			else
 			{
 				LOG(INFO) << "获取指令表失败";
 				return false;
-			}	
+			}
 		}
 		else
 		{
 			LOG(INFO) << "获取指令表失败";
 			return false;
 		}
-			
+
 		if (result)
 			mysql_free_result(result);//释放结果资源  
 		return true;
@@ -384,9 +389,14 @@ namespace DataBase
 				{
 					PCTable* onetable = new PCTable();
 					onetable->m_id = atoi(sql_row[0]);
+					onetable->m_roketID = atoi(sql_row[1]);
 					onetable->m_tableName = sql_row[2];
 
-					m_allParamtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
+					if (onetable->m_roketID == m_importRocketId)
+					{
+						m_allParamtableI.insert(pair<int, PCTable*>(onetable->m_id, onetable));
+					}
+
 				}
 			}
 			else
@@ -394,7 +404,7 @@ namespace DataBase
 				LOG(INFO) << "获取参数表失败";
 				return false;
 			}
-				
+
 		}
 		else
 		{
@@ -416,7 +426,7 @@ namespace DataBase
 		int tableNameId = -1;
 
 		//判断是否存在
-		for(auto item : m_allParamtableI)
+		for (auto item : m_allParamtableI)
 		{
 			if (item.second->m_tableName.compare(pTable.m_tableName) == 0)
 			{
@@ -538,7 +548,7 @@ namespace DataBase
 	/// 判断当前火箭是否绑定该参数
 	/// </summary>
 	/// <returns></returns>
-	int ImpotEXcelDAO::NowRocketParamExist(ParamInfo* oneParamInfo,bool& isExit)
+	int ImpotEXcelDAO::NowRocketParamExist(ParamInfo* oneParamInfo, bool& isExit)
 	{
 		int paramId = -1;
 		for (auto item : m_allParamI)
@@ -579,10 +589,9 @@ namespace DataBase
 				{
 					sql_row = mysql_fetch_row(result);
 
-					PCTable* oneTable = new PCTable();
-					oneTable->m_id = atoi(sql_row[0]);
-					//m_allParamtableI.insert(pair<int, PCTable*>(oneTable->m_id, oneTable));
-					paramId = oneTable->m_id;
+					oneParamInfo->m_id = atoi(sql_row[0]);
+					m_allParamI.insert(pair<int, ParamInfo*>(oneParamInfo->m_id, oneParamInfo));
+					paramId = oneParamInfo->m_id;
 					return paramId;
 				}
 			}
@@ -730,8 +739,31 @@ namespace DataBase
 		int res = mysql_query(&my_connection, sql.c_str());
 		if (!res)
 		{
+			int res1;
+			mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+			res1 = mysql_query(&my_connection, "select @@IDENTITY");
+			if (!res1)
+			{
+				MYSQL_RES* result = nullptr;
+				MYSQL_ROW sql_row;
+				result = mysql_store_result(&my_connection);
+				if (result)
+				{
+					sql_row = mysql_fetch_row(result);
+					oneCommand->m_id = atoi(sql_row[0]);//得到回令的id 用于写指令的时候使用   TODO注意释放result
+					m_allCommadI.insert(pair<int, Command*>(oneCommand->m_id, oneCommand));
+					cmdId = oneCommand->m_id;
+					return cmdId;
+				}
+			}
+			else
+			{
+				LOG(INFO) << "插入指令和指令对应关系表失败!" << sql;
+				return cmdId;
+			}
+
 			//每次更新用于后续查重
-			if (GetCommandInfo())
+			/*if (GetCommandInfo())
 			{
 				for (auto item : m_allCommadI)
 				{
@@ -744,7 +776,7 @@ namespace DataBase
 				return cmdId;
 			}
 			else
-				return cmdId;
+				return cmdId;*/
 		}
 		else
 		{
@@ -804,25 +836,11 @@ namespace DataBase
 					sql_row = mysql_fetch_row(result);
 					oneCommandBack->m_id = atoi(sql_row[0]);//得到回令的id 用于写指令的时候使用   TODO注意释放result
 					cmdBackId = oneCommandBack->m_id;
+
+					m_allCommadI.insert(pair<int, Command*>(oneCommandBack->m_id, oneCommandBack));
 					return cmdBackId;
 				}
 			}
-
-			////每次更新用于后续查重
-			//if (GetCommandInfo())
-			//{
-			//	for (auto item : m_allCommadI)
-			//	{
-			//		if (item.second->m_sName.compare(oneCommandBack->m_sName) == 0)
-			//		{
-			//			cmdBackId = item.first;
-			//			return cmdBackId;
-			//		}
-			//	}
-			//	return cmdBackId;
-			//}
-			//else
-			//	return cmdBackId;
 		}
 		else
 		{
@@ -857,6 +875,28 @@ namespace DataBase
 		if (!res)
 		{
 			return true;
+
+			//int res1;
+			//mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+			//res1 = mysql_query(&my_connection, "select @@IDENTITY");
+			//if (!res1)
+			//{
+			//	MYSQL_RES* result = nullptr;
+			//	MYSQL_ROW sql_row;
+			//	result = mysql_store_result(&my_connection);
+			//	if (result)
+			//	{
+			//		sql_row = mysql_fetch_row(result);
+			//		oneCommand->m_id = atoi(sql_row[0]);//得到回令的id 用于写指令的时候使用   TODO注意释放result
+			//		//m_allCommadI.insert(pair<int, Command*>(oneCommand->m_id, oneCommand));
+			//		return true;
+			//	}
+			//}
+			//else
+			//{
+			//	LOG(INFO) << "插入指令和指令对应关系表失败!" << sql;
+			//	return false;
+			//}
 		}
 		else
 		{
@@ -865,6 +905,162 @@ namespace DataBase
 		}
 		return true;
 	}
+
+
+	/// <summary>
+	/// 获取当前火箭所有设备信息
+	/// </summary>
+	/// <returns></returns>
+	bool ImpotEXcelDAO::GetAllDeviceInfo()
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		MYSQL_RES* result = nullptr;
+		MYSQL_ROW sql_row;
+		int res;
+		string sql;
+		sql.append("SELECT * FROM device_info");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());//查询
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result)
+			{
+				m_allDeviceI.clear();
+				while (sql_row = mysql_fetch_row(result))
+				{
+					DeviceInfo* oneDevice = new DeviceInfo();
+					oneDevice->m_id = atoi(sql_row[0]);
+					oneDevice->m_rocketid = atoi(sql_row[1]);
+					oneDevice->m_name = sql_row[2];
+					oneDevice->m_isVirtual = atoi(sql_row[3]);
+
+					if (oneDevice->m_rocketid == m_importRocketId)
+					{
+						m_allDeviceI.insert(pair<int, DeviceInfo*>(oneDevice->m_id, oneDevice));
+					}
+
+				}
+			}
+			else
+			{
+				LOG(INFO) << "获取设备失败";
+				return false;
+			}
+		}
+		else
+		{
+			LOG(INFO) << "获取设备失败";
+			return false;
+		}
+
+		if (result)
+			mysql_free_result(result);//释放结果资源  
+		return true;
+
+	}
+
+	/// <summary>
+	/// 判断当前设备是否存在，不存在则写入
+	/// </summary>
+	/// <param name="oneDevice"></param>
+	/// <returns></returns>
+	int ImpotEXcelDAO::DeviceIsExist(DeviceInfo* oneDevice)
+	{
+		int paramId = -1;
+		for (auto item : m_allDeviceI)
+		{
+			if (item.second->m_name.compare(oneDevice->m_name) == 0)
+			{
+				paramId = item.first;
+				return paramId;
+			}
+		}
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return paramId;
+		}
+		stringstream ss;
+		ss << "insert into device_info(rocket_id,name,isVirtual) values ('";
+		ss << boost::lexical_cast<string>(oneDevice->m_rocketid) + "','";
+		ss << boost::lexical_cast<string>(oneDevice->m_name) + "','";
+		ss << boost::lexical_cast<string>(oneDevice->m_isVirtual) + "')";
+
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		string sql = ss.str();
+		int res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+		{
+			int res1;
+			mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+			res1 = mysql_query(&my_connection, "select @@IDENTITY");
+			if (!res1)
+			{
+				MYSQL_RES* result = nullptr;
+				MYSQL_ROW sql_row;
+				result = mysql_store_result(&my_connection);
+				if (result)
+				{
+					sql_row = mysql_fetch_row(result);
+
+					//DeviceInfo* oneDevice = new DeviceInfo();
+					oneDevice->m_id = atoi(sql_row[0]);
+					m_allDeviceI.insert(pair<int, DeviceInfo*>(oneDevice->m_id, oneDevice));
+					paramId = oneDevice->m_id;
+					return paramId;
+				}
+			}
+		}
+		else
+		{
+			LOG(INFO) << "插入设备失败!" << sql;
+			return paramId;
+		}
+		return paramId;
+
+	}
+
+
+	/// <summary>
+	/// 写入设备和参数对应关系表
+	/// </summary>
+	/// <param name="oneDevice"></param>
+	/// <returns></returns>
+	bool ImpotEXcelDAO::InsertParamDevice(ParamInfo* oneParamInfo)
+	{
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		stringstream ss;
+		ss << "insert into device_param_info(device_id,parameter_id) values ('";
+		ss << boost::lexical_cast<string>(oneParamInfo->m_deviceid) + "','";
+		ss << boost::lexical_cast<string>(oneParamInfo->m_id) + "')";
+
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		string sql = ss.str();
+		int res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+		{
+			return true;
+		}
+		else
+		{
+			LOG(INFO) << "插入参数失败!" << sql;
+			return false;
+		}
+		return true;
+	}
+
 
 }
 

@@ -6,7 +6,7 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 {
 
 	selectedRowNum = 0;
-	columnNameList << QString("参数ID") << QString("参数名称") << QString("参数类型") << QString("参数单位") << QString("操作");
+	columnNameList << QString("参数ID") << QString("火箭型号") << QString("参数名称") << QString("参数类型") << QString("参数单位") << QString("操作");
 
 	InitUILayout();
 	InitDisplayData();
@@ -106,6 +106,7 @@ void ParamManageModule::InitDisplayData() {
 
 		QVector<QString> rowData;
 		rowData.push_back(QString::fromStdString(ele.second[0]));
+		rowData.push_back(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 		rowData.push_back(QString::fromStdString(ele.second[1]));
 		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele.second[2].c_str())].c_str()));
 		rowData.push_back(QString::fromStdString(ele.second[3]));
@@ -251,6 +252,7 @@ void ParamManageModule::InitUILayout() {
 			{
 				QVector<QString> rowData;
 				rowData.push_back(QString::fromStdString(ele->second[0]));
+				rowData.push_back(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 				rowData.push_back(QString::fromStdString(ele->second[1]));
 				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele->second[2].c_str())].c_str()));
 				rowData.push_back(QString::fromStdString(ele->second[3]));
@@ -290,6 +292,7 @@ void ParamManageModule::InitUILayout() {
 		{
 			QVector<QString> rowData;
 			rowData.push_back(QString::fromStdString(ele.second[0]));
+			rowData.push_back(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 			rowData.push_back(QString::fromStdString(ele.second[1]));
 			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele.second[2].c_str())].c_str()));
 			rowData.push_back(QString::fromStdString(ele.second[3]));
@@ -356,8 +359,8 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		editW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
 		editW->setWindowName(QString("编辑参数"));
 		int curRow = opEditBtn->property("row").toInt();
-		editW->setParamInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
-			configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text());
+		editW->setParamInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 2)->text(),
+			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 4)->text());
 		editW->show();
 		});
 

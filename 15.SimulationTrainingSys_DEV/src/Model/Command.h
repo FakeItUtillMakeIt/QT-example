@@ -24,8 +24,10 @@ public:
 	string m_sRocketName; //火箭型号名称
 	int m_iBackId;//测发回令ID
 	int m_commandTableId;
+	int m_tableId;//指令对应的指令表id  -1:表示没有绑定命令表
+	string m_tableName;//指令对应的指令表名称 "":为空表示没有绑定指令表
 	vector<CommandParam*> m_vCommandParam;//参数列表
-
+	bool isAddFault;
 
 };
 Q_DECLARE_METATYPE(Command*);

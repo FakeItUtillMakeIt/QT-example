@@ -29,6 +29,8 @@ public:
 	int m_subParameterId;//外键引用parameter_info.id
 	string m_subParameterName;
 	string m_unit;//单位 
+	int m_tableId;//参数对应的参数表id  -1:表示没有绑定参数表
+	string m_tableName;//参数对应的参数表名称 "":为空表示没有绑定参数表
 
 	double m_time;//遥测时间,相对于当日零时的纳秒数
 	//下面的需要根据设备状态进行赋值
@@ -37,6 +39,8 @@ public:
 
 	Status m_curStatus;//当前状态
 	string m_status;//参数状态
+
+	int faultCount;
 
 	Status m_preStatus;//上一个状态
 	int m_Validity;//参数有效性 0：无效；1：有效

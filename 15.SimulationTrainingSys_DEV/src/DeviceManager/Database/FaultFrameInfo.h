@@ -121,10 +121,10 @@ namespace DataBaseF
 		~FaultParameterInfo() {};
 
 		int m_id;
-		int m_rocketId;
 		string m_name;
 		int m_type;
 		int m_unit;
+		int m_rocketId;
 		string m_createTime;
 		string m_lastUpdateTime;
 

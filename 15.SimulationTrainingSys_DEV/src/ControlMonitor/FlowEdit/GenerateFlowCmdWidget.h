@@ -66,6 +66,7 @@ private:
 	QVector<QString> hadRunCmd;
 	QVector<QString> hadRecievedBackInfo;
 
+	QString curMainFlowName = "";
 private:
 	void InitLayout();
 

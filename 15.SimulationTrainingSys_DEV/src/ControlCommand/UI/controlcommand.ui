@@ -557,21 +557,8 @@
              <property name="spacing">
               <number>0</number>
              </property>
-             <item row="2" column="4">
-              <widget class="QLabel" name="lb_user_2">
-               <property name="layoutDirection">
-                <enum>Qt::LeftToRight</enum>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">color: white</string>
-               </property>
-               <property name="text">
-                <string>admin</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
+             <item row="1" column="2">
+              <widget class="QWidget" name="widget_5" native="true"/>
              </item>
              <item row="2" column="0">
               <widget class="QWidget" name="widget_4" native="true">
@@ -589,102 +576,7 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="2">
-              <widget class="QPushButton" name="pb_min_2">
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="toolTip">
-                <string>当前用户</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
-	background-color:transparent;
-	background-image: url(:/ControlCommand/images/用户1.png);
-    border:0px;
-}
-
-</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="QWidget" name="widget_6" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>15</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>15</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="6">
-              <widget class="QPushButton" name="pb_close">
-               <property name="minimumSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>30</width>
-                 <height>30</height>
-                </size>
-               </property>
-               <property name="cursor">
-                <cursorShape>PointingHandCursor</cursorShape>
-               </property>
-               <property name="toolTip">
-                <string>关闭</string>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	background-image: url(:/ControlCommand/images/关闭-悬浮.png);
-    border:0px;}
-QPushButton:pressed{
-	background-color:transparent; 
-	background-image: url(:/ControlCommand/images/关闭-点击.png);
-    border:0px;}
-QPushButton {
-	background-color:transparent;
-	background-image: url(:/ControlCommand/images/关闭-默认.png);
-    border:0px;
-}
-
-</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="3">
-              <widget class="QWidget" name="widget_5" native="true"/>
-             </item>
-             <item row="0" column="4">
+             <item row="0" column="3">
               <widget class="QPushButton" name="pb_min">
                <property name="minimumSize">
                 <size>
@@ -726,20 +618,65 @@ QPushButton {
                </property>
               </widget>
              </item>
-             <item row="2" column="6">
-              <widget class="QLabel" name="label">
+             <item row="0" column="5">
+              <widget class="QPushButton" name="pb_close">
+               <property name="minimumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>30</width>
+                 <height>30</height>
+                </size>
+               </property>
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
+               </property>
+               <property name="toolTip">
+                <string>关闭</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton:hover{
+	background-color:transparent;
+	background-image: url(:/ControlCommand/images/关闭-悬浮.png);
+    border:0px;}
+QPushButton:pressed{
+	background-color:transparent; 
+	background-image: url(:/ControlCommand/images/关闭-点击.png);
+    border:0px;}
+QPushButton {
+	background-color:transparent;
+	background-image: url(:/ControlCommand/images/关闭-默认.png);
+    border:0px;
+}
+
+</string>
                </property>
                <property name="text">
                 <string/>
                </property>
-               <property name="pixmap">
-                <pixmap resource="controlcommand.qrc">:/ControlCommand/xiala</pixmap>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QWidget" name="widget_6" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>15</width>
+                 <height>16777215</height>
+                </size>
                </property>
               </widget>
              </item>
-             <item row="2" column="5">
+             <item row="2" column="4">
               <widget class="QWidget" name="widget_7" native="true">
                <property name="minimumSize">
                 <size>

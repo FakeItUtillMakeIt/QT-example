@@ -86,14 +86,27 @@ void EquivalentSoft::CreatConfigInterface()
 	functionBtnList.push_back(ui.configalarm);//9
 
 	connect(ui.configdbsave, &QPushButton::clicked, [=]() {
-		QString msg;
-		bool bret = m_pRocketDataDAO->Compress(msg);
-		if(bret)
-			bret = m_pRocketDataDAO->SaveConfigToDb(msg);
-		if(!bret)
-			QMessageBox::warning(nullptr, ("错误"), msg);
-		else
-			QMessageBox::warning(nullptr, ("提示"), "保存成功");
+
+		QMenu  menu;
+		menu.addAction("保存配置到数据库", [=]() {
+				QString msg;
+				bool bret = m_pRocketDataDAO->Compress(msg);
+				if (bret)
+					bret = m_pRocketDataDAO->SaveConfigToDb(msg);
+				if (!bret)
+					QMessageBox::warning(nullptr, ("错误"), msg);
+				else
+					QMessageBox::warning(nullptr, ("提示"), "保存成功");
+			});
+		menu.addSeparator();
+		menu.addAction("获取数据库配置", [=]() {
+			QString filepath = QApplication::applicationDirPath();
+			filepath += ("/config/time");
+			QFile file(filepath);
+			file.remove();			
+		});
+		menu.exec(QCursor::pos());
+		
 
 		});
 	ConfigNameSpace::ConfigGlobal::currentSoftWare = m_app->m_softName;
@@ -233,7 +246,7 @@ void EquivalentSoft::Init()
 	connect(ui.delete_OK, SIGNAL(clicked()), this, SLOT(delete_ok()));
 	connect(ui.delete_cancel, SIGNAL(clicked()), this, SLOT(closehbj2()));
 	//等效器编辑
-	connect(ui.edit, SIGNAL(clicked()), this, SLOT(editdxq()));
+	//connect(ui.edit, SIGNAL(clicked()), this, SLOT(editdxq()));
 
 	//初始化调试信息显示区
 	m_myInfoTip = new MyInfoTip(ui.wgt_status_left);
@@ -284,12 +297,12 @@ void EquivalentSoft::Init()
 	displayStatuInfo("加载设备参数数据完毕！");
 
 	m_pCommandDAO = new DataBase::CommandDAO(m_app->m_outputPath);
-	if (!m_pCommandDAO->getCommand())
-	{
-		QString info = "建立数据库连接失败，请检查数据库配置文件";
-		displayStatuInfo(info, true);
-		return;
-	}
+	//if (!m_pCommandDAO->getCommand())
+	//{
+	//	QString info = "建立数据库连接失败，请检查数据库配置文件";
+	//	displayStatuInfo(info, true);
+	//	return;
+	//}
 	QString msg;	
 	ConfigNameSpace::ConfigGlobal::monitorRunning = m_pCommandDAO->GetMonitorState(msg);
 	
@@ -355,6 +368,18 @@ void EquivalentSoft::Init()
 	displayStatuInfo("系统启动完毕！");
 
 }
+
+
+void EquivalentSoft::GetRocketData()
+{
+	if (!m_pCommandDAO->getCommand())
+	{
+		QString info = "建立数据库连接失败，请检查数据库配置文件";
+		displayStatuInfo(info, true);
+		return;
+	}
+}
+
 //添加等效器弹框界面
 void EquivalentSoft::adddxq()
 {
@@ -670,24 +695,24 @@ void EquivalentSoft::delete_ok()
 
 }
 //进入编辑界面
-void EquivalentSoft::editdxq()
-
-{
-	qDebug() << cur;
-	if (cur == nullptr)
-	{
-		QMessageBox::warning(this, "waring", "需要选中一个等效器才能编辑", (QMessageBox::Ok | QMessageBox::Cancel));
-
-	}
-	else {
-
-		QString m = "的编辑界面";
-		QString n = cur->objectName();
-		n.append(m);
-		//	ui.test->setText(n.append(m));
-	}
-
-}
+//void EquivalentSoft::editdxq()
+//
+//{
+//	qDebug() << cur;
+//	if (cur == nullptr)
+//	{
+//		QMessageBox::warning(this, "waring", "需要选中一个等效器才能编辑", (QMessageBox::Ok | QMessageBox::Cancel));
+//
+//	}
+//	else {
+//
+//		QString m = "的编辑界面";
+//		QString n = cur->objectName();
+//		n.append(m);
+//		//	ui.test->setText(n.append(m));
+//	}
+//
+//}
 //头部时间设定函数
 void EquivalentSoft::timeupdate()
 {

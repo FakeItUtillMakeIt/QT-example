@@ -60,7 +60,8 @@ namespace DataBase
 		MYSQL_ROW sql_row;
 		int res;
 		string sql;
-		sql.append("select b.name as '火箭型号', a.* from command_info a left join rocket_info b on a.rocket_id = b.id ;");
+		//sql.append("select b.name as '火箭型号', a.* from command_info a left join rocket_info b on a.rocket_id = b.id ;");
+		sql.append("select b.name as '火箭型号',d.id as tableId,d.name as tablename, a.* from command_info a left join rocket_info b on a.rocket_id = b.id left join command_commandtable_info c on c.command_id= a.id left join command_table_info d on c.command_table_id= d.id;");
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 		if (!res)
@@ -73,13 +74,20 @@ namespace DataBase
 				{
 					Command* oneCommnd = new Command();
 					oneCommnd->m_sRocketName = Utils::UTF8ToGBK(sql_row[0]);
-					oneCommnd->m_id = atoi(sql_row[1]);
-					oneCommnd->m_iRocketId = atoi(sql_row[2]);
-					oneCommnd->m_iBackId = atoi(sql_row[3]);
-					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[4]);
-					oneCommnd->m_iCode = atoi(sql_row[5]);
-					oneCommnd->m_iType = atoi(sql_row[6]);
-					m_app->m_allCommad.insert(pair<int, Command*>(oneCommnd->m_id, oneCommnd));
+					oneCommnd->m_tableId = (sql_row[1] == nullptr) ? -1 : atoi(sql_row[1]);
+					oneCommnd->m_tableName = (sql_row[2] == nullptr) ? "" : Utils::UTF8ToGBK(sql_row[2]);
+					oneCommnd->m_id = atoi(sql_row[3]);
+					oneCommnd->m_iRocketId = atoi(sql_row[4]);
+					oneCommnd->m_iBackId = atoi(sql_row[5]);
+					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[6]);
+					oneCommnd->m_iCode = atoi(sql_row[7]);
+					oneCommnd->m_iType = atoi(sql_row[8]);
+
+					if (oneCommnd->m_iRocketId == m_app->m_CurrentRocketType->m_id)
+					{
+						m_app->m_allCommad.insert(pair<int, Command*>(oneCommnd->m_id, oneCommnd));
+					}
+					
 				}
 			}
 			else

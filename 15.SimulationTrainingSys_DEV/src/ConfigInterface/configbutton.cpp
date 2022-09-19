@@ -75,7 +75,7 @@ void ConfigButton::showListMenu(const QPoint& point) {
             QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allCommadPrt)[paramid]->m_sName.c_str());
             setText(paramname);
             ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
-             ConfigGlobal::updateButtonMap(paramid, this);
+            ConfigGlobal::updateButtonMap(paramid, this);
         }
   });
     cmenu->exec(QCursor::pos());  // 当前鼠标位置

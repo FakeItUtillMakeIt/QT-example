@@ -139,8 +139,8 @@ void ControlMonitor::Init()
 
 	//按钮界面切换
 
-	connect(ui.zhukong, SIGNAL(clicked()), this, SLOT(zhukongclick()));
-	connect(ui.erwei, SIGNAL(clicked()), this, SLOT(erwei_displayclick()));
+	//connect(ui.zhukong, SIGNAL(clicked()), this, SLOT(zhukongclick()));
+	//connect(ui.erwei, SIGNAL(clicked()), this, SLOT(erwei_displayclick()));
 
 
 	//初始化调试信息显示区
@@ -248,31 +248,31 @@ void ControlMonitor::light_load()
 
 			if (i % 2 == 0)
 			{
-				word_setvalue = setvalue + 18 - 55 + 40;
+				word_setvalue = setvalue + 18 - 100 + 40;
 				QLabel* WORD(i) = new QLabel(ui.down_wordbar);
 				QString str0 = "word";
 				QString count_str0 = QString::number(i);
 				WORD(i)->setObjectName(str0.append(count_str0));
 				WORD(i)->setText(m_app->mainflowlist[i]);
-				WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
+				WORD(i)->setGeometry(QRect(word_setvalue, 0, 200, 36));
 				WORD(i)->setAlignment(Qt::AlignCenter);
 				WORD(i)->setWordWrap(true);
 				WORD(i)->setFont(font);
-				WORD(i)->setStyleSheet("color:rgb(202,220,255)");
+				WORD(i)->setStyleSheet("color:rgb(202,220,255);font-size:20px;");
 				WORD(i)->show();
 			}
 			else {
-				word_setvalue = setvalue + 18 - 55 + 40;
+				word_setvalue = setvalue + 18 - 100 + 40;
 				QLabel* WORD(i) = new QLabel(ui.up_wordbar);
 				QString str1 = "word";;
 				QString count_str1 = QString::number(i);
 				WORD(i)->setObjectName(str1.append(count_str1));
 				WORD(i)->setText(m_app->mainflowlist[i]);
-				WORD(i)->setGeometry(QRect(word_setvalue, 0, 110, 36));
+				WORD(i)->setGeometry(QRect(word_setvalue, 0, 200, 36));
 				WORD(i)->setAlignment(Qt::AlignCenter);
 				WORD(i)->setWordWrap(true);
 				WORD(i)->setFont(font);
-				WORD(i)->setStyleSheet("color:rgb(202,220,255)");
+				WORD(i)->setStyleSheet("color:rgb(202,220,255);font-size:20px;");
 				WORD(i)->show();
 			}
 
@@ -436,8 +436,8 @@ void ControlMonitor::lighttest()
 void ControlMonitor::zhukongclick()
 {
 	ui.tabwgt->setCurrentIndex(0);//对象名为page1
-	ui.zhukong->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252);}");
-	ui.erwei->setStyleSheet("QPushButton{color:rgb(180,180,180);border:none;}QPushButton:hover{color:black;border:none;}");
+	//ui.zhukong->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252);}");
+	//ui.erwei->setStyleSheet("QPushButton{color:rgb(180,180,180);border:none;}QPushButton:hover{color:black;border:none;}");
 
 	//调用流程编排
 	if (flowDisplayWidget == nullptr)
@@ -460,8 +460,8 @@ void ControlMonitor::zhukongclick()
 void ControlMonitor::erwei_displayclick()
 {
 	ui.tabwgt->setCurrentIndex(1);//对象名为page2
-	ui.erwei->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252);}");
-	ui.zhukong->setStyleSheet("QPushButton{color:rgb(180,180,180);border:none;}QPushButton:hover{color:black;border:none;}");
+	//ui.erwei->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252);}");
+	//ui.zhukong->setStyleSheet("QPushButton{color:rgb(180,180,180);border:none;}QPushButton:hover{color:black;border:none;}");
 }
 void ControlMonitor::timeupdate()
 {
