@@ -14,6 +14,10 @@
 #include "../Receiver/ReceiveRocketData.h"
 
 #include<QTime>
+namespace ConfigNameSpace
+{
+    class ConfigTabButton;
+}
 
 class EquivalentSoft : public QMainWindow
 {
@@ -47,7 +51,7 @@ private:
     QPushButton* btnToDelete = nullptr;
     int count;
     ReceiveRocketData* m_pReceiveRocketData; //接收测发指令
-    void AutoAddDxq(QPushButton* selbtn, QPushButton* delbtn); 
+    void AutoAddDxq(ConfigNameSpace::ConfigTabButton* selbtn, ConfigNameSpace::ConfigTabButton* delbtn);
     void changeResize();
     map<int, DeviceParam*> m_allDeviceParam;//设备参数
 

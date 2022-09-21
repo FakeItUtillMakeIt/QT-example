@@ -8,6 +8,7 @@
 #include "configpairlabel.h"
 #include "groupelement.h"
 #include "xmlstore.h"
+#include "configtabbutton.h"
 ConfigNameSpaceStart
 class ConfigCurve;
 class ConfigAlarm;
@@ -30,9 +31,9 @@ public:
     void SetBtnScheduled(ConfigButton* btn);
     QString GetID();
     QToolButton* selectbtn = nullptr;
-    QPushButton* selbutton = nullptr;
-    QPushButton* delbutton = nullptr;
-
+    ConfigTabButton* selbutton = nullptr;
+    ConfigTabButton* delbutton = nullptr;
+    void ButtonSwap(ConfigScene* swapScene);
 
     QList<GroupElement*>  sceneGroupList;
     QList<ConfigButton*>  sceneButtonList;

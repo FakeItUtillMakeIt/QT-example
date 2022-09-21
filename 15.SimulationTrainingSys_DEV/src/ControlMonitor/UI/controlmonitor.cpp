@@ -85,7 +85,7 @@ void ControlMonitor::Init()
 
 	flowDisplayWidget = new FlowDisplayWidget(ui.page1, QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
 	flowDisplayWidget->setRocketType(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str()), m_app->m_CurrentRocketType->m_id);
-	flowDisplayWidget->setGeometry(0, 0, 1920, 768);
+	flowDisplayWidget->setGeometry(0, 0, 1920, 824);
 
 	ui.center_wgt->setObjectName("mainControlWidget");
 	ui.center_wgt->setStyleSheet(QString("#mainControlWidget{border-image:url(%1);}").arg(":/ControlMonitor/images/Flow/bg.png"));
@@ -339,7 +339,7 @@ void ControlMonitor::flash_load()
 			label = ui.dengtiao->findChild<QLabel*>(str);
 			wordlabel = ui.lightbar->findChild<QLabel*>(word);
 			label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-			wordlabel->setStyleSheet("color:white;");
+			wordlabel->setStyleSheet("color:white;font-size:20px;");
 		}
 
 		if (mainflow_finish)
@@ -352,7 +352,7 @@ void ControlMonitor::flash_load()
 			label = ui.dengtiao->findChild<QLabel*>(str);
 			wordlabel = ui.lightbar->findChild<QLabel*>(word);
 			label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
-			wordlabel->setStyleSheet("color:white;");
+			wordlabel->setStyleSheet("color:white;font-size:20px;");
 		}
 		else
 		{

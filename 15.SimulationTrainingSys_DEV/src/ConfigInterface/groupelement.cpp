@@ -217,8 +217,10 @@ QMap<QString, ConfigValueSet> &GroupElement::getPropertyMap()
 }
 void GroupElement::dragEnterEvent(QDragEnterEvent *event)
 {
-    QString groupid =  event->mimeData()->data("groupid");
     ControlRole  ctrlrole = (ControlRole)event->mimeData()->data("operation").toInt();
+    if (ctrlrole == cTabMove)
+        event->ignore();
+    QString groupid =  event->mimeData()->data("groupid");
     ControlType  ctrltype = (ControlType)event->mimeData()->data("controltype").toInt();
 
     if((groupid == m_uuid || ctrlrole == cCreateEntry)&&(ctrltype != cConfigGroup) && (ctrltype != cConfigCurve))

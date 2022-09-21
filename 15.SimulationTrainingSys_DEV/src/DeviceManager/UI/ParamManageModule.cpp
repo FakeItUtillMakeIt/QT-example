@@ -380,11 +380,49 @@ void ParamManageModule::removeOneRow(int removeRow) {
 	{
 		return;
 	}
-	int curDeviceID = configInfoTable->item(removeRow, 0)->text().toInt();
-	//删除数据
+	int curParamID = configInfoTable->item(removeRow, 0)->text().toInt();
+#ifdef __DELETE_RELE_TABLE__
+	//删除相关数据
+	//型号参数
+	QString qSqlString = QString("SELECT\
+		device_param_info.id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		device_param_info\
+		WHERE\
+		device_param_info.parameter_id = %1").arg(curParamID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releDataInfo)
+	{
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rockect_param_info WHERE device_parameter_id=%1").arg(ele.first));
+	}
+	//设备参数
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_param_info WHERE parameter_id=%1").arg(curParamID));
+	//参数型号
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.parameter_rocket_info WHERE parameter_id=%1").arg(curParamID));
+	//参数信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.parameter_info WHERE id=%1").arg(curParamID));
 
-	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`parameter_info` WHERE `id` = %1").arg(curDeviceID);
+	//参数信息
+	//DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.parameter_info WHERE id=%1").arg(curParamID));
+	//QThread* deleteThread = new QThread;
+	//DeleteDBDataThread* thread11 = new DeleteDBDataThread();
+	//thread11->setParamID(curParamID);
+	//thread11->moveToThread(deleteThread);
+	//connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteParamInfo);
+	//connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
+	//	//QMessageBox::information(this, "info", "success");
+	//	});
+	//deleteThread->start();
+
+#endif __DELETE_RELE_TABLE__
+#ifdef __DELETE_ONLY__
+	//删除数据
+	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`parameter_info` WHERE `id` = %1").arg(curParamID);
 	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+#endif 
 	configInfoTable->removeRow(removeRow);
 }
 

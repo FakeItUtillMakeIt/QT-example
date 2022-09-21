@@ -223,14 +223,29 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 		for (auto cmdInfo : cmdInfoList)
 		{
 			QComboBox* combo1 = new QComboBox;
+
+			QLineEdit* lineEdit = new QLineEdit;
+			combo1->setView(new QListView());
+			combo1->setLineEdit(lineEdit);
+			combo1->setMaxVisibleItems(6);//下拉列表显示item数
+
 			combo1->setEditable(true);
 			combo1->installEventFilter(this);
 			cmdComboBoxList.push_back(combo1);
+
+			QStringList wordList;
 			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
 				//newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
 				combo1->addItem(QString::fromStdString(ele.second[1]), ele.first);
+				wordList.append(QString::fromStdString(ele.second[1]));
 			}
+
+			QCompleter* pCompleter = new QCompleter(wordList, this);
+			lineEdit->setCompleter(pCompleter);
+			pCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+			combo1->setCompleter(pCompleter);
+
 			combo1->setCurrentText(cmdInfo);
 			newVbox->addWidget(combo1);
 		}
@@ -473,6 +488,12 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 		{//插入口令 
 			//插入口令
 			QComboBox* newcombox = new QComboBox;
+
+			QLineEdit* lineEdit = new QLineEdit;
+			newcombox->setView(new QListView());
+			newcombox->setLineEdit(lineEdit);
+			newcombox->setMaxVisibleItems(6);//下拉列表显示item数
+
 			newcombox->setEditable(true);
 			newcombox->installEventFilter(this);
 			cmdComboBoxList.push_back(newcombox);
@@ -489,11 +510,19 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 				WHERE\
 				command_info.type = 1 AND\
 				command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+			QStringList wordList;
 			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
 				//newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
 				newcombox->addItem(QString::fromStdString(ele.second[1]), ele.first);
+				wordList.append(QString::fromStdString(ele.second[1]));
 			}
+
+			QCompleter* pCompleter = new QCompleter(wordList, this);
+			lineEdit->setCompleter(pCompleter);
+			pCompleter->setCaseSensitivity(Qt::CaseInsensitive);
+			newcombox->setCompleter(pCompleter);
+
 			auto cellW = rightTable->cellWidget(row, 2);
 			cellW->layout()->addWidget(newcombox);
 			int wCount = cellW->children().count();

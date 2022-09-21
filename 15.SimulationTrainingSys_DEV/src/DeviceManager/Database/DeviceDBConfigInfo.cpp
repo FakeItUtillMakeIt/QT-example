@@ -526,5 +526,7 @@ void DeviceDBConfigInfo::customReadTableInfo(QString qSqlString) {
 	if (!opRet)
 	{
 		qDebug() << "获取自定义数据失败!!!";
+
 	}
 }
+

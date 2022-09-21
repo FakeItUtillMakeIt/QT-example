@@ -23,10 +23,10 @@ public:
     CtrolFactory ctrlfactory;
     void RestoreSceneFromXml(QList<ConfigNameSpace::SceneInfo> &sceneinfolist);
     void SetBtnStyle(QPushButton *btn, QString picture, QString tooltext);
-    void AddSceneFromOut(QString text, QPushButton* selBtn, QPushButton* delBtn);
-    void ChangeSceneByBtnFromOut(QPushButton* selBtn);
-    int DeleteSceneByBtnFromOut(QPushButton* delBtn);
-    QList<QPair<QPushButton*,QPushButton*>>  autoCreateBtn;
+    void AddSceneFromOut(QString text, ConfigTabButton* selBtn, ConfigTabButton* delBtn);
+    void ChangeSceneByBtnFromOut(ConfigTabButton* selBtn);
+    int DeleteSceneByBtnFromOut(ConfigTabButton* delBtn);
+    QList<QPair<ConfigTabButton*, ConfigTabButton*>>  autoCreateBtn;
     void firstinit();
     void firstinitFromOut(QList<QPushButton*> btnlist);
     void AddSceneEntry();

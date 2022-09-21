@@ -6,6 +6,14 @@
 
 namespace DataBase
 {
+#define MYSQL_SET_BIND(bind_, type_, buffer_, is_null_, len_) \
+	{ \
+		bind_.buffer_type = type_; \
+		bind_.buffer = buffer_; \
+		bind_.is_null = is_null_; \
+		bind_.length = len_; \
+	}
+
 	RocketDataDAO::RocketDataDAO(OutputPath* path)
 		: m_path(path)
 		, is_connected(false)
@@ -553,7 +561,6 @@ namespace DataBase
 
 	bool RocketDataDAO::ReadConfigTime(QString& msg,QString& curtime)
 	{
-
 		if (!connected())
 		{
 			LOG(INFO) << "创建数据库连接";
@@ -571,7 +578,7 @@ namespace DataBase
 		if (!res)
 		{
 			result = mysql_store_result(&my_connection);
-			if (result)
+			if (result) //如果查询到数据，取出数据
 			{
 				sql_row = mysql_fetch_row(result);
 				if (sql_row)
@@ -590,6 +597,7 @@ namespace DataBase
 						return false;
 					}
 				}
+				//没查询到数据，插入初始数据
 				sql.clear();
 				sql.append("INSERT INTO config_info VALUES(1, SYSDATE(), NULL,NULL)");
 				bool bret = exec_sql(sql);
@@ -696,49 +704,56 @@ namespace DataBase
 			QString exepath = QApplication::applicationDirPath();
 			filepath = exepath + "/newrocket.zip";
 			QFile::remove(filepath);
-			MYSQL_RES* result = nullptr;
-			MYSQL_ROW sql_row;
-			int res;
-			string sql;
-			sql.append("select scene from config_info where id =1 into dumpfile\"");
-			sql.append(filepath.toStdString());
-			sql.append("\"");
-			bret = exec_sql(sql);
-			if (!bret)
+			//MYSQL_RES* result = nullptr;
+			//MYSQL_ROW sql_row;
+			//int res;
+			//string sql;
+			//sql.append("select scene from config_info where id =1 into dumpfile\"");
+			//sql.append(filepath.toStdString());
+			//sql.append("\"");
+			//bret = exec_sql(sql);
+			//if (!bret)
+			//{
+			//	msg = "加载数据库组态配置失败";
+			//	return false;
+			//}
+			const char* sql = "select scene from config_info where ID=1";
+			if (GetConfigFile(filepath, sql))
 			{
-				msg = "加载数据库组态配置失败";
-				return false;
+				QString compressdir = exepath + "/rocket";
+				QString backdir = exepath + "/backrocket";
+				bret = removeFolderContent(backdir);
+				rename(compressdir.toStdString().data(), backdir.toStdString().data());
+				JlCompress::extractDir(filepath, compressdir);
 			}
-			QString compressdir = exepath + "/rocket";
-			QString backdir = exepath + "/backrocket";
-			bret = removeFolderContent(backdir);
-			rename(compressdir.toStdString().data(), backdir.toStdString().data());
-			JlCompress::extractDir(filepath, compressdir);
 			
 		}
 		{
 			QString exepath = QApplication::applicationDirPath();
 			filepath = exepath + "/newstyle.zip";
 			QFile::remove(filepath);
-			MYSQL_RES* result = nullptr;
-			MYSQL_ROW sql_row;
-			int res;
-			string sql;
-			sql.append("select style from config_info where id =1 into dumpfile\"");
-			sql.append(filepath.toStdString());
-			sql.append("\"");
-			bret = exec_sql(sql);
-			if (!bret)
+			//MYSQL_RES* result = nullptr;
+			//MYSQL_ROW sql_row;
+			//int res;
+			//string sql;
+			//sql.append("select style from config_info where id =1 into dumpfile\"");
+			//sql.append(filepath.toStdString());
+			//sql.append("\"");
+			//bret = exec_sql(sql);
+			//if (!bret)
+			//{
+			//	msg = "加载数据库组态配置失败";
+			//	return false;
+			//}
+			const char* sql = "select style from config_info where ID=1";
+			if (GetConfigFile(filepath, sql))
 			{
-				msg = "加载数据库组态配置失败";
-				return false;
+				QString compressdir = exepath + "/style";
+				QString backdir = exepath + "/backstyle";
+				bret = removeFolderContent(backdir);
+				rename(compressdir.toStdString().data(), backdir.toStdString().data());
+				JlCompress::extractDir(filepath, compressdir);
 			}
-			QString compressdir = exepath + "/style";
-			QString backdir = exepath + "/backstyle";
-			bret = removeFolderContent(backdir);
-			rename(compressdir.toStdString().data(), backdir.toStdString().data());
-			JlCompress::extractDir(filepath, compressdir);
-
 		}
 		file.close();
 		bret = file.open(QIODevice::WriteOnly);
@@ -791,7 +806,103 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return bret;
 	}
+	bool RocketDataDAO::GetConfigFile(QString filename, const char* sql)
+	{
+		MYSQL_STMT* stmt = mysql_stmt_init(&my_connection);
+		assert(NULL != stmt);
+		int sql_len = strlen(sql);
+		int ret = mysql_stmt_prepare(stmt, sql, sql_len);
+		assert(0 == ret);
+		qDebug("param count:%d", (int)mysql_stmt_param_count(stmt));
+		MYSQL_BIND result = { 0 };
+		unsigned long total_length = 0;
+		result.buffer_type = MYSQL_TYPE_LONG_BLOB;
+		result.length = &total_length;		
+		ret = mysql_stmt_bind_result(stmt, &result);
+		assert(0 == ret);
+		ret = mysql_stmt_execute(stmt);
+		assert(0 == ret);
+		ret = mysql_stmt_store_result(stmt);
+		assert(0 == ret);
+		QFile file(filename);
+		if(file.open(QIODevice::WriteOnly|QIODevice::Append) == false)
+		{
+			return false;
+		}	
+		//while (mysql_stmt_fetch(stmt)!=0)
+		for (;;)
+		{
+			ret = mysql_stmt_fetch(stmt);
+			if (ret != 0 && ret != MYSQL_DATA_TRUNCATED) 
+				return ret;
+			int start = 0;
+			char buf[1024] = { 0 };
+			printf("total_length=%lu\n", total_length);
+			result.buffer = buf;
+			while (start < (int)total_length)
+			{
+			//	result.buffer = (buf + start);
+				result.buffer_length = 1000;  //每次读这么长
+				ret = mysql_stmt_fetch_column(stmt, &result, 0, start);
+				if (ret != 0)
+				{
+					qDebug("code=%d, msg=%s", (int)mysql_errno(&my_connection), mysql_error(&my_connection));
+					return false;
+				}
+				start += result.buffer_length;
+				int writelenth = 0;
+				if (start > (int)total_length)
+				{
+					writelenth = result.buffer_length - (start - total_length);
+				}
+				else
+				{
+					writelenth = result.buffer_length;
+				}
+				file.write((const char*)result.buffer, writelenth);
+			}			
+			file.close();
+		}
+		mysql_stmt_close(stmt);	
+		return true;
+	}
 
+	bool RocketDataDAO::SaveConfigFile(QString filename, const char* sql)
+	{
+		MYSQL_STMT* stmt = mysql_stmt_init(&my_connection);
+		assert(NULL != stmt);
+		//const char* sql = "update config_info set scene=? where id=1";
+		int sql_len = strlen(sql);
+		int ret = mysql_stmt_prepare(stmt, sql, sql_len);
+		assert(0 == ret);
+		qDebug("param count:%d", (int)mysql_stmt_param_count(stmt));
+		char null_flag = 0;
+		MYSQL_BIND param = { 0 };
+		MYSQL_SET_BIND(param, MYSQL_TYPE_LONG_BLOB, NULL, &null_flag, NULL);
+		ret = mysql_stmt_bind_param(stmt, &param);
+		assert(0 == ret);
+		QFile file(filename);
+		if (file.open(QIODevice::ReadOnly) == false)
+		{
+			return false;
+		}
+		char buf[1001];
+		int iret = file.read(buf,1000);
+		while (iret>0)	
+		{
+			char ret1 = mysql_stmt_send_long_data(stmt, 0, buf, iret);
+			if (ret1 != 0)
+			{
+				qDebug("code=%d, msg=%s", (int)mysql_errno(&my_connection), mysql_error(&my_connection));
+				return false;
+			}
+			iret = file.read(buf, 1000);
+		}
+		ret = mysql_stmt_execute(stmt);
+		assert(0 == ret);
+		mysql_stmt_close(stmt);
+		return true;
+	}
 }
 
 

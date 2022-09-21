@@ -158,7 +158,92 @@ bool XmlStore::InitRocketFile( bool adddefault)
     qDebug() << "result:" << result << " filename:" << filename;
     return true;
 }
+bool XmlStore::SwapScenePosition(ConfigScene* first, ConfigScene* second)
+{
+    QString  exepath = QApplication::applicationDirPath();
+    QString rocketpath = exepath + "/rocket/" + ConfigGlobal::currentRocket;
+    QString scenesxmlpath = rocketpath + "/scenes.xml";
 
+        tinyxml2::XMLDocument doc;//定义doc对象
+   // filename = handlePath(filename);
+    int error = doc.LoadFile(scenesxmlpath.toLocal8Bit().data());
+    if (error)
+    {
+        QToolTip::showText(QCursor::pos(), QString("打开配置文件 %1 时出错（%2）,请确认配置文件路径是否正确").arg(scenesxmlpath).arg(error));
+
+        qDebug() << "打开配置文件‘" << scenesxmlpath << "’时出错,请确认配置文件路径是否正确:" << error;
+        return false;
+    }
+    tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
+    bool  softwareExist = false;
+    while (softwareElement)
+    {
+        QString  softName = QString::fromLocal8Bit(softwareElement->Attribute("name"));
+        int softId = softwareElement->IntAttribute("id");
+        if (softId == ConfigGlobal::currentSoftWareID)
+        {           
+            softwareExist = true;
+            break;
+        }
+        softwareElement = softwareElement->NextSiblingElement("software");
+    }
+    if (!softwareExist)
+    {
+        return false;
+    }
+
+    tinyxml2::XMLElement* groupElement = softwareElement->FirstChildElement("scenes");
+    if (groupElement == nullptr)
+    {
+        return false;
+    }
+    QList<ConfigSceneInfo> sceneElementList;
+   int firstElementPos = -1;
+   int secondElementPos = -1;
+
+    tinyxml2::XMLElement* sceneElement = groupElement->FirstChildElement("scene");
+    while(sceneElement)
+    {
+        ConfigSceneInfo  sceneinfo;
+        QString sceneid = sceneElement->Attribute("id");
+        sceneinfo.id = sceneid;
+        sceneinfo.name = QString::fromLocal8Bit(sceneElement->Attribute("name"));
+        sceneinfo.path = QString::fromLocal8Bit(sceneElement->Attribute("path"));
+        sceneElementList.push_back(sceneinfo);
+        if (sceneid == first->GetID())
+        {
+            firstElementPos = sceneElementList.size()-1;
+        }
+        else if (sceneid == second->GetID())
+        {
+            secondElementPos = sceneElementList.size() -1;
+        }
+       
+        sceneElement = sceneElement->NextSiblingElement("scene");        
+    }
+    groupElement->DeleteChildren();
+    sceneElementList.swap(firstElementPos, secondElementPos);
+    for (auto element : sceneElementList)
+    {
+        tinyxml2::XMLElement* sceneElement = doc.NewElement("scene");
+        sceneElement->SetAttribute("name", element.name.toLocal8Bit().data());
+        sceneElement->SetAttribute("id", element.id.toLocal8Bit().data());
+        sceneElement->SetAttribute("path", element.path.toLocal8Bit().data());
+        groupElement->InsertEndChild(sceneElement);
+    }
+    int result = doc.SaveFile(scenesxmlpath.toLocal8Bit().data());
+    if (result == 0)
+    {
+        QToolTip::showText(QCursor::pos(), QString("场景位置保存成功,错误%1 路径:%2").arg(result).arg(scenesxmlpath));
+    }
+    else
+    {
+        QToolTip::showText(QCursor::pos(), QString("场景位置保存失败,错误%1 路径:%2").arg(result).arg(scenesxmlpath));
+    }
+    return true;
+
+
+}
 bool XmlStore::AppenSoftWareIfNotExist(QString filename)
 {
     tinyxml2::XMLDocument doc;//定义doc对象
@@ -574,19 +659,19 @@ bool XmlStore::UpdateSceneNameToFile(ConfigScene* scene)
         return false;
     }
     tinyxml2::XMLElement* softwareElement = doc.FirstChildElement("software");
-    bool  softwareExit = false;
+    bool  softwareExist = false;
     while (softwareElement)
     {
         QString  softName = QString::fromLocal8Bit(softwareElement->Attribute("name"));
         int softId = softwareElement->IntAttribute("id");
         if (softId == ConfigGlobal::currentSoftWareID)
         {           
-            softwareExit = true;
+            softwareExist = true;
             break;
         }
         softwareElement = softwareElement->NextSiblingElement("software");
     }
-    if (!softwareExit)
+    if (!softwareExist)
     {
         return false;
     }

@@ -381,16 +381,16 @@ void ConfigInterface::AddScene()
     configplatform->addScene(text);
     AddSceneEntry();
 }
-int ConfigInterface::DeleteSceneByBtnFromOut(QPushButton* delBtn)
+int ConfigInterface::DeleteSceneByBtnFromOut(ConfigTabButton* delBtn)
 {
     return configplatform->DeleteSceneByBtnFromOut(delBtn);
 
 }
-void ConfigInterface::ChangeSceneByBtnFromOut(QPushButton* selBtn)
+void ConfigInterface::ChangeSceneByBtnFromOut(ConfigTabButton* selBtn)
 {
     configplatform->ChangeSceneByBtnFromOut(selBtn);
 }
-void ConfigInterface::AddSceneFromOut(QString text,QPushButton* selBtn,QPushButton* delBtn)
+void ConfigInterface::AddSceneFromOut(QString text, ConfigTabButton* selBtn, ConfigTabButton* delBtn)
 {
     configplatform->addScene(text, selBtn, delBtn);
   //  AddSceneEntry();

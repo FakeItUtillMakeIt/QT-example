@@ -437,11 +437,37 @@ void CommandManageModule::removeOneRow(int removeRow) {
 	{
 		return;
 	}
-	int curDeviceID = configInfoTable->item(removeRow, 0)->text().toInt();
-	//删除数据
+	int curCmdID = configInfoTable->item(removeRow, 0)->text().toInt();
 
-	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`command_info` WHERE `id` = %1").arg(curDeviceID);
+#ifdef __DELETE_RELE_TABLE__
+	//删除相关数据
+	//子流程信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.sub_flow_info WHERE command_id=%1").arg(curCmdID));
+	//指令参数
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_param_info WHERE command_id=%1").arg(curCmdID));
+	//指令设备状态
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_devicestatus_info WHERE command_id=%1").arg(curCmdID));
+	//指令表信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_commandtable_info WHERE command_id=%1").arg(curCmdID));
+	//指令信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
+	//指令信息
+	//DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
+	//QThread* deleteThread = new QThread;
+	//DeleteDBDataThread* thread11 = new DeleteDBDataThread();
+	//thread11->setCmdID(curCmdID);
+	//thread11->moveToThread(deleteThread);
+	//connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteCmdInfo);
+	//connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
+	//	//QMessageBox::information(this, "info", "success");
+	//	});
+	//deleteThread->start();
+#endif __DELETE_RELE_TABLE__
+#ifdef __DELETE_ONLY__
+	//删除数据
+	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`command_info` WHERE `id` = %1").arg(curCmdID);
 	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+#endif __DELETE_ONLY__
 	configInfoTable->removeRow(removeRow);
 }
 
@@ -463,15 +489,27 @@ void CommandManageModule::InitDisplayData() {
 	configInfoTable->clearContents();
 	configInfoTable->setRowCount(0);
 	DeviceDBConfigInfo* commandInfoDB = DeviceDBConfigInfo::getInstance();
-	commandInfoDB->readCommandDB2UI();
-	//configInfoTable->setRowCount(commandInfoDB->commandInfo.size());
+	commandInfoDB->customReadTableInfo(QString("SELECT\
+		command_info.id,\
+		command_info.rocket_id,\
+		command_info.back_id,\
+		command_info.`name`,\
+		command_info.`code`,\
+		command_info.type,\
+		command_info.prefix,\
+		command_info.createTime,\
+		command_info.lastUpdateTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+
 	int row = 0;
-	for (auto ele : commandInfoDB->commandInfo)
+	for (auto ele : commandInfoDB->customReadInfoMap)
 	{
 
 		QVector<QString> rowData;
 		rowData.push_back(QString::fromStdString(ele.second[0]));
-		//rowData.push_back(QString::fromStdString(ele->second[1]));
 		QString tmpp1, tmpp2;
 
 		if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
@@ -485,22 +523,19 @@ void CommandManageModule::InitDisplayData() {
 
 		}
 		rowData.push_back(tmpp1);
-		//rowData.push_back(QString::fromStdString(ele->second[1]));
-		//rowData.push_back(QString::fromStdString(ele->second[2]));
+
 		if (atoi(ele.second[2].c_str()) == 0)
 		{
 			tmpp2 = QString("无回令");
 		}
 		else
 		{
-			tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele.second[2].c_str())][3]);
+			tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->customReadInfoMap[atoi(ele.second[2].c_str())][3]);
 		}
-		//rowData.push_back(QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele->second[2].c_str())][3]));
 
 		rowData.push_back(QString::fromStdString(ele.second[3]));
 		rowData.push_back(tmpp2);
 		rowData.push_back(QString::fromStdString(ele.second[4]));
-		//rowData.push_back(QString::fromStdString(ele->second[5]));
 		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
 		rowData.push_back(QString::fromStdString(ele.second[6]));
 

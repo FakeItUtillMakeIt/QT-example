@@ -14,53 +14,8 @@
 
 #include "../AppCache.h"
 #include "../Public/Utils.h"
+#include "../Database/DeviceDAO.h"
 #include "../Database/DeviceDBConfigInfo.h"
-
-//class MutliThreadOp : public QObject
-//{
-//	Q_OBJECT
-//
-//public:
-//	MutliThreadOp(QObject* parent = nullptr) {
-//
-//	}
-//	~MutliThreadOp() {
-//
-//	}
-//};
-//
-///**
-//
-//	@class   FileRunnable
-//	@brief   文件读取线程 注册线程中处理函数，线程结束给主线程返回信号同时启动写数据库线程
-//	@details ~
-//
-//**/
-//class FileRunnable :public QObject, public QRunnable
-//{
-//	Q_OBJECT
-//
-//public:
-//	explicit FileRunnable(QObject* parent = nullptr);
-//	~FileRunnable();
-//
-//	void dealFile(QStringList);
-//
-//protected:
-//	void run() override;
-//
-//public:
-//
-//
-//signals:
-//	void working();
-//	void finish();
-//
-//private:
-//	QStringList dealFileList;
-//
-//};
-
 
 
 class WorkThread :public QObject
@@ -69,8 +24,6 @@ class WorkThread :public QObject
 public:
 	WorkThread(QObject* parent = nullptr);
 	~WorkThread();
-
-
 
 public slots:
 	void doWork();
@@ -81,6 +34,52 @@ private:
 
 };
 
+class DeleteDBDataThread :public QObject
+{
+	Q_OBJECT
+public:
+	DeleteDBDataThread(QObject* parent = nullptr);
+	~DeleteDBDataThread();
 
+	void setRocketID(int rocketID);
+	void setDeviceID(int deviceID);
+	void setCmdID(int CmdID);
+	void setParamID(int ParamID);
+public slots:
+	void deleteRocketInfo();
+	void deleteDeviceInfo();
+	void deleteCmdInfo();
+	void deleteParamInfo();
+signals:
+	void workFinished();
+protected:
+private:
+	int curRocketID;
+	int curCmdID;
+	int curDeviceID;
+	int curParamID;
+	unordered_map<int, vector<string>> customReadInfoMap;
+
+	DataBase::DeviceDAO* deviceManageDBOp;
+
+	void customRunSql(QString qSqlString);
+	void customReadTableInfo(QString qSqlString);
+
+};
+
+
+class DeleteDBDataThread1 :public QThread
+{
+	Q_OBJECT
+public:
+	void setRocketID(int rocketID);
+	void setDeviceID(int deviceID);
+	void setCmdID(int CmdID);
+	void setParamID(int ParamID);
+protected:
+	void run();
+private:
+	int curRocketID;
+};
 
 #endif

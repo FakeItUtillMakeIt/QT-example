@@ -24,7 +24,7 @@ DeviceManager::DeviceManager(QWidget* parent)
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	//Init();
 
-
+	qDebug() << "DeviceManager：" << QThread::currentThreadId() << QThread::currentThread();
 	//加载时间
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
@@ -58,7 +58,7 @@ void DeviceManager::Init()
 	ui.comboBox->setFont(f);
 	ui.curtime->setFont(f);
 
-	connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), this, [=]() {
+	connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentTextChanged), this, [=]() {
 
 		m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toInt();
 		m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
@@ -178,9 +178,10 @@ void DeviceManager::Init()
 
 	m_centeralWidget = new CenterOperate(ui.tab_DeviceManagement);//设备管理
 
+
 	connect(this->findChild<RocketTypeManageModule*>("rocketUI"), &RocketTypeManageModule::rocketInfoChanged, this, [=]() {
 
-		ui.comboBox->disconnect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
+		ui.comboBox->disconnect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentTextChanged), nullptr, nullptr);
 		curSelectedText = ui.comboBox->currentText();
 		ui.comboBox->clear();
 
@@ -190,8 +191,9 @@ void DeviceManager::Init()
 			ui.comboBox->addItem(QString::fromStdString(elem.second[1]), elem.first);
 		}
 
-		ui.comboBox->setCurrentText(curSelectedText);
-		connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged), this, [=]() {
+		//ui.comboBox->setCurrentText(curSelectedText);
+
+		connect(ui.comboBox, QOverload<const QString&>::of(&QComboBox::currentTextChanged), this, [=]() {
 
 			m_app->m_CurrentRocketType->m_id = ui.comboBox->currentData().toInt();
 			m_app->m_CurrentRocketType->m_name = ui.comboBox->currentText().toLocal8Bit();
@@ -202,6 +204,10 @@ void DeviceManager::Init()
 			TaskManagement();//任务岗位配置
 			preRocket = ui.comboBox->currentText();
 			});
+		if (curSelectedText != ui.comboBox->currentText())
+		{
+			emit ui.comboBox->currentTextChanged(ui.comboBox->currentText());
+		}
 
 		});
 
@@ -513,3 +519,4 @@ void DeviceManager::mouseDoubleClickEvent(QMouseEvent* event) {
 	//	changeResize();//此处调用最大化/还原按钮点击槽
 	//event->ignore();
 }
+

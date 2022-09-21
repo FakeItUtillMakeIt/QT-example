@@ -17,7 +17,7 @@ public:
 	
 	int id;
 	QString name;
-	int type;//img type Ϊ1
+	QString type;//img type Ϊ1
 	int pos_x;
 	int pos_y;
 	int Dimg_width;

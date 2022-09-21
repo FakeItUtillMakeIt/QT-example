@@ -283,11 +283,11 @@ void CenterOperateF::AddPowerFaultClicked()
 /// <param name="title"></param>
 /// <param name="code"></param>
 /// <param name="isSave"></param>
-void CenterOperateF::isEnabledFault(QString name, int code, int type, int faultType)
+void CenterOperateF::isEnabledFault(QString name, int code, int type, int faultType, bool isAddFault)
 {
     //TODO ’‚¿ÔUDP◊È≤•∑¢ÀÕπ ’œ÷∏¡Ó
     m_faultType = faultType;
-    sendCMD(code,type);
+    sendCMD(code,type, isAddFault);
 }
 
 /// <summary>
@@ -482,7 +482,7 @@ void CenterOperateF::receiverCMD(QByteArray oneCommand)
 /// ≤‚øÿ÷∏¡Ó∑¢ÀÕ
 /// </summary>
 /// <param name="cmd_id"></param>
-void CenterOperateF::sendCMD(int code, int type)
+void CenterOperateF::sendCMD(int code, int type, bool isAddFault)
 {
     if (m_app->m_CommandInfoframes.find(code) == m_app->m_CommandInfoframes.end())
     {
@@ -510,7 +510,7 @@ void CenterOperateF::sendCMD(int code, int type)
     m_pBuff[1] = 0xAA;
     //m_pBuff[2] = command->m_code; //≤‚∑¢÷∏¡Ócode 1◊÷Ω⁄
     memcpy(m_pBuff.data() + 2, &command->m_code, 2);//≤‚∑¢÷∏¡Ócode 
-    m_pBuff[4] = 0x00;//‘§¡Ù
+    m_pBuff[4] = isAddFault ? 0x01:0x00;//1:π ’œ+1£ª0£∫π ’œ-1
     m_pBuff[5] = 0x00;//‘§¡Ù
     m_pBuff[6] = 0x00;//‘§¡Ù
     m_pBuff[7] = 0x00;//‘§¡Ù

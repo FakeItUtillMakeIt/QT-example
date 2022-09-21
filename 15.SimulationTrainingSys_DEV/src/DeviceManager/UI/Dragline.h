@@ -15,16 +15,15 @@ public:
 	Dragline::Dragline(QWidget* parent);
 	Dragline::~Dragline();
 	
+	bool canDrag;
 	int id;
 	QString name;
 	QString type;
-	QString pos_x;
-	QString pos_y;
-	QString Dline_width;
-	QString Dline_height;
+	int pos_x;
+	int pos_y;
+	int Dline_width;
+	int Dline_height;
 	QString color;
-
-	bool canDrag;
 	int linetype;
 
 	int color_num;

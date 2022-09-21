@@ -12,11 +12,15 @@ class ImportComPramData : public QObject
 	Q_OBJECT
 
 public:
-	ImportComPramData(QObject* parent);
+	ImportComPramData(QObject* parent = nullptr);
 	~ImportComPramData();
 
-	void AddPramComDatas(int rocketID);
+
+public slots:
+	void AddPramComDatas(int rocketID, QString readFile);
 	void AddPramComDatasV1(int rocketID);
+
+
 private:
 	AppCache* m_app;
 	ImpotEXcelDAO* m_EXcelDAO;
@@ -27,4 +31,7 @@ private:
 
 	int NewCode();
 	//string QStr2Str(const QString qStr);
+
+signals:
+	void ImportResult(QString Qstr);
 };

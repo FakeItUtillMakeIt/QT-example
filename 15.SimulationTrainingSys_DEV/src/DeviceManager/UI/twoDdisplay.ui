@@ -1317,7 +1317,7 @@ QPushButton {
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="page_1">
                <property name="styleSheet">
@@ -7576,7 +7576,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_68">
+                          <widget class="QLabel" name="upvideoname1">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -7640,7 +7640,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_69">
+                          <widget class="QLabel" name="upvideoname2">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -7704,7 +7704,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_70">
+                          <widget class="QLabel" name="upvideoname3">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -7768,7 +7768,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_71">
+                          <widget class="QLabel" name="upvideoname4">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -7832,7 +7832,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_72">
+                          <widget class="QLabel" name="upvideoname5">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -7896,7 +7896,7 @@ border-radius: 4px;
                             <bool>true</bool>
                            </property>
                           </widget>
-                          <widget class="QLabel" name="label_73">
+                          <widget class="QLabel" name="upvideoname6">
                            <property name="geometry">
                             <rect>
                              <x>0</x>
@@ -8075,7 +8075,7 @@ border-radius: 4px;
                             <x>50</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_77">
@@ -8107,7 +8107,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8129,7 +8129,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -8171,7 +8171,7 @@ border:0;</string>
                             <x>180</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_78">
@@ -8203,7 +8203,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8225,7 +8225,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -8235,7 +8235,7 @@ border-radius:5px;</string>
                             <x>310</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_79">
@@ -8267,7 +8267,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8289,7 +8289,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -8299,7 +8299,7 @@ border-radius:5px;</string>
                             <x>440</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_80">
@@ -8331,7 +8331,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8353,7 +8353,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -8363,7 +8363,7 @@ border-radius:5px;</string>
                             <x>570</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_81">
@@ -8395,7 +8395,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8417,7 +8417,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -8427,7 +8427,7 @@ border-radius:5px;</string>
                             <x>700</x>
                             <y>40</y>
                             <width>100</width>
-                            <height>141</height>
+                            <height>120</height>
                            </rect>
                           </property>
                           <widget class="QLabel" name="label_82">
@@ -8459,7 +8459,7 @@ border-radius:5px;</string>
                              <x>0</x>
                              <y>100</y>
                              <width>100</width>
-                             <height>41</height>
+                             <height>20</height>
                             </rect>
                            </property>
                            <property name="minimumSize">
@@ -8481,7 +8481,7 @@ border-radius:5px;</string>
                             <set>Qt::AlignCenter</set>
                            </property>
                            <property name="wordWrap">
-                            <bool>true</bool>
+                            <bool>false</bool>
                            </property>
                           </widget>
                          </widget>
@@ -9485,7 +9485,7 @@ QToolButton {
 </string>
                     </property>
                     <property name="currentIndex">
-                     <number>1</number>
+                     <number>2</number>
                     </property>
                     <widget class="QWidget" name="image_page">
                      <widget class="QPushButton" name="imagebtn_1">
@@ -10107,9 +10107,9 @@ border-radius:4px;</string>
                      <widget class="QWidget" name="filewid1" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>50</x>
+                        <x>30</x>
                         <y>30</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10121,7 +10121,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn1">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10174,16 +10174,16 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QLabel" name="filename1">
                        <property name="geometry">
                         <rect>
-                         <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <x>-1</x>
+                         <y>120</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10202,6 +10202,40 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename1_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>word文件</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -10209,9 +10243,9 @@ border:2px dashed rgb(252,252,252);
                      <widget class="QWidget" name="filewid2" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>290</x>
+                        <x>280</x>
                         <y>30</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10223,7 +10257,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn2">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10276,16 +10310,16 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QLabel" name="filename2">
                        <property name="geometry">
                         <rect>
-                         <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <x>-1</x>
+                         <y>119</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10304,6 +10338,40 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename2_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>txt文件</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -10311,9 +10379,9 @@ border:2px dashed rgb(252,252,252);
                      <widget class="QWidget" name="filewid3" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>530</x>
+                        <x>520</x>
                         <y>30</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10325,7 +10393,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn3">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10378,16 +10446,16 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QLabel" name="filename3">
                        <property name="geometry">
                         <rect>
-                         <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <x>-1</x>
+                         <y>120</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10406,6 +10474,40 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename3_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>ppt文件</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -10413,9 +10515,9 @@ border:2px dashed rgb(252,252,252);
                      <widget class="QWidget" name="filewid4" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>50</x>
+                        <x>30</x>
                         <y>230</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10427,7 +10529,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn4">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10480,16 +10582,16 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QLabel" name="filename4">
                        <property name="geometry">
                         <rect>
-                         <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <x>-1</x>
+                         <y>120</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10508,6 +10610,40 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename4_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>xlsx文件</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -10515,9 +10651,9 @@ border:2px dashed rgb(252,252,252);
                      <widget class="QWidget" name="filewid6" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>530</x>
+                        <x>520</x>
                         <y>230</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10529,7 +10665,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn6">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10583,15 +10719,15 @@ border:2px dashed rgb(252,252,252);
                        <property name="geometry">
                         <rect>
                          <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <y>120</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10610,6 +10746,40 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename6_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>pdf文件</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -10617,9 +10787,9 @@ border:2px dashed rgb(252,252,252);
                      <widget class="QWidget" name="filewid5" native="true">
                       <property name="geometry">
                        <rect>
-                        <x>290</x>
+                        <x>280</x>
                         <y>230</y>
-                        <width>200</width>
+                        <width>220</width>
                         <height>160</height>
                        </rect>
                       </property>
@@ -10631,7 +10801,7 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QPushButton" name="filebtn5">
                        <property name="geometry">
                         <rect>
-                         <x>70</x>
+                         <x>80</x>
                          <y>30</y>
                          <width>60</width>
                          <height>60</height>
@@ -10684,16 +10854,16 @@ border:2px dashed rgb(252,252,252);
                       <widget class="QLabel" name="filename5">
                        <property name="geometry">
                         <rect>
-                         <x>0</x>
-                         <y>100</y>
-                         <width>200</width>
-                         <height>40</height>
+                         <x>-1</x>
+                         <y>120</y>
+                         <width>220</width>
+                         <height>20</height>
                         </rect>
                        </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
-                         <height>40</height>
+                         <height>20</height>
                         </size>
                        </property>
                        <property name="maximumSize">
@@ -10707,6 +10877,40 @@ border:2px dashed rgb(252,252,252);
                        </property>
                        <property name="text">
                         <string>文件5</string>
+                       </property>
+                       <property name="alignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="wordWrap">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="filename5_2">
+                       <property name="geometry">
+                        <rect>
+                         <x>0</x>
+                         <y>140</y>
+                         <width>220</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>60</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">background-color:white</string>
+                       </property>
+                       <property name="text">
+                        <string>pdf文件</string>
                        </property>
                        <property name="alignment">
                         <set>Qt::AlignCenter</set>
@@ -10901,7 +11105,7 @@ border:0;
                     <widget class="QPushButton" name="displayvideo">
                      <property name="geometry">
                       <rect>
-                       <x>70</x>
+                       <x>90</x>
                        <y>3</y>
                        <width>24</width>
                        <height>24</height>
@@ -10927,7 +11131,7 @@ border:0;
                     <widget class="QPushButton" name="displayfile">
                      <property name="geometry">
                       <rect>
-                       <x>110</x>
+                       <x>150</x>
                        <y>3</y>
                        <width>24</width>
                        <height>24</height>
@@ -10948,6 +11152,63 @@ border:0;
                        <width>24</width>
                        <height>24</height>
                       </size>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="imgsnumber">
+                     <property name="geometry">
+                      <rect>
+                       <x>55</x>
+                       <y>0</y>
+                       <width>31</width>
+                       <height>31</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-family:&quot;Microsoft Yahei&quot;;</string>
+                     </property>
+                     <property name="text">
+                      <string>(0/6)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="videosnumber">
+                     <property name="geometry">
+                      <rect>
+                       <x>115</x>
+                       <y>0</y>
+                       <width>31</width>
+                       <height>31</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-family:&quot;Microsoft Yahei&quot;;</string>
+                     </property>
+                     <property name="text">
+                      <string>(0/6)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
+                     </property>
+                    </widget>
+                    <widget class="QLabel" name="filesnumber">
+                     <property name="geometry">
+                      <rect>
+                       <x>175</x>
+                       <y>0</y>
+                       <width>31</width>
+                       <height>31</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">font-family:&quot;Microsoft Yahei&quot;;</string>
+                     </property>
+                     <property name="text">
+                      <string>(0/6)</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignCenter</set>
                      </property>
                     </widget>
                    </widget>
@@ -11735,6 +11996,7 @@ border-radius: 4px;
   <include location="../../EquivalentSoft/UI/EquivalentSoft.qrc"/>
   <include location="twoDdisplay.qrc"/>
   <include location="EquivalentSoft.qrc"/>
+  <include location="twoDdisplay.qrc"/>
  </resources>
  <connections/>
 </ui>

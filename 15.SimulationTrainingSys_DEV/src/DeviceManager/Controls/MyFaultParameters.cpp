@@ -194,7 +194,7 @@ void MyFaultParameters::onClick(QObject* obj)
 
 			//告诉已选参数列表，最新的操作
 			m_clickButtonname = item.tab->getName();
-			emit onFaultClick(m_clickButtonname, item.code, item.type, item.faultType);
+			emit onFaultClick(m_clickButtonname, item.code, item.type, item.faultType, selected);
 
 			//item.is_selected = selected;
 			//item.tab->selectItem(selected);

@@ -66,7 +66,10 @@ void ConfigAlarm::DefaultUiInit()
     m_color_normal = QColor(0, 250, 0);
     m_text = "未设置";    
     m_text_font = this->font();
-    m_text_font.setPointSizeF(20);
+    m_text_font.setFamily("微软雅黑");
+    m_text_font.setItalic(false);
+    m_text_font.setBold(false);
+    m_text_font.setPointSize(13);
     m_text_color = QColor(0, 0, 0);
     m_RunState = StateNormal;
 }

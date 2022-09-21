@@ -12,6 +12,8 @@
 #include "../SubWindow/AllInfoConfigWidget.h"
 
 #include "../Database/ImportComPramData.h"
+#include "../MutliThread/MutliThreadOp.h"
+#include <thread>
 
 class RocketTypeManageModule : public QWidget
 {
@@ -25,12 +27,12 @@ public:
 public:
 	QTableWidget* configInfoTable;
 
-
 private:
 	QVector<QString> columnNameList;
 	int selectedRowNum;
 
 	ImportComPramData* m_importComPramData;
+	QThread* m_importThread;
 
 private:
 	void InitUILayout();
@@ -40,6 +42,10 @@ private:
 	void removeOneRow(int removeRow);
 	void ImportData(int rowNumber);
 	void editOneRow(int rocketID, QString rocketName, QString  rocketCode);
+	void deleteReleDataFromDB(int curRocketID);
+
+public:
+	void ImportResultDo(QString Qstr);
 
 private:
 	void paintEvent(QPaintEvent* event) override;
@@ -48,8 +54,11 @@ private slots:
 	void insertOneRowData();
 	void deleteOneRowData();
 
+
 signals:
 	void rocketInfoChanged();
+	void AddPramComSignal(int rocketID, QString readFile);
+	void deleteData(int curRocketID);
 
 };
 

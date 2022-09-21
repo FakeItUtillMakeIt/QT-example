@@ -16,16 +16,14 @@ public:
         EditMode,
         CommonMode
     };
-
-
     ConfigPlatForm(QWidget *parent = Q_NULLPTR);
     void setWorkMode(ConfigMode mode);
     void SetWorkArea(QRect area);
     void addScene(QString text);
     QList<ConfigScene*>&  get_scenes();
-    void addScene(QString text, QPushButton* selbtn, QPushButton* delbtn);
-    void ChangeSceneByBtnFromOut(QPushButton* selBtn);
-    int DeleteSceneByBtnFromOut(QPushButton* delBtn);
+    void addScene(QString text, ConfigTabButton* selbtn, ConfigTabButton* delbtn);
+    void ChangeSceneByBtnFromOut(ConfigTabButton* selBtn);
+    int DeleteSceneByBtnFromOut(ConfigTabButton* delBtn);
     int DeleteElementByIdFromOut(ControlType ctrtype,QString elementid);
 
     void ChangeSceneByEntry(QToolButton *entry);
@@ -34,7 +32,7 @@ public:
     void InitContainer(int type);
 
     void addSceneFromXmlData(SceneInfo &sceneinfo);
-    void getAutoCreatedBtn(QList<QPair<QPushButton*, QPushButton*>> & autoCreateBtn);
+    void getAutoCreatedBtn(QList<QPair<ConfigTabButton*, ConfigTabButton*>> & autoCreateBtn);
 protected:
     void resizeEvent(QResizeEvent * event);
 private:

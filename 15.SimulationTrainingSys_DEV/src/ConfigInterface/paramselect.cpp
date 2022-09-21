@@ -85,13 +85,53 @@ bool ParamSelect::searchChildItems(QStandardItem* parenitem,QString text)
         }
         else
         {
-            bool searchresult =  searchChildItems(item, text);
+            bool searchresult = searchChildItems(item, text);
             if (searchresult)
-                return true;     
+                return true;           
         }
     }
     return false;
 }
+
+bool ParamSelect::searchChildItems_2(QStandardItem* parenitem, QString text)
+{
+    if (parenitem->rowCount() == 0)
+    {
+        return false;
+    }
+    int rowcount = parenitem->rowCount();
+    bool  findconspondseItem = false;
+    for (int i = 0; i < rowcount; i++)
+    {
+        QStandardItem* item = parenitem->child(i);
+        QString itemtext = item->text();
+        if (itemtext.contains(text))
+        {
+            if (item->rowCount() > 0)
+            {
+                searchChildItems(item, text);
+                ui->treeView->expand(item->index());
+            }
+            findconspondseItem = true;           
+        }
+        else
+        {
+            bool searchresult = searchChildItems_2(item, text);
+            if (searchresult)
+            {
+                findconspondseItem = true;
+                ui->treeView->expand(item->index());
+            }
+            else
+            {
+                ui->treeView->setRowHidden(i,parenitem->index(),true);
+            }
+        }
+    }
+    return findconspondseItem;
+}
+
+
 void ParamSelect::searchItems()
 {
     showAllItems();
@@ -113,7 +153,7 @@ void ParamSelect::searchItems()
         }
         else
         {
-            bool find =  searchChildItems(item, serchtext);
+            bool find = searchChildItems_2(item, serchtext);
             if(!find)
               ui->treeView->setRowHidden(i, item->index().parent(), true);
             if (find)
@@ -190,27 +230,86 @@ ParamSelect::~ParamSelect()
 }
 void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
 {
+    map<int, QStandardItem*> tableItemMap;
     int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allCommadPrt.begin(); it != m_allCommadPrt.end(); it++)
     {
         if (it->second->m_iRocketId != rocketid || it->second->m_iType != 1)
             continue;
-        QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_sName.c_str()));
-        paramnode->setData(it->second->m_id, Qt::UserRole + 1);
-        paramModel->appendRow(paramnode);
-        paramnode->setCheckable(true);
+
+        if (it->second->m_tableId != -1)
+        {
+            QStandardItem* tabblenode = nullptr;  //获取参数表节点
+            if (tableItemMap.find(it->second->m_tableId) != tableItemMap.end())
+            {
+                tabblenode = tableItemMap[it->second->m_tableId];
+            }
+            else
+            {
+                tabblenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_tableName.c_str()) + "(参数表)");
+                paramModel->appendRow(tabblenode);
+                tableItemMap[it->second->m_tableId] = tabblenode;
+            }
+            QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_sName.c_str()));
+            paramnode->setData(it->second->m_id, Qt::UserRole + 1);
+            tabblenode->appendRow(paramnode);
+            paramnode->setCheckable(true);
+        }
+        else
+        {
+            QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_sName.c_str()));
+            paramnode->setData(it->second->m_id, Qt::UserRole + 1);
+            paramModel->appendRow(paramnode);
+            paramnode->setCheckable(true);
+
+        }
+       
         
     }
 
 }
+//void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
+//{
+//    map<int, QStandardItem*> deviceItemMap;
+//    map<int, QStandardItem*> tableItemMap;
+//    int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
+//    for (auto it = m_allDeviceParam.begin(); it != m_allDeviceParam.end(); it++)
+//    {
+//        if (it->second->m_rockcketid != rocketid)
+//            continue;
+//        QStandardItem* devicenode = nullptr;  //获取设备节点
+//        if (deviceItemMap.find(it->second->m_deviceId) != deviceItemMap.end())
+//        {
+//            devicenode = deviceItemMap[it->second->m_deviceId];
+//        }
+//        else
+//        {
+//            devicenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_deviceName.c_str()));
+//            paramModel->appendRow(devicenode);
+//            deviceItemMap[it->second->m_deviceId] = devicenode;
+//        }
+//        //添加参数节点
+//        QStandardItem*  paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_subParameterName.c_str()));
+//        paramnode->setData(it->second->m_id, Qt::UserRole + 1);
+//        devicenode->appendRow(paramnode);
+//        paramnode->setCheckable(true);
+//    }
+//
+//}
+
 void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
 {
     map<int, QStandardItem*> deviceItemMap;
+    map<int, QStandardItem*> tableItemMap;
+    map<int, QList<int>> tabledevicemap;
+
     int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allDeviceParam.begin(); it != m_allDeviceParam.end(); it++)
     {
         if (it->second->m_rockcketid != rocketid)
             continue;
+
+
         QStandardItem* devicenode = nullptr;  //获取设备节点
         if (deviceItemMap.find(it->second->m_deviceId) != deviceItemMap.end())
         {
@@ -218,18 +317,39 @@ void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
         }
         else
         {
-            devicenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_deviceName.c_str()));
-            paramModel->appendRow(devicenode);
+            devicenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_deviceName.c_str()) + "(设备)");
+            if(it->second->m_tableId == -1)
+              paramModel->appendRow(devicenode);
             deviceItemMap[it->second->m_deviceId] = devicenode;
         }
+        if (it->second->m_tableId != -1)
+        {
+            QStandardItem* tabblenode = nullptr;  //获取参数表节点
+            if (tableItemMap.find(it->second->m_tableId) != tableItemMap.end())
+            {
+                tabblenode = tableItemMap[it->second->m_tableId];
+            }
+            else
+            {
+                tabblenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_tableName.c_str()) + "(参数表)");
+                paramModel->appendRow(tabblenode);
+                tableItemMap[it->second->m_tableId] = tabblenode;
+            }
+            if(tabledevicemap[it->second->m_tableId].contains(it->second->m_deviceId) == false)
+            {
+                tabblenode->appendRow(devicenode);
+                tabledevicemap[it->second->m_tableId].push_back(it->second->m_deviceId);
+            }
+        }       
+
         //添加参数节点
-        QStandardItem*  paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_subParameterName.c_str()));
+        QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_subParameterName.c_str()));
         paramnode->setData(it->second->m_id, Qt::UserRole + 1);
         devicenode->appendRow(paramnode);
         paramnode->setCheckable(true);
     }
-
 }
+
 void ParamSelect::treeItemChanged(QStandardItem *item)
 {
     if ( item == nullptr )

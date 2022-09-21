@@ -31,7 +31,8 @@ enum  ControlRole
 {
     cCreateEntry,
     cRealControl,
-    cCopycontrol
+    cCopycontrol,
+    cTabMove
 };
 
 
@@ -59,6 +60,13 @@ enum  ConfigValueType
     eConfigStyleInfo,
     eConfigMultiDataSource,
     eConfigCommand
+};
+
+struct ConfigSceneInfo
+{
+    QString name;
+    QString id;
+    QString path;
 };
 
 

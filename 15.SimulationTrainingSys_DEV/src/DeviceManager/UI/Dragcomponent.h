@@ -16,10 +16,10 @@ public:
 	int id;
 	QString name;
 	QString type;
-	QString pos_x;
-	QString pos_y;
-	QString Dcomp_width;
-	QString Dcomp_height;
+	int pos_x;
+	int pos_y;
+	int Dcomp_width;
+	int Dcomp_height;
 	QString Dcomp_title;
 	QString Dcomp_textcontent;
 

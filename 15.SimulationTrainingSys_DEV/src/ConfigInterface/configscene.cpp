@@ -6,6 +6,7 @@
 #include "configcurve.h"
 #include "configalarm.h"
 #include "booldialog.h"
+#include "configtabbutton.h"
 ConfigNameSpaceStart
 ConfigScene::ConfigScene(QWidget *parent):QWidget(parent)
 {
@@ -14,9 +15,33 @@ ConfigScene::ConfigScene(QWidget *parent):QWidget(parent)
 }
 void ConfigScene::AutoCreateOpBtn(QString scenename)
 {
-    selbutton = new QPushButton(scenename);
+    selbutton = new ConfigTabButton(scenename);
+    selbutton->configscene = this;
     AddContextMenuToBtn(selbutton);
-    delbutton = new QPushButton();
+    delbutton = new ConfigTabButton();
+    delbutton->configscene = this;
+}
+void ConfigScene::ButtonSwap(ConfigScene* swapScene)
+{
+    ConfigTabButton* iselbutton = selbutton;
+    ConfigTabButton* idelbutton = delbutton;
+    QString  swaptext = swapScene->selbutton->text();
+
+    selbutton = swapScene->selbutton;
+    selbutton->setText(iselbutton->text());
+    selbutton->configscene = this;
+    disconnect(selbutton, &QPushButton::customContextMenuRequested, 0, 0);
+//    AddContextMenuToBtn(selbutton);
+    delbutton = swapScene->delbutton;
+    delbutton->configscene = this;
+
+    swapScene->selbutton = iselbutton;
+    swapScene->selbutton->setText(swaptext);
+    disconnect(swapScene->selbutton, &QPushButton::customContextMenuRequested, 0, 0);
+    swapScene->delbutton = idelbutton;
+    swapScene->selbutton->configscene = swapScene;
+    swapScene->delbutton->configscene = swapScene;    
+    swapScene->selbutton->click();
 }
 void ConfigScene::AddContextMenuToBtn(QPushButton* selbtn)
 {    
@@ -347,9 +372,14 @@ void ConfigScene::SetName(QString scenename)
 }
 void ConfigScene::dragEnterEvent(QDragEnterEvent *event)
 {
-    QString groupid =  event->mimeData()->data("groupid");
     ControlRole  ctrlrole = (ControlRole)event->mimeData()->data("operation").toInt();
-
+    if (ctrlrole == cTabMove)
+    {
+        event->ignore();
+        return;
+    }
+    QString groupid =  event->mimeData()->data("groupid");
+  
    // if(groupid == m_uuid || ctrlrole == cCreateEntry)
     event->accept();
 }
@@ -433,7 +463,7 @@ void ConfigScene::CreateNewElement(ControlType  ctrltype,QPoint pos)
         ConfigAlarm* alarm = new ConfigAlarm(this);
         alarm->InitFromDefaultStyle();
         alarm->move(pos);
-        alarm->resize(500, 200);
+        alarm->resize(300, 100);
         alarm->show();
         alarm->updateGeometryData();
         sceneAlarmList.push_back(alarm);

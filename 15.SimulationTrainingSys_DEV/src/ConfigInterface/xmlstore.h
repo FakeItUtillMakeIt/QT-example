@@ -48,6 +48,7 @@ public:
     static bool SaveScenePairLabels(tinyxml2::XMLDocument &doc, tinyxml2::XMLElement *&pairLabelsElement, QList<ConfigPairLabel *> &scenePairLabelList);
     static bool SaveSceneAlarms(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement*& alarmsElement, QList<ConfigAlarm*>& sceneAlarmList);
     static bool AppenSoftWareIfNotExist(QString filename);
+    static bool SwapScenePosition(ConfigScene* first, ConfigScene* second);
 
     static bool ReadSceneInfoFile(QString filename, SceneInfo &sceneinfot);
    // static bool ReadElementInfo(tinyxml2::XMLDocument &doc, QString groupname, QString elementname, QList<QMap<QString, QString> > &Infolist);

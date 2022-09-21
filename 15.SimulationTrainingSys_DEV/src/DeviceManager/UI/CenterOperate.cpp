@@ -326,6 +326,7 @@ void CenterOperate::dealFaultCmd(Command* command) {
 						deviceParam->updateParamRealVal();
 						deviceParam->m_curStatus.m_id = FAULT_ID;
 						deviceParam->m_curStatus.m_name = deviceParam->m_status;
+						deviceParam->faultCount++;
 					}
 #endif __USE_MUTLI_FAULT__
 

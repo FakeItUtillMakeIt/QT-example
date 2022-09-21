@@ -37,7 +37,8 @@ namespace DataBase
 		bool ReadConfigTime(QString& msg, QString& curtime);
 		bool ReadConfigFromDb(QString& msg, QString curtime);
 		bool getMainSchedule(int rocketid, QVector<int>& schedue);
-
+		bool GetConfigFile(QString filename, const char* sql);
+		bool SaveConfigFile(QString filename, const char* sql);
 		bool GetTaskInfo();//获取岗位信息
 	private:
 		OutputPath* m_path;

@@ -19,7 +19,7 @@ Dragimg::~Dragimg()
 
 void Dragimg::mousePressEvent(QMouseEvent* me)
 {
-	qDebug() << "dianji£¡";
+
 	if (me->button() == Qt::LeftButton)
 	{
 		this->mainUI->ui.height_line->setDisabled(false);

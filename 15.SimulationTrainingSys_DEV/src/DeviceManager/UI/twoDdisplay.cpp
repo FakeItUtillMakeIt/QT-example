@@ -39,41 +39,78 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 	, deletewid(nullptr)
 	, e_aflag(true)
 	, verticalSpacer(nullptr)
-	, editflag(false)
+	,editflag(false)
 	, isOpen(false)
 	, cur_module(1)
+	, curComp(nullptr)
 
-
+    
+	
 
 {
-	curComp = nullptr;
-	this->setFocusPolicy(Qt::ClickFocus);
-	this->grabKeyboard();
+
+
 	ui.setupUi(this);
-	this->jsonData = new Dataspace();
+
+	
+
+	//加载字体
+	int id = QFontDatabase::addApplicationFont(":/twoDdisplay/word/word.ttf");
+	QStringList s = QFontDatabase::applicationFontFamilies(id);
+	font.setFamily(s[0]);
+	ui.title->setFont(font);
+	ui.modulename_1->setFont(font);
+	ui.modulename_2->setFont(font);
+	ui.modulename_3->setFont(font);
+	ui.modulename_4->setFont(font);
+	ui.dialogtitle->setFont(font);
+	ui.tx->setFont(font);
+	ui.dmydz->setFont(font);
+	ui.fwq_2->setFont(font);
+	ui.qdjsj->setFont(font);
+
+	curlabel = nullptr;
+	curwid = nullptr;
+	curobjectname = "null";
+	imgnum = 0;
+
+	ui.dialog->hide();
+
+	ui.textcontent->setReadOnly(true);
+	ui.dialogtitle->setReadOnly(true);
+
+
+
+	//初始化
+	this->setFocusPolicy(Qt::ClickFocus);
+
+	this->jsonData =new Dataspace();
 	jsondata_load();
 	dataload();
 	dataTopage();
+	data_toJson();
 
-	//DragArea* da = new DragArea(ui.page_5);
+	foreach(Rocketmodule* m, jsonData->rmlist)
+	{
+		if (m->id == cur_module)
+		{
+			curModule = m;
 
-	//da->mainUI = this;
-	//da->canDrag = true;
-	//da->setCursor(Qt::PointingHandCursor);
-	//da->setStyleSheet("border:2px dashed white");
-	//da->setGeometry(550, 500, 100, 100);
+		}
+	}
 
-	//da->show();
 
+
+	
 //路径检查
-	QString	path1 = exepath + "/image/thumbnail/";
-	QString path2 = exepath + "/image/prewimg/";
-	QString path3 = exepath + "/video/";
-	QString path4 = exepath + "/files/";
-	checkpath(path1);
-	checkpath(path2);
-	checkpath(path3);
-	checkpath(path4);
+QString	path1=exepath + "/image/thumbnail/";
+QString path2 = exepath + "/image/prewimg/";
+QString path3 = exepath + "/video/";
+QString path4 = exepath + "/files/";
+checkpath(path1);
+checkpath(path2);
+checkpath(path3);
+checkpath(path4);
 
 
 	//QString img1 = QCoreApplication::applicationDirPath() + "/gz-x.png";
@@ -112,7 +149,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 	ui.imgwarning->hide();
 
 	//area 控件点击事件
-
+	
 	connect(ui.Area_close, &QPushButton::clicked, this, [=]() {
 
 		zhezhao_global->hide();
@@ -138,6 +175,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 	dw->setGeometry(0, 0, 1630, 854);
 	dw->setAcceptDrops(true);
 	dw->mainUi = this;
+	dw->hide();
 	// 可拖动控件icon载入
 	Draglabel* Dimg = new Draglabel(ui.edit_Iconbar);
 	Dimg->dropwid = dw;
@@ -191,7 +229,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 	connect(ui.attr_close, &QPushButton::clicked, this, [=]() {
 		ui.attr_wid->hide();
 		});
-
+	
 
 	connect(ui.delete_comp, &QPushButton::clicked, this, [=]() {
 		if (curComp != nullptr)
@@ -214,7 +252,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			compType = 0;
 
 		}
-
+	
 		});
 	connect(ui.delete_Allcomp, &QPushButton::clicked, this, [=]() {
 		for (int i = 0; i < complist.size(); i++)
@@ -258,7 +296,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			comp->setCursor(Qt::PointingHandCursor);
 			comp->mainUI = this;
 			comp->canDrag = true;
-			comp->setGeometry(10, 10, curComp->width(), 40);
+			comp->setGeometry(10, 10, curComp->width(),40);
 			comp->setMinimumSize(QSize(0, 40));
 			comp->setMaximumSize(QSize(16777215, 40));
 			QHBoxLayout* compho = new QHBoxLayout(comp);
@@ -299,7 +337,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			dl->canDrag = true;
 			dl->setCursor(Qt::PointingHandCursor);
 			dl->color_num = curLine->color_num;
-			dl->setStyleSheet("border-top:2px dashed " + dl->colors[dl->color_num] + ";");
+			dl->setStyleSheet("border-top:2px dashed "+ dl->colors[dl->color_num] +";");
 			dl->setGeometry(10, 10, curComp->width(), 10);
 			ui.width_line->setText(QString::number(dl->width()));
 			ui.height_line->setText(QString::number(dl->height()));
@@ -319,9 +357,9 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			dl->canDrag = true;
 			dl->setCursor(Qt::PointingHandCursor);
 			dl->color_num = curLine->color_num;
-			dl->setStyleSheet("border-left:2px dashed " + dl->colors[dl->color_num] + ";");
+			dl->setStyleSheet("border-left:2px dashed "+dl->colors[dl->color_num]+";");
 			dl->setGeometry(10, 10, 10, curComp->height());
-
+		
 			ui.width_line->setText(QString::number(dl->width()));
 			ui.height_line->setText(QString::number(dl->height()));
 			ui.pos_x->setText(QString::number(dl->pos().x()));
@@ -338,7 +376,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			da->canDrag = true;
 			da->setCursor(Qt::PointingHandCursor);
 			da->color_num = curArea->color_num;
-			da->setStyleSheet("border:2px dashed " + da->colors[da->color_num] + ";");
+			da->setStyleSheet("border:2px dashed "+ da->colors[da->color_num] +";");
 			da->setGeometry(10, 10, curComp->width(), curComp->height());
 			ui.width_line->setText(QString::number(da->width()));
 			ui.height_line->setText(QString::number(da->height()));
@@ -352,7 +390,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		});
 
 	connect(ui.pos_x, &QLineEdit::editingFinished, this, [=]() {
-		curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(), ui.height_line->text().toInt());
+		curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(),ui.height_line->text().toInt());
 		});
 	connect(ui.pos_y, &QLineEdit::editingFinished, this, [=]() {
 		curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(), ui.height_line->text().toInt());
@@ -368,12 +406,12 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 				if (w > 0)
 				{
-					int height = (int)(ui.width_line->text().toInt() * h / w);
+					int height =(int)(ui.width_line->text().toInt() * h / w);
 					curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(), height);
 					ui.height_line->setText(QString::number(height));
 				}
 
-
+				
 				return;
 
 			}
@@ -388,7 +426,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 				if (w > 0)
 				{
-					int height = 20 * h / w;
+					int height = 20 * h /w ;
 					curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), 20, height);
 					ui.width_line->setText(QString::number(40));
 					ui.height_line->setText(QString::number(height));
@@ -399,11 +437,11 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 			}
 
-			curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), 20, ui.height_line->text().toInt());
+			curComp->setGeometry(ui.pos_x->text().toInt(),ui.pos_y->text().toInt(),20,ui.height_line->text().toInt());
 			ui.width_line->setText(QString::number(20));
 		}
-
-
+		
+		
 
 		});
 	connect(ui.height_line, &QLineEdit::editingFinished, this, [=]() {
@@ -438,7 +476,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 				if (w > 0)
 				{
-					int width = 20 * w / h;
+					int width = 20 * w /h;
 					curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), width, 20);
 					ui.height_line->setText(QString::number(40));
 					ui.width_line->setText(QString::number(width));
@@ -451,14 +489,14 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(), 20);
 			curComp->setGeometry(ui.pos_x->text().toInt(), ui.pos_y->text().toInt(), ui.width_line->text().toInt(), 20);
 		}
-
-
-
+		
+		
+		
 		});
 
 
 
-	//文件上传相关功能
+//文件上传相关功能
 	ui.uploadimgwid1->hide();
 	ui.uploadimgwid2->hide();
 	ui.uploadimgwid3->hide();
@@ -484,29 +522,29 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			"Select one or more files to open",
 			"",
 			"ImageFile(*.png *.jpg *.jpeg)");
-
-		if (uploaded_img.size() >= 6 || files.size() > 6 || (uploaded_img.size() + files.size()) > 6)
+	
+		if (uploaded_img.size() >= 6||files.size()>6|| (uploaded_img.size()+ files.size())>6)
 		{
 			QMessageBox::critical(NULL, "错误", "最多只能上传6张图片！");
 		}
-
-		else
+		
+		else 
 		{
 			for (int i = 0; i < files.size(); i++)
-			{
+			  {
+				
+				  QFile* f = new QFile(files[i]);
+				  int filesize = (int)(f->size() / (1024 * 1024));
 
-				QFile* f = new QFile(files[i]);
-				int filesize = (int)(f->size() / (1024 * 1024));
-
-				if (filesize >= 1)
+				  if (filesize >= 1)
 				{
 					QMessageBox::critical(NULL, "错误", "单张图片大小不能超过1M！");
 					continue;
 				}
-				uploaded_img.append(files[i]);
+				  uploaded_img.append(files[i]);
 
-
-			}
+ 
+			  }
 
 			if (!uploaded_img.isEmpty())
 			{
@@ -516,27 +554,27 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 					QString imagename = "uploadedimg" + QString::number(i);
 					QWidget* wid = ui.imgeditwid->findChild<QWidget*>(imagewidname);
 					QLabel* img = ui.imgeditwid->findChild<QLabel*>(imagename);
-					QPixmap map = QPixmap(uploaded_img[i - 1]);
-
+					QPixmap map =QPixmap(uploaded_img[i - 1]);
+				
 					if (map.height() > 100 || map.width() > 100)
 					{
 						QPixmap temp = map.scaled(100, 100, Qt::KeepAspectRatio);
 						img->setPixmap(temp);
 					}
 					else {
-						img->setPixmap(map);
+					    img->setPixmap(map);
 					}
-
+				
 					wid->show();
 				}
 
 			}
 		}
-
+	
 		});
 
-	connect(ui.imguploadresetbtn, &QPushButton::clicked, this, [=]() {
-		for (int i = 1; i < 7; i++)
+	connect(ui.imguploadresetbtn, &QPushButton::clicked, this, [=](){
+		for (int i = 1; i <7; i++)
 		{
 			QString imagewidname = "uploadimgwid" + QString::number(i);
 			QString imagename = "uploadedimg" + QString::number(i);
@@ -546,9 +584,9 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			wid->hide();
 		}
 		uploaded_img.clear();
-
+		
 		});
-
+	
 	connect(ui.videouploadbtn, &QPushButton::clicked, this, [this]() {
 		QStringList files = QFileDialog::getOpenFileNames(
 			this,
@@ -586,6 +624,9 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				{
 					QString videowidname = "uploadedvideo" + QString::number(i);
 					QWidget* wid = ui.videoeditwid->findChild<QWidget*>(videowidname);
+					QLabel* videonamelabel = ui.videoeditwid->findChild<QLabel*>("upvideoname" + QString::number(i));
+					QString vidname = uploaded_video[i-1].split("/")[uploaded_video[i-1].split("/").size() - 1];
+					videonamelabel->setText(CMutils::upload_shortname(vidname));
 					wid->show();
 				}
 
@@ -595,17 +636,19 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		});
 
 	connect(ui.videouploadresetbtn, &QPushButton::clicked, this, [this]() {
+		
+	
+			for (int i = 1; i < uploaded_video.size() + 1; i++)
+			{
+				QString videowidname = "uploadedvideo" + QString::number(i);
+				QWidget* wid = ui.videoeditwid->findChild<QWidget*>(videowidname);
+				QLabel* name = ui.videoeditwid->findChild<QLabel*>("upvideoname" + QString::number(i));
+				name->setText("");
+				wid->hide();
+			}
 
-
-		for (int i = 1; i < uploaded_video.size() + 1; i++)
-		{
-			QString videowidname = "uploadedvideo" + QString::number(i);
-			QWidget* wid = ui.videoeditwid->findChild<QWidget*>(videowidname);
-			wid->hide();
-		}
-
-
-		uploaded_video.clear();
+		
+			uploaded_video.clear();
 		});
 
 	connect(ui.fileuoloadbtn, &QPushButton::clicked, this, [this]() {
@@ -645,10 +688,11 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				{
 					QString filewidname = "fileuploadwid" + QString::number(i);
 					QWidget* wid = ui.fileeditwid->findChild<QWidget*>(filewidname);
-					QFile* f = new QFile(uploaded_file[i - 1]);
+					QFile* f = new QFile(uploaded_file[i-1]);
 					QString filename = "fileuploadname" + QString::number(i);
 					QLabel* namelabel = ui.fileeditwid->findChild<QLabel*>(filename);
-					namelabel->setText(f->fileName().split(".")[f->fileName().split(".").size() - 1].append("文件"));
+					QString fname = f->fileName().split("/")[f->fileName().split("/").size() - 1];
+					namelabel->setText(CMutils::upload_shortname(fname));
 					wid->show();
 				}
 
@@ -656,7 +700,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		}
 
 		});
-
+	
 	connect(ui.fileuploadresetbtn, &QPushButton::clicked, this, [this]() {
 		for (int i = 1; i < uploaded_file.size() + 1; i++)
 		{
@@ -669,13 +713,13 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		}
 
 		uploaded_file.clear();
-
+		
 		});
 
 	connect(ui.contentEdit_close, &QPushButton::clicked, this, [this]() {
 		zhezhao_global->hide();
 		ui.contentEdit->hide();
-
+		
 		});
 	connect(ui.contentEdit_cancel, &QPushButton::clicked, this, [this]() {
 		zhezhao_global->hide();
@@ -725,7 +769,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		}
 
 		curwid->findChild<QPushButton*>(curobjectname + "btn")->setText(ui.dialogtitle->text());
-
+	
 		for (int i = 0; i < module_list.size(); i++)
 		{
 			if (module_list[i]->id = cur_module)
@@ -735,14 +779,14 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 					if (module_list[i]->m_Component[j]->m_objname == curobjectname)
 					{
 						module_list[i]->m_Component[j]->imglist.clear();
-						module_list[i]->m_Component[j]->imglist = uploaded_img;
+						module_list[i]->m_Component[j]->imglist=uploaded_img;
 						module_list[i]->m_Component[j]->videolist.clear();
 						module_list[i]->m_Component[j]->videolist = uploaded_video;
 						module_list[i]->m_Component[j]->filelist.clear();
 						module_list[i]->m_Component[j]->filelist = uploaded_file;
 						module_list[i]->m_Component[j]->textContent = ui.textcontent->toPlainText();
 						module_list[i]->m_Component[j]->m_Compname = ui.dialogtitle->text();
-
+		
 					}
 
 				}
@@ -752,15 +796,15 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 		});
-
+	
 
 	//临时需求
 	connect(ui.jzxqs, &QPushButton::clicked, this, [this]() {
-		/*	VlcPlayer * m_pVlcPlayer = new VlcPlayer(0, 0, "", 20);
-			m_pVlcPlayer->setParent(ui.testwid);
-			QString temp = QCoreApplication::applicationDirPath() + "/video/tempjzx.mp4";
-			QString path = temp.replace("/", "\\\\");
-			m_pVlcPlayer->PlayVideo(path.toStdString());*/
+	/*	VlcPlayer * m_pVlcPlayer = new VlcPlayer(0, 0, "", 20);
+		m_pVlcPlayer->setParent(ui.testwid);
+		QString temp = QCoreApplication::applicationDirPath() + "/video/tempjzx.mp4";
+		QString path = temp.replace("/", "\\\\");
+		m_pVlcPlayer->PlayVideo(path.toStdString());*/
 		QString url = QCoreApplication::applicationDirPath() + "/video/tempjzx.mp4";
 		QDesktopServices::openUrl(QUrl(url));
 
@@ -769,21 +813,21 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 
-	//内容预览切换
+//内容预览切换
 	connect(ui.displayimage, &QPushButton::clicked, this, [this]() {
 
 		ui.displayimage->setIcon(QIcon(":/twoDdisplay/image_select"));
 		ui.displayimage->setIconSize(QSize(24, 24));
-
+		
 		ui.displayvideo->setIcon(QIcon(":/twoDdisplay/video_default"));
 		ui.displayvideo->setIconSize(QSize(24, 24));
-
+		
 		ui.displayfile->setIcon(QIcon(":/twoDdisplay/file_default"));
 		ui.displayfile->setIconSize(QSize(24, 24));
 
 		ui.stackedWidget_2->setCurrentIndex(0);
 
-
+		
 		});
 
 
@@ -813,6 +857,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 
+	  
 
 
 
@@ -837,13 +882,13 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 
+		
 
 
-
-
-	//编辑功能启动
+//编辑功能启动
 	connect(ui.editbtn, &QPushButton::clicked, this, [this]() {
-		if (editflag == false)
+	
+		if (editflag==false)
 		{
 			ui.imgprew_editbtn->show();
 			ui.save_edit->show();
@@ -853,14 +898,15 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			editflag = true;
 			ui.textcontent->setReadOnly(false);
 			ui.dialogtitle->setReadOnly(false);
-			if (cur_module == 5)
+			if (cur_module== 5)
 			{
 				ui.edit_Iconbar->show();
 			}
-
+			this->grabKeyboard();
 
 		}
 		else {
+			this->releaseKeyboard();
 			ui.imgprew_editbtn->hide();
 			ui.save_edit->hide();
 
@@ -874,10 +920,10 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			ui.edit_Iconbar->hide();
 
 		}
-
+		
 		});
 	connect(ui.imgprew_editbtn, &QPushButton::clicked, this, [this]() {
-
+	
 		zhezhao_global->show();
 		ui.contentEdit->show();
 
@@ -931,6 +977,9 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			{
 				QString videowidname = "uploadedvideo" + QString::number(i);
 				QWidget* wid = ui.videoeditwid->findChild<QWidget*>(videowidname);
+				QLabel* videonamelabel = ui.videoeditwid->findChild<QLabel*>("upvideoname" + QString::number(i));
+				QString vidname = uploaded_video[i-1].split("/")[uploaded_video[i-1].split("/").size() - 1];
+				videonamelabel->setText(CMutils::upload_shortname(vidname));
 				wid->show();
 			}
 
@@ -944,27 +993,28 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				QFile* f = new QFile(uploaded_file[i - 1]);
 				QString filename = "fileuploadname" + QString::number(i);
 				QLabel* namelabel = ui.fileeditwid->findChild<QLabel*>(filename);
-				namelabel->setText(f->fileName().split(".")[f->fileName().split(".").size() - 1].append("文件"));
+				QString fname = f->fileName().split("/")[f->fileName().split("/").size() - 1];
+				namelabel->setText(CMutils::upload_shortname(fname));
 				wid->show();
 			}
 
 		}
-
+	
 
 		});
 
-
-
+	
+	
 	//展示模型的数量
 
-	module_displaynum = ui.leftscrollpart->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly).size();
+	module_displaynum=ui.leftscrollpart->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly).size();
+	
 
 
 
-
-
-
-
+		
+		
+		
 
 
 
@@ -994,10 +1044,10 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 	//初始化载入数字
-	QList<QWidget*> list = ui.leftscrollpart->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
-	module_basenum = list[list.size() - 1]->objectName().split("_")[1].toInt();
+	QList<QWidget*> list=ui.leftscrollpart->findChildren<QWidget*>(QString(),Qt::FindDirectChildrenOnly);
+	module_basenum=list[list.size() - 1]->objectName().split("_")[1].toInt();
 	module_basenum++;
-
+	
 
 	//删除模型
 	connect(ui.moduleclosebtn_1, &QPushButton::clicked, this, [this]() {
@@ -1040,31 +1090,31 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		zhezhao_global->hide();
 		ui.delete_dialog->hide();
 		});
-
+	
 	//新增模型
-	connect(ui.module_add, &QPushButton::clicked, this, [this]() {
-		e_aflag = true;
+	connect(ui.module_add, &QPushButton::clicked, this, [this]() {   
+		    e_aflag = true;
+	
+			ui.e_aname->setText(QString::fromLocal8Bit("新建模型"));
+			ui.modulename_edit->setText("");
+			zhezhao_global->show();
+			ui.modulea_edialog->show();
+			ui.namewarning->hide();
+			ui.imgwarning->hide();
+			ui.module_thumnail->setStyleSheet("border-image:url(:/twoDdisplay/defaultimg);");
+			ui.module_thumnail->setPixmap(QPixmap(""));
+		
 
-		ui.e_aname->setText(QString::fromLocal8Bit("新建模型"));
-		ui.modulename_edit->setText("");
-		zhezhao_global->show();
-		ui.modulea_edialog->show();
-		ui.namewarning->hide();
-		ui.imgwarning->hide();
-		ui.module_thumnail->setStyleSheet("border-image:url(:/twoDdisplay/defaultimg);");
-		ui.module_thumnail->setPixmap(QPixmap(""));
 
-
-
-		});
-	connect(ui.imgupload, &QPushButton::clicked, this, [this]() {
-		QString filepath = QFileDialog::getOpenFileName(this, "选择一张图片", "", "ImageFile (*.png *.jpg *.bpm *.tiff *.jpeg)");
-		QString destpath = CMutils::destfilename_output(filepath);
+});
+	connect(ui.imgupload,&QPushButton::clicked, this, [this]() {
+		QString filepath=QFileDialog::getOpenFileName(this,"选择一张图片","","ImageFile (*.png *.jpg *.bpm *.tiff *.jpeg)");	
+		QString destpath=CMutils::destfilename_output(filepath);
 		thumbnail_originpath = filepath;
 		thumbnail_exepath = destpath;
-
+	
 		QString str = QString("border-image:url(%1)").arg(filepath);
-		if (filepath != "")
+		if (filepath!="")
 		{
 			ui.module_thumnail->setPixmap(QPixmap(filepath));
 			module_thumbnail = new QFile(filepath);
@@ -1072,8 +1122,8 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			ui.module_thumnail->setStyleSheet("");
 
 		}
-
-
+		
+	
 
 		});
 	connect(ui.xj_ok, &QPushButton::clicked, this, [this]() {
@@ -1210,7 +1260,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 				thumbnail->setObjectName(objname7);
 				thumbnail->setGeometry(QRect(0, 0, 272, 176));
 				thumbnail->setStyleSheet("border-image:url(\":/twoDdisplay/select\")");
-				QFile* f = new QFile(thumbnail_originpath);
+				QFile* f=new QFile(thumbnail_originpath);
 				f->copy(thumbnail_originpath, thumbnail_exepath);
 				thumbnail->setPixmap(QPixmap(mudule_thumbnailpath));
 				//thumbnail->setScaledContents(true);
@@ -1256,18 +1306,18 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 			}
 		}
 		else {
-			zhezhao_global->hide();
-			ui.modulea_edialog->hide();
-			ui.modulename_edit->text();
-			ui.module_thumnail->pixmap();
-			ui.dialog->hide();
-			QLabel* mname = editwid->findChildren<QLabel*>()[1];
-			QLabel* mthumbnail = editwid->findChildren<QLabel*>()[2];
-			mname->setText(ui.modulename_edit->text());
-			mthumbnail->setPixmap(*ui.module_thumnail->pixmap());
+		zhezhao_global->hide();
+		ui.modulea_edialog->hide();
+		ui.modulename_edit->text();
+		ui.module_thumnail->pixmap();
+		ui.dialog->hide();
+		QLabel* mname=editwid->findChildren<QLabel*>()[1];
+		QLabel* mthumbnail=editwid->findChildren<QLabel*>()[2];
+	mname->setText(ui.modulename_edit->text());
+		mthumbnail->setPixmap(*ui.module_thumnail->pixmap());
 
-		}
-
+}
+	
 
 
 
@@ -1289,7 +1339,7 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 		ui.modulea_edialog->show();
 		ui.module_thumnail->setStyleSheet("");
 		ui.e_aname->setText(QString::fromLocal8Bit("编辑模型"));
-		QString module_name = ui.moduleeditbtn_1->parent()->findChildren<QLabel*>()[1]->text();
+		QString module_name=ui.moduleeditbtn_1->parent()->findChildren<QLabel*>()[1]->text();
 		ui.modulename_edit->setText(module_name);
 		ui.module_thumnail->setPixmap(*(ui.moduleeditbtn_1->parent()->parent()->findChildren<QLabel*>()[2])->pixmap());
 		editwid = (QWidget*)ui.moduleeditbtn_1->parent()->parent();
@@ -1311,78 +1361,53 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 		});
 	connect(ui.moduleeditbtn_3, &QPushButton::clicked, this, [this]() {
-		e_aflag = false;
-		ui.namewarning->hide();
-		ui.imgwarning->hide();
-		zhezhao_global->show();
-		ui.modulea_edialog->show();
-		ui.module_thumnail->setStyleSheet("");
-		ui.e_aname->setText(QString::fromLocal8Bit("编辑模型"));
-		QString module_name = ui.moduleeditbtn_3->parent()->findChildren<QLabel*>()[1]->text();
-		ui.modulename_edit->setText(module_name);
-		editwid = (QWidget*)ui.moduleeditbtn_3->parent()->parent();
-		ui.module_thumnail->setPixmap(*(ui.moduleeditbtn_3->parent()->parent()->findChildren<QLabel*>()[2])->pixmap());
+		    e_aflag = false;
+			ui.namewarning->hide();
+			ui.imgwarning->hide();
+			zhezhao_global->show();
+			ui.modulea_edialog->show();
+			ui.module_thumnail->setStyleSheet("");
+			ui.e_aname->setText(QString::fromLocal8Bit("编辑模型"));
+			QString module_name = ui.moduleeditbtn_3->parent()->findChildren<QLabel*>()[1]->text();
+			ui.modulename_edit->setText(module_name);
+			editwid = (QWidget*)ui.moduleeditbtn_3->parent()->parent();
+			ui.module_thumnail->setPixmap(*(ui.moduleeditbtn_3->parent()->parent()->findChildren<QLabel*>()[2])->pixmap());
 
 
-		});
+		    });
 	connect(ui.moduleeditbtn_4, &QPushButton::clicked, this, [this]() {
-		e_aflag = false;
-		ui.namewarning->hide();
-		ui.imgwarning->hide();
-		zhezhao_global->show();
-		ui.modulea_edialog->show();
-		ui.module_thumnail->setStyleSheet("");
-		ui.e_aname->setText(QString::fromLocal8Bit("编辑模型"));
-		QString module_name = ui.moduleeditbtn_4->parent()->findChildren<QLabel*>()[1]->text();
-		ui.modulename_edit->setText(module_name);
-		editwid = (QWidget*)ui.moduleeditbtn_4->parent()->parent();
-		ui.module_thumnail->setPixmap(*(ui.moduleeditbtn_4->parent()->parent()->findChildren<QLabel*>()[2])->pixmap());
+		        e_aflag = false;
+				ui.namewarning->hide();
+				ui.imgwarning->hide();
+				zhezhao_global->show();
+				ui.modulea_edialog->show();
+				ui.module_thumnail->setStyleSheet("");
+				ui.e_aname->setText(QString::fromLocal8Bit("编辑模型"));
+				QString module_name = ui.moduleeditbtn_4->parent()->findChildren<QLabel*>()[1]->text();
+				ui.modulename_edit->setText(module_name);
+				editwid = (QWidget*)ui.moduleeditbtn_4->parent()->parent();
+				ui.module_thumnail->setPixmap(*(ui.moduleeditbtn_4->parent()->parent()->findChildren<QLabel*>()[2])->pixmap());
 
 
-		});
-
-
-
-
-
-
-	//加载字体
-	int id = QFontDatabase::addApplicationFont(":/twoDdisplay/word/word.ttf");
-	QStringList s = QFontDatabase::applicationFontFamilies(id);
-	font.setFamily(s[0]);
-	ui.title->setFont(font);
-	ui.modulename_1->setFont(font);
-	ui.modulename_2->setFont(font);
-	ui.modulename_3->setFont(font);
-	ui.modulename_4->setFont(font);
-	ui.dialogtitle->setFont(font);
-	ui.tx->setFont(font);
-	ui.dmydz->setFont(font);
-	ui.fwq_2->setFont(font);
-	ui.qdjsj->setFont(font);
-
-	curlabel = nullptr;
-	curwid = nullptr;
-	curobjectname = "null";
-	imgnum = 0;
-
-	ui.dialog->hide();
-
-	ui.textcontent->setReadOnly(true);
-	ui.dialogtitle->setReadOnly(true);
+			});
 
 
 
 
+
+
+
+
+	
 	//加载左侧点击事件效果
 	if (contentnum != 0)
 	{
 		curlabel = ui.thumbnail_1;
 	}
 
-	connect(ui.thumbnailbtn_1, &QPushButton::clicked, this, [this]() {
+		connect(ui.thumbnailbtn_1, &QPushButton::clicked, this, [this]() {
 
-		if (curlabel != nullptr && curlabel != ui.thumbnail_1)
+		if (curlabel != nullptr && curlabel!=ui.thumbnail_1)
 		{
 			ui.thumbnail_1->setStyleSheet("border-image:url(\":/twoDdisplay/select\");");
 			curlabel->setStyleSheet("border-image:url(\"\");background-color:rgba(255,255,255,0.3);");
@@ -1471,1207 +1496,1254 @@ twoDdisplay::twoDdisplay(QWidget* parent)
 
 
 	// 全箭模型按钮绑定
-	connect(ui.dialogclose, &QPushButton::clicked, this, [this]() {
-		ui.dialog->hide();
+	    connect(ui.dialogclose, &QPushButton::clicked, this, [this]() {
+			ui.dialog->hide();					
 		});
-
-	QList<QPushButton*> btnlist = ui.contentwid1->findChildren<QPushButton*>();
-
-	for (int i = 0; i < btnlist.size(); i++)
-	{
-
-		if (btnlist[i]->objectName() != "dialogclose" && btnlist[i]->objectName() != "imageview_close")
+	
+		QList<QPushButton*> btnlist = ui.contentwid1->findChildren<QPushButton*>();
+	
+		for (int i = 0; i < btnlist.size(); i++)
 		{
-			btnlist[i]->setFont(font);
-			btnlist[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
-			connect(btnlist[i], &QPushButton::clicked, this, [=]() {
-
-				curwid = btnlist[i]->parentWidget();
-				QPoint pt = curwid->pos();
-
-				int x = pt.x();
-				int y = pt.y();
-
-				if (x > 1200)
-				{
-					ui.dialog->setGeometry(x - 280, y, 500, 140);
-				}
-				else {
-					ui.dialog->setGeometry(x, y, 500, 140);
-				}
-
-				if (btnlist[i]->objectName() == "smjzkbtn")
-				{
-
-					curobjectname = "smjzk";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "smjzk")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-
-				}
-				if (btnlist[i]->objectName() == "rwzhbtn")
-				{
-					curobjectname = "rwzh";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "rwzh")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-				if (btnlist[i]->objectName() == "yctxbtn")
-				{
-					curobjectname = "yctx";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "yctx")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-
-				if (btnlist[i]->objectName() == "kzcbtn")
-				{
-					curobjectname = "kzc";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "kzc")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist[i]->objectName() == "smjgkbtn")
-				{
-					curobjectname = "smjgk";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "smjgk")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist[i]->objectName() == "sjfdjbtn")
-				{
-					curobjectname = "sjfdj";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "sjfdj")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-				if (btnlist[i]->objectName() == "esjjjbtn")
-				{
-					curobjectname = "esjjj";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "esjjj")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-				if (btnlist[i]->objectName() == "ejfdjbtn")
-				{
-					curobjectname = "ejfdj";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "ejfdj")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-				if (btnlist[i]->objectName() == "yejjjbtn")
-				{
-					curobjectname = "yejjj";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "yejjj")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-				if (btnlist[i]->objectName() == "yjfdjbtn")
-				{
-					curobjectname = "yjfdj";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "yjfdj")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-
-				if (btnlist[i]->objectName() == "yjwdbtn")
-				{
-					curobjectname = "yjwd";
-					for (int j = 0; j < module_list[0]->m_Component.size(); j++)
-					{
-						if (module_list[0]->m_Component[j]->m_objname == "yjwd")
-						{
-							ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-
-				}
-
-				ui.dialogtitle->setText(btnlist[i]->text());
-				ui.dialog->show();
-				ui.dialog->raise();
-
-				});
-		}
-	}
-
-	//点击图片进入详情预览后相关操作
-	connect(ui.vicontent, &QPushButton::clicked, this, [=]() {
-		zhezhao_global->show();
-		ui.content_prew->show();
-		ui.displayimage->clicked();
-
-		for (int i = 0; i < module_list[cur_module - 1]->m_Component.size(); i++)
-		{
-			if (module_list[cur_module - 1]->m_Component[i]->m_objname == curobjectname)
+	
+			if (btnlist[i]->objectName() != "dialogclose" && btnlist[i]->objectName() != "imageview_close")
 			{
-				prew_img = module_list[cur_module - 1]->m_Component[i]->imglist;
-				prew_video = module_list[cur_module - 1]->m_Component[i]->videolist;
-				prew_file = module_list[cur_module - 1]->m_Component[i]->filelist;
+				btnlist[i]->setFont(font);
+				btnlist[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
+				connect(btnlist[i], &QPushButton::clicked, this, [=]() {
+				
+				    curwid = btnlist[i]->parentWidget();
+					QPoint pt = curwid->pos();
+	
+					int x = pt.x();
+					int y = pt.y();
 
+					if (x > 1100)
+					{
+						ui.dialog->setGeometry(x-380, y, 500, 140);
+					}
+					else {
+						ui.dialog->setGeometry(x, y, 500, 140);
+					}
+
+					if (btnlist[i]->objectName() == "smjzkbtn")
+					{
+					
+						curobjectname = "smjzk";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "smjzk")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url("+ module_list[0]->m_Component[j]->imglist[0]+");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+						
+	
+					}
+					if (btnlist[i]->objectName() == "rwzhbtn")
+					{
+						curobjectname = "rwzh";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "rwzh")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+
+					}
+					if (btnlist[i]->objectName() == "yctxbtn")
+					{
+						curobjectname = "yctx";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "yctx")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+
+					if (btnlist[i]->objectName() == "kzcbtn")
+					{	
+						curobjectname = "kzc";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "kzc")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist[i]->objectName() == "smjgkbtn")
+					{
+						curobjectname = "smjgk";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "smjgk")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist[i]->objectName() == "sjfdjbtn")
+					{
+						curobjectname = "sjfdj";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "sjfdj")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+
+					}
+					if (btnlist[i]->objectName() == "esjjjbtn")
+					{
+						curobjectname = "esjjj";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "esjjj")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+
+					}
+					if (btnlist[i]->objectName() == "ejfdjbtn")
+					{
+						curobjectname = "ejfdj";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "ejfdj")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+		
+					}
+					if (btnlist[i]->objectName() == "yejjjbtn")
+					{
+						curobjectname = "yejjj";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "yejjj")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+
+					}
+					if (btnlist[i]->objectName() == "yjfdjbtn")
+					{
+						curobjectname = "yjfdj";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "yjfdj")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+
+					}
+
+					if (btnlist[i]->objectName() == "yjwdbtn")
+					{
+						curobjectname = "yjwd";
+						for (int j = 0; j < module_list[0]->m_Component.size(); j++)
+						{
+							if (module_list[0]->m_Component[j]->m_objname == "yjwd")
+							{
+								ui.textcontent->setText(module_list[0]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[0]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+				
+					}
+				
+					ui.dialogtitle->setText(btnlist[i]->text());
+					ui.dialog->show();
+					ui.dialog->raise();
+
+					});
 			}
 		}
-		ui.img_number->setText(QString::number(prew_img.size()));
-		ui.video_number->setText(QString::number(prew_video.size()));
-		ui.file_number->setText(QString::number(prew_file.size()));
 
+//点击图片进入详情预览后相关操作
+connect(ui.vicontent, &QPushButton::clicked, this, [=]() {
+			zhezhao_global->show();
+			ui.content_prew->show();
+			ui.displayimage->clicked();
 
-		//清空里面内容
-		for (int i = 0; i < 6; i++)
-		{
-			ui.image_page->findChildren<QPushButton*>()[i]->hide();
-			ui.image_page->findChildren<QLabel*>()[i]->hide();
-			QPushButton* imgbtn = ui.image_page->findChild<QPushButton*>("imagebtn_" + QString::number(i + 1));
-			disconnect(imgbtn, &QPushButton::clicked, 0, 0);
-
-
-			ui.video_page->findChildren<QPushButton*>()[i]->hide();
-			ui.video_page->findChildren<QLabel*>()[i]->hide();
-			QPushButton* video = ui.video_page->findChild<QPushButton*>("videobtn" + QString::number(i + 1));
-			disconnect(video, &QPushButton::clicked, 0, 0);
-
-			ui.filepage->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly)[i]->hide();
-			QPushButton* filebtn = ui.filepage->findChild<QPushButton*>("filebtn" + QString::number(i + 1));
-			disconnect(filebtn, &QPushButton::clicked, 0, 0);
-
-
-		}
-		for (int i = 0; i < prew_img.size(); i++)
-		{
-
-			QPushButton* btn = ui.image_page->findChild<QPushButton*>("imagebtn_" + QString::number(i + 1));
-			QLabel* picname = ui.image_page->findChild<QLabel*>("imgname" + QString::number(i + 1));
-			btn->setIcon(QIcon(prew_img[i]));
-			btn->setIconSize(QSize(220, 140));
-			btn->show();
-			picname->show();
-			connect(btn, &QPushButton::clicked, this, [=]() {
-				prewimg_index = btn->objectName().split("_")[1].toInt() - 1;
-				ui.stackedWidget_2->setCurrentIndex(3);
-				QPixmap map = QPixmap(prew_img[prewimg_index]);
-				ui.bigimg_prew->setMaximumSize(750, 420);
-				if (map.height() > 420 || map.width() > 750)
-				{
-					QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
-					ui.bigimg_prew->setPixmap(temp);
-				}
-				else {
-					ui.bigimg_prew->setPixmap(map);
-				}
-				});
-		}
-		for (int i = 0; i < prew_video.size(); i++)
-		{
-			QPushButton* video = ui.video_page->findChild<QPushButton*>("videobtn" + QString::number(i + 1));
-			QLabel* videoname = ui.video_page->findChild<QLabel*>("videoname" + QString::number(i + 1));
-
-			connect(video, &QPushButton::clicked, this, [=]() {
-				prewvideo_index = video->objectName().split("n")[1].toInt() - 1;
-				QDesktopServices::openUrl(QUrl(prew_video[prewvideo_index]));
-				});
-			video->show();
-			videoname->show();
-
-		}
-		for (int i = 0; i < prew_file.size(); i++)
-		{
-
-			QWidget* filewid = ui.filepage->findChild<QWidget*>("filewid" + QString::number(i + 1));
-			QPushButton* filebtn = ui.filepage->findChild<QPushButton*>("filebtn" + QString::number(i + 1));
-			connect(filebtn, &QPushButton::clicked, this, [=]() {
-				prewfile_index = filebtn->objectName().split("n")[1].toInt() - 1;
-
-				QDesktopServices::openUrl(QUrl(prew_file[prewfile_index]));
-				});
-			filewid->show();
-
-		}
-		});
-
-
-
-	//预览图片切换
-
-	connect(ui.imgleft_arr, &QPushButton::clicked, this, [=]() {
-
-		if (prewimg_index == 0)
-		{
-
-			prewimg_index = prew_img.size() - 1;
-
-			QPixmap map = QPixmap(prew_img[prewimg_index]);
-			if (map.height() > 420 || map.width() > 750)
+			if (cur_module > 4)
 			{
-				QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
-				ui.bigimg_prew->setPixmap(temp);
-			}
-			else { ui.bigimg_prew->setPixmap(map); }
-
-		}
-		else {
-			prewimg_index--;
-			QPixmap map = QPixmap(prew_img[prewimg_index]);
-			if (map.height() > 420 || map.width() > 750)
-			{
-				QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
-				ui.bigimg_prew->setPixmap(temp);
-			}
-			else { ui.bigimg_prew->setPixmap(map); }
-		}
-
-
-		ui.bigimg_prew->setMaximumSize(750, 420);
-
-		});
-	connect(ui.imgright_arr, &QPushButton::clicked, this, [=]() {
-		if (prewimg_index == prew_img.size() - 1)
-		{
-
-			prewimg_index = 0;
-			QPixmap map = QPixmap(prew_img[prewimg_index]);
-			if (map.height() > 420 || map.width() > 750)
-			{
-				QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
-				ui.bigimg_prew->setPixmap(temp);
-			}
-			else { ui.bigimg_prew->setPixmap(map); }
-		}
-		else {
-			prewimg_index++;
-			QPixmap map = QPixmap(prew_img[prewimg_index]);
-			if (map.height() > 420 || map.width() > 750)
-			{
-				QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
-				ui.bigimg_prew->setPixmap(temp);
-			}
-			else { ui.bigimg_prew->setPixmap(map); }
-		}
-
-
-		ui.bigimg_prew->setMaximumSize(750, 420);
-
-		});
-
-
-	//关闭预览界面
-	connect(ui.cotentprew_close, &QPushButton::clicked, this, [this]()
-		{
-			zhezhao_global->hide();
-			ui.content_prew->hide();
-		});
-
-
-
-
-
-
-
-
-
-	// 上面级模型按钮绑定
-
-
-	QList<QPushButton*> btnlist2 = ui.contentwid2->findChildren<QPushButton*>();
-
-	for (int i = 0; i < btnlist2.size(); i++)
-	{
-		if (btnlist2[i]->objectName() != "dialogclose2")
-		{
-			btnlist2[i]->setFont(font);
-			btnlist2[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
-			connect(btnlist2[i], &QPushButton::clicked, this, [=]() {
-
-				curwid = btnlist2[i]->parentWidget();
-				QPoint pt = curwid->pos();
-				int x = pt.x();
-				int y = pt.y();
-
-				if (x > 1200)
-				{
-					ui.dialog->setGeometry(x - 280, y, 500, 140);
-				}
-				else {
-					ui.dialog->setGeometry(x, y, 500, 140);
-				}
-
-				if (btnlist2[i]->objectName() == "zlzbtn")
-				{
-					curobjectname = "zlz";
-					for (int j = 0; j < module_list[1]->m_Component.size(); j++)
-					{
-						if (module_list[1]->m_Component[j]->m_objname == "zlz")
+			
+						foreach(Dragcomponent* dcomp, curModule->dcomp)
 						{
-							ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+							if (dcomp->id == curDcomp->id)
 							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+								for (int i = 0; i < dcomp->imglist.size(); i++)
 								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
+									dcomp->imglist[i] = exepath + "/image/prewimg/" + dcomp->imglist[i];
 								}
-
+								for (int i = 0; i < dcomp->videolist.size(); i++)
+								{
+									dcomp->videolist[i] = exepath + "/video/" + dcomp->videolist[i];
+								}
+								for (int i = 0; i < dcomp->filelist.size(); i++)
+								{
+									dcomp->filelist[i] = exepath + "/files/" + dcomp->filelist[i];
+								}
+							
+								prew_img = dcomp->imglist;
+								prew_video = dcomp->videolist;
+								prew_file = dcomp->filelist;
 							}
 						}
 
-					}
-				}
-				if (btnlist2[i]->objectName() == "zkfdjbtn")
-				{
-					curobjectname = "zkfdj";
-					for (int j = 0; j < module_list[1]->m_Component.size(); j++)
-					{
-						if (module_list[1]->m_Component[j]->m_objname == "zkfdj")
-						{
-							ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-					}
-				}
-				if (btnlist2[i]->objectName() == "rwzhbtn2")
-				{
-					curobjectname = "rwzh";
-					for (int j = 0; j < module_list[1]->m_Component.size(); j++)
-					{
-						if (module_list[1]->m_Component[j]->m_objname == "rwzh")
-						{
-							ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist2[i]->objectName() == "gkfdjbtn")
-				{
-					curobjectname = "gkfdj";
-					for (int j = 0; j < module_list[1]->m_Component.size(); j++)
-					{
-						if (module_list[1]->m_Component[j]->m_objname == "gkfdj")
-						{
-							ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-							}
-						}
-					}
-				}
-
-				ui.dialogtitle->setText(btnlist2[i]->text());
-				ui.dialog->show();
-				ui.dialog->raise();
-
-				});
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// 控制舱模型按钮绑定
-	QList<QPushButton*> btnlist3 = ui.contentwid3->findChildren<QPushButton*>();
-	for (int i = 0; i < btnlist3.size(); i++)
-	{
-		if (btnlist3[i]->objectName() != "dialogclose3")
-		{
-			btnlist3[i]->setFont(font);
-			btnlist3[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
-			connect(btnlist3[i], &QPushButton::clicked, this, [=]() {
-				curwid = btnlist3[i]->parentWidget();
-				QPoint pt = curwid->pos();
-				int x = pt.x();
-				int y = pt.y();
-
-				if (x > 1200)
-				{
-					ui.dialog->setGeometry(x - 280, y, 500, 140);
-				}
-				else {
-					ui.dialog->setGeometry(x, y, 500, 140);
-				}
-
-				if (btnlist3[i]->objectName() == "gzbtn")
-				{
-					curobjectname = "gz";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "gz")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "mcxsydjbtn")
-				{
-					curobjectname = "mcxsydj";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "mcxsydj")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "aqzljsjbtn")
-				{
-					curobjectname = "aqzljsj";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "aqzljsj")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "dzhbtn")
-				{
-					curobjectname = "dzh";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "dzh")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "zkjbtn")
-				{
-					curobjectname = "zkj";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "zkj")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "spqdbtn")
-				{
-					curobjectname = "spqd";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "spqd")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-				if (btnlist3[i]->objectName() == "zdcbtn")
-				{
-					curobjectname = "zdc";
-					for (int j = 0; j < module_list[2]->m_Component.size(); j++)
-					{
-						if (module_list[2]->m_Component[j]->m_objname == "zdc")
-						{
-							ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
-							ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
-							ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
-						}
-					}
-					for (int i = 0; i < module_list.size(); i++)
-					{
-						if (module_list[i]->id = cur_module)
-						{
-							for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-							{
-								if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-								{
-									uploaded_img = module_list[i]->m_Component[j]->imglist;
-									uploaded_video = module_list[i]->m_Component[j]->videolist;
-									uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-								}
-
-							}
-						}
-
-					}
-				}
-
-				ui.dialogtitle->setText(btnlist3[i]->text());
-				ui.dialog->show();
-				ui.dialog->raise();
-
-				});
-		}
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// 尾段模型按钮绑定
-	QList<QPushButton*> btnlist4 = ui.contentwid4->findChildren<QPushButton*>();
-	for (int i = 0; i < btnlist4.size(); i++)
-	{
-
-		btnlist4[i]->setFont(font);
-		btnlist4[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
-		connect(btnlist4[i], &QPushButton::clicked, this, [=]() {
-			curwid = btnlist4[i]->parentWidget();
-			QPoint pt = curwid->pos();
-			int x = pt.x();
-			int y = pt.y();
-
-			if (x > 1200)
-			{
-				ui.dialog->setGeometry(x - 280, y, 500, 140);
+				
+				
 			}
 			else {
-				ui.dialog->setGeometry(x, y, 500, 140);
+				for (int i = 0; i < module_list[cur_module - 1]->m_Component.size(); i++)
+				{
+					if (module_list[cur_module - 1]->m_Component[i]->m_objname == curobjectname)
+					{
+						prew_img = module_list[cur_module - 1]->m_Component[i]->imglist;
+						prew_video = module_list[cur_module - 1]->m_Component[i]->videolist;
+						prew_file = module_list[cur_module - 1]->m_Component[i]->filelist;
+
+					}
+				}
 			}
-			if (btnlist4[i]->objectName() == "kqdbtn")
+		
+
+
+			ui.img_number->setText(QString::number(prew_img.size()));
+			ui.video_number->setText(QString::number(prew_video.size()));
+			ui.file_number->setText(QString::number(prew_file.size()));
+			ui.imgsnumber->setText(QString("(" + QString::number(prew_img.size()) + "/6)"));
+			ui.videosnumber->setText(QString("(" + QString::number(prew_video.size()) + "/6)"));
+			ui.filesnumber->setText(QString("(" + QString::number(prew_file.size()) + "/6)"));
+		  
+//清空里面内容
+			for (int i = 0; i < 6; i++)
 			{
-				curobjectname = "kqd";
-				for (int j = 0; j < module_list[3]->m_Component.size(); j++)
-				{
-					if (module_list[3]->m_Component[j]->m_objname == "kqd")
-					{
-						ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
-						ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
-						ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
-					}
-				}
-				for (int i = 0; i < module_list.size(); i++)
-				{
-					if (module_list[i]->id = cur_module)
-					{
-						for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-						{
-							if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-							{
-								uploaded_img = module_list[i]->m_Component[j]->imglist;
-								uploaded_video = module_list[i]->m_Component[j]->videolist;
-								uploaded_file = module_list[i]->m_Component[j]->filelist;
+				ui.image_page->findChildren<QPushButton*>()[i]->hide();
+				ui.image_page->findChildren<QLabel*>()[i]->hide();
+				QPushButton* imgbtn = ui.image_page->findChild<QPushButton*>("imagebtn_" + QString::number(i + 1));
+				disconnect(imgbtn, &QPushButton::clicked, 0, 0);
 
-							}
 
-						}
-					}
+				ui.video_page->findChildren<QPushButton*>()[i]->hide();
+				ui.video_page->findChildren<QLabel*>()[i]->hide();
+				QPushButton* video = ui.video_page->findChild<QPushButton*>("videobtn" + QString::number(i + 1));
+				disconnect(video, &QPushButton::clicked, 0, 0);
 
-				}
+				ui.filepage->findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly)[i]->hide();
+				QPushButton* filebtn = ui.filepage->findChild<QPushButton*>("filebtn" + QString::number(i + 1));
+				disconnect(filebtn, &QPushButton::clicked, 0, 0);
+	
+	
 			}
-			if (btnlist4[i]->objectName() == "sfrdcbtn")
+
+//加载内容
+			for (int i = 0; i < prew_img.size(); i++)
 			{
-				curobjectname = "sfrdc";
-				for (int j = 0; j < module_list[3]->m_Component.size(); j++)
-				{
-					if (module_list[3]->m_Component[j]->m_objname == "sfrdc")
+
+				QPushButton* btn = ui.image_page->findChild<QPushButton*>("imagebtn_" + QString::number(i + 1));
+				QLabel* picname = ui.image_page->findChild<QLabel*>("imgname" + QString::number(i + 1));
+				btn->setIcon(QIcon(prew_img[i]));
+				btn->setIconSize(QSize(220, 140));
+				btn->show();
+				picname->show();
+				connect(btn, &QPushButton::clicked, this, [=]() {
+					prewimg_index = btn->objectName().split("_")[1].toInt() - 1;
+					ui.stackedWidget_2->setCurrentIndex(3);
+					QPixmap map = QPixmap(prew_img[prewimg_index]);
+					ui.bigimg_prew->setMaximumSize(750, 420);
+					if (map.height() > 420 || map.width() > 750)
 					{
-						ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
-						ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
-						ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+						QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
+						ui.bigimg_prew->setPixmap(temp);
 					}
-				}
-				for (int i = 0; i < module_list.size(); i++)
-				{
-					if (module_list[i]->id = cur_module)
-					{
-						for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-						{
-							if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-							{
-								uploaded_img = module_list[i]->m_Component[j]->imglist;
-								uploaded_video = module_list[i]->m_Component[j]->videolist;
-								uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-							}
-
-						}
+					else {
+						ui.bigimg_prew->setPixmap(map);
 					}
-
-				}
-			}
-			if (btnlist4[i]->objectName() == "rqdbtn")
+					});
+			}			
+			for (int i = 0; i < prew_video.size(); i++)
 			{
-				curobjectname = "rqd";
-				for (int j = 0; j < module_list[3]->m_Component.size(); j++)
-				{
-					if (module_list[3]->m_Component[j]->m_objname == "rqd")
-					{
-						ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
-						ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
-						ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
-					}
-				}
-				for (int i = 0; i < module_list.size(); i++)
-				{
-					if (module_list[i]->id = cur_module)
-					{
-						for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-						{
-							if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-							{
-								uploaded_img = module_list[i]->m_Component[j]->imglist;
-								uploaded_video = module_list[i]->m_Component[j]->videolist;
-								uploaded_file = module_list[i]->m_Component[j]->filelist;
+				QPushButton* video = ui.video_page->findChild<QPushButton*>("videobtn" + QString::number(i + 1));
+				QLabel* videoname = ui.video_page->findChild<QLabel*>("videoname" + QString::number(i + 1));
+			
+				connect(video, &QPushButton::clicked, this, [=]() {
+					prewvideo_index = video->objectName().split("n")[1].toInt() - 1;				
+					QDesktopServices::openUrl(QUrl(prew_video[prewvideo_index]));
+					});
 
-							}
-
-						}
-					}
-
-				}
+				QString fname = QString(prew_video[i].split("/")[prew_video[i].split("/").size() - 1]);
+				QString postfit = QString(prew_video[i].split(".")[prew_video[i].split(".").size() - 1]);
+				QString shortfname = CMutils::shortname(fname, postfit);
+				videoname->setText(shortfname);
+				video->show();
+				videoname->show();
 			}
-			if (btnlist4[i]->objectName() == "sfzdqbtn")
+			for (int i = 0; i < prew_file.size(); i++)
 			{
-				curobjectname = "sfzdq";
-				for (int j = 0; j < module_list[3]->m_Component.size(); j++)
-				{
-					if (module_list[3]->m_Component[j]->m_objname == "sfzdq")
-					{
-						ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
-						ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
-						ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
-					}
-				}
-				for (int i = 0; i < module_list.size(); i++)
-				{
-					if (module_list[i]->id = cur_module)
-					{
-						for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-						{
-							if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-							{
-								uploaded_img = module_list[i]->m_Component[j]->imglist;
-								uploaded_video = module_list[i]->m_Component[j]->videolist;
-								uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-							}
-
-						}
-					}
-
-				}
+			
+				QWidget* filewid = ui.filepage->findChild<QWidget*>("filewid" + QString::number(i + 1));
+				QPushButton* filebtn = ui.filepage->findChild<QPushButton*>("filebtn" + QString::number(i + 1));
+				QLabel* filename = ui.filepage->findChild<QLabel*>("filename" + QString::number(i + 1));
+				QLabel* filename2 = ui.filepage->findChild<QLabel*>("filename" + QString::number(i + 1)+"_2");
+				connect(filebtn, &QPushButton::clicked, this, [=]() {
+					prewfile_index = filebtn->objectName().split("n")[1].toInt() - 1;
+					QDesktopServices::openUrl(QUrl::fromLocalFile(prew_file[prewfile_index]));
+					});
+				filewid->show();
+				QString fname = QString(prew_file[i].split("/")[prew_file[i].split("/").size() - 1]);
+				QString postfit = QString(prew_file[i].split(".")[prew_file[i].split(".").size() - 1]);
+				QString shortfname=CMutils::shortname(fname, postfit);
+				filename->setText(shortfname);
+				filename2->setText(postfit.append("文件"));
 			}
-			if (btnlist4[i]->objectName() == "sfkzqbtn")
-			{
-				curobjectname = "sfkzq";
-				for (int j = 0; j < module_list[3]->m_Component.size(); j++)
-				{
-					if (module_list[3]->m_Component[j]->m_objname == "sfkzq")
-					{
-						ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
-						ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
-						ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
-					}
-				}
-				for (int i = 0; i < module_list.size(); i++)
-				{
-					if (module_list[i]->id = cur_module)
-					{
-						for (int j = 0; j < module_list[i]->m_Component.size(); j++)
-						{
-							if (module_list[i]->m_Component[j]->m_objname == curobjectname)
-							{
-								uploaded_img = module_list[i]->m_Component[j]->imglist;
-								uploaded_video = module_list[i]->m_Component[j]->videolist;
-								uploaded_file = module_list[i]->m_Component[j]->filelist;
-
-							}
-
-						}
-					}
-
-				}
-			}
-
-			ui.dialogtitle->setText(btnlist4[i]->text());
-			ui.dialog->show();
-			ui.dialog->raise();
-
 			});
 
-	}
+
+
+//预览图片切换
+
+connect(ui.imgleft_arr, &QPushButton::clicked, this, [=]() {
+
+				if (prewimg_index == 0)
+				{
+
+					prewimg_index = prew_img.size()-1;
+
+					QPixmap map = QPixmap(prew_img[prewimg_index]);
+					if (map.height() > 420 || map.width() > 750)
+					{
+						QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
+						ui.bigimg_prew->setPixmap(temp);
+					}
+					else { ui.bigimg_prew->setPixmap(map); }
+			
+				}
+				else {
+					prewimg_index--;
+					QPixmap map = QPixmap(prew_img[prewimg_index]);
+					if (map.height() > 420 || map.width() > 750)
+					{
+						QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
+						ui.bigimg_prew->setPixmap(temp);
+					}
+					else { ui.bigimg_prew->setPixmap(map); }
+				}
+
+	
+				ui.bigimg_prew->setMaximumSize(750, 420);
+			
+				});
+connect(ui.imgright_arr, &QPushButton::clicked, this, [=]() {
+				if (prewimg_index == prew_img.size() - 1)
+				{
+	
+					prewimg_index =0;
+					QPixmap map = QPixmap(prew_img[prewimg_index]);
+					if (map.height() > 420 || map.width() > 750)
+					{
+						QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
+						ui.bigimg_prew->setPixmap(temp);
+					}
+					else { ui.bigimg_prew->setPixmap(map); }
+				}
+				else {
+					prewimg_index++;
+					QPixmap map = QPixmap(prew_img[prewimg_index]);
+					if (map.height() > 420 || map.width() > 750)
+					{
+						QPixmap temp = map.scaled(750, 420, Qt::KeepAspectRatio);
+						ui.bigimg_prew->setPixmap(temp);
+					}
+					else { ui.bigimg_prew->setPixmap(map); }
+				}
+
+
+				ui.bigimg_prew->setMaximumSize(750, 420);
+
+				});
+
+
+//关闭预览界面
+connect(ui.cotentprew_close, &QPushButton::clicked, this, [this]()
+	           {
+				zhezhao_global->hide();
+				ui.content_prew->hide();
+				});
+
+
+
+
+
+
+
+
+
+// 上面级模型按钮绑定
+
+
+QList<QPushButton*> btnlist2 = ui.contentwid2->findChildren<QPushButton*>();
+
+for (int i = 0; i < btnlist2.size(); i++)
+		{
+			if (btnlist2[i]->objectName() != "dialogclose2")
+			{
+				btnlist2[i]->setFont(font);
+				btnlist2[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
+				connect(btnlist2[i], &QPushButton::clicked, this, [=]() {
+			
+					curwid = btnlist2[i]->parentWidget();
+					QPoint pt = curwid->pos();
+					int x = pt.x();
+					int y = pt.y();
+
+					if (x > 1100)
+					{
+						ui.dialog->setGeometry(x - 380, y, 500, 140);
+					}
+					else {
+						ui.dialog->setGeometry(x, y, 500, 140);
+					}
+
+					if (btnlist2[i]->objectName() == "zlzbtn")
+					{
+						curobjectname = "zlz";
+						for (int j = 0; j < module_list[1]->m_Component.size(); j++)
+						{
+							if (module_list[1]->m_Component[j]->m_objname == "zlz")
+							{
+								ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist2[i]->objectName() == "zkfdjbtn")
+					{
+						curobjectname = "zkfdj";
+						for (int j = 0; j < module_list[1]->m_Component.size(); j++)
+						{
+							if (module_list[1]->m_Component[j]->m_objname == "zkfdj")
+							{
+								ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+						}
+					}
+					if (btnlist2[i]->objectName() == "rwzhbtn2")
+					{
+						curobjectname = "rwzh";
+						for (int j = 0; j < module_list[1]->m_Component.size(); j++)
+						{
+							if (module_list[1]->m_Component[j]->m_objname == "rwzh")
+							{
+								ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[1]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist2[i]->objectName() == "gkfdjbtn")
+					{
+						curobjectname = "gkfdj";
+						for (int j = 0; j < module_list[1]->m_Component.size(); j++)
+						{
+							if (module_list[1]->m_Component[j]->m_objname == "gkfdj")
+							{
+								ui.textcontent->setText(module_list[1]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[0]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[1]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+								}
+							}
+						}
+					}
+				
+					ui.dialogtitle->setText(btnlist2[i]->text());
+					ui.dialog->show();
+					ui.dialog->raise();
+			
+					});
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 控制舱模型按钮绑定
+QList<QPushButton*> btnlist3 = ui.contentwid3->findChildren<QPushButton*>();
+for (int i = 0; i < btnlist3.size(); i++)
+		{
+			if (btnlist3[i]->objectName() != "dialogclose3")
+			{
+				btnlist3[i]->setFont(font);
+				btnlist3[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
+				connect(btnlist3[i], &QPushButton::clicked, this, [=]() {
+					curwid = btnlist3[i]->parentWidget();
+					QPoint pt = curwid->pos();
+					int x = pt.x();
+					int y = pt.y();
+
+					if (x > 1100)
+					{
+						ui.dialog->setGeometry(x - 380, y, 500, 140);
+					}
+					else {
+						ui.dialog->setGeometry(x, y, 500, 140);
+					}
+
+					if (btnlist3[i]->objectName() == "gzbtn")
+					{
+						curobjectname = "gz";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "gz")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "mcxsydjbtn")
+					{
+						curobjectname = "mcxsydj";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "mcxsydj")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "aqzljsjbtn")
+					{
+						curobjectname = "aqzljsj";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "aqzljsj")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "dzhbtn")
+					{
+						curobjectname = "dzh";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "dzh")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "zkjbtn")
+					{
+						curobjectname = "zkj";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "zkj")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "spqdbtn")
+					{
+						curobjectname = "spqd";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "spqd")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist3[i]->objectName() == "zdcbtn")
+					{
+						curobjectname = "zdc";
+						for (int j = 0; j < module_list[2]->m_Component.size(); j++)
+						{
+							if (module_list[2]->m_Component[j]->m_objname == "zdc")
+							{
+								ui.textcontent->setText(module_list[2]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[2]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[2]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+		
+					ui.dialogtitle->setText(btnlist3[i]->text());
+					ui.dialog->show();
+					ui.dialog->raise();
+
+					});
+			}
+		}
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 尾段模型按钮绑定
+QList<QPushButton*> btnlist4 = ui.contentwid4->findChildren<QPushButton*>();
+for (int i = 0; i < btnlist4.size(); i++)
+		{
+		
+				btnlist4[i]->setFont(font);
+				btnlist4[i]->setStyleSheet("font-size:16px;border-image:url(:/twoDdisplay/btnbg);color:rgb(98, 109, 125);");
+				connect(btnlist4[i], &QPushButton::clicked, this, [=]() {
+					curwid = btnlist4[i]->parentWidget();
+					QPoint pt = curwid->pos();
+					int x = pt.x();
+					int y = pt.y();
+
+					if (x > 1100)
+					{
+						ui.dialog->setGeometry(x - 380, y, 500, 140);
+					}
+					else {
+						ui.dialog->setGeometry(x, y, 500, 140);
+					}
+					if (btnlist4[i]->objectName() == "kqdbtn")
+					{
+						curobjectname = "kqd";
+						for (int j = 0; j < module_list[3]->m_Component.size(); j++)
+						{
+							if (module_list[3]->m_Component[j]->m_objname == "kqd")
+							{
+								ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist4[i]->objectName() == "sfrdcbtn")
+					{
+						curobjectname = "sfrdc";
+						for (int j = 0; j < module_list[3]->m_Component.size(); j++)
+						{
+							if (module_list[3]->m_Component[j]->m_objname == "sfrdc")
+							{
+								ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist4[i]->objectName() == "rqdbtn")
+					{
+						curobjectname = "rqd";
+						for (int j = 0; j < module_list[3]->m_Component.size(); j++)
+						{
+							if (module_list[3]->m_Component[j]->m_objname == "rqd")
+							{
+								ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist4[i]->objectName() == "sfzdqbtn")
+					{
+						curobjectname = "sfzdq";
+						for (int j = 0; j < module_list[3]->m_Component.size(); j++)
+						{
+							if (module_list[3]->m_Component[j]->m_objname == "sfzdq")
+							{
+								ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+					if (btnlist4[i]->objectName() == "sfkzqbtn")
+					{
+						curobjectname = "sfkzq";
+						for (int j = 0; j < module_list[3]->m_Component.size(); j++)
+						{
+							if (module_list[3]->m_Component[j]->m_objname == "sfkzq")
+							{
+								ui.textcontent->setText(module_list[3]->m_Component[j]->textContent);
+								ui.vicontent->setStyleSheet("border-image:url(" + module_list[3]->m_Component[j]->imglist[0] + ");");
+								ui.dialogtitle->setText(module_list[3]->m_Component[j]->m_Compname);
+							}
+						}
+						for (int i = 0; i < module_list.size(); i++)
+						{
+							if (module_list[i]->id = cur_module)
+							{
+								for (int j = 0; j < module_list[i]->m_Component.size(); j++)
+								{
+									if (module_list[i]->m_Component[j]->m_objname == curobjectname)
+									{
+										uploaded_img = module_list[i]->m_Component[j]->imglist;
+										uploaded_video = module_list[i]->m_Component[j]->videolist;
+										uploaded_file = module_list[i]->m_Component[j]->filelist;
+
+									}
+
+								}
+							}
+
+						}
+					}
+			
+					ui.dialogtitle->setText(btnlist4[i]->text());
+					ui.dialog->show();
+					ui.dialog->raise();
+
+					});
+			
+		}
 }
 // 已编辑
 void twoDdisplay::dataload()
@@ -2928,9 +3000,9 @@ void twoDdisplay::jsondata_load()
 	if (jsonfile.open(QIODevice::ReadOnly))
 	{
 		qDebug() << "文件打开成功！";
-		QByteArray jsontext = jsonfile.readAll();
+		QByteArray jsontext = jsonfile.readAll();		
 		QJsonParseError jsonError;
-		QJsonDocument doc = QJsonDocument::fromJson(QString::fromLocal8Bit(jsontext).toUtf8(), &jsonError);
+		QJsonDocument doc = QJsonDocument::fromJson(QString::fromLocal8Bit(jsontext).toUtf8(),&jsonError);
 
 		if (!doc.isNull() || jsonError.error == QJsonParseError::NoError)
 		{
@@ -2946,45 +3018,45 @@ void twoDdisplay::jsondata_load()
 
 			for (int i = 0; i < modules.size(); i++)
 			{
-				Rocketmodule* Rmodule = new Rocketmodule();
+				Rocketmodule* Rmodule=new Rocketmodule();
 
 				QJsonObject module = modules.at(i).toObject();
 
 				Rmodule->id = module.value("id").toString().toLong();
-				Rmodule->module_name = QString::fromLocal8Bit(module.value("module_name").toString().toLocal8Bit().data());
+	         	Rmodule->module_name = QString::fromLocal8Bit(module.value("module_name").toString().toLocal8Bit().data());
 				Rmodule->name = module.value("name").toString();
 				Rmodule->pagename = module.value("pagename").toString();
 				Rmodule->thumbnail = module.value("thumbnail").toString();
-
+	        
 				QJsonArray components = module.value("components").toArray();
 
 				for (int j = 0; j < components.size(); j++)
 				{
 					QJsonObject comp = components.at(j).toObject();
 					int c_type = comp.value("type").toString().toInt();
-
+		
 					if (c_type == 1)
 					{
-
+	
 						Dragimg* Dimg = new Dragimg();
-						Dimg->id = comp.value("id").toString().toLong();
-						Dimg->type = comp.value("type").toString().toInt();
-						Dimg->name = comp.value("name").toString();
-						Dimg->pos_x = comp.value("pos_x").toString().toInt();
-						Dimg->pos_y = comp.value("pos_y").toString().toInt();
-						Dimg->Dimg_width = comp.value("width").toString().toInt();
-						Dimg->Dimg_height = comp.value("height").toString().toInt();
-						Dimg->imgurl = comp.value("imgurl").toString();
+						Dimg->id=comp.value("id").toString().toLong();
+						Dimg->type=comp.value("type").toString();
+						Dimg->name=comp.value("name").toString();
+						Dimg->pos_x =comp.value("pos_x").toString().toInt();
+						Dimg->pos_y =comp.value("pos_y").toString().toInt();
+						Dimg->Dimg_width =comp.value("width").toString().toInt();
+						Dimg->Dimg_height =comp.value("height").toString().toInt();
+						Dimg->imgurl =comp.value("imgurl").toString();
 						Rmodule->dimglist.append(Dimg);
 						Rmodule->components.append(Dimg);
 
 					}
 					if (c_type == 2)
 					{
-
+						
 						Dragcomponent* Dcomp = new Dragcomponent();
 						Dcomp->id = comp.value("id").toString().toLong();
-						Dcomp->type = comp.value("type").toString().toLong();
+						Dcomp->type = comp.value("type").toString();
 						Dcomp->name = comp.value("name").toString();
 						Dcomp->pos_x = comp.value("pos_x").toString().toInt();
 						Dcomp->pos_y = comp.value("pos_y").toString().toInt();
@@ -2993,36 +3065,37 @@ void twoDdisplay::jsondata_load()
 						Dcomp->Dcomp_title = comp.value("title").toString();
 						Dcomp->Dcomp_textcontent = comp.value("textcontent").toString();
 
-						QJsonArray imglist = comp.value("imglist").toArray();
-						for (int n = 0; n < imglist.size(); n++)
-						{
-							Dcomp->imglist.append(imglist.at(n).toString());
-						}
+					   QJsonArray imglist = comp.value("imglist").toArray();		
+					   for (int n=0; n < imglist.size(); n++)
+					   {
+							 Dcomp->imglist.append(imglist.at(n).toString());
+					   }
 
-						QJsonArray videolist = comp.value("videolist").toArray();
-						for (int m = 0; m < videolist.size(); m++)
-						{
-							Dcomp->videolist << videolist.at(m).toString();
-						}
-						QJsonArray filelist = comp.value("filelist").toArray();
-						for (int o = 0; o < filelist.size(); o++)
-						{
-							Dcomp->filelist << filelist.at(o).toString();
-						}
-						Rmodule->dcomp.append(Dcomp);
-						Rmodule->components.append(Dcomp);
+					   QJsonArray videolist = comp.value("videolist").toArray();
+					   for (int m = 0;m < videolist.size(); m++)
+					   {
+						     Dcomp->videolist<< videolist.at(m).toString();
+					   }
+					   QJsonArray filelist = comp.value("filelist").toArray();
+					   for (int o = 0; o < filelist.size(); o++)
+					   {
+						   Dcomp->filelist<< filelist.at(o).toString();
+					   }
+				
+					        Rmodule->dcomp.append(Dcomp);
+							Rmodule->components.append(Dcomp);
 					}
 					if (c_type == 3)
 					{
 						Dragline* Dline = new Dragline();
 						Dline->id = comp.value("id").toString().toLong();
-						Dline->type = comp.value("type").toString().toLong();
+						Dline->type = comp.value("type").toString();
 						Dline->name = comp.value("name").toString();
 						Dline->pos_x = comp.value("pos_x").toString().toInt();
 						Dline->pos_y = comp.value("pos_y").toString().toInt();
 						Dline->Dline_width = comp.value("width").toString().toInt();
 						Dline->Dline_height = comp.value("height").toString().toInt();
-						Dline->color = comp.value("color").toString();
+						Dline->color= comp.value("color").toString();
 						Rmodule->dline.append(Dline);
 						Rmodule->components.append(Dline);
 					}
@@ -3044,13 +3117,14 @@ void twoDdisplay::jsondata_load()
 					{
 						DragArea* Darea = new DragArea();
 						Darea->id = comp.value("id").toString().toLong();
-						Darea->type = comp.value("type").toString().toLong();
+						Darea->type = comp.value("type").toString();
 						Darea->name = comp.value("name").toString();
 						Darea->pos_x = comp.value("pos_x").toString().toInt();
 						Darea->pos_y = comp.value("pos_y").toString().toInt();
 						Darea->Darea_width = comp.value("width").toString().toInt();
 						Darea->Darea_height = comp.value("height").toString().toInt();
 						Darea->color = comp.value("color").toString();
+						Darea->bind_module = comp.value("bind_module").toString();
 						Rmodule->darea.append(Darea);
 						Rmodule->components.append(Darea);
 					}
@@ -3076,58 +3150,346 @@ void twoDdisplay::jsondata_load()
 }
 void twoDdisplay::dataTopage()
 {
+	
+		for (int i = 0; i<jsonData->rmlist.size(); i++)
+		{
+	
+			Rocketmodule* module=jsonData->rmlist[i];
+			for (int j = 0; j < module->dimglist.size();j++)
+			{
+				QWidget* parentWid;
 
+				if (module->pagename != "page_5")
+				{
+					QWidget* page = new QWidget();
+					page->setObjectName(module->pagename);
+					ui.stackedWidget->addWidget(page);
+
+				}
+				parentWid = ui.stackedWidget->findChild<QWidget*>(QString(module->pagename));
+
+				Dragimg* Di = new Dragimg(parentWid);
+				Di->setCursor(Qt::PointingHandCursor);
+				Di->mainUI = this;
+				Di->canDrag = true;
+				Di->id = module->dimglist[j]->id;
+				Di->name = module->dimglist[j]->name;
+				Di->type = module->dimglist[j]->type;
+				Di->pos_x = module->dimglist[j]->pos_x;
+				Di->pos_y = module->dimglist[j]->pos_y;
+				Di->Dimg_width = module->dimglist[j]->Dimg_width;
+				Di->Dimg_height = module->dimglist[j]->Dimg_height;
+				Di->imgurl = exepath+"/image/displayimg/"+module->dimglist[j]->imgurl;
+				QPixmap img(Di->imgurl);
+				Di->ownimg = img;
+				Di->setScaledContents(true);
+				Di->setGeometry(Di->pos_x, Di->pos_y, Di->Dimg_width, Di->Dimg_height);
+				Di->setPixmap(img);
+				Di->show();
+			}
+			for (int k = 0; k < module->dcomp.size(); k++)
+			{
+				QWidget* parentWid;
+
+				if (module->pagename != "page_5")
+				{
+					QWidget* page = new QWidget();
+					page->setObjectName(module->pagename);
+					ui.stackedWidget->addWidget(page);
+
+				}
+                parentWid = ui.stackedWidget->findChild<QWidget*>(module->pagename);		
+				Dragcomponent* Dcomp = new Dragcomponent(parentWid);
+				Dcomp->setCursor(Qt::PointingHandCursor);
+				Dcomp->mainUI=this;
+				Dcomp->canDrag = true;
+				Dcomp->id = module->dcomp[k]->id;
+				Dcomp->name = module->dcomp[k]->name;
+				Dcomp->type = module->dcomp[k]->type;
+				Dcomp->pos_x = module->dcomp[k]->pos_x;
+				Dcomp->pos_y = module->dcomp[k]->pos_y;
+				Dcomp->Dcomp_width = module->dcomp[k]->Dcomp_width;
+				Dcomp->Dcomp_height = module->dcomp[k]->Dcomp_height;
+				Dcomp->Dcomp_title = module->dcomp[k]->Dcomp_title;
+				Dcomp->Dcomp_textcontent = module->dcomp[k]->Dcomp_textcontent;
+
+				for (int a = 0; a < module->dcomp[k]->imglist.size(); a++)
+				{
+					Dcomp->imglist.append(module->dcomp[k]->imglist[a]);
+				}
+				for (int b = 0; b < module->dcomp[k]->videolist.size(); b++)
+				{
+					Dcomp->videolist.append(module->dcomp[b]->videolist[b]);
+				}
+				for (int c = 0; c < module->dcomp[k]->filelist.size(); c++)
+				{
+					Dcomp->filelist.append(module->dcomp[k]->filelist[c]);
+				}
+				Dcomp->setGeometry(Dcomp->pos_x, Dcomp->pos_y, Dcomp->Dcomp_width, 40);
+				Dcomp->setMinimumSize(QSize(0, 40));
+				Dcomp->setMaximumSize(QSize(16777215, 40));
+				QHBoxLayout* compho = new QHBoxLayout(Dcomp);
+				compho->setSpacing(0);
+				compho->setContentsMargins(0, 0, 0, 0);
+				QLabel* leftrect = new QLabel(Dcomp);
+				leftrect->setMinimumSize(QSize(4, 0));
+				leftrect->setMaximumSize(QSize(4, 16777215));
+				leftrect->setPixmap(QPixmap(QString::fromUtf8(":/twoDdisplay/rectleft")));
+				compho->addWidget(leftrect);
+				QLabel* btn = new QLabel(Dcomp);
+				btn->setObjectName(Dcomp->name);
+				btn->setText(Dcomp->Dcomp_title);
+		
+				btn->setAlignment(Qt::AlignCenter);
+				btn->setFont(font);
+				btn->setMinimumSize(QSize(0, 40));
+				btn->setMaximumSize(QSize(16777215, 40));
+				btn->setCursor(QCursor(Qt::PointingHandCursor));
+				btn->setStyleSheet(QLatin1String("border-image:url(:/twoDdisplay/btnbg);\n"
+					"color:rgb(98,109,125);font-size:16px;"));
+				compho->addWidget(btn);
+				QLabel* rightrect = new QLabel(Dcomp);
+				rightrect->setMinimumSize(QSize(4, 0));
+				rightrect->setMaximumSize(QSize(4, 16777215));
+				rightrect->setPixmap(QPixmap(QString::fromUtf8(":/twoDdisplay/rectright")));
+				compho->addWidget(rightrect);
+				Dcomp->show();
+
+				
+			}
+			for (int l = 0; l < module->dline.size(); l++)
+			{
+				if (module->dline[l]->type == "3")
+				{
+					QWidget* parentWid;
+
+					if (module->pagename != "page_5")
+					{
+						QWidget* page = new QWidget();
+						page->setObjectName(module->pagename);
+						ui.stackedWidget->addWidget(page);
+
+					}
+					parentWid = ui.stackedWidget->findChild<QWidget*>(module->pagename);
+					Dragline* dl = new Dragline(parentWid);
+
+					dl->id = module->dline[l]->id;
+					dl->name = module->dline[l]->name;
+					dl->type = module->dline[l]->type;
+					dl->linetype = 0;
+					dl->pos_x = module->dline[l]->pos_x;
+					dl->pos_y = module->dline[l]->pos_y;
+					dl->Dline_width = module->dline[l]->Dline_width;
+					dl->Dline_height = module->dline[l]->Dline_height;
+					dl->color = module->dline[l]->color;
+				
+
+					dl->mainUI = this;
+					dl->canDrag = true;
+					dl->setCursor(Qt::PointingHandCursor);
+					dl->setStyleSheet("border-top:2px dashed "+dl->color+";");
+					dl->setGeometry(dl->pos_x, dl->pos_y, dl->Dline_width, dl->Dline_height);
+
+					dl->show();
+
+				}
+				if (module->dline[l]->type == "4")
+				{
+					QWidget* parentWid;
+
+					if (module->pagename != "page_5")
+					{
+						QWidget* page = new QWidget();
+						page->setObjectName(module->pagename);
+						ui.stackedWidget->addWidget(page);
+
+					}
+					parentWid = ui.stackedWidget->findChild<QWidget*>(module->pagename);
+					Dragline* dl = new Dragline(parentWid);
+
+					dl->id = module->dline[l]->id;
+					dl->name = module->dline[l]->name;
+					dl->type = module->dline[l]->type;
+					dl->linetype = 1;
+					dl->pos_x = module->dline[l]->pos_x;
+					dl->pos_y = module->dline[l]->pos_y;
+					dl->Dline_width = module->dline[l]->Dline_width;
+					dl->Dline_height = module->dline[l]->Dline_height;
+					dl->color = module->dline[l]->color;
+
+
+					dl->mainUI = this;
+					dl->canDrag = true;
+					dl->setCursor(Qt::PointingHandCursor);
+					dl->setStyleSheet("border-left:2px dashed " + dl->color + ";");
+					dl->setGeometry(dl->pos_x, dl->pos_y, dl->Dline_width, dl->Dline_height);
+
+					dl->show();
+				}
+
+			}
+			for (int m = 0; m < module->darea.size(); m++)
+			{
+				QWidget* parentWid;
+
+				if (module->pagename != "page_5")
+				{
+					QWidget* page = new QWidget();
+					page->setObjectName(module->pagename);
+					ui.stackedWidget->addWidget(page);
+
+				}
+				parentWid = ui.stackedWidget->findChild<QWidget*>(module->pagename);
+				DragArea* da = new DragArea(parentWid);
+
+				da->id = module->darea[m]->id;
+				da->name = module->darea[m]->name;
+				da->type = module->darea[m]->type;
+				da->pos_x = module->darea[m]->pos_x;
+				da->pos_y = module->darea[m]->pos_y;
+				da->Darea_width = module->darea[m]->Darea_width;
+				da->Darea_height = module->darea[m]->Darea_width;
+				da->color = module->darea[m]->color;
+
+
+				da->mainUI = this;
+				da->canDrag = true;
+				da->setCursor(Qt::PointingHandCursor);
+				da->setStyleSheet("border:2px dashed " + da->color + ";");
+				da->setGeometry(da->pos_x, da->pos_y, da->Darea_width, da->Darea_height);
+				da->show();
+
+			}
+
+		}
+}
+void twoDdisplay::data_toJson()
+{
+	QString filepath= exepath + "/config/testjson.json";
+	QJsonObject root;
+	root.insert("base_moduleid", QJsonValue(QString::number(jsonData->base_moduleid)));
+	root.insert("base_Dimgid", QJsonValue(QString::number(jsonData->base_Dimgid)));
+	root.insert("base_Dcompid", QJsonValue(QString::number(jsonData->base_Dcompid)));
+	root.insert("base_lineid", QJsonValue(QString::number(jsonData->base_lineid)));
+	root.insert("base_areaid", QJsonValue(QString::number(jsonData->base_areaid)));
+	QJsonArray modules;
 	for (int i = 0; i < jsonData->rmlist.size(); i++)
 	{
-
-		Rocketmodule* module = jsonData->rmlist[i];
-		for (int j = 0; j < module->dimglist.size(); j++)
+		Rocketmodule* tempModule = jsonData->rmlist[i];
+		QJsonObject module;
+		module.insert("id", QJsonValue(QString::number(tempModule->id)));
+		module.insert("name", QJsonValue(QString(tempModule->name)));
+		module.insert("module_name", QJsonValue(QString(tempModule->module_name)));
+		module.insert("pagename", QJsonValue(QString(tempModule->pagename)));
+		module.insert("thumbnail", QJsonValue(QString(tempModule->thumbnail)));
+		QJsonArray comps;
+		for (int j = 0; j < tempModule->dimglist.size(); j++)
 		{
-			module->dimglist[j];
-			QWidget* parentWid = ui.stackedWidget->findChild<QWidget*>(module->pagename);
-
-			Dragimg* Di = new Dragimg(ui.page_5);
-			Di->setCursor(Qt::PointingHandCursor);
-			Di->mainUI = this;
-			Di->canDrag = true;
-			Di->id = module->dimglist[j]->id;
-			Di->name = module->dimglist[j]->name;
-			Di->type = module->dimglist[j]->type;
-			Di->pos_x = module->dimglist[j]->pos_x;
-			Di->pos_y = module->dimglist[j]->pos_y;
-			Di->Dimg_width = module->dimglist[j]->Dimg_width;
-			Di->Dimg_height = module->dimglist[j]->Dimg_height;
-			Di->imgurl = exepath + "/image/displayimg/" + module->dimglist[j]->imgurl;
-			QPixmap img(Di->imgurl);
-			Di->ownimg = img;
-			Di->setScaledContents(true);
-			Di->setGeometry(10, 10, Di->Dimg_width, Di->Dimg_height);
-			Di->setPixmap(img);
-			Di->show();
+			QJsonObject dimg;
+			dimg.insert("id", QJsonValue(QString::number(tempModule->dimglist[j]->id)));
+			dimg.insert("type", QJsonValue(QString(tempModule->dimglist[j]->type)));
+			dimg.insert("name", QJsonValue(QString(tempModule->dimglist[j]->name)));
+			dimg.insert("pos_x", QJsonValue(QString::number(tempModule->dimglist[j]->pos_x)));
+			dimg.insert("pos_y", QJsonValue(QString::number(tempModule->dimglist[j]->pos_y)));
+			dimg.insert("width", QJsonValue(QString::number(tempModule->dimglist[j]->Dimg_width)));
+			dimg.insert("height", QJsonValue(QString::number(tempModule->dimglist[j]->Dimg_height)));
+			dimg.insert("imgurl", QJsonValue(QString(tempModule->dimglist[j]->imgurl)));
+			comps.append(dimg);
+			
 		}
-		for (int k = 0; k < module->dcomp.size(); k++)
+		for (int k = 0; k < tempModule->dcomp.size(); k++)
+		{ 
+			QJsonObject Dcomp;
+			QJsonArray imglist;
+			QJsonArray videolist;
+			QJsonArray filelist;
+
+			Dcomp.insert("id", QJsonValue(QString::number(tempModule->dcomp[k]->id)));
+			Dcomp.insert("type", QJsonValue(QString(tempModule->dcomp[k]->type)));
+			Dcomp.insert("name", QJsonValue(QString(tempModule->dcomp[k]->name)));
+			Dcomp.insert("pos_x", QJsonValue(QString::number(tempModule->dcomp[k]->pos_x)));
+			Dcomp.insert("pos_y", QJsonValue(QString::number(tempModule->dcomp[k]->pos_y)));
+			Dcomp.insert("Dcomp_width", QJsonValue(QString::number(tempModule->dcomp[k]->Dcomp_width)));
+			Dcomp.insert("Dcomp_height", QJsonValue(QString::number(tempModule->dcomp[k]->Dcomp_height)));
+			Dcomp.insert("Dcomp_title", QJsonValue(QString(tempModule->dcomp[k]->Dcomp_title)));
+			Dcomp.insert("Dcomp_textcontent", QJsonValue(QString(tempModule->dcomp[k]->Dcomp_textcontent)));
+
+			for (int o = 0; o < tempModule->dcomp[k]->imglist.size(); o++)
+			{
+				imglist.append(tempModule->dcomp[k]->imglist[o]);
+			}
+			Dcomp.insert("imglist", imglist);
+			for (int p = 0; p < tempModule->dcomp[k]->videolist.size(); p++)
+			{
+				videolist.append(tempModule->dcomp[k]->videolist[p]);
+			}
+			Dcomp.insert("videolist", videolist);
+			for (int q= 0; q< tempModule->dcomp[k]->filelist.size(); q++)
+			{
+				filelist.append(tempModule->dcomp[k]->filelist[q]);
+			}
+			Dcomp.insert("filelist", filelist);
+
+			comps.append(Dcomp);
+
+		}
+		for (int l = 0; l < tempModule->dline.size(); l++)
 		{
-
+			QJsonObject Dline;
+			Dline.insert("id", QJsonValue(QString::number(tempModule->dline[l]->id)));
+			Dline.insert("type", QJsonValue(QString(tempModule->dline[l]->type)));
+			Dline.insert("name", QJsonValue(QString(tempModule->dline[l]->name)));
+			Dline.insert("pos_x", QJsonValue(QString::number(tempModule->dline[l]->pos_x)));
+			Dline.insert("pos_y", QJsonValue(QString::number(tempModule->dline[l]->pos_y)));
+			Dline.insert("Dline_width", QJsonValue(QString::number(tempModule->dline[l]->Dline_width)));
+			Dline.insert("Dline_height", QJsonValue(QString::number(tempModule->dline[l]->Dline_height)));
+			Dline.insert("color", QJsonValue(QString(tempModule->dline[l]->color)));
+			comps.append(Dline);
 		}
-		for (int l = 0; l < module->dline.size(); l++)
+
+		for (int m = 0; m < tempModule->darea.size();m++)
 		{
-
+			QJsonObject Darea;
+			Darea.insert("id", QJsonValue(QString::number(tempModule->darea[m]->id)));
+			Darea.insert("type", QJsonValue(QString(tempModule->darea[m]->type)));
+			Darea.insert("name", QJsonValue(QString(tempModule->darea[m]->name)));
+			Darea.insert("pos_x", QJsonValue(QString::number(tempModule->darea[m]->pos_x)));
+			Darea.insert("pos_y", QJsonValue(QString::number(tempModule->darea[m]->pos_y)));
+			Darea.insert("Dline_width", QJsonValue(QString::number(tempModule->darea[m]->Darea_width)));
+			Darea.insert("Dline_height", QJsonValue(QString::number(tempModule->darea[m]->Darea_height)));
+			Darea.insert("color", QJsonValue(QString(tempModule->darea[m]->color)));
+			Darea.insert("bind_module", QJsonValue(QString(tempModule->darea[m]->bind_module)));
+			comps.append(Darea);
 		}
-		for (int m = 0; m < module->darea.size(); m++)
-		{
-
-		}
+		module.insert("components", comps);
+		modules.append(module);
 
 	}
-}
 
+
+	root.insert("modules", modules);
+
+
+	QJsonDocument doc(root);
+	QByteArray text = doc.toJson();
+	QFile file(filepath);
+	if (file.open(QIODevice::WriteOnly))
+	{
+		file.write(text);
+		file.close();
+	}
+	else {
+	
+		qDebug() << "文件写入错误！";
+	}
+
+}
 void twoDdisplay::keyPressEvent(QKeyEvent* qe)
 {
 	qe->accept();
-	this->releaseKeyboard();
-	if (qe->key() == Qt::Key_Delete || qe->key() == Qt::Key_Backspace)
+	
+	if (qe->key() == Qt::Key_Backspace || qe->key() == Qt::Key_Delete)
 	{
-
 		if (curComp != nullptr)
 		{
 			for (int i = 0; i < complist.size(); i++)
@@ -3138,7 +3500,6 @@ void twoDdisplay::keyPressEvent(QKeyEvent* qe)
 
 				}
 			}
-
 			delete curComp;
 			ui.width_line->setText("");
 			ui.height_line->setText("");
@@ -3149,6 +3510,7 @@ void twoDdisplay::keyPressEvent(QKeyEvent* qe)
 			compType = 0;
 		}
 	}
+	this->releaseKeyboard();
 }
 
 

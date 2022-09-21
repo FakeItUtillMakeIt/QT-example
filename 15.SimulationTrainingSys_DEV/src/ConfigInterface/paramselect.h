@@ -33,6 +33,7 @@ public:
     void add_params(QStandardItem *groupnode, QList<ParamInterfaceStruct *>& paramlist);
     void searchItems();
     bool searchChildItems(QStandardItem* parenitem, QString text);
+    bool searchChildItems_2(QStandardItem* parenitem, QString text);    
     bool showAllChildItems(QStandardItem* parenitem);
     void showAllItems();
     void add_groups(QStandardItem *filenode, QMap<QPair<int, QString>, QList<ParamInterfaceStruct* > >& groupmap);

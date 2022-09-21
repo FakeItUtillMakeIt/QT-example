@@ -27,14 +27,19 @@
 #include "CenterOperateF.h" 
 #include "TaskConfiguration.h"
 
-#define NEW_UI//优化后的UI
+#include <thread>
+
+//优化后的UI
+#define NEW_UI
 #ifndef NEW_UI
-
 #define OLD_UI
-
 #endif // NEW_UI
 
-
+//删除功能
+//#define __DELETE_ONLY__
+#ifndef __DELETE_ONLY__
+#define __DELETE_RELE_TABLE__
+#endif
 
 class DeviceManager : public QMainWindow
 {
@@ -47,6 +52,8 @@ public:
 	void DataFaultLoad();
 	void TaskManagement();
 	void ShowMinimized();
+
+
 private:
 	Ui::DeviceManagerClass ui;
 	AppCache* m_app;
@@ -77,6 +84,7 @@ private:
 	QString preRocket;
 	QString curSelectedText;
 
+
 protected:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
@@ -89,13 +97,11 @@ protected:
 
 private slots:
 	void CloseWindow();
-
-
 	void timeUpdate();
+
 
 signals:
 	void rocketTypeChanged();
-
 	void deviceLoadOver();
 
 };

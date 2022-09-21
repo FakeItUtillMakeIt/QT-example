@@ -92,7 +92,18 @@ void EquivalentSoft::CreatConfigInterface()
 				QString msg;
 				bool bret = m_pRocketDataDAO->Compress(msg);
 				if (bret)
-					bret = m_pRocketDataDAO->SaveConfigToDb(msg);
+				{
+				//	bret = m_pRocketDataDAO->SaveConfigToDb(msg);
+					//因上面接口无法远程调用，替换为下面执行语句
+					QString exepath = QApplication::applicationDirPath();
+					QString rocketzip = exepath + "/rocket.zip";
+					QString stylezip = exepath + "/style.zip";
+					bret = m_pRocketDataDAO->SaveConfigFile(rocketzip,"update config_info set scene=? where id=1");
+					if (bret)
+					{
+						bret = m_pRocketDataDAO->SaveConfigFile(stylezip, "update config_info set style=? where id=1");
+					}
+				}
 				if (!bret)
 					QMessageBox::warning(nullptr, ("错误"), msg);
 				else
@@ -103,7 +114,8 @@ void EquivalentSoft::CreatConfigInterface()
 			QString filepath = QApplication::applicationDirPath();
 			filepath += ("/config/time");
 			QFile file(filepath);
-			file.remove();			
+			file.remove();	
+			QMessageBox::warning(nullptr, tr("提示"), "请重启软件使配置生效");
 		});
 		menu.exec(QCursor::pos());
 		
@@ -356,6 +368,8 @@ void EquivalentSoft::Init()
 	if (m_pRocketDataDAO->ReadConfigTime(msg, curtime))//读取配置表更新时间，如果配置已有，则返回其时间，否则返回失败
 	{
 		if(m_pRocketDataDAO->ReadConfigFromDb(msg, curtime))
+		//上面的
+
 			displayStatuInfo("读取组态配置文件成功！");
 	}
 	displayStatuInfo("从数据库同步配置文件完成！");	
@@ -365,8 +379,10 @@ void EquivalentSoft::Init()
 		item.second->sortParams();
 	}
 	//InitFrame();
-	displayStatuInfo("系统启动完毕！");
-
+	displayStatuInfo("系统启动完毕！");	
+	//QString exepath = QApplication::applicationDirPath();
+	//exepath = exepath + "/newrocket.zip";
+	//m_pRocketDataDAO->GetConfigFile(exepath,"1" );
 }
 
 
@@ -392,6 +408,9 @@ void EquivalentSoft::adddxq()
 void EquivalentSoft::adddxq_ok()
 {
 	count++;
+	ConfigNameSpace::ConfigTabButton* selbutton = new ConfigNameSpace::ConfigTabButton();
+	ConfigNameSpace::ConfigTabButton* delbutton = new ConfigNameSpace::ConfigTabButton();
+
 	QWidget* SINGLE_NAME(count) = new QWidget();
 	QString count_str = QString::number(count);
 	QString s1 = "single_dxq";
@@ -418,7 +437,7 @@ void EquivalentSoft::adddxq_ok()
 	LABEL_LEFT(count)->setAlignment(Qt::AlignCenter);
 	HO_NAME(count)->addWidget(LABEL_LEFT(count));
 
-	QPushButton* DXQ_NAME(count) = new QPushButton();
+	QPushButton* DXQ_NAME(count) = selbutton;
 	QString s4 = "dxqname";
 	QString dxqname = s4.append(count_str);
 
@@ -453,7 +472,7 @@ void EquivalentSoft::adddxq_ok()
 	LABEL_RIGHT(count)->setAlignment(Qt::AlignCenter);
 	HO_NAME(count)->addWidget(LABEL_RIGHT(count));
 
-	QPushButton* DXQ_CLOSE(count) = new QPushButton();
+	QPushButton* DXQ_CLOSE(count) = delbutton;
 	QString s = "dxqCLOSE";
 	QString dxqclose = s.append(count_str);
 	connect(DXQ_CLOSE(count), SIGNAL(clicked()), this, SLOT(deletedxq()));
@@ -506,10 +525,10 @@ void EquivalentSoft::adddxq_ok()
 	DXQ_NAME(count)->setStyleSheet("QPushButton{color:rgb(0,0,0);border:none;background-color:rgb(242,247,252)}");
 	hbj->hide();
 
-	ConfigNameSpace::ConfigGlobal::gconfiginterface->AddSceneFromOut(ui.comboBox->currentText(), DXQ_NAME(count), DXQ_CLOSE(count));
+	ConfigNameSpace::ConfigGlobal::gconfiginterface->AddSceneFromOut(ui.comboBox->currentText(), selbutton, delbutton);
 }
 
-void EquivalentSoft::AutoAddDxq(QPushButton* selbtn, QPushButton* delbtn)
+void EquivalentSoft::AutoAddDxq(ConfigNameSpace::ConfigTabButton* selbtn, ConfigNameSpace::ConfigTabButton* delbtn)
 {
 	count++;
 	QWidget* SINGLE_NAME(count) = new QWidget();
@@ -657,8 +676,7 @@ void EquivalentSoft::selected()
 	n.append(m);
 	// ui.test->setText(n.append(m));
 
-	ConfigNameSpace::ConfigGlobal::gconfiginterface->ChangeSceneByBtnFromOut(selectbutton);
-
+	ConfigNameSpace::ConfigGlobal::gconfiginterface->ChangeSceneByBtnFromOut((ConfigNameSpace::ConfigTabButton*)selectbutton);
 }
 //隐藏遮罩
 void EquivalentSoft::closehbj()
@@ -683,7 +701,7 @@ void EquivalentSoft::delete_ok()
 	int result = 0;
 	if (btnToDelete)
 	{
-		result = ConfigNameSpace::ConfigGlobal::gconfiginterface->DeleteSceneByBtnFromOut(btnToDelete);
+		result = ConfigNameSpace::ConfigGlobal::gconfiginterface->DeleteSceneByBtnFromOut((ConfigNameSpace::ConfigTabButton*)btnToDelete);
 		btnToDelete = nullptr;
 		cur->deleteLater();
 		cur = nullptr;

@@ -64,7 +64,7 @@ public:
 	//!<	指令设备状态关联表
 	unordered_map<int, vector<string>> commandDeviceStatInfo;
 	unordered_map<int, vector<string>> device2Param;
-	//!<  故障指令影响的设备参数信息
+	//!<  
 	unordered_map<int, vector<string>> customReadInfoMap;
 
 public:

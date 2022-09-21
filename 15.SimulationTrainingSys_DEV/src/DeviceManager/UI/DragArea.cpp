@@ -1,4 +1,5 @@
 #include "DragArea.h"
+#include<qdebug.h>
 DragArea::DragArea() :QLabel()
 , color_num(0)
 {
@@ -51,6 +52,7 @@ DragArea::~DragArea()
 
 void DragArea::mousePressEvent(QMouseEvent* me)
 {
+
 	if (me->button() == Qt::LeftButton)
 	{
 		this->mainUI->ui.height_line->setDisabled(false);

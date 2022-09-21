@@ -36,7 +36,7 @@ class twoDdisplay : public QWidget
 	Q_OBJECT
 
 public:
-	twoDdisplay(QWidget* parent = nullptr);
+	twoDdisplay(QWidget *parent = nullptr);
 	~twoDdisplay();
 	Ui::twoDdisplayClass ui;
 	QWidget* zhezhao_global;
@@ -52,16 +52,16 @@ public:
 	QList<Dragcomponent*> Dcomplist;
 	QList<Dragline*> Dlinelist;
 	QList<DragArea*> Darealist;
-	Dataspace* jsonData;
+	Dataspace *jsonData;
 
 
 protected:
 
-
+	
 
 
 private:
-
+	
 	QList<Module*> module_list;
 	QList<QString> uploaded_img;
 	QList<QString> uploaded_video;
@@ -99,6 +99,8 @@ private:
 	QString thumbnail_originpath;
 	QString thumbnail_exepath;
 
+	Rocketmodule* curModule;
+
 	long long module_basenum;
 	bool testbool;
 	void dataload();
@@ -106,4 +108,5 @@ private:
 	void keyPressEvent(QKeyEvent* qe);
 	void jsondata_load();
 	void dataTopage();
+	void data_toJson();
 };

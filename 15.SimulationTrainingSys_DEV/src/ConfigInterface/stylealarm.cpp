@@ -62,7 +62,7 @@ void StyleAlarm::DefaultUiInit()
     m_infomap[Alarm_Normal_Color] = QPair<bool,QString>(false,QColor(0,250,0).name(QColor::QColor::HexArgb));
     m_infomap[Alarm_Err_Color] = QPair<bool,QString>(false,QColor(250,0,0).name(QColor::QColor::HexArgb));
     QFont  font = this->font();
-    font.setPointSizeF(20);
+    initFont(font,"Î¢ÈíÑÅºÚ",false,false,13);
     m_infomap[ALarm_Font_Style] = QPair<bool,QString>(false,font.toString());
     m_infomap[Alarm_Text_Color] = QPair<bool,QString>(false,QColor(0,0,0).name(QColor::QColor::HexArgb));
     m_infomap[Alarm_Text_Position] = QPair<bool, QString>(false, "·ñ");

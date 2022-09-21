@@ -264,10 +264,63 @@ void DeviceManageModule::removeOneRow(int removeRow) {
 		return;
 	}
 	int curDeviceID = configInfoTable->item(removeRow, 0)->text().toInt();
-	//删除数据
+#ifdef __DELETE_RELE_TABLE__
+	//删除相关数据
+	//设备关联的设备状态信息
+	QString qSqlString = QString("SELECT\
+		device_status_info.id,\
+		device_status_info.createTime,\
+		device_status_info.lastUpdateTime\
+		FROM\
+		device_status_info\
+		WHERE\
+		device_status_info.device_id = %1").arg(curDeviceID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releDataInfo)
+	{
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_devicestatus_info WHERE deviceStatus_id=%1").arg(ele.first));
+	}
+	//箭上参数
+	qSqlString = QString("SELECT\
+		device_param_info.id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		device_param_info\
+		WHERE\
+		device_param_info.device_id = %1").arg(curDeviceID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releDataInfo)
+	{
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rockect_param_info WHERE device_parameter_id=%1").arg(ele.first));
+	}
+	//设备参数
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_param_info WHERE device_id=%1").arg(curDeviceID));
+	//设备状态
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_status_info WHERE device_id=%1").arg(curDeviceID));
+	//设备信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_info WHERE id=%1").arg(curDeviceID));
 
+	//设备信息
+	//DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_info WHERE id=%1").arg(curDeviceID));
+	//QThread* deleteThread = new QThread;
+	//DeleteDBDataThread* thread11 = new DeleteDBDataThread();
+	//thread11->setDeviceID(curDeviceID);
+	//thread11->moveToThread(deleteThread);
+	//connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteDeviceInfo);
+	//connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
+	//	//QMessageBox::information(this, "info", "success");
+	//	});
+	//deleteThread->start();
+
+#endif __DELETE_RELE_TABLE__
+#ifdef __DELETE_ONLY__
+	//删除数据
 	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`device_info` WHERE `id` = %1").arg(curDeviceID);
 	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+#endif __DELETE_ONLY__
 	configInfoTable->removeRow(removeRow);
 }
 

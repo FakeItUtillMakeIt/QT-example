@@ -3,9 +3,9 @@
 #include <QtCore/qtextstream.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qdir.h>
-#include <QtWidgets/qfiledialog.h>
-#include <qfiledialog.h>
-#include <QtWidgets/qmessagebox.h>
+//#include <QtWidgets/qfiledialog.h>
+//#include <qfiledialog.h>
+//#include <QtWidgets/qmessagebox.h>
 
 //#include <ActiveQt/qaxobject.h>
 #include "ImportComPramData.h"
@@ -31,25 +31,18 @@ ImportComPramData::~ImportComPramData()
 /// <summary>
 /// 导入参数 V2
 /// </summary>
-void ImportComPramData::AddPramComDatas(int rocketID)
+void ImportComPramData::AddPramComDatas(int rocketID, QString readFile)
 {
-
+	qDebug() << "ImportComPramData：" << QThread::currentThreadId() << QThread::currentThread();
 	//excel V1.00
 #if 0
 	AddPramComDatasV1(rocketID);
 
 	//excel V2.00
 #else
-
-	//读取excel文件
-	QString readFile = QFileDialog::getOpenFileName(nullptr, QStringLiteral("选择Excel文件"), "", tr("Exel file(*.xls *.xlsx)"));
-	if (readFile == "")
-	{
-		return;
-	}
-
 	int row_count, col_count;
 	QStringList str;
+	QString Qstr;
 
 	QXlsx::Document* m_xlsx = nullptr;
 	if (!m_xlsx)
@@ -62,7 +55,8 @@ void ImportComPramData::AddPramComDatas(int rocketID)
 	}
 	else
 	{
-		QMessageBox::warning(nullptr, "提示", "文件打开失败！", "确定");
+		Qstr = "文件打开失败！";
+		emit ImportResult(Qstr);
 		return;
 	}
 
@@ -74,7 +68,8 @@ void ImportComPramData::AddPramComDatas(int rocketID)
 	m_rocketId = m_EXcelDAO->GetRocketID();
 	if (m_rocketId != rocketID)
 	{
-		QMessageBox::warning(nullptr, "提示", "请导入对应火箭型号的数据！", "确定");
+		Qstr = "导入火箭型号不匹配！";
+		emit ImportResult(Qstr);
 		return;
 	}
 
@@ -205,10 +200,11 @@ void ImportComPramData::AddPramComDatas(int rocketID)
 
 	}
 
-	
 
-	//QString str = QString("成功导入参数：%1条；指令：%2条").arg(paramCount).arg(cmdCount);
-	QMessageBox::information(nullptr, "信息", QString("成功导入参数：%1条；指令：%2条").arg(paramCount).arg(cmdCount), "确定");
+	Qstr = QString("成功导入参数：%1条；指令：%2条").arg(paramCount).arg(cmdCount);
+	//QMessageBox::information(nullptr, "信息", QString("成功导入参数：%1条；指令：%2条").arg(paramCount).arg(cmdCount), "确定");
+	
+	emit ImportResult(Qstr);
 	return;
 
 #endif
@@ -408,7 +404,7 @@ int ImportComPramData::NewCode()
 	while (true)
 	{
 		newcode = rand() % MAXCODE;
-		if (find(code.begin(), code.end(), newcode) == code.end())
+		if (std::find(code.begin(), code.end(), newcode) == code.end())
 		{
 			break;
 		}

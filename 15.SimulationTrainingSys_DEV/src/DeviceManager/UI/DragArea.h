@@ -13,11 +13,13 @@ public:
 	int id;
 	QString name;
 	QString type;
-	QString pos_x;
-	QString pos_y;
-	QString Darea_width;
-	QString Darea_height;
+	int pos_x;
+	int pos_y;
+	int Darea_width;
+	int Darea_height;
 	QString color;
+	QString bind_module;
+
 	int color_num;
 	QStringList colors;
 	bool canDrag;

@@ -142,7 +142,7 @@ int ConfigPlatForm::DeleteElementByIdFromOut(ControlType ctrtype, QString elemen
     MoveAbleFrame::hide_ctrl_point();
 }
 
-int ConfigPlatForm::DeleteSceneByBtnFromOut(QPushButton* delBtn)
+int ConfigPlatForm::DeleteSceneByBtnFromOut(ConfigTabButton* delBtn)
 {
     for (int i = 0; i<  scenes.size(); i++)
     {
@@ -160,7 +160,7 @@ int ConfigPlatForm::DeleteSceneByBtnFromOut(QPushButton* delBtn)
     }
 }
 
-void ConfigPlatForm::ChangeSceneByBtnFromOut(QPushButton* selBtn)
+void ConfigPlatForm::ChangeSceneByBtnFromOut(ConfigTabButton* selBtn)
 {
     for (auto scene : scenes)
     {
@@ -172,7 +172,7 @@ void ConfigPlatForm::ChangeSceneByBtnFromOut(QPushButton* selBtn)
 
     }
 }
-void ConfigPlatForm::addScene(QString text,QPushButton* selbtn,QPushButton* delbtn)
+void ConfigPlatForm::addScene(QString text, ConfigTabButton* selbtn, ConfigTabButton* delbtn)
 {
     ConfigScene* newscene = new ConfigScene;
     newscene->SetName(text);
@@ -196,11 +196,11 @@ void ConfigPlatForm::addScene(QString text,QPushButton* selbtn,QPushButton* delb
     newscene->delbutton = delbtn;
     newscene->AddContextMenuToBtn(selbtn);
 }
-void ConfigPlatForm::getAutoCreatedBtn(QList<QPair<QPushButton*, QPushButton*>>& iautoCreateBtn)
+void ConfigPlatForm::getAutoCreatedBtn(QList<QPair<ConfigTabButton*, ConfigTabButton*>>& iautoCreateBtn)
 {
     for (auto scene : scenes)
     {
-        iautoCreateBtn.push_back(QPair<QPushButton*,QPushButton*>(scene->selbutton,scene->delbutton));
+        iautoCreateBtn.push_back(QPair<ConfigTabButton*, ConfigTabButton*>(scene->selbutton,scene->delbutton));
     }
 }
 

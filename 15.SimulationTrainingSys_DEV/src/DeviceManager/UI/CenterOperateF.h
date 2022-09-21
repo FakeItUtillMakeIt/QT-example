@@ -72,11 +72,11 @@ private:
     void EditFaultItem(vector<AddOneFaultInfo> editFaults);
     void DelFaultItem(vector<AddOneFaultInfo> delFaults);
 
-    void isEnabledFault(QString name, int code, int type, int faultType);
+    void isEnabledFault(QString name, int code, int type, int faultType, bool isAddFault);
 
 
 public slots:
-    void sendCMD(int cmd_id, int type);
+    void sendCMD(int cmd_id, int type, bool isAddFault);
     void receiverCMD(QByteArray oneCommand);
 
 signals:

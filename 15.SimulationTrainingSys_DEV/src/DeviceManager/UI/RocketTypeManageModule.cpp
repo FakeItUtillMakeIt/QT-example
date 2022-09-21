@@ -1,8 +1,6 @@
 #include "RocketTypeManageModule.h"
 #include "DeviceManager.h"
 
-
-
 RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
 	, m_importComPramData(nullptr)
@@ -10,10 +8,14 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	selectedRowNum = -1;
 	columnNameList << QString("火箭ID") << QString("火箭型号名称") << QString("火箭型号描述") << QString("操作");
 
-	m_importComPramData = new ImportComPramData(this);
+	m_importComPramData = new ImportComPramData();
+	m_importThread = new QThread;
+	m_importComPramData->moveToThread(m_importThread);
+	connect(this, &RocketTypeManageModule::AddPramComSignal, m_importComPramData, &ImportComPramData::AddPramComDatas);
+	connect(m_importComPramData, &ImportComPramData::ImportResult, this, &RocketTypeManageModule::ImportResultDo);
+	m_importThread->start();
 
 	InitUILayout();
-
 	InitDisplayData();
 
 	configInfoTable->setColumnHidden(0, true);
@@ -229,6 +231,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		});
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
+
 		removeOneRow(opDeleteBtn->property("row").toInt());
 		emit rocketInfoChanged();
 		});
@@ -252,12 +255,29 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 /// <param name="rowNumber"></param>
 void RocketTypeManageModule::ImportData(int rowNumber)
 {
-	int curRocketID = configInfoTable->item(rowNumber, 0)->text().toInt();
+	qDebug() << "RocketTypeManageModule：" << QThread::currentThreadId() << QThread::currentThread();
 
-	m_importComPramData->AddPramComDatas(curRocketID);
-	//QString qSqlString = QString("DELETE FROM `simulatedtraining`.`rocket_info` WHERE `id` = %1").arg(curRocketID);
-	//DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
+	int curRocketID;
+	QString readFile;
+	//读取excel文件路径
+	readFile = QFileDialog::getOpenFileName(nullptr, "选择Excel文件", "", tr("Exel file(*.xls *.xlsx)"));
+	if (readFile == "")
+	{
+		return;
+	}
+	curRocketID = configInfoTable->item(rowNumber, 0)->text().toInt();
 
+	emit AddPramComSignal(curRocketID, readFile);
+	//m_importComPramData->AddPramComDatas(curRocketID);
+}
+
+/// <summary>
+/// 导入结果展示
+/// </summary>
+/// <param name="index"></param>
+void RocketTypeManageModule::ImportResultDo(QString Qstr)
+{
+	QMessageBox::information(nullptr, "提示", Qstr, "确定");
 
 }
 
@@ -271,11 +291,28 @@ void RocketTypeManageModule::removeOneRow(int removeRow) {
 		return;
 	}
 	int curRocketID = configInfoTable->item(removeRow, 0)->text().toInt();
-	//删除数据
 
+	configInfoTable->removeRow(removeRow);
+
+#ifdef __DELETE_RELE_TABLE__
+	//型号信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rocket_info WHERE id=%1").arg(curRocketID));
+	QThread* deleteThread = new QThread;
+	DeleteDBDataThread* thread11 = new DeleteDBDataThread();
+	thread11->setRocketID(curRocketID);
+	thread11->moveToThread(deleteThread);
+	connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteRocketInfo);
+	connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
+		//QMessageBox::information(this, "info", "success");
+		});
+	deleteThread->start();
+
+#endif __DELETE_RELE_TABLE__
+#ifdef __DELETE_ONLY__
 	QString qSqlString = QString("DELETE FROM `simulatedtraining`.`rocket_info` WHERE `id` = %1").arg(curRocketID);
 	DeviceDBConfigInfo::getInstance()->customRunSql(qSqlString);
-	configInfoTable->removeRow(removeRow);
+#endif __DELETE_ONLY__
+
 }
 
 /**
@@ -363,6 +400,176 @@ void RocketTypeManageModule::deleteOneRowData() {
 }
 
 
+
+void RocketTypeManageModule::deleteReleDataFromDB(int curRocketID) {
+	//删除和型号相关数据
+	QString qSqlString;
+
+	//参数信息
+	qSqlString = QString("SELECT\
+		parameter_rocket_info.parameter_id,\
+		parameter_rocket_info.createTime,\
+		parameter_rocket_info.lastUpdateTime\
+		FROM\
+		parameter_rocket_info\
+		WHERE\
+		parameter_rocket_info.rocket_id = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releParamInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releParamInfo)
+	{
+		int curParamID = ele.first;
+		QString qSqlString = QString("SELECT\
+		device_param_info.id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		device_param_info\
+		WHERE\
+		device_param_info.parameter_id = %1").arg(curParamID);
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		auto releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele1 : releDataInfo)
+		{
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rockect_param_info WHERE device_parameter_id=%1").arg(ele1.first));
+		}
+		//设备参数
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_param_info WHERE parameter_id=%1").arg(curParamID));
+		//参数型号
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.parameter_rocket_info WHERE parameter_id=%1").arg(curParamID));
+		//参数信息
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.parameter_info WHERE id=%1").arg(curParamID));
+	}
+	//参数型号信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.param_table_info WHERE rocket_id=%1").arg(curRocketID));
+
+	//参数型号信息
+	//递归删除和设备相关的所有信息
+	qSqlString = QString("SELECT\
+		device_info.id,\
+		device_info.createTime,\
+		device_info.lastUpdateTime\
+		FROM\
+		device_info\
+		WHERE\
+		device_info.rocket_id = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releDeviceInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releDeviceInfo)
+	{
+		int curDeviceID = ele.first;
+		//设备关联的设备状态信息
+		qSqlString = QString("SELECT\
+		device_status_info.id,\
+		device_status_info.createTime,\
+		device_status_info.lastUpdateTime\
+		FROM\
+		device_status_info\
+		WHERE\
+		device_status_info.device_id = %1").arg(curDeviceID);
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		auto releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele1 : releDataInfo)
+		{
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_devicestatus_info WHERE deviceStatus_id=%1").arg(ele1.first));
+		}
+		//箭上参数
+		qSqlString = QString("SELECT\
+		device_param_info.id,\
+		device_param_info.createTime,\
+		device_param_info.lastUpdateTime\
+		FROM\
+		device_param_info\
+		WHERE\
+		device_param_info.device_id = %1").arg(curDeviceID);
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+		releDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+		for (auto ele2 : releDataInfo)
+		{
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rockect_param_info WHERE device_parameter_id=%1").arg(ele2.first));
+		}
+		//设备参数
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_param_info WHERE device_id=%1").arg(curDeviceID));
+		//设备状态
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_status_info WHERE device_id=%1").arg(curDeviceID));
+	}
+	//设备信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.device_info WHERE rocket_id=%1").arg(curRocketID));
+
+	//递归删除和指令相关的所有信息
+	qSqlString = QString("SELECT\
+		command_info.id,\
+		command_info.createTime,\
+		command_info.lastUpdateTime\
+		FROM\
+		command_info\
+		WHERE\
+		command_info.rocket_id = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releCmdInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releCmdInfo)
+	{
+		int curCmdID = ele.first;
+		//子流程信息
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.sub_flow_info WHERE command_id=%1").arg(curCmdID));
+		//指令参数
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_param_info WHERE command_id=%1").arg(curCmdID));
+		//指令设备状态
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_devicestatus_info WHERE command_id=%1").arg(curCmdID));
+		//指令表信息
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_commandtable_info WHERE command_id=%1").arg(curCmdID));
+		//指令信息
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
+	}
+	//指令信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_table_info WHERE rocket_id=%1").arg(curRocketID));
+	//箭上参数
+	qSqlString = QString("SELECT\
+		rocket_data_info.id,\
+		rocket_data_info.createTime,\
+		rocket_data_info.lastUpdateTime\
+		FROM\
+		rocket_data_info\
+		WHERE\
+		rocket_data_info.rocket_id = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releRocketDataInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releRocketDataInfo)
+	{
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rockect_param_info WHERE rocket_data_id=%1").arg(ele.first));
+	}
+	//箭上数据
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rocket_data_info WHERE rocket_id=%1").arg(curRocketID));
+	//子流程信息
+	qSqlString = QString("SELECT\
+		main_flow_info.id,\
+		main_flow_info.createTime,\
+		main_flow_info.lastUpdateTime\
+		FROM\
+		main_flow_info\
+		WHERE\
+		main_flow_info.rocket_id = %1").arg(curRocketID);
+	DeviceDBConfigInfo::getInstance()->customReadTableInfo(qSqlString);
+	auto releMainFlowInfo = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+	for (auto ele : releMainFlowInfo)
+	{
+		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.sub_flow_info WHERE main_id=%1").arg(ele.first));
+	}
+	//主流程信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.main_flow_info WHERE rocket_id=%1").arg(curRocketID));
+	//故障指令信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.fault_command_info WHERE rocket_id=%1").arg(curRocketID));
+	// 故障参数信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.fault_param_info WHERE rocket_id=%1").arg(curRocketID));
+	//型号岗位信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rocket_task_info WHERE rocket_id=%1").arg(curRocketID));
+	//型号信息
+	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.rocket_info WHERE id=%1").arg(curRocketID));
+
+	emit rocketInfoChanged();
+}
+
+
 /**
 	@brief	   火箭数据配置窗口
 	@retval  -
@@ -424,6 +631,7 @@ RocketDataCfgW::RocketDataCfgW() {
 	this->setWindowTitle(QString("火箭数据信息配置"));
 	this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
+
 }
 
 /**
@@ -443,6 +651,9 @@ RocketParamCfgW::RocketParamCfgW() {
 
 
 }
+
+
+
 
 
 /**

@@ -180,7 +180,7 @@ public slots:
 	void backonFaultClick(int faultype, bool isOK);
 
 signals:
-	void onFaultClick(QString name, int code, int type,int faultType);
+	void onFaultClick(QString name, int code, int type,int faultType,bool isAddFault);
 };
 
 
