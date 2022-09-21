@@ -40,7 +40,13 @@ void ConfigAlarm::showListMenu(const QPoint& point) {
     connect(actSetCmd, &QAction::triggered, [=]() {
         {
             ParamSelect  paramselect;
-            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr);
+            QString  valueid = m_valueSetMap["数据源配置"].valuelist[ConfigAlarm::eDataSource]->getStrValue();
+            QVector<int>  idlist;
+            if (valueid != "未设置")
+            {
+                idlist.push_back(valueid.toInt());
+            }
+            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr,idlist);
             if (paramselect.exec() == QDialog::Rejected)
                 return;
             int paramid = paramselect.get_select_key();

@@ -6,7 +6,7 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 {
 
 	selectedRowNum = 0;
-	columnNameList << QString("参数ID") << QString("火箭型号") << QString("参数名称") << QString("参数类型") << QString("参数单位") << QString("操作");
+	columnNameList << QString("参数ID") << QString("火箭型号") << QString("参数名称") << QString("参数类型") << QString("参数单位") << QString("所属参数表") << QString("操作");
 
 	InitUILayout();
 	InitDisplayData();
@@ -86,18 +86,26 @@ void ParamManageModule::InitDisplayData() {
 
 	DeviceDBConfigInfo* paramInfoDB = DeviceDBConfigInfo::getInstance();
 	paramInfoDB->customReadTableInfo(QString("SELECT\
-		parameter_info.id,\
-		parameter_info.`name`,\
-		parameter_info.type,\
-		parameter_info.unit,\
-		parameter_info.createTime,\
-		parameter_info.lastUpdateTime\
+		param_table_info.id,\
+		param_table_info.`name`,\
+		param_table_info.createTime,\
+		param_table_info.lastUpdateTime\
 		FROM\
-		parameter_info\
-		INNER JOIN parameter_rocket_info ON parameter_rocket_info.parameter_id = parameter_info.id\
-		WHERE\
-		parameter_rocket_info.rocket_id = %1\
-		").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+		param_table_info"));
+	auto paramTable = paramInfoDB->customReadInfoMap;
+
+	paramInfoDB->customReadTableInfo(QString("SELECT\
+		a.id,\
+		a.`name`,\
+		a.type,\
+		a.unit,\
+		b.param_table_id,\
+		a.createTime,\
+		a.lastUpdateTime\
+		FROM\
+		parameter_info AS a\
+		LEFT JOIN parameter_rocket_info AS b ON a.id = b.parameter_id\
+		WHERE b.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
 	auto queryRes = paramInfoDB->customReadInfoMap;
 	int row = 0;
@@ -110,6 +118,16 @@ void ParamManageModule::InitDisplayData() {
 		rowData.push_back(QString::fromStdString(ele.second[1]));
 		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele.second[2].c_str())].c_str()));
 		rowData.push_back(QString::fromStdString(ele.second[3]));
+
+		if (QString::fromStdString(ele.second[4]) == "" || QString::fromStdString(ele.second[4]) == "-1")
+		{
+			rowData.push_back(QString(""));
+		}
+		else
+		{
+			rowData.push_back(QString::fromStdString(paramTable[atoi(ele.second[4].c_str())][1]));
+			//rowData.push_back(QString::fromStdString(ele.second[4]));
+		}
 		insertOneRow(row++, rowData);
 	}
 
@@ -244,9 +262,30 @@ void ParamManageModule::InitUILayout() {
 
 		configInfoTable->clearContents();
 		configInfoTable->setRowCount(0);
-		DeviceDBConfigInfo::getInstance()->readParamDB2UI();
+		DeviceDBConfigInfo* paramInfoDB = DeviceDBConfigInfo::getInstance();
+		paramInfoDB->customReadTableInfo(QString("SELECT\
+		param_table_info.id,\
+		param_table_info.`name`,\
+		param_table_info.createTime,\
+		param_table_info.lastUpdateTime\
+		FROM\
+		param_table_info"));
+		auto paramTable = paramInfoDB->customReadInfoMap;
+
+		paramInfoDB->customReadTableInfo(QString("SELECT\
+		a.id,\
+		a.`name`,\
+		a.type,\
+		a.unit,\
+		b.param_table_id,\
+		a.createTime,\
+		a.lastUpdateTime\
+		FROM\
+		parameter_info AS a\
+		LEFT JOIN parameter_rocket_info AS b ON a.id = b.parameter_id\
+		WHERE b.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 		int searchRow = 0;
-		for (auto ele = DeviceDBConfigInfo::getInstance()->paramInfo.begin(); ele != DeviceDBConfigInfo::getInstance()->paramInfo.end(); ele++)
+		for (auto ele = DeviceDBConfigInfo::getInstance()->customReadInfoMap.begin(); ele != DeviceDBConfigInfo::getInstance()->customReadInfoMap.end(); ele++)
 		{
 			if (QString::fromStdString(ele->second[1]).contains(paramInputName->text()))
 			{
@@ -256,9 +295,19 @@ void ParamManageModule::InitUILayout() {
 				rowData.push_back(QString::fromStdString(ele->second[1]));
 				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele->second[2].c_str())].c_str()));
 				rowData.push_back(QString::fromStdString(ele->second[3]));
+				if (QString::fromStdString(ele->second[4]) == "" || QString::fromStdString(ele->second[4]) == "-1")
+				{
+					rowData.push_back(QString(""));
+				}
+				else
+				{
+					rowData.push_back(QString::fromStdString(paramTable[atoi(ele->second[4].c_str())][1]));
+					//rowData.push_back(QString::fromStdString(ele.second[4]));
+				}
 				insertOneRow(searchRow++, rowData);
 			}
 		}
+
 		});
 
 	connect(deviceCombox, QOverload<int>::of(&QComboBox::activated), this, [=](int index) {
@@ -296,6 +345,7 @@ void ParamManageModule::InitUILayout() {
 			rowData.push_back(QString::fromStdString(ele.second[1]));
 			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->paramIndex2Type[atoi(ele.second[2].c_str())].c_str()));
 			rowData.push_back(QString::fromStdString(ele.second[3]));
+			rowData.push_back(deviceCombox->currentText());
 			insertOneRow(searchRow++, rowData);
 		}
 		});
@@ -342,7 +392,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-		});
+});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
@@ -360,7 +410,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		editW->setWindowName(QString("编辑参数"));
 		int curRow = opEditBtn->property("row").toInt();
 		editW->setParamInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 2)->text(),
-			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 4)->text());
+			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 4)->text(), configInfoTable->item(curRow, 5)->text());
 		editW->show();
 		});
 
@@ -455,7 +505,7 @@ void ParamManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增参数"));
-	addRocketTypeW->setParamInfo(0, "", "", "");
+	addRocketTypeW->setParamInfo(0, "", "", "", "");
 	addRocketTypeW->show();
 #endif
 

@@ -560,7 +560,16 @@ namespace DataBase
 			for (int i = 0; i < num_feilds - 2; i++)
 			{
 				LOG(INFO) << (int)lengths[i] << (row[i] ? row[i] : "NULL ");
-				contents[atoi(row[0])].push_back(string(row[i]));
+				qDebug() << row[i];
+				if (i == (num_feilds - 3) && row[i] == NULL)
+				{
+					contents[atoi(row[0])].push_back(string(""));
+				}
+				else
+				{
+					contents[atoi(row[0])].push_back(string(row[i]));
+				}
+
 			}
 			counts++;
 		}

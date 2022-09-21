@@ -9,6 +9,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "multiinputget.h"
 #include "qaction.h"
+#include "paramselect.h"
 ConfigNameSpaceStart
 
 ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
@@ -137,6 +138,27 @@ void ConfigCurve::contextMenuEvent(QContextMenuEvent* event)
     menu.addAction(&act_is_roll);
    // menu.addSeparator();
     menu.addAction(&act_set_roll_range);
+    menu.addAction("选择数据源", [=]()
+        {
+            ParamSelect  paramselect;
+            paramselect.enableMultiSelect(true);
+            QVector<int>  idlist;
+            for (auto ds : dataSourceList)
+            {
+                idlist.push_back(ds.toInt());
+            }           
+            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
+            if (paramselect.exec() == QDialog::Rejected)
+                return;
+            QVector<int> paramids = paramselect.get_multiselect_key();
+            dataSourceList.clear();
+            for (auto paramid : paramids)
+            {               
+                dataSourceList.push_back(QString::number(paramid));
+            }
+            updateCurve("1", "", 1);
+            ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
+        });
   //  menu.addSeparator();
   //  menu.addAction(&act_set_tmp_range);
     //menu.addSeparator();
@@ -241,7 +263,7 @@ void ConfigCurve::updataDataFromTool()
 }
 void ConfigCurve::updateCurve(QString datasourceid,QString datasourcename,int  addordelete)
 {
-    if(addordelete == 1)
+ /*   if(addordelete == 1)
     {
        QCPGraph* graph  =   addGraph();
        graph->setName(datasourcename);
@@ -259,6 +281,23 @@ void ConfigCurve::updateCurve(QString datasourceid,QString datasourcename,int  a
         QCPGraph* graph = curvelist[datasourceid];
         curvelist.remove(datasourceid);
         removeGraph(graph);
+    }*/
+    clearGraphs();
+    curvelist.clear();
+    for (auto datasource : dataSourceList)
+    {
+        QCPGraph* graph = addGraph();
+        QString datasourcename = QString::fromLocal8Bit((*ConfigGlobal::m_allDeviceParamPtr)[datasource.toInt()]->m_subParameterName.c_str());
+        int datasourceid = datasource.toInt();
+        graph->setName(datasourcename);
+        curvelist[datasource] = graph;
+        QColor  color = colorlist.back();
+        colorlist.pop_back();
+        graph->setPen(QPen(color));
+        if (colorlist.size() == 0)
+        {
+            colorlist << QColor(250, 0, 0) << QColor(0, 250, 0) << QColor(0, 250, 0);
+        }
     }
    ConfigGlobal::updateCurveMap(dataSourceList,this);
    replot();

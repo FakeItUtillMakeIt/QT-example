@@ -5,7 +5,7 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 	: QWidget(parent)
 {
 	selectedRowNum = -1;
-	columnNameList << QString("指令ID") << QString("火箭型号") << QString("指令名称") << QString("测发回令") << QString("指令编码") << QString("指令类型") << QString("指令前缀") << QString("操作");
+	columnNameList << QString("指令ID") << QString("火箭型号") << QString("指令名称") << QString("测发回令") << QString("指令编码") << QString("指令类型") << QString("指令前缀") << QString("所属指令表") << QString("操作");
 
 	InitUILayout();
 	InitDisplayData();
@@ -72,8 +72,6 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 
 		});
 
-	qDebug() << this->parent()->parent()->parent()->parent()->parent()->objectName();
-	qDebug() << this->parent()->parent()->parent()->parent()->parent()->parent()->parent()->objectName();
 
 }
 
@@ -213,20 +211,32 @@ void CommandManageModule::InitUILayout() {
 
 		configInfoTable->clearContents();
 		configInfoTable->setRowCount(0);
+		DeviceDBConfigInfo* commandInfoDB = DeviceDBConfigInfo::getInstance();
+		commandInfoDB->customReadTableInfo(QString("SELECT\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
+		FROM\
+		command_table_info"));
+		auto commandTable = commandInfoDB->customReadInfoMap;
+
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
-			command_info.id,\
-			command_info.rocket_id,\
-			command_info.back_id,\
-			command_info.`name`,\
-			command_info.`code`,\
-			command_info.type,\
-			command_info.prefix,\
-			command_info.createTime,\
-			command_info.lastUpdateTime\
-			FROM\
-			command_info\
-			WHERE\
-			command_info.rocket_id = %1")
+		a.id,\
+		a.rocket_id,\
+		a.back_id,\
+		a.`name`,\
+		a.`code`,\
+		a.type,\
+		a.prefix,\
+		b.command_table_id,\
+		a.createTime,\
+		a.lastUpdateTime\
+		FROM\
+		command_info AS a\
+		LEFT JOIN command_commandtable_info AS b ON a.id = b.command_id\
+		WHERE\
+		a.rocket_id = %1")
 			.arg(AppCache::instance()->m_CurrentRocketType->m_id)
 		);
 
@@ -267,6 +277,15 @@ void CommandManageModule::InitUILayout() {
 
 				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
 				rowData.push_back(QString::fromStdString(ele.second[6]));
+				if (QString::fromStdString(ele.second[7]) == "" || QString::fromStdString(ele.second[7]) == "-1")
+				{
+					rowData.push_back("");
+				}
+				else
+				{
+					rowData.push_back(QString::fromStdString(commandTable[atoi(ele.second[7].c_str())][1]));
+					//rowData.push_back(QString::fromStdString(ele.second[7]));
+				}
 				insertOneRow(searchRow++, rowData);
 			}
 		}
@@ -306,7 +325,7 @@ void CommandManageModule::InitUILayout() {
 		{
 			QVector<QString> rowData;
 			rowData.push_back(QString::fromStdString(ele.second[0]));
-			//rowData.push_back(QString::fromStdString(ele->second[1]));
+
 			QString tmpp1, tmpp2;
 
 			if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
@@ -320,8 +339,7 @@ void CommandManageModule::InitUILayout() {
 
 			}
 			rowData.push_back(tmpp1);
-			//rowData.push_back(QString::fromStdString(ele->second[1]));
-			//rowData.push_back(QString::fromStdString(ele->second[2]));
+
 			if (atoi(ele.second[2].c_str()) == 0)
 			{
 				tmpp2 = QString("无回令");
@@ -330,14 +348,14 @@ void CommandManageModule::InitUILayout() {
 			{
 				tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele.second[2].c_str())][3]);
 			}
-			//rowData.push_back(QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele->second[2].c_str())][3]));
 
 			rowData.push_back(QString::fromStdString(ele.second[3]));
 			rowData.push_back(tmpp2);
 			rowData.push_back(QString::fromStdString(ele.second[4]));
-			//rowData.push_back(QString::fromStdString(ele->second[5]));
+
 			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
 			rowData.push_back(QString::fromStdString(ele.second[6]));
+			rowData.push_back(deviceCombox->currentText());
 			insertOneRow(searchRow++, rowData);
 		}
 		});
@@ -405,7 +423,8 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		int curRow = opEditBtn->property("row").toInt();
 		editW->setCommandInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
 			configInfoTable->item(curRow, 5)->text(), configInfoTable->item(curRow, 2)->text(),
-			configInfoTable->item(curRow, 3)->text());
+			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 7)->text());
+
 		editW->show();
 		});
 
@@ -490,19 +509,30 @@ void CommandManageModule::InitDisplayData() {
 	configInfoTable->setRowCount(0);
 	DeviceDBConfigInfo* commandInfoDB = DeviceDBConfigInfo::getInstance();
 	commandInfoDB->customReadTableInfo(QString("SELECT\
-		command_info.id,\
-		command_info.rocket_id,\
-		command_info.back_id,\
-		command_info.`name`,\
-		command_info.`code`,\
-		command_info.type,\
-		command_info.prefix,\
-		command_info.createTime,\
-		command_info.lastUpdateTime\
+		command_table_info.id,\
+		command_table_info.`name`,\
+		command_table_info.createTime,\
+		command_table_info.lastUpdateTime\
 		FROM\
-		command_info\
+		command_table_info"));
+	auto commandTable = commandInfoDB->customReadInfoMap;
+
+	commandInfoDB->customReadTableInfo(QString("SELECT\
+		a.id,\
+		a.rocket_id,\
+		a.back_id,\
+		a.`name`,\
+		a.`code`,\
+		a.type,\
+		a.prefix,\
+		b.command_table_id,\
+		a.createTime,\
+		a.lastUpdateTime\
+		FROM\
+		command_info AS a\
+		LEFT JOIN command_commandtable_info AS b ON a.id = b.command_id\
 		WHERE\
-		command_info.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
+		a.rocket_id = %1").arg(AppCache::instance()->m_CurrentRocketType->m_id));
 
 	int row = 0;
 	for (auto ele : commandInfoDB->customReadInfoMap)
@@ -538,7 +568,15 @@ void CommandManageModule::InitDisplayData() {
 		rowData.push_back(QString::fromStdString(ele.second[4]));
 		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
 		rowData.push_back(QString::fromStdString(ele.second[6]));
-
+		if (QString::fromStdString(ele.second[7]) == "" || QString::fromStdString(ele.second[7]) == "-1")
+		{
+			rowData.push_back(QString(""));
+		}
+		else
+		{
+			rowData.push_back(QString::fromStdString(commandTable[atoi(ele.second[7].c_str())][1]));
+			//rowData.push_back(QString::fromStdString(ele.second[7]));
+		}
 		if (tmpp1 == QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()))
 		{
 			insertOneRow(row++, rowData);
@@ -570,7 +608,7 @@ void CommandManageModule::insertOneRowData() {
 	AddRocketTypeWidget* addRocketTypeW = AddRocketTypeWidget::getInstance();
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::COMMAND_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增指令"));
-	addRocketTypeW->setCommandInfo(0, "", "", "", "");
+	addRocketTypeW->setCommandInfo(0, "", "", "", "", "");
 	addRocketTypeW->show();
 #endif // NEW_UI
 

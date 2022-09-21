@@ -27,8 +27,8 @@ class ParamSelect : public QDialog
 public:
     explicit ParamSelect(QWidget *parent = 0);
     ~ParamSelect();
-    void update_data(map<int, DeviceParam*>& m_allDeviceParam);
-    void update_data(map<int, Command*>& m_allCommadPrt);
+    void update_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid = {});
+    void update_data(map<int, Command*>& m_allCommadPrt, QVector<int> oldparamid = {});
 
     void add_params(QStandardItem *groupnode, QList<ParamInterfaceStruct *>& paramlist);
     void searchItems();
@@ -39,7 +39,10 @@ public:
     void add_groups(QStandardItem *filenode, QMap<QPair<int, QString>, QList<ParamInterfaceStruct* > >& groupmap);
     QString get_group_name(int groupid);
     int get_select_key() { return paramID; }
+    QVector<int> get_multiselect_key() { return paramIDs; }
+
     void select_item_by_key(int key);
+    void enableMultiSelect(bool  enabled) { multiselected = enabled; }
 private slots:
     void treeItemChanged(QStandardItem *item);
 private:
@@ -48,7 +51,10 @@ private:
     AppCache* app = nullptr;
     QModelIndexList  itemlist;
     int paramID;
+    QVector<int>  paramIDs;
     QMap<int, QStandardItem*> KeyItemMap;
+    bool  multiselected = false;
+
 };
 
 #endif // PARAMSELECT_H

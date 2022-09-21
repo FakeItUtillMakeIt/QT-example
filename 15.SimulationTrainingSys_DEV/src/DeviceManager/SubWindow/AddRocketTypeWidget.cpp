@@ -354,7 +354,7 @@ void AddRocketTypeWidget::setRocketInfo(int rocketId, QString rocketName, QStrin
 	@param paramType -
 	@param paramUnit -
 **/
-void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit) {
+void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit, QString paramTableName) {
 	paramID = paramId;
 
 	paramRocketType->setText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
@@ -378,7 +378,7 @@ void AddRocketTypeWidget::setParamInfo(int paramId, QString paramName, QString p
 
 		paramTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
-
+	paramTableType->setCurrentText(paramTableName);
 #ifdef IDENTIFY_ROCKET_//预留给需要根据火箭类型区别参数表的情况
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 		parameter_info.id,\
@@ -450,7 +450,7 @@ void AddRocketTypeWidget::setDevInfo(int devId, QString rocketType, QString devN
 	@param cmdName    -
 	@param backCmd    -
 **/
-void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd) {
+void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd, QString cmdTable) {
 
 	commandID = cmdId;
 
@@ -458,6 +458,7 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 	userSelectRocketType->setCurrentText(QString::fromLocal8Bit(AppCache::instance()->m_CurrentRocketType->m_name.c_str()));
 	userSelectCmdType->setCurrentText(cmdType);
 	userInputCmdName->setText(cmdName);
+
 
 	userSelectBackCmd->clear();
 	userSelectBackCmd->addItem("无回令", 0);
@@ -492,7 +493,7 @@ void AddRocketTypeWidget::setCommandInfo(int cmdId, QString rocketType, QString 
 	{
 		cmdTableType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
-
+	cmdTableType->setCurrentText(cmdTable);
 #ifdef IDENTIFY_ROCKET_////预留给需要根据火箭类型区别参数表的情况
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 		command_info.id,\

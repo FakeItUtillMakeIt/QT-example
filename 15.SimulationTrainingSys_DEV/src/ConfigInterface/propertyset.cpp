@@ -155,13 +155,14 @@ void PropertySet::updateOneSetData(ConfigValueSet &configset)
         }
         if (multiDatasoueces.contains(configvalue->valueid))
         {
+            multiDatasoueces[configvalue->valueid]->clear();
             QList<QString>& dataSourceList = *(QList<QString>*)configvalue->value;
             for (auto item : dataSourceList)
             {
                 if (VerifyNumber(item) && (*ConfigGlobal::m_allDeviceParamPtr).count(item.toInt()))
                 {
                     string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[item.toInt()]->m_subParameterName;
-                    multiDatasoueces[configvalue->valueid]->addItem(showtext.c_str());
+                    multiDatasoueces[configvalue->valueid]->addItem(QString::fromLocal8Bit(showtext.c_str()));
                 }
             }
         }
@@ -387,7 +388,14 @@ void PropertySet::addDataSource(QVBoxLayout *vlayout,ConfigValue* configvalue )
     connect(btnsel,&QPushButton::clicked,[=](int){       
         ParamSelect  paramselect;
       //  AppCache::instance()->m_allDeviceParam;
-        paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr);
+        QString  valueid = configvalue->getStrValue();
+        QVector<int>  idlist;
+        if (valueid != "未设置")
+        {
+            idlist.push_back(valueid.toInt());
+        }
+
+        paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
         if (paramselect.exec() == QDialog::Rejected)
             return;
         int paramid = paramselect.get_select_key();
@@ -424,7 +432,13 @@ void PropertySet::addCommand(QVBoxLayout* vlayout, ConfigValue* configvalue)
 
     connect(btnsel, &QPushButton::clicked, [=](int) {
         ParamSelect  paramselect;
-        paramselect.update_data(*ConfigGlobal::m_allCommadPrt);
+        QString  valueid = configvalue->getStrValue();
+        QVector<int>  idlist;
+        if (valueid != "未设置")
+        {
+            idlist.push_back(valueid.toInt());
+        }
+        paramselect.update_data(*ConfigGlobal::m_allCommadPrt, idlist);
         if (paramselect.exec() == QDialog::Rejected)
             return;
         int paramid = paramselect.get_select_key();
@@ -486,19 +500,29 @@ void PropertySet::addMultiDataSource(QVBoxLayout *vlayout,ConfigValue* configval
     listwidget->setSelectionMode(QAbstractItemView::SingleSelection);
     multiDatasoueces[configvalue->valueid] = listwidget;
     connect(btnsel,&QPushButton::clicked,[=](int){
-
         {
             QList<QString>& dataSourceList = *(QList<QString>*)configvalue->value;  
+            QVector<int>  idlist;
+            for (auto ds : dataSourceList)
+            {
+                idlist.push_back(ds.toInt());
+            }
             ParamSelect  paramselect;
-            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr);
+            paramselect.enableMultiSelect(true);
+            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr,idlist);
             if (paramselect.exec() == QDialog::Rejected)
                 return;
-            int paramid = paramselect.get_select_key();
-            string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_subParameterName;
-            listwidget->addItem(QString::fromLocal8Bit(showtext.c_str()));
-            QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_subParameterName.c_str());
-            dataSourceList.push_back(QString::number(paramid));
-            updateDataSource(QString::number(paramid), paramname, 1);        
+            QVector<int> paramids = paramselect.get_multiselect_key();
+            dataSourceList.clear();
+            listwidget->clear();
+            for(auto paramid : paramids)
+            { 
+                string  showtext = (*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_deviceName + ":" + (*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_subParameterName;
+                listwidget->addItem(QString::fromLocal8Bit(showtext.c_str()));
+                QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allDeviceParamPtr)[paramid]->m_subParameterName.c_str());
+                dataSourceList.push_back(QString::number(paramid));
+            }
+            updateDataSource(QString::number(1), "", 1);        
         }
     });
 
@@ -532,7 +556,7 @@ void PropertySet::addMultiDataSource(QVBoxLayout *vlayout,ConfigValue* configval
         listwidget->addItem(QString::fromLocal8Bit(showtext.c_str()));
     }
     vlayout->addWidget(btnsel);
-    vlayout->addWidget(delSel);
+   // vlayout->addWidget(delSel);
     vlayout->addWidget(listwidget);
 }
 ConfigNameSpaceEnd

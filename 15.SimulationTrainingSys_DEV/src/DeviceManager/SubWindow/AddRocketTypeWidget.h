@@ -52,9 +52,9 @@ public:
 	void setWindowName(QString);
 
 	void setRocketInfo(int rocketId, QString rocketName, QString rocketDescrp);
-	void setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit);
+	void setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit, QString paramTableName);
 	void setDevInfo(int devId, QString rocketType, QString devName, QString devType);
-	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd);
+	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd, QString cmdTable);
 
 private:
 	bool tableInfoInput = false;

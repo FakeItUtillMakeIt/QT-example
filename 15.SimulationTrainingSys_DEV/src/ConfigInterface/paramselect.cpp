@@ -24,17 +24,31 @@ ParamSelect::ParamSelect(QWidget *parent) :
         reject();
         });
     connect(ui->btnconfirm, &QPushButton::clicked, [=]() {
-        if (itemlist.size() > 1)
+        if (!multiselected)
         {
-            QMessageBox::warning(nullptr, tr("错误"), tr("只能选中一个参数"));
-            return;
+            if (itemlist.size() > 1)
+            {
+                QMessageBox::warning(nullptr, tr("错误"), tr("只能选中一个参数"));
+                return;
+            }
         }
         if (itemlist.size() == 0)
         {
             QMessageBox::warning(nullptr, tr("错误"), tr("未选择参数"));
             return;
         }
-        paramID = paramModel->itemFromIndex(itemlist.first())->data(Qt::UserRole + 1).toInt();
+    
+        if (!multiselected)
+        {
+            paramID = paramModel->itemFromIndex(itemlist.first())->data(Qt::UserRole + 1).toInt();
+        }
+        else
+        {
+            for (auto item : itemlist)
+            {
+                paramIDs.push_back(paramModel->itemFromIndex(item)->data(Qt::UserRole + 1).toInt());
+            }
+        }
         accept();
         });
 
@@ -228,9 +242,11 @@ ParamSelect::~ParamSelect()
 {
     delete ui;
 }
-void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
+void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt, QVector<int> oldparamid)
 {
     map<int, QStandardItem*> tableItemMap;
+    disconnect(paramModel, &QStandardItemModel::itemChanged, 0, 0);
+
     int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allCommadPrt.begin(); it != m_allCommadPrt.end(); it++)
     {
@@ -254,6 +270,17 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
             paramnode->setData(it->second->m_id, Qt::UserRole + 1);
             tabblenode->appendRow(paramnode);
             paramnode->setCheckable(true);
+            if (oldparamid.size() > 0 && oldparamid.contains(it->second->m_id))
+            {
+                paramnode->setCheckState(Qt::Checked);
+                itemlist << paramnode->index();
+                QStandardItem* parentitem = paramnode->parent();
+                while (parentitem)
+                {
+                    ui->treeView->setExpanded(parentitem->index(), true);
+                    parentitem = parentitem->parent();
+                }
+            }
         }
         else
         {
@@ -261,11 +288,22 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
             paramnode->setData(it->second->m_id, Qt::UserRole + 1);
             paramModel->appendRow(paramnode);
             paramnode->setCheckable(true);
-
+            if (oldparamid.size() > 0 && oldparamid.contains(it->second->m_id))
+            {
+                paramnode->setCheckState(Qt::Checked);
+                itemlist << paramnode->index();
+                QStandardItem* parentitem = paramnode->parent();
+                while (parentitem)
+                {
+                    ui->treeView->setExpanded(parentitem->index(), true);
+                    parentitem = parentitem->parent();
+                }
+            }
         }
        
         
     }
+    connect(paramModel, &QStandardItemModel::itemChanged, this, &ParamSelect::treeItemChanged);
 
 }
 //void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
@@ -297,19 +335,17 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt)
 //
 //}
 
-void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
+void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid)
 {
     map<int, QStandardItem*> deviceItemMap;
     map<int, QStandardItem*> tableItemMap;
     map<int, QList<int>> tabledevicemap;
-
+    disconnect(paramModel, &QStandardItemModel::itemChanged, 0, 0);
     int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
     for (auto it = m_allDeviceParam.begin(); it != m_allDeviceParam.end(); it++)
     {
         if (it->second->m_rockcketid != rocketid)
             continue;
-
-
         QStandardItem* devicenode = nullptr;  //获取设备节点
         if (deviceItemMap.find(it->second->m_deviceId) != deviceItemMap.end())
         {
@@ -320,7 +356,7 @@ void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
             devicenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_deviceName.c_str()) + "(设备)");
             if(it->second->m_tableId == -1)
               paramModel->appendRow(devicenode);
-            deviceItemMap[it->second->m_deviceId] = devicenode;
+            deviceItemMap[it->second->m_deviceId] = devicenode;         
         }
         if (it->second->m_tableId != -1)
         {
@@ -347,7 +383,19 @@ void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam)
         paramnode->setData(it->second->m_id, Qt::UserRole + 1);
         devicenode->appendRow(paramnode);
         paramnode->setCheckable(true);
+        if (oldparamid.size() > 0 && oldparamid.contains(it->second->m_id))
+        {
+            paramnode->setCheckState(Qt::Checked);
+            itemlist << paramnode->index();
+            QStandardItem* parentitem = paramnode->parent();
+            while (parentitem)
+            {
+                ui->treeView->setExpanded(parentitem->index(), true);
+                parentitem = parentitem->parent();
+            }
+        }
     }
+    connect(paramModel, &QStandardItemModel::itemChanged, this, &ParamSelect::treeItemChanged);
 }
 
 void ParamSelect::treeItemChanged(QStandardItem *item)
@@ -361,16 +409,22 @@ void ParamSelect::treeItemChanged(QStandardItem *item)
         int  paramKey = item->data(Qt::UserRole+1).toInt();
        if(state == Qt::Checked)
        {
-           for(auto iIndex:itemlist )
+           if (!multiselected)
            {
-              item->model()->itemFromIndex(iIndex)->setCheckState(Qt::Unchecked);
+               for (auto iIndex : itemlist)
+               {
+                   item->model()->itemFromIndex(iIndex)->setCheckState(Qt::Unchecked);
+               }
+               itemlist.clear();
            }
-           itemlist.clear();
            itemlist << item->index();
        }
        else
        {
-            itemlist.clear();
+           if (!multiselected)
+               itemlist.clear();
+           else
+               itemlist.removeOne(item->index());
        }
     }
 }
