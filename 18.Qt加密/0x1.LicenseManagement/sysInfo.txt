@@ -1,0 +1,5 @@
+    Host Name=Fantast-RD-04
+    IP Address=169.254.177.150
+    System ID=PGSXP0JK9CPQDR
+    Ethernet Address=AC:D6:64:54:EC:35
+    Processor ID=BFEBFBFF001906ED
