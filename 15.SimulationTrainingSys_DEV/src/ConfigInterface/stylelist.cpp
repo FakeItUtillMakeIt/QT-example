@@ -11,7 +11,14 @@ StyleList::StyleList(QWidget * parent):QScrollArea(parent)
     setWidget(scrollWidget);
 }
 
-void StyleList::addWidget(QLabel* namelabel,QWidget *widget)
+void StyleList::removeWidget(QWidget* namelabel, QWidget* widget)
+{
+    if (widget && scrollWidget)
+    {
+        scrollWidget->removeWidget(namelabel, widget);
+    }
+}
+void StyleList::addWidget(QWidget* namelabel,QWidget *widget)
 {
     if(widget&&scrollWidget)
     {

@@ -6,7 +6,9 @@ ConfigNameSpaceStart
 StyleButton::StyleButton(const QString &text, QWidget *parent):QPushButton(text,parent)
 {
     m_infomap[Button_Style_ID] =  QPair<int,QString>(Button_Style_ID,get_uuid());
-    m_namelabel = new QLabel();
+  //  m_namelabel = new QLabel();
+    m_namelabel = new QCheckBox();;
+
     DefaultUiInit();
     updateStyle();
 }

@@ -41,6 +41,7 @@ public:
     char m_StyleID[MaximumPathLength];
     char m_CmdSourceID[MaximumPathLength];
 
+    void DefaultUiInit();
 
     QString m_styleinfoId = "";
     QString m_styleinfoname = "";
@@ -74,7 +75,8 @@ private:
     QString successstyle;
     QString failedstyle;
 
-    void DefaultUiInit();
+    void UpdateObjectGeometryLimit();
+
 private slots:
     void showListMenu(const QPoint& point);
     void handleEvent();

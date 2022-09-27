@@ -52,6 +52,19 @@ private:
     void addPairLabel();
     void addAlarm();
 
+    void delBtn();
+    void delLabel();
+    void delGroup();
+    void delCurve();
+    void delPairLabel();
+    void delAlarm();
+
+    QMap<QCheckBox*, StyleButton*>  cb_btn;
+    QMap<QCheckBox*, StylePairLabel*>  cb_pairlabel;
+    QMap<QCheckBox*, StyleCurve*>  cb_curve;
+    QMap<QCheckBox*, StyleAlarm*>  cb_alarm;
+    QMap<QCheckBox*, StyleGroup*>  cb_group;
+
 private:
     QList<StyleGroup*>  grouplist;
     QList<StyleLabel*>  labellist;

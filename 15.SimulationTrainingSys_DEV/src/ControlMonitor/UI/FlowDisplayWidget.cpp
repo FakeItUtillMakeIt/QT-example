@@ -1,7 +1,7 @@
 //#pragma execution_character_set("utf-8")
 #include "FlowDisplayWidget.h"
 #include "..\..\Public\Utils.h"
-#define ONEROWHEIGHT 27
+#define ONEROWHEIGHT 35
 
 /**
 	@brief  流程显示窗口
@@ -238,11 +238,14 @@ void FlowDisplayWidget::loadSavedFlow()
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
 			rows1 += oneRow;
 			cmdCount++;
-			label = new QLabel(val);
-			label->adjustSize();
-			label->setGeometry(0, 0, 200, 27 * 4);
-			label->setWordWrap(true);
+			label = new QLabel(val.replace(QRegExp("[\s+\n\t]"), ""));
+			//label->setStyleSheet("QLabel{text-align:center;}");
+			//label->adjustSize();
+			//label->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
+			//label->setWordWrap(true);
+			label->setFixedHeight(ONEROWHEIGHT);
 			boxLayout->addWidget(label);
+
 		}
 
 		cellWidg->setLayout(boxLayout);
@@ -255,10 +258,13 @@ void FlowDisplayWidget::loadSavedFlow()
 		{
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
 			rows2 += oneRow;
-			label = new QLabel(val);
-			label->adjustSize();
-			label->setGeometry(0, 0, 200, 27 * 4);
-			label->setWordWrap(true);
+
+			label = new QLabel(val.replace(QRegExp("[\s\n\t]"), ""));
+			//label->setStyleSheet("QLabel{border:1px solid red;text-align:center;}");
+			//label->adjustSize();
+			//label->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
+			//label->setWordWrap(true);
+			label->setFixedHeight(ONEROWHEIGHT);
 			boxLayout->addWidget(label);
 		}
 
@@ -269,15 +275,21 @@ void FlowDisplayWidget::loadSavedFlow()
 		maxSize = 17;
 		cellWidg = new QWidget;
 		boxLayout = new QVBoxLayout;
+		QLineEdit* lineEidt;
 		for (auto val : subFlowInfo2.value(mainID))
 		{
 			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
 			rows3 += oneRow;
-			label = new QLabel(val);
+			/*label = new QLabel(val);
 			label->adjustSize();
 			label->setGeometry(0, 0, 200, 27 * 4);
-			label->setWordWrap(true);
-			boxLayout->addWidget(label);
+			label->setWordWrap(true);*/
+			lineEidt = new QLineEdit;
+			lineEidt->setText(val);
+			lineEidt->setCursorPosition(0);
+			lineEidt->setStyleSheet("QLineEdit{border:none; text-align: left;}");
+			//lineEidt->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
+			boxLayout->addWidget(lineEidt);
 		}
 		if (rows1 < rows2) rows1 = rows2;
 		if (rows1 < rows3) rows1 = rows3;
@@ -299,6 +311,7 @@ void FlowDisplayWidget::loadSavedFlow()
 	emit updateFlowOver();
 	emit sendMainflowchange();
 }
+
 
 /**
 	@brief 根据接收得到的icode和sendcode更新流程信息

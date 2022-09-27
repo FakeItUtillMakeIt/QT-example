@@ -33,7 +33,7 @@ StyleAlarm::StyleAlarm(QWidget *parent):QWidget(parent)
 //    initFont(m_text_font,"Î¢ÈíÑÅºÚ",false,false,12);
 
      //   m_infomap[Alarm_Style_ID] =  QPair<int,QString>(Alarm_Style_ID,get_uuid());
-        m_namelabel = new QLabel();
+        m_namelabel = new QCheckBox();
         DefaultUiInit();
         updateStyle();
 }

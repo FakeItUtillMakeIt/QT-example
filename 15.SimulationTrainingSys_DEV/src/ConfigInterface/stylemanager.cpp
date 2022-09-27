@@ -133,6 +133,39 @@ void StyleManager::initUI()
         }
     });
 
+    /////////
+
+    QPushButton* delbtn = new QPushButton("");
+    SetBtnStyle(delbtn, ":/rc/delete_normal.png", "删除");
+    connect(delbtn, &QPushButton::clicked, [=]() {
+        QString text = types->currentText();
+        if (text == "按钮")
+        {
+            delBtn();
+        }
+        else if (text == "单独标签")
+        {
+            delLabel();
+        }
+        else if (text == "组")
+        {
+            delGroup();
+        }
+        else if (text == "曲线")
+        {
+            delCurve();
+        }
+        else if (text == "标签")
+        {
+            delPairLabel();
+        }
+        else if (text == "报警灯")
+        {
+            delAlarm();
+        }
+        });
+    //////////
+
     QPushButton* savebtn = new QPushButton("");
     SetBtnStyle(savebtn,":/rc/save.png","保存");
 
@@ -173,8 +206,9 @@ void StyleManager::initUI()
     });
     gridlayout->addWidget(types,0,0,1,5);
     gridlayout->addWidget(addbtn,0,3,1,1);
-    gridlayout->addWidget(savebtn,0,4,1,1);
-    gridlayout->addWidget(retBtn,0,5,1,1);
+    gridlayout->addWidget(delbtn, 0, 4, 1, 1);  
+    gridlayout->addWidget(savebtn,0,5,1,1);
+    gridlayout->addWidget(retBtn,0,6,1,1);
 
     gridlayout->addWidget(stylestack,1,0,20,10);
     gridlayout->addWidget(styleset,1,12,20,5);
@@ -185,13 +219,22 @@ void StyleManager::initUI()
 void StyleManager::addBtn()
 {
     StyleButton* stylebutton = new  StyleButton("按钮");
+    QCheckBox* selectbtn = new QCheckBox();
     stylebutton->resize(200,50);
     stylebutton->styleset = styleset;
-    stylebutton->setTypeName(QString("按钮样式%1").arg(buttonlist.size()+1));
+    int btnlistsize = buttonlist.size();
+    QString newname = QString("按钮样式%1").arg(++btnlistsize);
+    for (auto btn : buttonlist)
+    {
+        if (btn->m_namelabel->text() == newname)
+        {
+            newname = QString("按钮样式%1").arg(++btnlistsize);
+        }
+    }
+    stylebutton->setTypeName(newname);
     buttonstylelist->addWidget(stylebutton->m_namelabel,stylebutton);
     buttonlist.append(stylebutton);
     buttonStyleRecord.push_back(&stylebutton->m_infomap);
-
 }
 
 void StyleManager::addLabel()
@@ -213,7 +256,17 @@ void StyleManager::addGroup()
     StyleGroup* stylegroup = new  StyleGroup();
     stylegroup->resize(400,200);
     stylegroup->styleset = styleset;
-    stylegroup->setTypeName(QString("组样式%1").arg(grouplist.size()+1));
+    int grouplistsize = grouplist.size();
+    QString newname = QString("组样式%1").arg(++grouplistsize);
+    for (auto groupinfo : grouplist)
+    {
+        if (groupinfo->m_namelabel->text() == newname)
+        {
+            newname = QString("组样式%1").arg(++grouplistsize);
+        }
+    }
+    stylegroup->setTypeName(newname);
+    //stylegroup->setTypeName(QString("组样式%1").arg(grouplist.size()+1));
     groupstylelist->addWidget(stylegroup->m_namelabel,stylegroup);
     grouplist.append(stylegroup);
     groupStyleRecord.push_back(&stylegroup->m_infomap);
@@ -224,7 +277,19 @@ void StyleManager::addCurve()
     StyleCurve* stylecurve = new  StyleCurve();
     stylecurve->resize(400,200);
     stylecurve->styleset = styleset;
-    stylecurve->setTypeName(QString("曲线样式%1").arg(curvelist.size()+1));
+
+    int curvelistsize = curvelist.size();
+    QString newname = QString("曲线样式%1").arg(++curvelistsize);
+    for (auto curveinfo : curvelist)
+    {
+        if (curveinfo->m_namelabel->text() == newname)
+        {
+            newname = QString("曲线样式%1").arg(++curvelistsize);
+        }
+    }
+    stylecurve->setTypeName(newname);
+
+  //  stylecurve->setTypeName(QString("曲线样式%1").arg(curvelist.size()+1));
     curvestylelist->addWidget(stylecurve->m_namelabel,stylecurve);
     curvelist.append(stylecurve);
     curveStyleRecord.push_back(&stylecurve->m_infomap);
@@ -237,7 +302,18 @@ void StyleManager::addPairLabel()
     stylelabel->resize(400,100);
 
     stylelabel->styleset = styleset;
-    stylelabel->setTypeName(QString("标签样式%1").arg(pairlabellist.size()+1));
+
+    int stylelistsize = pairlabellist.size();
+    QString newname = QString("标签样式%1").arg(++stylelistsize);
+    for (auto curveinfo : pairlabellist)
+    {
+        if (curveinfo->m_namelabel->text() == newname)
+        {
+            newname = QString("标签样式%1").arg(++stylelistsize);
+        }
+    }
+    stylelabel->setTypeName(newname);
+//    stylelabel->setTypeName(QString("标签样式%1").arg(pairlabellist.size()+1));
     pairLabelstylelist->addWidget(stylelabel->m_namelabel,stylelabel);
     pairlabellist.append(stylelabel);
     labelStyleRecord.push_back(&stylelabel->m_infomap);
@@ -250,11 +326,95 @@ void StyleManager::addAlarm()
     stylealarm->resize(400, 100);
 
     stylealarm->styleset = styleset;
-    stylealarm->setTypeName(QString("报警灯样式%1").arg(alarmlist.size() + 1));
+
+    int stylelistsize = alarmlist.size();
+    QString newname = QString("报警灯样式%1").arg(++stylelistsize);
+    for (auto curveinfo : alarmlist)
+    {
+        if (curveinfo->m_namelabel->text() == newname)
+        {
+            newname = QString("报警灯样式%1").arg(++stylelistsize);
+        }
+    }
+    stylealarm->setTypeName(newname);
+  //  stylealarm->setTypeName(QString("报警灯样式%1").arg(alarmlist.size() + 1));
     alarmstylelist->addWidget(stylealarm->m_namelabel, stylealarm);
     alarmlist.append(stylealarm);
     alarmStyleRecord.push_back(&stylealarm->m_infomap);
 }
+
+void StyleManager::delBtn()
+{
+    for (auto btn : buttonlist)
+    {
+        if (btn->m_namelabel->isChecked())
+        {
+            buttonstylelist->removeWidget(btn->m_namelabel, btn);
+            buttonlist.removeOne(btn);
+            buttonStyleRecord.removeOne(&btn->m_infomap);
+        }
+    }
+    //StyleButton* stylebutton = new  StyleButton("按钮");
+    //stylebutton->resize(200, 50);
+    //stylebutton->styleset = styleset;
+    //stylebutton->setTypeName(QString("按钮样式%1").arg(buttonlist.size() + 1));
+    //buttonstylelist->addWidget(stylebutton->m_namelabel, stylebutton);
+    //buttonlist.append(stylebutton);
+    //buttonStyleRecord.push_back(&stylebutton->m_infomap);
+}
+void StyleManager::delLabel() 
+{
+
+}
+void StyleManager::delGroup() 
+{
+    for (auto group : grouplist)
+    {
+        if (group->m_namelabel->isChecked())
+        {
+            groupstylelist->removeWidget(group->m_namelabel, group);
+            grouplist.removeOne(group);
+            groupStyleRecord.removeOne(&group->m_infomap);
+        }
+    }
+}
+void StyleManager::delCurve() 
+{
+    for (auto curve : curvelist)
+    {
+        if (curve->m_namelabel->isChecked())
+        {
+            curvestylelist->removeWidget(curve->m_namelabel, curve);
+            curvelist.removeOne(curve);
+            curveStyleRecord.removeOne(&curve->m_infomap);
+        }
+    }
+}
+void StyleManager::delPairLabel() 
+{
+    for (auto pairlabel : pairlabellist)
+    {
+        if (pairlabel->m_namelabel->isChecked())
+        {
+            pairLabelstylelist->removeWidget(pairlabel->m_namelabel, pairlabel);
+            pairlabellist.removeOne(pairlabel);
+            pairLabelStyleRecord.removeOne(&pairlabel->m_infomap);
+        }
+    }
+}
+void StyleManager::delAlarm() 
+{
+    for (auto alarminfo : alarmlist)
+    {
+        if (alarminfo->m_namelabel->isChecked())
+        {
+            alarmstylelist->removeWidget(alarminfo->m_namelabel, alarminfo);
+            alarmlist.removeOne(alarminfo);
+            alarmStyleRecord.removeOne(&alarminfo->m_infomap);
+        }
+    }
+}
+
 void StyleManager::restore_from_xml()
 {
     QString exepath  = QApplication::applicationDirPath();

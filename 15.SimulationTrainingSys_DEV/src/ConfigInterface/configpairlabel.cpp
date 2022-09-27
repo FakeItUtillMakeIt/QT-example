@@ -80,6 +80,8 @@ void ConfigPairLabel::DefaultUIInit()
     m_error_namelabelstyle = ":/rc/nValueError.png";
     m_error_valuelabelstyle = ":/rc/vValueError.png";
     m_textfont = this->font().toString();
+    m_textfont.setFamily("微软雅黑"); 
+    m_textfont.setPointSize(14);
     m_textcolor = QColor(0,0,0).name(QColor::QColor::HexArgb);
 
     QString stylecolor =  QString("color:rgb(%1,%2,%3);").arg(m_textcolor.red()).arg(m_textcolor.green()).arg(m_textcolor.blue());

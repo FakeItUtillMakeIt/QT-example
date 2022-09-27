@@ -4,6 +4,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QWidget>
+#include <QCheckBox>
 ConfigNameSpaceStart
 class StyleSet;
 class ConfigPairLabel;
@@ -26,7 +27,7 @@ public:
        PairLabel_Space
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
-    QLabel* m_namelabel;
+    QCheckBox* m_namelabel;
     StyleSet*  styleset;
     QLabel* paramnamelabel;
     QLabel* paramvaluelabel;

@@ -477,7 +477,10 @@ image: url(:/FaultInjection/images/addFault.png);</string>
             <property name="styleSheet">
              <string notr="true">border:2px groove gray;border-radius:5px;padding:2px 4px;
 font: 12pt &quot;微软雅黑&quot;;
-</string>
+color: rgb(0, 0, 0);</string>
+            </property>
+            <property name="text">
+             <string>111</string>
             </property>
            </widget>
            <widget class="QLabel" name="label">
@@ -526,7 +529,10 @@ font: 12pt &quot;微软雅黑&quot;;
             <property name="styleSheet">
              <string notr="true">border:2px groove gray;border-radius:5px;padding:2px 4px;
 font: 12pt &quot;微软雅黑&quot;;
-</string>
+color: rgb(142, 142, 142);</string>
+            </property>
+            <property name="text">
+             <string>222</string>
             </property>
             <property name="readOnly">
              <bool>true</bool>

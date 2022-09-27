@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
 	if (process.waitForFinished()) {
 		//得到进程列表
 		QString result = QString::fromLocal8Bit(process.readAllStandardOutput());
-		if (result.count("DeviceManager", Qt::CaseInsensitive) >= 2) {
-			QMessageBox::critical(qApp->activeWindow(), QObject::tr("警告"), QObject::tr("设备管理软件已启动!"));
+		if (result.count("TeachingManagement", Qt::CaseInsensitive) >= 2) {
+			QMessageBox::critical(qApp->activeWindow(), QObject::tr("警告"), QObject::tr("教学管理软件已启动!"));
 			app.exit();
 			return 0;
 		}

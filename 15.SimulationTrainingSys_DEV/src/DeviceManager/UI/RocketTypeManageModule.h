@@ -34,6 +34,8 @@ private:
 	ImportComPramData* m_importComPramData;
 	QThread* m_importThread;
 
+
+	QMessageBox* m_message;
 private:
 	void InitUILayout();
 	void InitDisplayData();

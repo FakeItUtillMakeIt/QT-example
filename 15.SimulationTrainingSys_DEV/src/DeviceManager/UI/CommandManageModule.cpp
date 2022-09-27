@@ -240,6 +240,7 @@ void CommandManageModule::InitUILayout() {
 			.arg(AppCache::instance()->m_CurrentRocketType->m_id)
 		);
 
+		DeviceDBConfigInfo::getInstance()->readCommandDB2UI();
 		int searchRow = 0;
 		for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 		{
@@ -249,11 +250,9 @@ void CommandManageModule::InitUILayout() {
 				rowData.push_back(QString::fromStdString(ele.second[0]));
 				//rowData.push_back(QString::fromStdString(ele->second[1]));
 				QString tmpp1, tmpp2;
-
 				if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
 				{
 					tmpp1 = QString::fromStdString(ele.second[1]);
-
 				}
 				else
 				{
@@ -267,15 +266,22 @@ void CommandManageModule::InitUILayout() {
 				}
 				else
 				{
+
 					tmpp2 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->commandInfo[atoi(ele.second[2].c_str())][3]);
 				}
-
 
 				rowData.push_back(QString::fromStdString(ele.second[3]));
 				rowData.push_back(tmpp2);
 				rowData.push_back(QString::fromStdString(ele.second[4]));
 
-				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+				if (atoi(ele.second[5].c_str()) == 2 || atoi(ele.second[5].c_str()) == 3)
+				{
+					continue;
+				}
+				else
+				{
+					rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+				}
 				rowData.push_back(QString::fromStdString(ele.second[6]));
 				if (QString::fromStdString(ele.second[7]) == "" || QString::fromStdString(ele.second[7]) == "-1")
 				{
@@ -352,8 +358,14 @@ void CommandManageModule::InitUILayout() {
 			rowData.push_back(QString::fromStdString(ele.second[3]));
 			rowData.push_back(tmpp2);
 			rowData.push_back(QString::fromStdString(ele.second[4]));
-
-			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+			if (atoi(ele.second[5].c_str()) == 2 || atoi(ele.second[5].c_str()) == 3)
+			{
+				continue;
+			}
+			else
+			{
+				rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+			}
 			rowData.push_back(QString::fromStdString(ele.second[6]));
 			rowData.push_back(deviceCombox->currentText());
 			insertOneRow(searchRow++, rowData);
@@ -403,7 +415,7 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDType->setCurrentText(configInfoTable->item(curRow, 5)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDPrefix->setCurrentText(configInfoTable->item(curRow, 6)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->show();
-		});
+});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
@@ -411,7 +423,7 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 	hbox->addWidget(opDeleteBtn);
 
 	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
+	w1->setStyleSheet("*{border:none;color:blue;min-height:20px;}");
 
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
@@ -545,12 +557,10 @@ void CommandManageModule::InitDisplayData() {
 		if (DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())].size() < 3)
 		{
 			tmpp1 = QString::fromStdString(ele.second[1]);
-
 		}
 		else
 		{
 			tmpp1 = QString::fromStdString(DeviceDBConfigInfo::getInstance()->rocketInfo[atoi(ele.second[1].c_str())][1]);
-
 		}
 		rowData.push_back(tmpp1);
 
@@ -566,7 +576,14 @@ void CommandManageModule::InitDisplayData() {
 		rowData.push_back(QString::fromStdString(ele.second[3]));
 		rowData.push_back(tmpp2);
 		rowData.push_back(QString::fromStdString(ele.second[4]));
-		rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+		if (atoi(ele.second[5].c_str()) == 2 || atoi(ele.second[5].c_str()) == 3)
+		{
+			continue;
+		}
+		else
+		{
+			rowData.push_back(QString::fromLocal8Bit(DeviceCommonVaries::getInstance()->commandIndex2Type[atoi(ele.second[5].c_str())].c_str()));
+		}
 		rowData.push_back(QString::fromStdString(ele.second[6]));
 		if (QString::fromStdString(ele.second[7]) == "" || QString::fromStdString(ele.second[7]) == "-1")
 		{

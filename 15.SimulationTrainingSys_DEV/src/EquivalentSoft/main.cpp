@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
 	if (process.waitForFinished()) {
 		//得到进程列表
 		QString result = QString::fromLocal8Bit(process.readAllStandardOutput());
-		if (result.count("EquivalentSoft", Qt::CaseInsensitive) >= 2) {
+		/*if (result.count("EquivalentSoft", Qt::CaseInsensitive) >= 2) {
 			QMessageBox::critical(qApp->activeWindow(), QObject::tr("警告"), QObject::tr("等效器软件已启动!"));
 			app.exit();
 			return 0;
-		}
+		}*/
 	}
 	else {
 		QMessageBox::critical(qApp->activeWindow(), QObject::tr("警告"), QObject::tr("软件打开任务管理器失败，无法识别是否存在运行实例!"));

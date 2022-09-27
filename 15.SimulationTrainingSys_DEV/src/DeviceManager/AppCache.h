@@ -96,6 +96,7 @@ public:
 	RocketType* m_CurrentRocketType;//当前火箭型号 
 	map<int, RocketDataFrame*> m_RocketDataFrame;
 	RocketDataFrame* m_CurrentRocketDataFrame;//当前火箭数据协议帧
+	bool IsDeleting;//是否正在删除
 
 	int* argc;
 	char*** argv;

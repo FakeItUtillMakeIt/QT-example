@@ -10,7 +10,7 @@ ConfigNameSpaceStart
 StyleGroup::StyleGroup(QWidget *parent) : QWidget(parent)
 {
     DefaultUiInit();
-    m_namelabel = new QLabel();
+    m_namelabel = new QCheckBox();
     m_infomap[Group_Style_ID] = QPair<int,QString>(Group_Style_ID,get_uuid());
 
     this->setAttribute(Qt::WA_StyledBackground, true);

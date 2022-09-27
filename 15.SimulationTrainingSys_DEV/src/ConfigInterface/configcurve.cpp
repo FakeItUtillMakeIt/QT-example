@@ -28,7 +28,6 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
     init_value_set();
 
     colorlist << QColor(250,0,0) <<QColor(0,250,0) <<QColor(0,0,250);
-
  //  addGraph();
 
     //曲线测试
@@ -175,6 +174,12 @@ void ConfigCurve::AddTitle(QString title)
     plotLayout()->insertRow(0);     // pCurveWidget、curveWidget为在ui中定义的QCustomPlot对象指针
     memcpy(m_title,title.toLocal8Bit().data(),strlen(title.toLocal8Bit().data()));
     m_pCurvTitle = new QCPTextElement(this, QString::fromLocal8Bit( m_title));
+    QFont  font = this->font();
+    font.setFamily("微软雅黑");
+    font.setItalic(false);
+    font.setBold(false);
+    font.setPointSize(13);
+    m_pCurvTitle->setFont(font);
     plotLayout()->addElement(0, 0, m_pCurvTitle);    //给坐标设置标题
 }
 void ConfigCurve::InitFromXmlInfo(QMap<QString, QString> & curveinfo)
@@ -415,9 +420,9 @@ void ConfigCurve::UpdatePropertyByStyle()
     if(!fontstr.isNull())
     {
         qDebug() << "curve set font";
-        QFont font;
-        font.fromString(fontstr);
-        m_pCurvTitle->setFont(font);
+        QFont m_textfont;
+        m_textfont.fromString(fontstr);        
+        m_pCurvTitle->setFont(m_textfont);
     }
     QString colorstr = m_infomap[ConfigCurve::Curve_Title_Color].second;
     if(!colorstr.isNull())

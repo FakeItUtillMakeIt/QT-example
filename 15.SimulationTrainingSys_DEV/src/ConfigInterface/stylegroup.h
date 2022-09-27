@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QMap>
 #include <QWidget>
-
+#include <qcheckbox.h>
 ConfigNameSpaceStart
 
 class StyleSet;
@@ -26,7 +26,7 @@ public:
        Group_Icon_Style
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
-    QLabel* m_namelabel;
+    QCheckBox * m_namelabel;
     QList<GroupElement*>  styleusers;
 
 

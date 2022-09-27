@@ -230,15 +230,19 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 			combo1->setMaxVisibleItems(6);//下拉列表显示item数
 
 			combo1->setEditable(true);
+
 			combo1->installEventFilter(this);
 			cmdComboBoxList.push_back(combo1);
 
 			QStringList wordList;
+			int itemIndex = 0;
 			for (auto ele : flowInfoOp->customReadInfoMap)
 			{
 				//newcombox->addItem(QString::fromStdString(ele->second[3]), QString::fromStdString(ele->second[0]).toInt());
 				combo1->addItem(QString::fromStdString(ele.second[1]), ele.first);
+				cmdName2Id[QString::fromStdString(ele.second[1])] = ele.first;
 				wordList.append(QString::fromStdString(ele.second[1]));
+				itemIndex++;
 			}
 
 			QCompleter* pCompleter = new QCompleter(wordList, this);
@@ -248,6 +252,7 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 
 			combo1->setCurrentText(cmdInfo);
 			newVbox->addWidget(combo1);
+
 		}
 		newWidget->setLayout(newVbox);
 		rightTable->setCellWidget(i - 1, c++, newWidget);
@@ -278,6 +283,7 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 		int size = cmdInfoList.size() == 0 ? 1 : cmdInfoList.size();
 		rightTable->setRowHeight(i - 1, 40 * size);
 	}
+
 
 
 }
@@ -391,6 +397,11 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 	//删除  判断为第几列
 	connect(removeCell, &QPushButton::clicked, this, [=]()
 		{
+			auto retMsg = QMessageBox::question(this, QString("警告"), QString("是否确定删除该项?"), QString("取消"), QString("确定"));
+			if (retMsg == 0)
+			{
+				return;
+			}
 			switch (column)
 			{
 			case 1:
@@ -518,10 +529,10 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 				wordList.append(QString::fromStdString(ele.second[1]));
 			}
 
-			QCompleter* pCompleter = new QCompleter(wordList, this);
+			/*QCompleter* pCompleter = new QCompleter(wordList, this);
 			lineEdit->setCompleter(pCompleter);
 			pCompleter->setCaseSensitivity(Qt::CaseInsensitive);
-			newcombox->setCompleter(pCompleter);
+			newcombox->setCompleter(pCompleter);*/
 
 			auto cellW = rightTable->cellWidget(row, 2);
 			cellW->layout()->addWidget(newcombox);
@@ -677,7 +688,8 @@ void FlowEditWidget::clickOKButton() {
 			QString remark;
 
 			cmdName = obj->currentText();
-			cmdID = obj->currentData().toInt();
+			//cmdID = obj->currentData().toInt();
+			cmdID = cmdName2Id[cmdName];
 
 			backInfo = allSubBackInfo[count]->text();
 			remark = allSubRemark[count]->text();
@@ -705,7 +717,7 @@ void FlowEditWidget::clickCancelButton() {
 **/
 bool FlowEditWidget::eventFilter(QObject* obj, QEvent* event)
 {
-	if ( obj->inherits("QComboBox")) {
+	if (obj->inherits("QComboBox")) {
 
 		if (event->type() == QEvent::Wheel)
 		{

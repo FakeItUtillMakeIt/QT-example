@@ -14,6 +14,7 @@ AppCache::AppCache()
 	m_soft = nullptr; 
 	m_CurrentRocketType = nullptr;
 	m_CurrentRocketDataFrame = nullptr;
+	IsDeleting = false;
 }
 
 AppCache::~AppCache()

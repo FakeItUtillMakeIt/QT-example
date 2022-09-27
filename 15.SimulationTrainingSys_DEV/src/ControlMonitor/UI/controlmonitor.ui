@@ -418,7 +418,7 @@
                 <string notr="true">color:#98b8f9</string>
                </property>
                <property name="text">
-                <string>飞行时间</string>
+                <string>运行时间</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>

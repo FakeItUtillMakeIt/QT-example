@@ -15,7 +15,8 @@ ParamSelect::ParamSelect(QWidget *parent) :
     setWindowTitle("参数选择");
     ui->treeView->setHeaderHidden(true);
     ui->treeView->setStyle(QStyleFactory::create("windows")); //该风格显示节点关系连接线
-    ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection); 
+    ui->treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     paramModel = new QStandardItemModel;
     connect (paramModel ,&QStandardItemModel::itemChanged , this ,&ParamSelect::treeItemChanged );
     ui->treeView->setModel(paramModel);
@@ -262,7 +263,7 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt, QVector<int> o
             }
             else
             {
-                tabblenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_tableName.c_str()) + "(参数表)");
+                tabblenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_tableName.c_str()));
                 paramModel->appendRow(tabblenode);
                 tableItemMap[it->second->m_tableId] = tabblenode;
             }

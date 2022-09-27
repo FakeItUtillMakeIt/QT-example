@@ -53,8 +53,11 @@ public:
 	QList<Dragline*> Dlinelist;
 	QList<DragArea*> Darealist;
 	Dataspace *jsonData;
+	Rocketmodule* curModule;
 
-
+	QList<QString> uploaded_img;
+	QList<QString> uploaded_video;
+	QList<QString> uploaded_file;
 protected:
 
 	
@@ -63,25 +66,20 @@ protected:
 private:
 	
 	QList<Module*> module_list;
-	QList<QString> uploaded_img;
-	QList<QString> uploaded_video;
-	QList<QString> uploaded_file;
+
 
 	QList<QString> prew_img;
 	QList<QString> prew_video;
 	QList<QString> prew_file;
 
-	QList<QString>imglist;
+	//QList<QString>imglist;
 
-	bool isOpen;
+
 	int cur_module;
-	int page_x;
 	bool editflag;
-	int curimgnum;
 	int prewimg_index;
 	int prewvideo_index;
 	int prewfile_index;
-	QSpacerItem* verticalSpacer;
 	bool e_aflag;
 	QStringList  imgprewlist;
 	QWidget* deletewid;
@@ -95,11 +93,8 @@ private:
 	QWidget* curwid;
 	QString curobjectname;
 	QString exepath;
-	int imgnum;
 	QString thumbnail_originpath;
 	QString thumbnail_exepath;
-
-	Rocketmodule* curModule;
 
 	long long module_basenum;
 	bool testbool;
@@ -109,4 +104,5 @@ private:
 	void jsondata_load();
 	void dataTopage();
 	void data_toJson();
+	void cur_moduleChange();
 };

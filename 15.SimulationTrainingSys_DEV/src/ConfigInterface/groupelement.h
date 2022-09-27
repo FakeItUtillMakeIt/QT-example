@@ -153,6 +153,7 @@ private: // 配置信息
 public:
     bool SelectStyle(StyleGroup *&stylegroup);
     void UpdatePropertyByStyle();
+    void DefaultUiInit();
 
     QMap<QString, ConfigValueSet> &getPropertyMap();
     void InitFromXmlInfo(GroupElementInfo &groupElementInfo);
@@ -173,7 +174,6 @@ private:
     void AddPairLabelElement(QMap<QString, QString> &buttoninfo);
     void AddAlarmElement(QMap<QString, QString>& alarminfo);
 
-    void DefaultUiInit();
     void drawIconEntry(QPainter &painter);
 };
 ConfigNameSpaceEnd

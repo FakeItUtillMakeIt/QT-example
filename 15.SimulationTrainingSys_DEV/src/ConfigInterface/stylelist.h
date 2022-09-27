@@ -15,7 +15,9 @@ public:
     StyleList(QWidget* widget = nullptr);
     ElementDisPlayer * scrollWidget = nullptr;
   //  void addWidget(QWidget* widget);
-    void addWidget(QLabel *namelabel, QWidget *widget);
+    void addWidget(QWidget*namelabel, QWidget *widget);
+    void removeWidget(QWidget* namelabel, QWidget* widget);
+
 };
 
 ConfigNameSpaceEnd

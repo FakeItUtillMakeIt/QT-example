@@ -84,6 +84,10 @@ private:
 	QString preRocket;
 	QString curSelectedText;
 
+	//÷™ ∂ø‚≈‰÷√
+	QHBoxLayout* m_hlayoutdisplay;
+	twoDdisplay* m_twoDdisplay;
+
 
 protected:
 	void mouseMoveEvent(QMouseEvent* event);

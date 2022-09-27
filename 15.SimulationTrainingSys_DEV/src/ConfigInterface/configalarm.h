@@ -40,6 +40,7 @@ public:
     int m_yPos = 0;
     char m_StyleID[MaximumPathLength];
     char m_ParamSourceID[MaximumPathLength];
+    void DefaultUiInit();
 
 
     QString m_styleinfoId = "";
@@ -76,7 +77,6 @@ private:
     QString m_styleid = "";
     QPoint startPos;
     void init_value_set();
-    void DefaultUiInit();
 
     QString m_img_error="";
     QString m_img_init="";

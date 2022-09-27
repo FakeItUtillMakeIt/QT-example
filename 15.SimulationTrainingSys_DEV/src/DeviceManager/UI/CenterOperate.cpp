@@ -172,7 +172,7 @@ void CenterOperate::dealDeviceParams(Command* command) {
 			//参数状态和设备状态保持一致m_id
 
 			deviceParam->m_Validity = 1;//参数数据有效
-			if (deviceParam->m_curStatus.m_id == 3)
+			if (deviceParam->m_curStatus.m_id == FAULT_ID)
 			{
 				deviceParam->m_status = m_app->m_allDeviceStatus[statusIdV[i]]->m_statusName;
 				deviceParam->m_preStatus.m_name = deviceParam->m_status;

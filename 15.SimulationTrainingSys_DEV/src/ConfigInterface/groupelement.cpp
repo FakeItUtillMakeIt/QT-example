@@ -18,7 +18,6 @@ GroupElement::GroupElement(QWidget *parent) : QWidget(parent)
 {
     memset(titletext, 0, MaximumPathLength);
     memset(m_styleID, 0, MaximumPathLength);
-
    this->setAttribute(Qt::WA_StyledBackground, true);
  //   DefaultUiInit();
    setAcceptDrops(true);

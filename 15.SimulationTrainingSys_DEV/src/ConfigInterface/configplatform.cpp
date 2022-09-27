@@ -242,6 +242,7 @@ void ConfigPlatForm::resizeEvent(QResizeEvent *event)
 {
     if(m_mode == CommonMode)
     {
+        ConfigGlobal::scenesize = size() - QSize(5, 5);
         if (m_showtype == 1)
             sceneContainer->setMinimumSize(size() - QSize(5, 5));
         else

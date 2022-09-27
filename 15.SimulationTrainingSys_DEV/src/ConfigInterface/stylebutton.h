@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QMap>
 #include <QPushButton>
+#include <QCheckBox>
 ConfigNameSpaceStart
 
 class StyleSet;
@@ -37,7 +38,8 @@ public:
 
     StyleSet*  styleset;
     void updateStyle();
-    QLabel* m_namelabel;
+  //  QLabel* m_namelabel;
+    QCheckBox* m_namelabel;
 
     void setTypeName(QString iTypeName);
     void record_styleusers(ConfigButton *configbtn);

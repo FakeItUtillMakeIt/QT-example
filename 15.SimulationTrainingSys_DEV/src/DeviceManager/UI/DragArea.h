@@ -24,6 +24,8 @@ public:
 	QStringList colors;
 	bool canDrag;
 	twoDdisplay* mainUI;
+
+	bool editflag;
 	DragArea::DragArea();
 	DragArea::DragArea(QWidget* parent);
 	DragArea::~DragArea();

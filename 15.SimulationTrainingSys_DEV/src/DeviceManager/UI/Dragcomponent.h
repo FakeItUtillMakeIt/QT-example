@@ -30,7 +30,7 @@ public:
 
 	bool canDrag;
 	twoDdisplay* mainUI;
-
+	bool editflag;
 
 	void mousePressEvent(QMouseEvent* me);
 	void mouseMoveEvent(QMouseEvent* me);

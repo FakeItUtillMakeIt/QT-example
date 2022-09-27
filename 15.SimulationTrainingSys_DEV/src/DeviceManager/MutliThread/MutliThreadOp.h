@@ -54,6 +54,8 @@ signals:
 	void workFinished();
 protected:
 private:
+
+	AppCache* m_app;
 	int curRocketID;
 	int curCmdID;
 	int curDeviceID;

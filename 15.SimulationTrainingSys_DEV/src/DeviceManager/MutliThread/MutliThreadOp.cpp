@@ -4,7 +4,7 @@
 
 
 WorkThread::WorkThread(QObject* parent) {
-
+	
 }
 
 WorkThread::~WorkThread() {
@@ -80,7 +80,7 @@ void WorkThread::doWork() {
 DeleteDBDataThread::DeleteDBDataThread(QObject* parent) {
 	//根据APPcache中的配置信息进行数据库初始化
 	deviceManageDBOp = new DataBase::DeviceDAO(AppCache::instance()->m_outputPath);
-
+	m_app = AppCache::instance();
 	if (deviceManageDBOp->connect())
 	{
 		qDebug() << "连接数据库失败，检查数据库设置<<DeviceDBConfigInfo";
@@ -125,6 +125,7 @@ void DeleteDBDataThread::setRocketID(int rocketID) {
 }
 
 void DeleteDBDataThread::deleteRocketInfo() {
+	m_app->IsDeleting = true;
 	//删除和型号相关数据
 	QString qSqlString;
 
@@ -290,9 +291,12 @@ void DeleteDBDataThread::deleteRocketInfo() {
 	customRunSql(QString("DELETE FROM simulatedtraining.rocket_info WHERE id=%1").arg(curRocketID));
 
 	emit workFinished();
+	m_app->IsDeleting = false;
 }
 
 void DeleteDBDataThread::deleteDeviceInfo() {
+	
+	m_app->IsDeleting = true;
 	//删除相关数据
 //设备关联的设备状态信息
 	QString qSqlString = QString("SELECT\
@@ -330,10 +334,12 @@ void DeleteDBDataThread::deleteDeviceInfo() {
 	customRunSql(QString("DELETE FROM simulatedtraining.device_status_info WHERE device_id=%1").arg(curDeviceID));
 	//设备信息
 	customRunSql(QString("DELETE FROM simulatedtraining.device_info WHERE id=%1").arg(curDeviceID));
-
+	m_app->IsDeleting = false;
 }
 
 void DeleteDBDataThread::deleteCmdInfo() {
+	m_app->IsDeleting = true;
+	
 	//删除相关数据
 	//子流程信息
 	customRunSql(QString("DELETE FROM simulatedtraining.sub_flow_info WHERE command_id=%1").arg(curCmdID));
@@ -345,9 +351,12 @@ void DeleteDBDataThread::deleteCmdInfo() {
 	customRunSql(QString("DELETE FROM simulatedtraining.command_commandtable_info WHERE command_id=%1").arg(curCmdID));
 	//指令信息
 	customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
+	m_app->IsDeleting = false;
 }
 
 void DeleteDBDataThread::deleteParamInfo() {
+	m_app->IsDeleting = true;
+	
 	//删除相关数据
 	//型号参数
 	QString qSqlString = QString("SELECT\
@@ -370,6 +379,7 @@ void DeleteDBDataThread::deleteParamInfo() {
 	customRunSql(QString("DELETE FROM simulatedtraining.parameter_rocket_info WHERE parameter_id=%1").arg(curParamID));
 	//参数信息
 	customRunSql(QString("DELETE FROM simulatedtraining.parameter_info WHERE id=%1").arg(curParamID));
+	m_app->IsDeleting = false;
 }
 
 
@@ -379,6 +389,7 @@ void DeleteDBDataThread1::setRocketID(int rocketID) {
 }
 
 void DeleteDBDataThread1::run() {
+	
 	//删除和型号相关数据
 	QString qSqlString;
 

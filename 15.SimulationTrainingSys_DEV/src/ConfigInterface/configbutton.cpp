@@ -106,6 +106,14 @@ void ConfigButton::DefaultUiInit()
 
     successstyle  = QString("QPushButton{ border-image: url(:/rc/forbit.png);}");
     failedstyle = QString("QPushButton{ border-image: url(:/rc/error.png);}");
+
+    QFont  font = this->font();
+    font.setFamily("微软雅黑");
+    font.setItalic(false);
+    font.setBold(false);
+    font.setPointSize(14);
+    setFont(font);
+   
 }
 void ConfigButton::InitFromDefaultStyle()
 {
@@ -229,7 +237,14 @@ QString ConfigButton::GetID()
 {
     return m_uuid;
 }
+void  ConfigButton::UpdateObjectGeometryLimit()
+{   
+    m_valueSetMap["位置属性"].valuelist[ConfigButton::eXPos]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigButton::eYPos]->uplimit = ConfigGlobal::scenesize.height();
+    m_valueSetMap["位置属性"].valuelist[ConfigButton::eWidth]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigButton::eHeight]->uplimit = ConfigGlobal::scenesize.height();
 
+}
 void ConfigButton::mousePressEvent(QMouseEvent *ev)
 {
     if(!ConfigGlobal::isEditing)
@@ -242,6 +257,7 @@ void ConfigButton::mousePressEvent(QMouseEvent *ev)
             startPos = ev->pos();
 
     updateGeometryData();
+    UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigButton,this, m_valueSetMap);
     if (!m_ingroup)
     {

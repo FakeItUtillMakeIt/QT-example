@@ -220,7 +220,7 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	hbox->addWidget(opDeleteBtn);
 
 	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
+	w1->setStyleSheet("*{border:none;color:blue;min-height:20px;}");
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
 

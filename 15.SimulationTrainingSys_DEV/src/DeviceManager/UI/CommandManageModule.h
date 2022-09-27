@@ -21,6 +21,8 @@ public:
 	QComboBox* deviceCombox;
 	int selectedRowNum;
 private:
+
+	AppCache* m_app;
 	void InitUILayout();
 	void InitDisplayData();
 

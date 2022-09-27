@@ -156,7 +156,7 @@ void MoveAbleFrame::update_ctrl_point_pos_2()
 void MoveAbleFrame::CreateControl()
 {
     ctrlsize = 10;
-    tlPoint = new ControlPoint(ctrlsize,ControlPoint::dTopLeft);
+    tlPoint = new ControlPoint(15,ControlPoint::dTopLeft);
     tlPoint->setControlTyle(ControlPoint::cMoveCtrol);
     blPoint = new ControlPoint(ctrlsize,ControlPoint::dBottomLeft);
     trPoint = new ControlPoint(ctrlsize,ControlPoint::dTopRight);

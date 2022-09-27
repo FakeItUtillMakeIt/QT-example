@@ -14,6 +14,8 @@ ConfigNameSpaceStart
 PropertySet* ConfigGlobal::gpropeetyset;
 StyleManager* ConfigGlobal::gstylemanager;
 ConfigInterface* ConfigGlobal::gconfiginterface;
+QSize  ConfigGlobal::scenesize;
+
 //CenterOperate* ConfigGlobal::m_pCenterOperate = nullptr;
 
 bool  ConfigGlobal::isEditing = false;

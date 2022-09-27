@@ -54,6 +54,7 @@ public:
     static int currentSoftWareID;
     static bool  monitorRunning;
     static QVector<int> mainSchedule;
+    static QSize  scenesize;
 }; 
 
 

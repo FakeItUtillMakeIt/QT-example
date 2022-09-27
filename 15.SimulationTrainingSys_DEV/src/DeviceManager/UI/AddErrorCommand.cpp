@@ -150,6 +150,8 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
     
     this->move(420, 100);    //设置位置
 
+    ui.le_searchedit->clear();
+    SearchFaults();//清空搜索
 
     switch (m_faultType)
     {
@@ -185,6 +187,7 @@ void AddErrorCommand::SetAddIndex(int index, vector<ItemStruct> faultItems)
         ui.cb_deciveType->setCurrentIndex(0);
         ui.cb_faultType->setCurrentIndex(0);
         ui.le_errorName->setReadOnly(true);
+        ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(142, 142, 142);");
 
         IsEnable(false);
         ShowParamsTable(-1);//空表格
@@ -214,6 +217,8 @@ void AddErrorCommand::AddFault()
     ui.cb_deciveType->setCurrentIndex(0);
     ui.cb_faultType->setCurrentIndex(0);
     ui.le_errorName->setReadOnly(false);
+    ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(0, 0, 0);");
+    ui.le_errorName->setFocus();
 
     m_tempParamId.clear();
     m_tempCommandId.clear();
@@ -236,6 +241,7 @@ void AddErrorCommand::OnFaultNode(QString name, int deviceid)
     }
 
     ui.le_errorName->setReadOnly(true);
+    ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(142, 142, 142);");
     for (auto item : m_faultItems)
     {
         if (item.Name == name)
@@ -326,7 +332,7 @@ void AddErrorCommand::DelFault()
         ui.cb_deciveType->setCurrentIndex(0);
         ui.cb_faultType->setCurrentIndex(0);
         ui.le_errorName->setReadOnly(true);
-
+        ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(142, 142, 142);");
         IsEnable(false);
         ShowParamsTable(-1);//空表格
     }
@@ -576,6 +582,10 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
             m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_lastUpdateTime)));
 
             m_tableModel->setItem(temp, tableitem++, new QStandardItem("选择"));
+            for (size_t i = 0; i < tableitem; i++)
+            {
+                m_tableModel->item(temp, i)->setTextAlignment(Qt::AlignCenter);//居中
+            }
             ui.tv_paramInfo->setModel(m_tableModel);
 
             //添加处理控件
@@ -635,6 +645,10 @@ void AddErrorCommand::ShowParamsTable(int index, int deviceIndex)
             m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_lastUpdateTime)));
 
             m_tableModel->setItem(temp, tableitem++, new QStandardItem("选择"));
+            for (size_t i = 0; i < tableitem; i++)
+            {
+                m_tableModel->item(temp, i)->setTextAlignment(Qt::AlignCenter);//居中
+            }
             ui.tv_paramInfo->setModel(m_tableModel);
 
             //添加处理控件
@@ -744,6 +758,11 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
                                 m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(itemP.second->m_lastUpdateTime)));                  
                                 m_tableModel->setItem(i, tableitem++, new QStandardItem("选择"));
 
+                                for (size_t j = 0; j < tableitem; j++)
+                                {
+                                    m_tableModel->item(i, j)->setTextAlignment(Qt::AlignCenter);//居中
+                                }
+
                                 m_tempParamId.push_back(item.first);//获取device_param_info id
 
                                 isfind = true;
@@ -779,6 +798,11 @@ void AddErrorCommand::FlashParamTable(QString tempName, int deviceid)
                         m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_name)));
                         m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_createTime)));
                         m_tableModel->setItem(i, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_lastUpdateTime)));
+
+                        for (size_t j = 0; j < tableitem; j++)
+                        {
+                            m_tableModel->item(i, j)->setTextAlignment(Qt::AlignCenter);//居中
+                        }
 
                         m_tempCommandId.push_back(item.first);
                         break;

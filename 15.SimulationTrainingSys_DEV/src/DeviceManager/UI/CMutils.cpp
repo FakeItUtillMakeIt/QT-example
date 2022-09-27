@@ -13,27 +13,22 @@ QString CMutils::destfilename_output(QString origin)
 		QString destpath = QCoreApplication::applicationDirPath() + "/image/thumbnail/thumbnail" + Timestr + "." + filename;
 		return destpath;
 	}
-QString CMutils::destimg_output(QString origin, int bias)
+QString CMutils::destimg_output(QString origin)
 {
-	QString Timestr = QString::number(QDateTime::currentDateTime().toTime_t() + bias);
-	QStringList filenamelist = origin.split(".");
-	QString filename = filenamelist[filenamelist.size() - 1];
-	QString destpath = QCoreApplication::applicationDirPath() + "/image/prewimg/image" + Timestr + "." + filename;
+	QString filename = origin.split("/")[origin.split("/").size() - 1];
+	QString destpath = QCoreApplication::applicationDirPath() + "/image/prewimg/"+ filename;
 	return destpath;
 }
-QString CMutils::destvideo_output(QString origin, int bias)
+QString CMutils::destvideo_output(QString origin)
 {
-	QString Timestr = QString::number(QDateTime::currentDateTime().toTime_t() + bias);
 	QString vname = origin.split("/")[origin.split("/").size() - 1];
-
 	QString destpath = QCoreApplication::applicationDirPath() + "/video/" + vname ;
 	return destpath;
 }
-QString CMutils::destfile_output(QString origin, int bias)
+QString CMutils::destfile_output(QString origin)
 {
-	QString Timestr = QString::number(QDateTime::currentDateTime().toTime_t() + bias);
-	QString fname = origin.split("/")[origin.split("/").size() - 1];
 
+	QString fname = origin.split("/")[origin.split("/").size() - 1];
 	QString destpath = QCoreApplication::applicationDirPath() + "/files/" + fname ;
 	return destpath;
 }

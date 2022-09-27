@@ -10,7 +10,7 @@ ConfigNameSpaceStart
 StylePairLabel::StylePairLabel(QWidget *parent):QWidget(parent)
 {
     m_infomap[PairLabel_Style_ID] = QPair<int,QString>(PairLabel_Style_ID,get_uuid());
-    m_namelabel = new QLabel("");
+    m_namelabel = new QCheckBox("");
    // setStyleSheet("background-color:transparent");
     paramlayout = new QHBoxLayout;
     paramnamelabel = new QLabel("参数名称");

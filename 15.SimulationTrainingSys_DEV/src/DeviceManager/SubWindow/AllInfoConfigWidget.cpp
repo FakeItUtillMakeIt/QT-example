@@ -1402,6 +1402,7 @@ void AllInfoConfigWidget::InitUILayout() {
 	rocketTypeParamTitle = new QLabel(QString("型号参数"));
 	searchLineEdit = new QLineEdit;
 	searchLineEdit->setStatusTip(QString("搜索"));
+
 	deviceParamTree = new QTreeWidget;
 	selectAllBox = new QCheckBox;
 	selectAllBox->setText(QString("全选"));
@@ -1412,6 +1413,7 @@ void AllInfoConfigWidget::InitUILayout() {
 	selectParamTitle = new QLabel(QString("已选择参数"));
 	searchSelect = new QLineEdit;
 	searchSelect->setStatusTip(QString("搜索"));
+
 	hadSelectedParamsL = new QListWidget;
 
 	/*!
@@ -1573,7 +1575,7 @@ void AllInfoConfigWidget::setInfoWidgetCfg(int rocketId, int deviceId, int cmdId
 	rocketID = rocketId;
 	deviceID = deviceId;
 	cmdID = cmdId;
-
+	hadSelectDevStat->clear();
 }
 
 /**
@@ -1641,6 +1643,11 @@ void AllInfoConfigWidget::clickedOkBtn() {
 	//判别当前操作配置
 	if (curWidget == DeviceCommonVaries::ROCKET_WIDGET)
 	{
+		if (rocketComProtoList->count() == 0)
+		{
+			QMessageBox::warning(this, "警告", "无协议，请先添加箭上协议");
+			return;
+		}
 		//读取rocketComProtoList中选中的选项作为使用的协议
 		int rocketDataID = rocketComProtoList->currentItem()->data(Qt::UserRole).toInt();
 		//将之前该协议的配置清除

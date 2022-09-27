@@ -29,7 +29,7 @@ public:
 	int color_num;
 	QStringList colors;
 	twoDdisplay* mainUI;
-
+	bool editflag;
 
 	void mousePressEvent(QMouseEvent* me);
 	void mouseMoveEvent(QMouseEvent* me);

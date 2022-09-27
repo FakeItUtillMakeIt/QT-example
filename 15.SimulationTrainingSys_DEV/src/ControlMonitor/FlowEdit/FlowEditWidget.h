@@ -87,6 +87,8 @@ private:
 
 	QVector<QComboBox*> cmdComboBoxList;//存储所有流程编辑界面的combox
 
+	QMap<QString, int> cmdName2Id;
+
 private:
 	void InitLayout();
 	void initConnection();

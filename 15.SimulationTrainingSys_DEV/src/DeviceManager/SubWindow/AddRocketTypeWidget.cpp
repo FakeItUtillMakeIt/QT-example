@@ -78,6 +78,8 @@ void AddRocketTypeWidget::InitUILayout() {
 	userInputCmdName = new QLineEdit;
 	cmdBackCmd = new QLabel(QString("测发回令:"));
 	userSelectBackCmd = new QComboBox;
+	cmdBackCmd->hide();
+	userSelectBackCmd->hide();
 	cmdTable = new QLabel(QString("所属指令表"));
 	cmdTableType = new QComboBox;
 	cmdTableType->setEditable(false);
@@ -259,11 +261,11 @@ void AddRocketTypeWidget::InitUILayout() {
 	{
 		userSelectRocketType->addItem(QString::fromStdString(ele.second[1]), ele.first);
 	}
-	for (pair<int, string> ele : DeviceCommonVaries::getInstance()->commandIndex2Type)
+	/*for (pair<int, string> ele : DeviceCommonVaries::getInstance()->commandIndex2Type)
 	{
 		userSelectCmdType->addItem(QString::fromLocal8Bit(ele.second.c_str()), ele.first);
-	}
-
+	}*/
+	userSelectCmdType->addItem(QString("测发指令"), 1);
 
 	QString qSqlString = QString("SELECT\
 		command_info.id,\
@@ -637,8 +639,8 @@ void AddRocketTypeWidget::commandInfoDisplay(bool flag) {
 		userSelectCmdType->show();
 		commandName->show();
 		userInputCmdName->show();
-		cmdBackCmd->show();
-		userSelectBackCmd->show();
+		cmdBackCmd->hide();
+		userSelectBackCmd->hide();
 		cmdTable->show();
 		cmdTableType->show();
 		addCmdTable->show();
@@ -845,6 +847,7 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		command_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputCmdName->text()));
 
 	int cmdcode = 1;
+	int backCmdCode = 1;
 
 	QVector<int> savedCode;
 	if (wid == DeviceCommonVaries::ADD_MODULE)
@@ -869,17 +872,39 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 		{
 			savedCode.push_back(atoi(eachele.second[1].c_str()));
 		}
+		int findCount = 0;
 		for (int i = 0; i < 0xffff; i++)
 		{
-			if (savedCode.count(i) == 0)
+			if (savedCode.count(i) == 0 && findCount == 0)
 			{
 				cmdcode = i;
+				findCount++;
+				continue;
+			}
+			if (savedCode.count(i) == 0 && findCount == 1)
+			{
+				backCmdCode = i;
 				break;
 			}
 		}
-
-
-		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), AppCache::instance()->m_CurrentRocketType->m_id, userSelectBackCmd->currentData().toInt(), cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
+		QString backCmdName = userInputCmdName->text() + QString("回令");
+		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(backCmdName, AppCache::instance()->m_CurrentRocketType->m_id, 0, backCmdCode, 2, 0x55aa);
+		//获取当前新增指令回令的ID
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			command_info.id,\
+			command_info.createTime,\
+			command_info.lastUpdateTime\
+			FROM\
+			command_info\
+			WHERE\
+			command_info.rocket_id = %1 AND\
+			command_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(backCmdName));
+		int backCmdID;
+		for (auto elem : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+		{
+			backCmdID = elem.first;
+		}
+		DeviceDBConfigInfo::getInstance()->commandConfigOp2DB(userInputCmdName->text(), AppCache::instance()->m_CurrentRocketType->m_id, backCmdID, cmdcode, userSelectCmdType->currentData().toInt(), 0x55aa);
 
 		//获取当前新增指令的ID
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\

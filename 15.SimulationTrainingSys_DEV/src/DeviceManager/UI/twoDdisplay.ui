@@ -141,7 +141,7 @@
              <string notr="true">font-size:16px</string>
             </property>
             <property name="text">
-             <string>灵龙-模型教学分解</string>
+             <string>火箭-模型教学分解</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1317,7 +1317,7 @@ QPushButton {
                <bool>false</bool>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="page_1">
                <property name="styleSheet">
@@ -5155,7 +5155,6 @@ background-color:rgba(255,255,255,0.25);</string>
                            </property>
                            <property name="font">
                             <font>
-                             <family>Adobe 黑体 Std R</family>
                              <pointsize>-1</pointsize>
                             </font>
                            </property>

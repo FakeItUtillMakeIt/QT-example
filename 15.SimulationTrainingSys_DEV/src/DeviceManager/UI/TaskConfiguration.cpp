@@ -11,6 +11,7 @@ TaskConfiguration::TaskConfiguration(QWidget *parent)
 	ui.setupUi(this);
     m_app = AppCache::instance();
 
+    ui.widget_2->hide();
 	Init();
 }
 
@@ -25,27 +26,28 @@ void TaskConfiguration::Init()
     taskDataDAO = new RocketDataDAO(m_app->m_outputPath);
 
     //设置搜索框
-    ui.pb_searchButton->setCursor(Qt::PointingHandCursor);
-    ui.pb_searchButton->setFixedSize(30, 30);
+    ui.pb_searchButton_2->setCursor(Qt::PointingHandCursor);
+    ui.pb_searchButton_2->setFixedSize(30, 30);
     
-    QMargins margins = ui.le_searchedit->textMargins();//防止文本框输入内容位于按钮之下
-    ui.le_searchedit->setPlaceholderText("搜索");
+    QMargins margins = ui.le_searchedit_2->textMargins();//防止文本框输入内容位于按钮之下
+    ui.le_searchedit_2->setPlaceholderText("搜索");
     
     QHBoxLayout* pSearchLayout = new QHBoxLayout();
     pSearchLayout->addStretch();
-    pSearchLayout->addWidget(ui.pb_searchButton);
+    pSearchLayout->addWidget(ui.pb_searchButton_2);
     pSearchLayout->setSpacing(0);
     pSearchLayout->setContentsMargins(8, 0, 10, 0);
-    ui.le_searchedit->setTextMargins(13 + 8 + 2, 0, 0, 0);
-    ui.le_searchedit->setContentsMargins(0, 0, 0, 0);
-    ui.le_searchedit->setLayout(pSearchLayout);
-    ui.le_searchedit->setStyleSheet("height:29px;border:1px solid #eaeaea;background-color: rgb(255, 255, 255);border-radius:14px;");
-    //connect(ui.pb_searchButton, &QPushButton::clicked, this, &AddErrorCommand::SearchFaults);
+    ui.le_searchedit_2->setTextMargins(13 + 8 + 2, 0, 0, 0);
+    ui.le_searchedit_2->setContentsMargins(0, 0, 0, 0);
+    ui.le_searchedit_2->setLayout(pSearchLayout);
+    ui.le_searchedit_2->setStyleSheet("height:29px;border:1px solid #eaeaea;background-color: rgb(255, 255, 255);border-radius:14px;");
+    //connect(ui.le_searchedit_2, &QPushButton::clicked, this, &TaskConfiguration::SearchSoft);
+    connect(ui.le_searchedit_2, &QLineEdit::textEdited, this, &TaskConfiguration::SearchSoft);
 
     //表格初始化
-    TaskInit();
+    TaskInit(false);
 
-
+    
     connect(ui.pb_addTask,&QPushButton::clicked,this,&TaskConfiguration::AddTaskShow);
 
 }
@@ -54,7 +56,7 @@ void TaskConfiguration::Init()
 /// <summary>
 /// 表格初始化
 /// </summary>
-void TaskConfiguration::TaskInit()
+void TaskConfiguration::TaskInit(bool isSeach)
 {
     ////刷新表格内容 
     int tableitem = 5;
@@ -75,7 +77,6 @@ void TaskConfiguration::TaskInit()
     columnTitles << "序号" << "所属型号" << "任务岗位" << "任务软件" << "创建时间" << "操作";
     m_tableModel->setHorizontalHeaderLabels(columnTitles);
     ui.tv_taskView->setModel(m_tableModel);
-
 
     for (int i = 0; i <= tableitem; i++)
     {
@@ -102,11 +103,19 @@ void TaskConfiguration::TaskInit()
     verticalHeader->setSectionResizeMode(QHeaderView::Fixed);
     verticalHeader->setDefaultSectionSize(30);//设置高度(2)
     ui.tv_taskView->horizontalHeader()->setMinimumHeight(38);//设置表头高度
-    ui.tv_taskView->horizontalHeader()->setStyleSheet("QHeaderView::section {color: black;padding-left: 4px;border: 1px solid #6c6c6c;}");
-
+    ui.tv_taskView->horizontalHeader()->setStyleSheet("QHeaderView::section {color: black;padding-left: 4px;border: 1px solid #6c6c6c;font: 12pt 微软雅黑;}");
+    //ui.tv_taskView->update();
     //ui.tv_taskView->setColumnHidden(1, true);//隐藏某行
 
-    FalshTableView();
+    if (isSeach)
+    {
+        FalshSeachTableView();
+    }
+    else
+    {
+        FalshTableView();
+    }
+    
 }
 
 
@@ -128,6 +137,11 @@ void TaskConfiguration::FalshTableView()
         m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_createTime)));
 
         m_tableModel->setItem(temp, tableitem++, new QStandardItem("删除"));
+        
+        for (size_t i = 0; i < tableitem; i++)
+        {
+            m_tableModel->item(temp, i)->setTextAlignment(Qt::AlignCenter);//居中
+        }
         ui.tv_taskView->setModel(m_tableModel);
 
         //添加处理控件
@@ -136,7 +150,7 @@ void TaskConfiguration::FalshTableView()
         m_deleteBtn->setStyleSheet("border-image: url(:/FaultInjection/images/bt_normal.png);");
         connect(m_deleteBtn, &QToolButton::clicked,this,&TaskConfiguration::DeleteOneTask);
         ui.tv_taskView->setIndexWidget(m_tableModel->index(temp, 5), m_deleteBtn);
-
+       
         temp++;
     }
 
@@ -181,7 +195,7 @@ void TaskConfiguration::AddTaskFun(TaskInfo oneTask)
     if (taskDataDAO->InsertTaskInfo(taskInfo))
     {
         m_isAdd = true;
-        TaskInit();
+        TaskInit(false);
         //FalshTableView();
         QMessageBox::information(nullptr,"信息","岗位添加成功！");
     }
@@ -236,5 +250,78 @@ void TaskConfiguration::DeleteOneTask()
         return;
     }
     
-    TaskInit();
+    TaskInit(false);
+}
+
+/// <summary>
+/// 根据软件名称查找
+/// </summary>
+/// <param name="softName"></param>
+void TaskConfiguration::SearchSoft(QString softName)
+{
+    if (softName.isEmpty())
+    {
+        TaskInit(false);
+        return;
+    }
+
+   
+    m_TaskManageSearchFrames.clear();
+    for (auto item : m_app->m_TaskManageInfoFrames)
+    {
+        if (QString::fromStdString(item.second->m_roketSoftName).contains(softName))
+        {
+            //m_app->m_TaskManageInfoFrames.insert(pair<int, TaskManageInfo*>(item.first, item.second));
+            m_TaskManageSearchFrames.insert(item);
+        }
+    }
+
+    //展示筛选后的数据
+    TaskInit(true);
+   
+
+   
+    //int a = m_tableModel->rowCount();
+    //for (size_t i = 0; i <= m_tableModel->rowCount(); i++)
+    //{
+    //    m_tableModel->removeRow(i);
+    //}
+    //ui.tv_taskView->setModel(m_tableModel);
+}
+
+/// <summary>
+/// 查找刷新表格
+/// </summary>
+void TaskConfiguration::FalshSeachTableView()
+{
+    int temp = 0;
+    int tableitem = 0;
+    //刷新表格
+    for (auto item : m_TaskManageSearchFrames)
+    {
+        tableitem = 0;
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString("%1").arg(temp + 1)));
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromLocal8Bit(m_app->m_CurrentRocketType->m_name.c_str())));//表格第i行，第0列添加一项内容
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_taskName)));
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_roketSoftName)));
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem(QString::fromStdString(item.second->m_createTime)));
+
+        m_tableModel->setItem(temp, tableitem++, new QStandardItem("删除"));
+
+        for (size_t i = 0; i < tableitem; i++)
+        {
+            m_tableModel->item(temp, i)->setTextAlignment(Qt::AlignCenter);//居中
+        }
+        ui.tv_taskView->setModel(m_tableModel);
+
+        //添加处理控件
+        m_deleteBtn = new QToolButton();
+        m_deleteBtn->setText("删除");
+        m_deleteBtn->setStyleSheet("border-image: url(:/FaultInjection/images/bt_normal.png);");
+        connect(m_deleteBtn, &QToolButton::clicked, this, &TaskConfiguration::DeleteOneTask);
+        ui.tv_taskView->setIndexWidget(m_tableModel->index(temp, 5), m_deleteBtn);
+
+        temp++;
+    }
+
 }

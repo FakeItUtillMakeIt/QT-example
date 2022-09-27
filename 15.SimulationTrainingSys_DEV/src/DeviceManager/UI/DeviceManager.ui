@@ -507,6 +507,11 @@ color:white;</string>
            <string>任务模型配置</string>
           </attribute>
          </widget>
+         <widget class="QWidget" name="tab_taskManege">
+          <attribute name="title">
+           <string>任务岗位配置</string>
+          </attribute>
+         </widget>
          <widget class="QWidget" name="tab_faultInjection">
           <attribute name="title">
            <string>故障模型配置</string>
@@ -515,11 +520,6 @@ color:white;</string>
          <widget class="QWidget" name="tab_Display">
           <attribute name="title">
            <string>知识库配置</string>
-          </attribute>
-         </widget>
-         <widget class="QWidget" name="tab_taskManege">
-          <attribute name="title">
-           <string>任务岗位配置</string>
           </attribute>
          </widget>
         </widget>

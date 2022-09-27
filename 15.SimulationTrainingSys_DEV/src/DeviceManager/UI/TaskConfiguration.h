@@ -27,13 +27,17 @@ private:
 	QToolButton* m_deleteBtn;
 
 	RocketDataDAO* taskDataDAO;
+
+	map<int, TaskManageInfo*> m_TaskManageSearchFrames;//²éÕÒµÄ
+
 	bool m_isAdd;
 
 	void Init();
-	void TaskInit();
+	void TaskInit(bool isSeach);
 	void FalshTableView();
 	void DeleteOneTask();
-
+	void SearchSoft(QString softName);
+	void FalshSeachTableView();
 
 
 public slots:

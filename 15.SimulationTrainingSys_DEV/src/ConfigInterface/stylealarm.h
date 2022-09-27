@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QWidget>
 #include "configdefine.h"
+#include <QCheckBox>
 ConfigNameSpaceStart
 class  StyleSet;
 class ConfigAlarm;
@@ -28,7 +29,7 @@ public:
      };
      QMap<int,QPair<bool,QString>>  m_infomap;
    //  QList<ConfigButton*>  styleusers;
-     QLabel* m_namelabel;
+     QCheckBox* m_namelabel;
      StyleSet* styleset;
      void setTypeName(QString iTypeName);
      void updateStyle();

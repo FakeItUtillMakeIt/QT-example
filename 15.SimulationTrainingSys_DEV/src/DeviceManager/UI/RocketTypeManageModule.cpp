@@ -5,6 +5,7 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	: QWidget(parent)
 	, m_importComPramData(nullptr)
 {
+	m_message = new QMessageBox();
 	selectedRowNum = -1;
 	columnNameList << QString("火箭ID") << QString("火箭型号名称") << QString("火箭型号描述") << QString("操作");
 
@@ -210,7 +211,7 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 
 
 	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
+	w1->setStyleSheet("*{border:none;color:blue;min-height:20px;}");
 
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
@@ -268,7 +269,13 @@ void RocketTypeManageModule::ImportData(int rowNumber)
 	curRocketID = configInfoTable->item(rowNumber, 0)->text().toInt();
 
 	emit AddPramComSignal(curRocketID, readFile);
-	//m_importComPramData->AddPramComDatas(curRocketID);
+	m_message->setParent(nullptr);
+	m_message->setText("数据导入中请稍等...");
+	m_message->setWindowTitle("提示");
+	m_message->setStandardButtons(QMessageBox::No);
+	m_message->button(QMessageBox::No)->setHidden(true);
+	m_message->show();
+
 }
 
 /// <summary>
@@ -277,8 +284,11 @@ void RocketTypeManageModule::ImportData(int rowNumber)
 /// <param name="index"></param>
 void RocketTypeManageModule::ImportResultDo(QString Qstr)
 {
+	if (m_message != nullptr)
+	{
+		m_message->close();
+	}
 	QMessageBox::information(nullptr, "提示", Qstr, "确定");
-
 }
 
 /**
@@ -304,6 +314,11 @@ void RocketTypeManageModule::removeOneRow(int removeRow) {
 	connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteRocketInfo);
 	connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
 		//QMessageBox::information(this, "info", "success");
+		QMessageBox msg;
+		msg.setText("null");
+		msg.show();
+		msg.close();
+
 		});
 	deleteThread->start();
 

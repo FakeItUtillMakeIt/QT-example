@@ -2,7 +2,7 @@
 #define STYLECURVE_H
 #include "configdefine.h"
 #include "qcustomplot.h"
-
+#include <QCheckBox>
 
 ConfigNameSpaceStart
 class StyleSet;
@@ -26,7 +26,7 @@ public:
     QMap<int,QPair<bool,QString>>  m_infomap;
     void updateStyle();
     StyleSet*  styleset;
-    QLabel* m_namelabel;
+    QCheckBox* m_namelabel;
     QList<ConfigCurve*>  styleusers;
     QList<ConfigCurve*>&  getStyleUsers();
     StyleCurve(QWidget *parent = nullptr);

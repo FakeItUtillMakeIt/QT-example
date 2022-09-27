@@ -81,7 +81,7 @@ void DeviceManager::Init()
 
 	connect(ui.tabWidget, &QTabWidget::currentChanged, this, [=](int index)
 		{
-			if (index == 1)
+			if (index == 2)
 			{
 				//DataFaultLoad();//故障重新加载
 			}
@@ -211,9 +211,25 @@ void DeviceManager::Init()
 
 		});
 
-	DataFaultLoad();//故障加载
-	new twoDdisplay(ui.tab_Display);//二维展示
-	TaskManagement();//任务岗位配置
+	//故障加载
+	DataFaultLoad();
+	//任务岗位配置
+	TaskManagement();
+	//二维展示
+	//new twoDdisplay(ui.tab_taskManege);
+	if (m_hlayoutdisplay != nullptr)
+	{
+		delete m_twoDdisplay;
+		m_twoDdisplay = nullptr;
+
+		delete m_hlayoutdisplay;
+		m_hlayoutdisplay = nullptr;
+	}
+	m_twoDdisplay = new twoDdisplay(this);
+	m_hlayoutdisplay = new QHBoxLayout;
+	m_hlayoutdisplay->setContentsMargins(0, 0, 0, 0);
+	m_hlayoutdisplay->addWidget(m_twoDdisplay);
+	ui.tab_Display->setLayout(m_hlayoutdisplay);
 
 	QElapsedTimer timer2;
 	displayStatuInfo("加载基础数据完毕！");
@@ -372,6 +388,12 @@ void DeviceManager::timeUpdate() {
 
 void DeviceManager::CloseWindow()
 {
+	if (m_app->IsDeleting == true)
+	{
+		QMessageBox::information(nullptr, "信息", "数据删除中，请稍后！");
+		return;
+	}
+
 	this->close();
 	ParamInfoConfig::InfoConfigWidget::closeInstance();
 	DeviceInfoConfig::InfoConfigWidget::closeInstance();

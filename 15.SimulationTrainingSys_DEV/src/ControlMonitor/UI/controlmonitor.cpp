@@ -35,7 +35,6 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	font.setFamily(s[0]);
 
 
-
 	//指示灯测试用代码 
 	/*light_info.append(new Light_info(1, "控制箭上配电", 0));
 	light_info.append(new Light_info(2, "测量箭上配电", 0));
@@ -106,7 +105,7 @@ void ControlMonitor::Init()
 	//connect(ui.pb_resize, &QPushButton::clicked, this, &ControlMonitor::changeResize);
 
 	//指示灯初始化
-	lightnumber = 0;
+	lightnumber = 1;
 	lightflag = true;
 	//inspect = new QTimer(this);
 //	connect(inspect, SIGNAL(timeout()), this, SLOT(light_inspect()));
@@ -388,22 +387,22 @@ void ControlMonitor::lightreset()
 }
 //指示灯闪烁
 void ControlMonitor::light_flash() {
-	QString s = "light";
-	QString str = s.append(QString::number(lightnumber));
-	curlabel = ui.dengtiao->findChild<QLabel*>(str);
-
-	if (lightflag == true)
+	QString s ="light";
+	if (lightnumber > 0)
 	{
-
-
-		lightflag = false;
-		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+		QString str = s.append(QString::number(lightnumber - 1));
+		curlabel = ui.dengtiao->findChild<QLabel*>(str);
+		if (lightflag == true)
+		{
+			lightflag = false;
+			curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));
+		}
+		else {
+			lightflag = true;
+			curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
+		}
 	}
-	else {
 
-		lightflag = true;
-		curlabel->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/lightbg")));
-	}
 
 }
 //测试函数
@@ -415,7 +414,7 @@ void ControlMonitor::lighttest()
 	connect(test, &QTimer::timeout, this, [this]() {
 		if (lightnumber < 4)
 		{
-			lightnumber++;
+			lightnumber=lightnumber+1;
 			if (mainflow_finish)
 			{
 				mainflow_finish = false;
@@ -597,8 +596,10 @@ void ControlMonitor::mouseDoubleClickEvent(QMouseEvent* event) {
 
 void ControlMonitor::recvMainFlow(int mainFlowIndex, bool curFlowFlag) {
 
-	lightnumber = mainFlowIndex - 1;
+	lightnumber = mainFlowIndex;
 	mainflow_finish = curFlowFlag;
+	lightreset();
+	light_load();
 	flash_load();
 
 }
@@ -614,7 +615,7 @@ void ControlMonitor::recieverocketType(int id)
 
 void ControlMonitor::acceptchage()
 {
-	lightnumber = 1;
+
 	m_app->mainflowlist.clear();
 	m_pmainFlowDao = new DataBase::mainFlowDao(m_app->m_outputPath);
 	m_pmainFlowDao->getMainflow(m_app->m_allRocketType[m_app->m_CurrentRocketType->m_id]->m_id);

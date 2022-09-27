@@ -42,6 +42,7 @@ public:
     void InitFromDefineStyle(QString istyleid);
     void updateValue(double value, int error = 0);
     void updateText(QString text, int error = 0);
+    void DefaultUIInit();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -90,7 +91,6 @@ private:
     QString m_uuid;
     void handleDragEvent();
     bool UpdateStyleByStyleId(QString styleid);
-    void DefaultUIInit();
 private slots:
     void showListMenu(const QPoint& point);
 };

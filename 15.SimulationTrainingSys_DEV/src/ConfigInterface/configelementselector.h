@@ -12,6 +12,7 @@ public:
     ControlRole m_ctrlrole;
     void mousePressEvent(QMouseEvent *e);
     void setSelectorInfo(ControlType ctrtype, QString name);
+    QPixmap ConfigElementSelector::getElementMap(ControlType ctrtyle);
 private:
     void handleDragEvent();
 };

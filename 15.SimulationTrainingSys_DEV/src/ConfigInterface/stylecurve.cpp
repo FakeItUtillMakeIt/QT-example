@@ -7,7 +7,7 @@ ConfigNameSpaceStart
 
 StyleCurve::StyleCurve(QWidget *parent):QCustomPlot(parent)
 {
-    m_namelabel = new QLabel();
+    m_namelabel = new QCheckBox();
     m_infomap[Curve_Style_ID] = QPair<int,QString>(Curve_Style_ID,get_uuid());
 
     AddTitle("实时曲线");

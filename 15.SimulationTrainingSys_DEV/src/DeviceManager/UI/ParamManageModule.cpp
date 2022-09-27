@@ -392,7 +392,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		ParamInfoConfig::InfoConfigWidget::getInstance()->userSelcetUnit->setCurrentText(configInfoTable->item(curRow, 3)->text());
 
 		ParamInfoConfig::InfoConfigWidget::getInstance()->show();
-});
+		});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
@@ -400,7 +400,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	hbox->addWidget(opDeleteBtn);
 
 	w1->setLayout(hbox);
-	w1->setStyleSheet("*{border:none;color:blue;}");
+	w1->setStyleSheet("*{border:none;color:blue;min-height:20px;}");
 
 	configInfoTable->setCellWidget(insertRow, columnNameList.size() - 1, w1);
 

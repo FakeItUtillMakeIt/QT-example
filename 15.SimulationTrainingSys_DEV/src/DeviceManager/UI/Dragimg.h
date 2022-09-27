@@ -25,7 +25,7 @@ public:
 	QString imgurl;
 
 
-
+	bool editflag;
 	bool canDrag;
 	twoDdisplay* mainUI;
 	QPixmap ownimg;
