@@ -28,10 +28,10 @@ void LicenseManagement::slotGenerator()
 	QFile file(file_name);
 	if (file.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
-		//ÈÕÆÚÌØÊâ´¦Àí
+		//æ—¥æœŸç‰¹æ®Šå¤„ç†
 		QDate date = ui.ExpiryDate->date();
-		QString strDate = date.toString("yyyy/MM/dd");
-		//½øĞĞ¼ÓÃÜ×Ö·û´®<ÓÃ»§Ãû-IP-SYSID- - -DATA-NUMBER-TYPE>
+		QString strDate = date.toString("yyyy/MM/dd");//
+		//è¿›è¡ŒåŠ å¯†å­—ç¬¦ä¸²<ç”¨æˆ·å-IP-SYSID- - -DATA-NUMBER-TYPE>
 		QString lic;
 		for (auto ele : list)
 		{
@@ -43,18 +43,18 @@ void LicenseManagement::slotGenerator()
 			ui.LicenseType->currentText() +
 			QDate::currentDate().toString("yyyy/MM/dd");
 
-		//ÕûÀíÏêÏ¸ĞÅÏ¢
+		//æ•´ç†è¯¦ç»†ä¿¡æ¯
 		QString fuhao = "=";
-		QString type = ui.LicenseType->currentText();		//µ¥»ú-ÍøÂç
-		QString edate = strDate;								//ÊÚÈ¨ÖÕÖ¹ÈÕÆÚ
-		QString time = QTime::currentTime().toString();		//Ê±¼ä
-		QString num = QString::number(ui.spinBox_number->value());	//ÓÃ»§ÊıÁ¿
-		QString sdate = QDate::currentDate().toString("yyyy/MM/dd");//ÊÚÈ¨ÆğÊ¼Ê±¼ä(ÎªÉú³ÉÊÚÈ¨ÎÄ¼şÊ±¼ä)
+		QString type = ui.LicenseType->currentText();		//å•æœº-ç½‘ç»œ
+		QString edate = strDate;								//æˆæƒç»ˆæ­¢æ—¥æœŸ
+		QString time = QTime::currentTime().toString();		//æ—¶é—´
+		QString num = QString::number(ui.spinBox_number->value());	//ç”¨æˆ·æ•°é‡
+		QString sdate = QDate::currentDate().toString("yyyy/MM/dd");//æˆæƒèµ·å§‹æ—¶é—´(ä¸ºç”Ÿæˆæˆæƒæ–‡ä»¶æ—¶é—´)
 		QString strData = list.at(0) + fuhao + type + fuhao + sdate + fuhao + time + fuhao + num + fuhao + edate + fuhao;
 
-		//Ê¹ÓÃQt×Ô´ø¼ÓÃÜËã·¨
+		//ä½¿ç”¨Qtè‡ªå¸¦åŠ å¯†ç®—æ³•
 		QByteArray hashData = QCryptographicHash::hash(lic.toLocal8Bit(), QCryptographicHash::Sha3_512);
-		//·µ»Ø×Ö½ÚÊı×éµÄÊ®Áù½øÖÆ±àÂë£¬±àÂëÊ¹ÓÃÊı×Ö0-9ºÍ×ÖÄ¸a-f
+		//è¿”å›å­—èŠ‚æ•°ç»„çš„åå…­è¿›åˆ¶ç¼–ç ï¼Œç¼–ç ä½¿ç”¨æ•°å­—0-9å’Œå­—æ¯a-f
 		lic.clear();
 		lic = hashData.toHex();
 		strData += lic;
@@ -75,14 +75,14 @@ void LicenseManagement::slotBrowse()
 	auto ipAddrs = getLocalIp();
 	auto macName = getSysInfo();
 	getReleInfo();
-	ui.SystemInformationFileBrowser->setText(QString::fromLocal8Bit("µçÄÔÃû:") + n + macName + n + QString::fromLocal8Bit("Ö÷°åIDºÅ:") + n + biosId.split(" ")[0] + n + QString::fromLocal8Bit("CPUIDºÅ:") + n + cpuId.split(" ")[0]);
+	ui.SystemInformationFileBrowser->setText(QString::fromLocal8Bit("ç”µè„‘å:") + n + macName + n + QString::fromLocal8Bit("ä¸»æ¿IDå·:") + n + biosId.split(" ")[0] + n + QString::fromLocal8Bit("CPUIDå·:") + n + cpuId.split(" ")[0]);
 	list.push_back(macName);
 	list.push_back(biosId.split(" ")[0]);
 	list.push_back(cpuId.split(" ")[0]);
 
 	for (int addrIndex = 0; addrIndex < macAddrs.size(); addrIndex++)
 	{
-		ui.SystemInformationFileBrowser->append(QString::fromLocal8Bit("IPµØÖ·:") + n + ipAddrs[addrIndex] + n + QString::fromLocal8Bit("ÎïÀíµØÖ·:") + n + macAddrs[addrIndex]);
+		ui.SystemInformationFileBrowser->append(QString::fromLocal8Bit("IPåœ°å€:") + n + ipAddrs[addrIndex] + n + QString::fromLocal8Bit("ç‰©ç†åœ°å€:") + n + macAddrs[addrIndex]);
 		list.push_back(ipAddrs[addrIndex]);
 		list.push_back(macAddrs[addrIndex]);
 	}
@@ -99,10 +99,14 @@ QStringList LicenseManagement::getLocalMacAddress() {
 		{
 			for (int i = 0; i < interface1.addressEntries().size(); i++)
 			{
-				//macµØÖ·ip²»ÄÜÎª172.0.0.1 Îªipv4
+				//macåœ°å€ipä¸èƒ½ä¸º127.0.0.1 ä¸ºipv4
 				if (interface1.addressEntries().at(i).ip() != QHostAddress::LocalHost
 					&& interface1.addressEntries().at(i).ip().protocol() == QAbstractSocket::IPv4Protocol)
 				{
+					if (interface1.addressEntries().at(i).ip().toString().startsWith("192"))
+					{
+						continue;
+					}
 					macAdds.push_back(interface1.hardwareAddress());
 				}
 			}
@@ -123,10 +127,14 @@ QStringList LicenseManagement::getLocalIp() {
 		{
 			for (int i = 0; i < interface1.addressEntries().size(); i++)
 			{
-				//macµØÖ·ip²»ÄÜÎª172.0.0.1 Îªipv4
+				//macåœ°å€ipä¸èƒ½ä¸º172.0.0.1 ä¸ºipv4
 				if (interface1.addressEntries().at(i).ip() != QHostAddress::LocalHost
 					&& interface1.addressEntries().at(i).ip().protocol() == QAbstractSocket::IPv4Protocol)
 				{
+					if (interface1.addressEntries().at(i).ip().toString().startsWith("192"))
+					{
+						continue;
+					}
 					ipAddrs.push_back(interface1.addressEntries().at(i).ip().toString());
 				}
 			}
