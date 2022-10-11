@@ -76,3 +76,6 @@ C++模板
 ## [2022/07/29更新,添加模训系统](https://github.com/FakeItUtillMakeIt/QT-example/tree/main/15.SimulationTrainingSys_DEV/src)
 ## [2022/08/19更新,模训系统version1.0](https://github.com/FakeItUtillMakeIt/QT-example/tree/main/15.SimulationTrainingSys_DEV/src)
 
+=======
+## [QT精品项目](https://blog.csdn.net/bxlover007/article/details/112212439)
+
