@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="/DeviceManager">
+    <file>icon/close_b.png</file>
+    <file>icon/close_big.png</file>
+    <file>icon/close_small.png</file>
     <file>icon/dlt.png</file>
     <file>icon/squareBl1.png</file>
     <file>bt_disable.png</file>
@@ -34,5 +37,7 @@
     <file>images/comboxDropDown.png</file>
     <file>images/login_back.png</file>
     <file>word/YouSheBiaoTiHei-2.ttf</file>
+    <file>images/TeachingManagement.ico</file>
+    <file>images/教学管理64_64.ico</file>
   </qresource>
 </RCC>

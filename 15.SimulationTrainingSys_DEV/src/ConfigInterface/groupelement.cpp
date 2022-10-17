@@ -222,7 +222,8 @@ void GroupElement::dragEnterEvent(QDragEnterEvent *event)
     QString groupid =  event->mimeData()->data("groupid");
     ControlType  ctrltype = (ControlType)event->mimeData()->data("controltype").toInt();
 
-    if((groupid == m_uuid || ctrlrole == cCreateEntry)&&(ctrltype != cConfigGroup) && (ctrltype != cConfigCurve))
+  // if((groupid == m_uuid || ctrlrole == cCreateEntry)&&(ctrltype != cConfigGroup) && (ctrltype != cConfigCurve))
+   if ((ctrlrole == cCreateEntry || ctrlrole == cRealControl) && (ctrltype != cConfigGroup) && (ctrltype != cConfigCurve))
         event->accept();
 }
 
@@ -450,7 +451,13 @@ void GroupElement::updateFromValueSet()
    // titletext =  m_valueSetMap["样式配置"].valuelist[eTitleInfo]->getStrValue();
    // qDebug() << "updateFromValueSet:" << titletext;
 }
-
+void  GroupElement::UpdateObjectGeometryLimit()
+{
+    m_valueSetMap["位置属性"].valuelist[GroupElement::eXPos]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[GroupElement::eYPos]->uplimit = ConfigGlobal::scenesize.height();
+    m_valueSetMap["位置属性"].valuelist[GroupElement::eWidth]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[GroupElement::eHeight]->uplimit = ConfigGlobal::scenesize.height();
+}
 void GroupElement::addElementBack(RectInfo&  rectinfo,QString text,ControlType ctrltype)
 {
     QWidget*  newctrl = nullptr;
@@ -528,6 +535,127 @@ void GroupElement::addElement(RectInfo&  rectinfo,QString text,ControlType ctrlt
     update();
 
 }
+void GroupElement::AddElementByType(QWidget* curwidget, QString groupid, ControlType ctrltype)
+{
+    if (ctrltype == cConfigButton)
+    {
+        ConfigButton* curbtn = (ConfigButton*)curwidget;
+        buttonlist.push_back(curbtn);
+        curbtn->setGroupId(groupid);
+    }
+    else if (ctrltype == cConfigPairLabel)
+    {
+        ConfigPairLabel* curbtn = (ConfigPairLabel*)curwidget;
+        pairlabellist.push_back(curbtn);
+        curbtn->setGroupId(groupid);
+    }
+    else if (ctrltype == cConfigAlarm)
+    {
+        ConfigAlarm* curbtn = (ConfigAlarm*)curwidget;
+        alarmlist.push_back(curbtn);
+        curbtn->setGroupId(groupid);
+    }
+}
+void GroupElement::RemoveElementByIndex(QWidget* curwidget, QString groupid, ControlType ctrltype)
+{
+    if (ctrltype == cConfigButton)
+    {
+        ConfigButton* curbtn = (ConfigButton*)curwidget;
+        buttonlist.removeOne(curbtn);
+    }
+    else if (ctrltype == cConfigPairLabel)
+    {
+        ConfigPairLabel* curbtn = (ConfigPairLabel*)curwidget;
+        pairlabellist.removeOne(curbtn);
+    }
+    else if (ctrltype == cConfigAlarm)
+    {
+        ConfigAlarm* curbtn = (ConfigAlarm*)curwidget;
+        alarmlist.removeOne(curbtn);
+    }
+}
+QWidget* GroupElement::GetWidgetByIndex(int curindex, QString groupid, ControlType ctrltype)
+{
+    if (widgetmap.contains(curindex))
+    {
+        QWidget* widget = widgetmap.take(curindex);
+        RemoveElementByIndex(widget,groupid,ctrltype);
+        return widget;
+    }
+    return nullptr;
+}
+
+void GroupElement::RemoveWidgetByIndex(int curindex)
+{
+    if (widgetmap.contains(curindex))
+    {
+        widgetmap.take(curindex);
+    }
+}
+void  GroupElement::moveElementFromFreeRegion(RectInfo& rectinfo,ControlType ctrltype, QString elementid)
+{
+    //首先找到 来源  group
+    ConfigScene* m_scene = (ConfigScene*)this->parent();    
+    QWidget* srcwidget = m_scene->TakeWidgetFromFreeList(ctrltype, elementid);
+    AddElementByType(srcwidget, m_uuid, ctrltype);
+    srcwidget->setParent(this);
+    srcwidget->setGeometry(rectinfo.rect);
+    widgetmap[rectinfo.index] = srcwidget;
+    srcwidget->setProperty("index", rectinfo.index);
+    rectinfo.show = false;
+    srcwidget->show();
+    MoveAbleFrame::hide_ctrl_point();
+    update();
+    return;
+}
+
+void GroupElement::moveElementFromAnother(RectInfo& rectinfo, int curindex, QString  groupid, ControlType ctrltype)
+{
+    //首先找到 来源  group
+    ConfigScene* m_scene = (ConfigScene*)this->parent();
+    GroupElement* srcgrouo = m_scene->getGroupElementById(groupid);
+    if (!srcgrouo)
+    {
+        return;
+    }
+    srcgrouo->stateInit2();
+    QWidget* srcwidget = srcgrouo->GetWidgetByIndex(curindex,groupid,ctrltype);
+    AddElementByType(srcwidget, m_uuid, ctrltype);
+    srcwidget->setParent(this);
+    srcwidget->setGeometry(rectinfo.rect);
+    widgetmap[rectinfo.index] = srcwidget;
+    srcwidget->setProperty("index", rectinfo.index);
+    rectinfo.show = false;
+    srcwidget->show();
+    update();
+    return;
+
+    //判断当前位置有没有 控件，有则互换位置
+    if (widgetmap.contains(rectinfo.index))  //替换
+    {
+        //QWidget* widget = widgetmap[curindex]; //获取被移动widget
+        //QWidget* placedwidget = widgetmap[rectinfo.index];//获取鼠标悬停位置的 widget
+        //widget->setGeometry(rectinfo.rect);//将被移动widget 放到鼠标悬停的位置
+        //widgetmap[rectinfo.index] = widget;//将鼠标悬停位置的 rect 对应widget设置为被移动widget
+        //widget->setProperty("index", rectinfo.index);//将被移动widget的  index 属性 设置为鼠标悬停位置 rect 的  index
+        //QRect placerect = rectmap[curindex].rect;//获取被移动widget的  原位置
+        //placedwidget->setGeometry(placerect);//将鼠标悬停处的原 widget 移动到 被移动widget的原位置
+        //widgetmap[curindex] = placedwidget;//将被移动widget rect 对应widget设置为被移动widget
+        //placedwidget->setProperty("index", curindex);
+        //rectinfo.show = false;
+        //update();
+    }
+    else  //移动
+    {
+        QWidget* widget = widgetmap.take(curindex);
+        widget->setGeometry(rectinfo.rect);
+        widgetmap[rectinfo.index] = widget;
+        widget->setProperty("index", rectinfo.index);
+        rectinfo.show = false;
+        update();
+    }
+
+}
 
 void GroupElement::moveElement(RectInfo&  rectinfo,int curindex)
 {
@@ -558,6 +686,20 @@ void GroupElement::moveElement(RectInfo&  rectinfo,int curindex)
         update();
     }
 }
+bool GroupElement::ColliderDetect(QRect  newrect)
+{
+    QObject* parent = this->parent();
+    QObjectList  objlist = parent->children();
+    QRect  curRect;
+    for (auto obj : objlist)
+    {
+        QWidget* widget = (QWidget*)obj;
+        curRect = widget->geometry();
+        if (newrect.intersects(curRect))
+            return true;
+    }
+    return false;
+}
 
 
 void GroupElement::dropEvent(QDropEvent *event)
@@ -566,6 +708,7 @@ void GroupElement::dropEvent(QDropEvent *event)
     QByteArray name =    event->mimeData()->data("name");
     ControlRole  ctrlrole = (ControlRole)event->mimeData()->data("operation").toInt();
     ControlType  ctrltype = (ControlType)event->mimeData()->data("controltype").toInt();
+    QString srcgroupid = event->mimeData()->data("groupid");
 
     for(int key: rectmap.keys())
     {
@@ -574,17 +717,26 @@ void GroupElement::dropEvent(QDropEvent *event)
             rectmap[key].show = true;
             if(ctrlrole == cCreateEntry)
               addElement(rectmap[key],QString::number(key),ctrltype);
-            else if(ctrlrole == cRealControl)
+            else if((ctrlrole == cRealControl)&&(srcgroupid == m_uuid))
               moveElement(rectmap[key],index);
+            else if ((ctrlrole == cRealControl) && (srcgroupid != m_uuid)&&(srcgroupid!= WidgetFree))
+            {
+                moveElementFromAnother(rectmap[key], index, srcgroupid, ctrltype);
+            }
+            else if ((ctrlrole == cRealControl) && (srcgroupid == WidgetFree))
+            {                
+                QString elementid = event->mimeData()->data("elementid");
+                moveElementFromFreeRegion(rectmap[key], ctrltype, elementid);
+            }
         }
         else
         {
             rectmap[key].show = false;
         }
     }
-    update();
-
+    stateInit2();
 }
+
 GroupElement::RectInfo  GroupElement::get_rect(int irow, int icol, int rowspan,int colspan)
 {
      int left = m_leftmagin  + icol*(colspan + m_colspace);
@@ -811,6 +963,48 @@ void GroupElement::handleDragEvent()
     dg->exec(Qt::CopyAction | Qt::MoveAction);
 
 }
+void GroupElement::ipressHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton && ev->modifiers() == Qt::NoModifier)
+    {
+        for (auto index : widgetmap.keys())
+        {
+            if (widgetmap[index]->geometry().contains(ev->pos()))
+                return;
+        }
+        mMoving = true;
+        mLastMousePosition = ev->globalPos();
+    }
+}
+void GroupElement::imoveHandler(QMouseEvent* e)
+{
+    if (e->buttons().testFlag(Qt::LeftButton) && mMoving)
+    {
+        setCursor(Qt::OpenHandCursor);
+        QPoint offset = e->globalPos() - mLastMousePosition;
+
+        if (abs(offset.x()) > 50 || abs(offset.y()) > 50)
+        {
+
+            return;
+        }
+        QRect  currect = this->geometry();
+        currect.adjust(offset.x(), offset.y(), offset.x(), offset.y());
+      //  if (ColliderDetect(currect))
+          //  return;
+        this->move(this->pos() + (offset));
+        mLastMousePosition = e->globalPos();
+    }
+}
+void GroupElement::ireleaseHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton)
+    {
+        mMoving = false;
+        setCursor(Qt::ArrowCursor);
+    }
+}
+
 void GroupElement::mousePressEvent(QMouseEvent *event)
 {
     if(!ConfigGlobal::isEditing)
@@ -820,7 +1014,7 @@ void GroupElement::mousePressEvent(QMouseEvent *event)
     }
     qDebug() << "GroupElement::mousePressEvent:" << event->modifiers();
 
-    /*复制  判断如果 CTRL 被同时按下，进入赋值状态*/
+    /*复制  判断如果 shift 被同时按下，进入赋值状态*/
     if (event->modifiers() == Qt::ShiftModifier)
     {
         qDebug() << "GroupElement::mousePressEvent ControlModifier";
@@ -832,6 +1026,7 @@ void GroupElement::mousePressEvent(QMouseEvent *event)
         return;
     }       
     qDebug() << "GroupElement::mousePressEvent";
+    UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigGroup,this, m_valueSetMap);
     MoveAbleFrame::update_ctrl_point_pos(this,(QWidget*)parent());
     MoveAbleFrame::setControlStyle(cConfigGroup,false,m_uuid);
@@ -879,6 +1074,7 @@ void GroupElement::mousePressEvent(QMouseEvent *event)
 
         }
     }
+    ipressHandler(event);
     //MoveAbleFrame::mousePressEvent(event);
 }
 
@@ -894,7 +1090,7 @@ void GroupElement::mouseMoveEvent(QMouseEvent *event)
         deletehoverd = false;
         update();
     }
-    qDebug() << "GroupElement::mouseMoveEvent:" << handlertriggerd;
+   // qDebug() << "GroupElement::mouseMoveEvent:" << handlertriggerd;
     if ( (event->buttons()== Qt::LeftButton)&&handlertriggerd) {
         int distance = (event->pos() - handlertriggerdPos).manhattanLength();
         if (distance >= QApplication::startDragDistance())
@@ -903,8 +1099,20 @@ void GroupElement::mouseMoveEvent(QMouseEvent *event)
             handleDragEvent();
         }
     }
-
+    else
+    {
+        imoveHandler(event);
+    }
     QWidget::mouseMoveEvent(event);
+}
+void GroupElement::stateInit2()
+{
+    for (int key : rectmap.keys())
+    {
+        rectmap[key].show = false;
+        rectmap[key].selected = false;
+    }
+    update();
 }
 void GroupElement::stateInit()
 {
@@ -914,6 +1122,7 @@ void GroupElement::stateInit()
 void GroupElement::mouseReleaseEvent(QMouseEvent *event)
 {
     stateInit();
+    ireleaseHandler(event);
     QWidget::mouseReleaseEvent(event);
 }
 

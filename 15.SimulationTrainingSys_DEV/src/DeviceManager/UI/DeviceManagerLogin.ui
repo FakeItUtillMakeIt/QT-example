@@ -32,7 +32,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>DeviceManagerLogin</string>
+   <string>教学管理软件</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Labelbac{

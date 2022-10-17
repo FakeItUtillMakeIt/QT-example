@@ -20,6 +20,7 @@ RocketTypeManageModule::RocketTypeManageModule(QWidget* parent)
 	InitDisplayData();
 
 	configInfoTable->setColumnHidden(0, true);
+	configInfoTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	//更改ui.comboBox时更新窗口内容
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
@@ -223,7 +224,15 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		int curRow = opEditBtn->property("row").toInt();
 		editW->setRocketInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
 			configInfoTable->item(curRow, 2)->text());
+
+		editW->setParent(this);
+		editW->setWindowModality(Qt::ApplicationModal);
+		editW->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		editW->move((rtWorkArea.width() - editW->frameGeometry().width()) / 2, (rtWorkArea.height() - editW->frameGeometry().height()) / 2);
 		editW->show();
+
 		emit rocketInfoChanged();
 		});
 
@@ -244,6 +253,14 @@ void RocketTypeManageModule::insertOneRow(int insertRow, QVector<QString> rowDat
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::ROCKET_WIDGET);
 		w->setWindowTitle(configInfoTable->item(opCfgDataBtn->property("row").toInt(), 1)->text() + QString("-箭上数据通信协议配置"));
 
+
+		w->setParent(this);
+		w->setWindowModality(Qt::ApplicationModal);
+		w->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		w->move((rtWorkArea.width() - w->frameGeometry().width()) / 2, (rtWorkArea.height() - w->frameGeometry().height()) / 2);
 		w->show();
 		});
 
@@ -295,7 +312,15 @@ void RocketTypeManageModule::ImportResultDo(QString Qstr)
 	@brief 删除一行
 **/
 void RocketTypeManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(RocketInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	/*QMessageBox msgBoxWarning;
+	msgBoxWarning.setText(QString("确认删除当前数据吗?"));
+	msgBoxWarning.setWindowTitle(QString("警告"));
+	msgBoxWarning.setWindowIcon(QIcon(":/DeviceManager/images/TeachingManagement.ico"));
+	msgBoxWarning.setIcon(QMessageBox::Warning);
+	msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+	int ret = msgBoxWarning.exec();*/
+	int ret = AllInfoConfigWidget::getInstance()->delExecResult();
 	if (ret == 0)
 	{
 		return;

@@ -16,6 +16,7 @@ public:
 	Dragline::~Dragline();
 	
 	bool canDrag;
+	bool editflag;
 	int id;
 	QString name;
 	QString type;
@@ -29,7 +30,7 @@ public:
 	int color_num;
 	QStringList colors;
 	twoDdisplay* mainUI;
-	bool editflag;
+
 
 	void mousePressEvent(QMouseEvent* me);
 	void mouseMoveEvent(QMouseEvent* me);

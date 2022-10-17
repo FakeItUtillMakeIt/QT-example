@@ -2,6 +2,9 @@
 #include"qdebug.h"
 
 
+Dropwid::Dropwid()
+{
+}
 Dropwid::Dropwid(QWidget* parent) :QWidget(parent)
 {
 }
@@ -24,10 +27,17 @@ void Dropwid::dropEvent(QDropEvent* Qe)
     int type = Qe->mimeData()->data("labeltype").toInt();
     if (type == 1)
     {
+        this->mainUi->ui.height_line->setDisabled(false);
+        this->mainUi->ui.width_line->setDisabled(false);
         Dragimg* Di = new Dragimg(this->cur_editWid);
+        Di->id = this->mainUi->jsonData->base_Dimgid + 1;
+        this->mainUi->jsonData->base_Dimgid++;
+        Di->name = "dragimg_" + QString::number(Di->id);
+        Di->type = "1";
         Di->setCursor(Qt::PointingHandCursor);
         Di->mainUI= this->mainUi;
         Di->canDrag = true;
+        Di->editflag = true;
         QPixmap img = QPixmap(":/twoDdisplay/defaultimg");
         Di->mainUI->baseimg = img;
         Di->ownimg = img;
@@ -52,7 +62,6 @@ void Dropwid::dropEvent(QDropEvent* Qe)
         this->mainUi->ui.pos_y->setText(QString::number(Di->pos().y()));
         this->mainUi->complist.append(Di);
         this->mainUi->Dimglist.append(Di);
-
         this->mainUi->curComp = Di;
         this->mainUi->curCompimg = Di;
         this->mainUi->compType = 1;
@@ -60,10 +69,17 @@ void Dropwid::dropEvent(QDropEvent* Qe)
     }
     if (type == 2)
     {
+        this->mainUi->ui.height_line->setDisabled(true);
+        this->mainUi->ui.width_line->setDisabled(false);
         Dragcomponent* comp = new Dragcomponent(this->cur_editWid);
+        comp->id = this->mainUi->jsonData->base_Dcompid + 1;
+        this->mainUi->jsonData->base_Dcompid++;
+        comp->name = "dragcomp_" + QString::number(comp->id);
+        comp->type = "2";
         comp->setCursor(Qt::PointingHandCursor);
         comp->mainUI = this->mainUi;
         comp->canDrag = true;
+        comp->editflag = true;
         comp->setGeometry(QCursor().pos().x() - 352, QCursor().pos().y() - 216, 120, 40);
         comp->setMinimumSize(QSize(0, 40));
         comp->setMaximumSize(QSize(16777215, 40));
@@ -81,11 +97,13 @@ void Dropwid::dropEvent(QDropEvent* Qe)
         leftrect->setPixmap(QPixmap(QString::fromUtf8(":/twoDdisplay/rectleft")));
         compho->addWidget(leftrect);
         QLabel* btn = new QLabel(comp);
+        btn->setObjectName(comp->name);
+        btn->setAlignment(Qt::AlignHCenter);
         btn->setMinimumSize(QSize(0, 40));
         btn->setMaximumSize(QSize(16777215, 40));
         btn->setCursor(QCursor(Qt::PointingHandCursor));
         btn->setStyleSheet(QLatin1String("border-image:url(:/twoDdisplay/btnbg);\n"
-            "color:rgb(98,109,125);"));
+            "color:rgb(98,109,125);font-size:16px"));
         compho->addWidget(btn);
 
         QLabel* rightrect = new QLabel(comp);
@@ -102,10 +120,17 @@ void Dropwid::dropEvent(QDropEvent* Qe)
     }
     if (type == 3)
     {
+        this->mainUi->ui.height_line->setDisabled(true);
+        this->mainUi->ui.width_line->setDisabled(false);
         Dragline* dl = new Dragline(this->cur_editWid);
+        dl->id = this->mainUi->jsonData->base_lineid + 1;
+        this->mainUi->jsonData->base_lineid++;
+        dl->name = "hline_" + QString::number(dl->id);
+        dl->type = "3";
         dl->linetype = 0;
         dl->mainUI = this->mainUi;
         dl->canDrag = true;
+        dl->editflag = true;
         dl->setCursor(Qt::PointingHandCursor);
         dl->setStyleSheet("border-top:2px dashed white;");
         dl->setGeometry(QCursor().pos().x() - 392, QCursor().pos().y() - 194, 200, 10);
@@ -123,11 +148,17 @@ void Dropwid::dropEvent(QDropEvent* Qe)
     
     if (type == 4)
     {
-    
+        this->mainUi->ui.height_line->setDisabled(false);
+        this->mainUi->ui.width_line->setDisabled(true);
         Dragline* dl = new Dragline(this->cur_editWid);
         dl->linetype = 1;
+        dl->id = this->mainUi->jsonData->base_lineid + 1;
+        this->mainUi->jsonData->base_lineid++;
+        dl->name = "vline_" + QString::number(dl->id);
+        dl->type = "4";
         dl->mainUI = this->mainUi;
         dl->canDrag = true;
+        dl->editflag = true;
         dl->setCursor(Qt::PointingHandCursor);
         dl->setStyleSheet("border-left:2px dashed white;");
         dl->setGeometry(QCursor().pos().x() - 292, QCursor().pos().y() - 294, 10, 200);
@@ -144,11 +175,18 @@ void Dropwid::dropEvent(QDropEvent* Qe)
     }
     if (type == 5)
     {
+        this->mainUi->ui.height_line->setDisabled(false);
+        this->mainUi->ui.width_line->setDisabled(false);
 
         DragArea* da = new DragArea(this->cur_editWid);
    
+        da->id = this->mainUi->jsonData->base_areaid+1;
+        this->mainUi->jsonData->base_areaid++;
+        da->name = "area_" + QString::number(da->id);
+        da->type = "5";
         da->mainUI = this->mainUi;
         da->canDrag = true;
+        da->editflag = true;
         da->setCursor(Qt::PointingHandCursor);
         da->setStyleSheet("border:2px dashed white");
         da->setGeometry(QCursor().pos().x() - 342, QCursor().pos().y() - 244, 100, 100);
@@ -164,7 +202,7 @@ void Dropwid::dropEvent(QDropEvent* Qe)
         this->mainUi->compType = 5;
     }
 
-    this->mainUi->ui.attr_wid->show();
+   
  
 }
 

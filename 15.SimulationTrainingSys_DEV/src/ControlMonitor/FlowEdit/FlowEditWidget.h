@@ -7,12 +7,16 @@
 #include <QWidget>
 #include <QtWidgets>
 
+
 #include "../FlowEdit/FlowInfoConfig2DB.h"
 #include "../FlowEdit/CustomTableWidget.h"
+#include "../FlowEdit/ItemDelegate.h"
 
 
 using namespace CUSTOM_TABLE_WIDGET;
 
+
+class MainFlowInfoSt;
 /**
 
 	@class   FlowEditWidget
@@ -84,10 +88,14 @@ private:
 
 	QVector<QString> hadUsedCmdList;
 	QVector<QString> unUsedCmdList;
+	QVector<QString> hadSaveStage;
 
 	QVector<QComboBox*> cmdComboBoxList;//存储所有流程编辑界面的combox
 
 	QMap<QString, int> cmdName2Id;
+
+	MainFlowInfoSt* tableFlowInfoHeader;
+
 
 private:
 	void InitLayout();
@@ -95,7 +103,14 @@ private:
 
 	void loadDBSavedFlow();
 	void loadFlowDisplayFlow();
+
 	bool eventFilter(QObject* obj, QEvent* event);
+
+	//
+	void recurseUpdate(MainFlowInfoSt* node, int type);
+	void removeRowFrom2Index(int startRow, int rowSpan);
+	void updateSortIndex(MainFlowInfoSt* header);
+	void addRow(int rowIndex);
 
 private slots:
 	void addNewFlow();
@@ -108,12 +123,24 @@ private slots:
 	void clickOKButton();
 	void clickCancelButton();
 
-	//void changedComboBoxContent(QString text1);
-
 signals:
 	void updateDisPlayFlow();
 
 };
 
+/**
+
+	@class   MainFlowInfoSt
+	@brief   主流程信息结构
+	@details ~
+
+**/
+class MainFlowInfoSt {
+public:
+	MainFlowInfoSt* next = nullptr;
+	int sortNum;
+	int startRowNum;
+	int rowSpanCount;
+};
 
 #endif

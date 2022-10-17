@@ -1,12 +1,14 @@
 #include "ControlMonitorLogin.h"
-ControlMonitorLogin::ControlMonitorLogin(ControlMonitor* conMoni, QWidget* parent)
+ControlMonitorLogin::ControlMonitorLogin(SingleApplication* app, ControlMonitor* conMoni, QWidget* parent)
 	: QWidget(parent)
 	, m_pDeviceDAO(nullptr)
 {
 	ui.setupUi(this);
 	m_app = AppCache::instance();
+	this->setWindowIcon(QIcon(":/ControlMonitor/images/C3I-64_64.ico"));
 	setWindowFlags(Qt::FramelessWindowHint);
 	controlMonitor = conMoni;
+	m_nowApp = app;
 	Init();
 	connect(this, &ControlMonitorLogin::sendrocketType, conMoni, &ControlMonitor::recieverocketType);
 	connect(ui.LoginBt, SIGNAL(clicked()), this, SLOT(LoginSlot()));
@@ -19,6 +21,7 @@ void ControlMonitorLogin::LoginSlot()
 
 	//m_app->rokecttype->setText(ui.TypeComboBox->currentText());
 
+	m_nowApp->w = controlMonitor;
 	this->close();
 	controlMonitor->Init();
 	emit sendrocketType(m_app->m_allRocketType[typeId]->m_id);

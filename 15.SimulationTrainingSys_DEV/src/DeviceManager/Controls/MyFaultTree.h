@@ -78,6 +78,11 @@ public:
 	inline QString getName() {
 		return m_instanceName;
 	}
+
+	inline void setName(QString name) {
+		m_oneButton->setText(name);
+		m_instanceName = name;
+	}
 private:
 	QString m_instanceName;
 	QPushButton* m_oneButton; 

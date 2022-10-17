@@ -23,6 +23,7 @@ InfoConfigWidget::InfoConfigWidget(QWidget* parent)
 	this->setAutoFillBackground(true);
 
 	this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint | Qt::WindowStaysOnTopHint);
+	//this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint);
 
 	InitUILayout();
 

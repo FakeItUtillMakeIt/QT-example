@@ -193,6 +193,11 @@ void PropertySet::updateObject()
          ((ConfigCurve*)m_object)->updataDataFromTool();
 
      }
+     else if (m_ctrType == cConfigAlarm)
+     {
+         ((ConfigAlarm*)m_object)->updataDataFromTool();
+
+     }
 }
 
 void PropertySet::addIntSelect(QVBoxLayout* vlayout, ConfigValue* configvalue )
@@ -206,7 +211,7 @@ void PropertySet::addIntSelect(QVBoxLayout* vlayout, ConfigValue* configvalue )
     int intvalue = *(int*)configvalue->value;
  //   qDebug() <<"intvalue:" <<intvalue;
     spinbox->setValue(intvalue);
-
+    spinbox->setEnabled(configvalue->editEabled);
     connect(spinbox,static_cast<void (QSpinBox ::*)(int)>(&QSpinBox::valueChanged),[=](int){
         *(int*)configvalue->value  = spinbox->value();
    //     qDebug() << "spinbox valuechanged:"<<*(int*)configvalue->value;
@@ -394,8 +399,10 @@ void PropertySet::addDataSource(QVBoxLayout *vlayout,ConfigValue* configvalue )
         {
             idlist.push_back(valueid.toInt());
         }
-
-        paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
+        if(m_ctrType == cConfigAlarm)
+            paramselect.update_turn_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
+        else
+            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
         if (paramselect.exec() == QDialog::Rejected)
             return;
         int paramid = paramselect.get_select_key();
@@ -432,6 +439,7 @@ void PropertySet::addCommand(QVBoxLayout* vlayout, ConfigValue* configvalue)
 
     connect(btnsel, &QPushButton::clicked, [=](int) {
         ParamSelect  paramselect;
+        paramselect.setWindowTitle("指令选择");
         QString  valueid = configvalue->getStrValue();
         QVector<int>  idlist;
         if (valueid != "未设置")

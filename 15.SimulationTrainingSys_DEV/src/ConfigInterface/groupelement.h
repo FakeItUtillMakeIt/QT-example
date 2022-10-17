@@ -58,7 +58,7 @@ public:
     QList<ConfigButton*> buttonlist;
     QList<ConfigPairLabel*>& getPairLabelList();
     QList<ConfigAlarm*>& getAlarmList();
-    QList<ConfigButton*>& getButtonList();
+    QList<ConfigButton*>& getButtonList();    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -68,9 +68,17 @@ protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-
+    bool ColliderDetect(QRect  newrect);
     void resizeEvent(QResizeEvent *event);
     void moveEvent(QMoveEvent *event);
+
+#pragma region  移动
+    void ipressHandler(QMouseEvent* ev);
+    void imoveHandler(QMouseEvent* ev);
+    void ireleaseHandler(QMouseEvent* ev);
+    QPoint mLastMousePosition;
+    bool mMoving;
+#pragma endregion
 public:
     int m_width;
     int m_height;
@@ -85,6 +93,9 @@ public:
     void InitFromDefineStyle(QString istyleid);
     void copyProperty(QString styleid, QMap<int, int>& propertylist);
     void moveToCenterPos(QPoint centerpos);
+    QWidget* GetWidgetByIndex(int curindex, QString groupid, ControlType ctrltype);
+    void stateInit();
+    void stateInit2();
 
     QMap<int, int> & getPropertyList();
     QString getStyleId();
@@ -110,9 +121,17 @@ private:
     QMap<int,QWidget*>  widgetmap;
     QMap<int,RectInfo>  rectmap;
     void addElementBack(RectInfo &rectinfo, QString text, ControlType ctrltype);
+    void UpdateObjectGeometryLimit();
     void addElement(RectInfo &rectinfo, QString text, ControlType ctrltype);
     bool resizing = false;
     void moveElement(RectInfo &rectinfo, int index);
+    void moveElementFromAnother(RectInfo& rectinfo, int index,QString  groupid, ControlType ctrltype);
+    void moveElementFromFreeRegion(RectInfo& rectinfo,ControlType ctrltype,QString elementid);
+
+    void RemoveWidgetByIndex(int curindex);
+    void RemoveElementByIndex(QWidget* curwidget, QString groupid, ControlType ctrltype);
+    void AddElementByType(QWidget* curwidget, QString groupid, ControlType ctrltype);
+
     QString  m_uuid;
     void drawTitle(QPainter &painter);
     void drawDeleteEntry(QPainter &painter);
@@ -123,7 +142,6 @@ private:
     void handleDragEvent();
     bool  handlertriggerd = false;
     QPoint  handlertriggerdPos;
-    void stateInit();
     void delSelectedElements();
     void removeWidgetFromList(QWidget* widget);
 

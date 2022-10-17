@@ -28,6 +28,7 @@ ControlMonitor::ControlMonitor(QWidget* parent)
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
 	this->setGeometry(0, 0, 1920, 1080);
+	this->setWindowIcon(QIcon(":/ControlMonitor/images/C3I-64_64.ico"));
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	//加载字体包至成员变量font
 	int id = QFontDatabase::addApplicationFont(":/ControlMonitor/word/word.ttf");
@@ -207,6 +208,11 @@ void ControlMonitor::Init()
 		displayStatuInfo(msg, true);
 		return;
 	}
+	else
+	{
+		displayStatuInfo("修改启动状态成功", false);
+
+	}
 	displayStatuInfo("加载指令参数数据完毕！");
 	displayStatuInfo("加载用户数据完毕！");
 	displayStatuInfo("系统启动完毕！");
@@ -346,8 +352,8 @@ void ControlMonitor::flash_load()
 
 			QString s = "light";
 			QString w = "word";
-			QString word = w.append(QString::number(lightnumber));
-			QString str = s.append(QString::number(lightnumber));
+			QString word = w.append(QString::number(lightnumber -1));
+			QString str = s.append(QString::number(lightnumber -1));
 			label = ui.dengtiao->findChild<QLabel*>(str);
 			wordlabel = ui.lightbar->findChild<QLabel*>(word);
 			label->setPixmap(QPixmap(QString::fromUtf8(":/ControlMonitor/light")));

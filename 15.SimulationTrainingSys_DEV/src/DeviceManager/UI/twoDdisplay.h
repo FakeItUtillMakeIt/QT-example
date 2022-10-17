@@ -28,6 +28,7 @@ class Dragline;
 class DragArea;
 class Dataspace;
 class Rocketmodule;
+class Dropwid;
 
 
 
@@ -39,6 +40,7 @@ public:
 	twoDdisplay(QWidget *parent = nullptr);
 	~twoDdisplay();
 	Ui::twoDdisplayClass ui;
+	Dropwid* dw;
 	QWidget* zhezhao_global;
 	QPixmap  baseimg;
 	QWidget* curComp;
@@ -54,6 +56,7 @@ public:
 	QList<DragArea*> Darealist;
 	Dataspace *jsonData;
 	Rocketmodule* curModule;
+	int cur_module;
 
 	QList<QString> uploaded_img;
 	QList<QString> uploaded_video;
@@ -75,7 +78,7 @@ private:
 	//QList<QString>imglist;
 
 
-	int cur_module;
+	QString writefilepath;
 	bool editflag;
 	int prewimg_index;
 	int prewvideo_index;
@@ -85,8 +88,7 @@ private:
 	QWidget* deletewid;
 	QWidget* editwid;
 	QFile* module_thumbnail;
-	QString mudule_thumbnailpath;
-	int module_displaynum;
+
 	QFont font;
 	QLabel* curlabel;
 	int contentnum;
@@ -94,14 +96,14 @@ private:
 	QString curobjectname;
 	QString exepath;
 	QString thumbnail_originpath;
-	QString thumbnail_exepath;
+	QString mudule_thumbnailpath;
 
-	long long module_basenum;
 	bool testbool;
 	void dataload();
 	void checkpath(QString path);
 	void keyPressEvent(QKeyEvent* qe);
 	void jsondata_load();
+	void moduleTopage();
 	void dataTopage();
 	void data_toJson();
 	void cur_moduleChange();

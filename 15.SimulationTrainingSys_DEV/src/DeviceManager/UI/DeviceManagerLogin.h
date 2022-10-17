@@ -9,14 +9,14 @@
 #include "DeviceManager.h"
 #include "../AppCache.h"
 #include "../Database/DeviceDAO.h"
-
+#include "../Model/SingleApplication.h"
 #include <QMovie>
 class DeviceManagerLogin : public QWidget
 {
 	Q_OBJECT
 
 public:
-	DeviceManagerLogin(DeviceManager*, QWidget* parent = nullptr);
+	DeviceManagerLogin(SingleApplication* app,DeviceManager*, QWidget* parent = nullptr);
 	~DeviceManagerLogin();
 
 private:
@@ -24,6 +24,7 @@ private:
 	DeviceManager* deviceManager;
 	void Init();
 	AppCache* m_app;
+	SingleApplication* m_nowApp;
 	DataBase::DeviceDAO* m_pDeviceDAO;
 
 	QWidget* dataLoading;

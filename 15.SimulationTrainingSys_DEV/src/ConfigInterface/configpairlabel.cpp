@@ -38,7 +38,20 @@ ConfigPairLabel::ConfigPairLabel(QWidget* parent):QWidget(parent)
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showListMenu(const QPoint&)));
 
 }
-
+void  ConfigPairLabel::UpdateObjectGeometryLimit()
+{
+    m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eXPos]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eYPos]->uplimit = ConfigGlobal::scenesize.height();
+    m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eWidth]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eHeight]->uplimit = ConfigGlobal::scenesize.height();
+    if (m_ingroup)
+    {
+        m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eXPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eYPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eWidth]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigPairLabel::eHeight]->editEabled = false;
+    }
+}
 void ConfigPairLabel::showListMenu(const QPoint& point) {
 
     if (!ConfigGlobal::isEditing)
@@ -46,7 +59,7 @@ void ConfigPairLabel::showListMenu(const QPoint& point) {
         return;
     }
     QMenu* cmenu = new QMenu();
-    QAction* actSetCmd = cmenu->addAction("设置参数");
+    QAction* actSetCmd = cmenu->addAction("选择数据源");
     QString str = "为当前标签选择参数";
     connect(actSetCmd, &QAction::triggered, [=]() {
         {
@@ -164,6 +177,10 @@ bool ConfigPairLabel::UpdateStyleByStyleId(QString styleid)
 void ConfigPairLabel::setGroupId(QString groupid)
 {
     m_groupid = groupid;
+    if (m_groupid != WidgetFree)
+        m_ingroup = true;
+    else
+        m_ingroup = false;
 }
 void ConfigPairLabel::init_value_set()
 {
@@ -345,6 +362,38 @@ void ConfigPairLabel::updataGeometryFromData()
 {
     setGeometry(m_xPos,m_yPos,m_width,m_height);
 }
+void ConfigPairLabel::ipressHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton && ev->modifiers() == Qt::NoModifier)
+    {
+        mMoving = true;
+        mLastMousePosition = ev->globalPos();
+    }
+}
+void ConfigPairLabel::imoveHandler(QMouseEvent* e)
+{
+    if (e->buttons().testFlag(Qt::LeftButton) && mMoving)
+    {
+        setCursor(Qt::OpenHandCursor);
+        QPoint offset = e->globalPos() - mLastMousePosition;
+
+        if (abs(offset.x()) > 50 || abs(offset.y()) > 50)
+        {
+
+            return;
+        }
+        this->move(this->pos() + (offset));
+        mLastMousePosition = e->globalPos();
+    }
+}
+void ConfigPairLabel::ireleaseHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton)
+    {
+        mMoving = false;
+        setCursor(Qt::ArrowCursor);
+    }
+}
 
 void ConfigPairLabel::mousePressEvent(QMouseEvent *event)
 {
@@ -353,17 +402,23 @@ void ConfigPairLabel::mousePressEvent(QMouseEvent *event)
        QWidget::mousePressEvent(event);
        return;
     }
-
    // qDebug() <<"ConfigPairLabel:mousePressEvent:" << m_valueSetMap["数据源配置"].valuelist[ConfigPairLabel::eDataSource]->getStrValue();
     if (event->button() == Qt::LeftButton)
-            startPos = event->pos();
+    {
+          startPos = event->pos();
+          if (m_ingroup)
+              dragenabled = true;
+          if (event->modifiers() == Qt::ControlModifier)
+              dragenabled = true;
+    }
     if(!m_ingroup)
     {
          MoveAbleFrame::update_ctrl_point_pos(this,(QWidget*)parent());
          MoveAbleFrame::setControlStyle(cConfigPairLabel, false,m_uuid);
-
+         ipressHandler(event);
     }
     updateGeometryData();
+    UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigPairLabel,this, m_valueSetMap);
     if(m_ingroup)
      QWidget::mousePressEvent(event);
@@ -379,12 +434,24 @@ void ConfigPairLabel::handleDragEvent()
     md->setData("operation",QByteArray::number(m_ctrlrole));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("controltype",QByteArray::number(m_ctrltype));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("groupid",m_groupid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
+    md->setData("elementid", m_uuid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
 
     dg->setMimeData(md);   			//步骤1：设置拖动的数据。该函数会获得md的所有权。
     dg->setPixmap(this->grab());
     dg->setHotSpot(QPoint(this->width()/2,this->height()/2));
     dg->exec(Qt::CopyAction | Qt::MoveAction);
 
+}
+void ConfigPairLabel::mouseReleaseEvent(QMouseEvent* e)
+{
+    if (!ConfigGlobal::isEditing)
+    {
+        QWidget::mouseReleaseEvent(e);
+        return;
+    }
+    if (!m_ingroup)
+        ireleaseHandler(e);
+    QWidget::mouseReleaseEvent(e);
 }
 void ConfigPairLabel::mouseMoveEvent(QMouseEvent *ev)
 {
@@ -393,16 +460,21 @@ void ConfigPairLabel::mouseMoveEvent(QMouseEvent *ev)
        QWidget::mouseMoveEvent(ev);
        return;
     }
-    if(m_ingroup)
+    if(dragenabled)
     {
         if (ev->buttons() & Qt::LeftButton) {
            int distance = (ev->pos() - startPos).manhattanLength();
            if (distance >= QApplication::startDragDistance())
            {
                handleDragEvent();
+               dragenabled = false;
                return;
            }
         }
+    }
+    else
+    {
+        imoveHandler(ev);
     }
     QWidget::mouseMoveEvent(ev);
 }

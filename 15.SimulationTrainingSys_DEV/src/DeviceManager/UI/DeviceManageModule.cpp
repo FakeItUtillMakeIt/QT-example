@@ -14,6 +14,7 @@ DeviceManageModule::DeviceManageModule(QWidget* parent)
 
 	//隐藏ID列
 	configInfoTable->setColumnHidden(0, true);
+	configInfoTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
@@ -231,6 +232,14 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		int curRow = opEditBtn->property("row").toInt();
 		editW->setDevInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 1)->text(),
 			configInfoTable->item(curRow, 2)->text(), configInfoTable->item(curRow, 3)->text());
+		editW->setParent(this);
+		editW->setWindowModality(Qt::ApplicationModal);
+		editW->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		editW->move((rtWorkArea.width() - editW->frameGeometry().width()) / 2, (rtWorkArea.height() - editW->frameGeometry().height()) / 2);
+
 		editW->show();
 		});
 
@@ -247,8 +256,15 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::DEVICE_WIDGET);
 		w->setWindowTitle(configInfoTable->item(opDeleteBtn->property("row").toInt(), 2)->text() + QString("-设备配置"));
 
-		w->show();
+		w->setParent(this);
+		w->setWindowModality(Qt::ApplicationModal);
+		w->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
 
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		w->move((rtWorkArea.width() - w->frameGeometry().width()) / 2, (rtWorkArea.height() - w->frameGeometry().height()) / 2);
+
+		w->show();
 		});
 
 
@@ -258,7 +274,7 @@ void DeviceManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	@brief 删除一行
 **/
 void DeviceManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(DeviceInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = AllInfoConfigWidget::getInstance()->delExecResult();
 	if (ret == 0)
 	{
 		return;
@@ -403,6 +419,7 @@ void DeviceManageModule::insertOneRowData() {
 	addRocketTypeW->setWindowName(QString("新增设备"));
 	addRocketTypeW->setDevInfo(0, "", "", "");
 	addRocketTypeW->show();
+	addRocketTypeW->setWindowModality(Qt::ApplicationModal);
 #endif // NEW_UI
 
 #ifdef OLD_UI

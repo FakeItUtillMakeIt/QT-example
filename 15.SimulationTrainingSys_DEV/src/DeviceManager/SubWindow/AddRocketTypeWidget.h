@@ -36,7 +36,7 @@ public:
 	static AddRocketTypeWidget* getInstance() {
 		if (instance == nullptr)
 		{
-			instance = new AddRocketTypeWidget;
+			instance = new AddRocketTypeWidget();
 		}
 		return instance;
 	}
@@ -55,6 +55,8 @@ public:
 	void setParamInfo(int paramId, QString paramName, QString paramType, QString paramUnit, QString paramTableName);
 	void setDevInfo(int devId, QString rocketType, QString devName, QString devType);
 	void setCommandInfo(int cmdId, QString rocketType, QString cmdType, QString cmdName, QString backCmd, QString cmdTable);
+
+	void displayHaveExistInfo(QString infotext);
 
 private:
 	bool tableInfoInput = false;

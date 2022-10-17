@@ -13,7 +13,7 @@ namespace DataBase
 	}
 
 	CommandDAO::~CommandDAO()
-	{ 
+	{
 		if (is_connected)
 		{
 			mysql_close(&my_connection);//断开连接  
@@ -115,24 +115,24 @@ namespace DataBase
 		{
 			result = mysql_store_result(&my_connection);
 			if (result)
-			{ 
+			{
 				while (sql_row = mysql_fetch_row(result))
 				{
-					CommandParam* oneCommnd = new CommandParam(); 
-					oneCommnd->m_id = atoi(sql_row[0]); 
+					CommandParam* oneCommnd = new CommandParam();
+					oneCommnd->m_id = atoi(sql_row[0]);
 					oneCommnd->m_iCommand_id = atoi(sql_row[1]);
-					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[2]); 
-					oneCommnd->m_iCode = atoi(sql_row[3]); 
-					oneCommnd->m_iIndex = atoi(sql_row[4]); 
+					oneCommnd->m_sName = Utils::UTF8ToGBK(sql_row[2]);
+					oneCommnd->m_iCode = atoi(sql_row[3]);
+					oneCommnd->m_iIndex = atoi(sql_row[4]);
 					oneCommnd->m_iLength = atoi(sql_row[5]);
-					oneCommnd->m_sResultType = atoi(sql_row[6]); 
-					oneCommnd->m_dDefaultValue = atof(sql_row[7]); 
+					oneCommnd->m_sResultType = atoi(sql_row[6]);
+					oneCommnd->m_dDefaultValue = atof(sql_row[7]);
 					oneCommnd->m_val.val_f = 0;
 					if (m_app->m_allCommad.find(oneCommnd->m_iCommand_id) != m_app->m_allCommad.end())
 					{
 						Command* command = m_app->m_allCommad[oneCommnd->m_iCommand_id];
 						command->m_vCommandParam.push_back(oneCommnd);
-					} 
+					}
 				}
 			}
 			else
@@ -144,7 +144,7 @@ namespace DataBase
 			mysql_free_result(result);//释放结果资源  
 		return true;
 	}
-	 
+
 	///// <summary>
 	///// 获取所有帧
 	///// </summary>
@@ -389,7 +389,7 @@ namespace DataBase
 			return false;
 		}
 	}
-	bool CommandDAO::StartNotify(QString & msg)
+	bool CommandDAO::StartNotify(QString& msg)
 	{
 		if (!connected())
 		{
@@ -400,31 +400,36 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		int res;
+
+		string dropsql;
+		dropsql.append("drop table if EXISTS monitorstate;");
+		bool bret = exec_sql(dropsql);
+		if (!bret)
+		{
+			msg = "数据库操作失败";
+			return false;
+		}
+
 		string sql;
-		sql.append("CREATE TABLE  if not EXISTS `MonitorState` (\
+		sql.append("CREATE TABLE `MonitorState` (\
 			`id` int NOT NULL,\
 			`updatetime` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,\
 			 `state` int DEFAULT NULL,\
 			PRIMARY KEY(`id`)\
 			) ENGINE = InnoDB DEFAULT CHARSET = utf8; ");
 
-		bool bret = exec_sql(sql);
+		bret = exec_sql(sql);
 		if (!bret)
 		{
 			msg = "创建C3I状态表失败";
 			return false;
 		}
-		string updatesql = "update `MonitorState` set  updatetime=SYSDATE(),state=1 where id=1;";
-		 bret = exec_sql(updatesql);
+		string insertsql = "INSERT INTO `MonitorState` VALUES ('1',SYSDATE(), '1');";
+		bret = exec_sql(insertsql);
 		if (!bret)
 		{
-			string insertsql = "INSERT INTO `monitor_state` VALUES ('1',SYSDATE(), '1');";
-			bret = exec_sql(insertsql);
-			if (!bret)
-			{
-				msg = "修改C3I状态表为启动失败";
-				return false;
-			}
+			msg = "修改C3I状态表为启动失败";
+			return false;
 		}
 		return true;
 	}
@@ -439,7 +444,7 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		int res;
-		
+
 		string stopsql = "update `MonitorState` set  updatetime=SYSDATE(),state=0 where id=1;";
 		bool bret = exec_sql(stopsql);
 		if (!bret)
@@ -448,7 +453,7 @@ namespace DataBase
 			return false;
 		}
 		return true;
-	
+
 	}
 }
 

@@ -1,4 +1,5 @@
 ﻿#include "ItemDelegate.h"
+#include <QComboBox>
 
 ItemDelegate::ItemDelegate(QObject* parent) :
 	QStyledItemDelegate(parent)
@@ -52,6 +53,74 @@ bool ItemDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const Q
 	}
 
 	return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+
+Delegate::Delegate(QObject* parent)
+	: QItemDelegate(parent)
+{
+
+}
+
+Delegate::~Delegate()
+{
+
+}
+void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+	const QModelIndex& index) const
+{
+	QItemDelegate::paint(painter, option, index);
+}
+
+QSize Delegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+	return QItemDelegate::sizeHint(option, index);
+}
+
+QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option,
+	const QModelIndex& index) const
+{
+	if (index.isValid() && index.column() == COMBOXCOL)
+	{
+		QComboBox* editor = new QComboBox(parent);
+		editor->setEditable(true);
+		editor->installEventFilter(const_cast<Delegate*>(this));
+		return editor;
+	}
+	else
+	{
+		return QItemDelegate::createEditor(parent, option, index);
+	}
+}
+
+void Delegate::setEditorData(QWidget* editor, const QModelIndex& index) const
+{
+	if (index.isValid() && index.column() == COMBOXCOL)
+	{
+		QString value = index.model()->data(index, Qt::DisplayRole).toString();
+		QComboBox* combox = static_cast<QComboBox*>(editor);
+		combox->addItem("男");
+		combox->addItem("女");
+		combox->setCurrentText(value);
+	}
+	else
+	{
+		QItemDelegate::setEditorData(editor, index);
+	}
+}
+
+void Delegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+	const QModelIndex& index) const
+{
+	if (index.isValid() && index.column() == COMBOXCOL)
+	{
+		QComboBox* combox = static_cast<QComboBox*>(editor);
+		model->setData(index, combox->currentText());
+	}
+	else
+	{
+		QItemDelegate::setModelData(editor, model, index);
+	}
 }
 
 

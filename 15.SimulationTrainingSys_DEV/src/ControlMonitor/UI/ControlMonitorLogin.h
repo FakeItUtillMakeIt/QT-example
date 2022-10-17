@@ -3,12 +3,13 @@
 #include <QWidget>
 #include "ui_ControlMonitorLogin.h"
 #include "controlMonitor.h"
+#include "../../Model/SingleApplication.h"
 class ControlMonitorLogin : public QWidget
 {
 	Q_OBJECT
 
 public:
-	ControlMonitorLogin(ControlMonitor *, QWidget *parent = nullptr);
+	ControlMonitorLogin(SingleApplication* app, ControlMonitor *, QWidget *parent = nullptr);
 	~ControlMonitorLogin();
 
 private:
@@ -16,6 +17,7 @@ private:
 	ControlMonitor* controlMonitor;
 	void Init();
 	AppCache* m_app;
+	SingleApplication* m_nowApp;
 	DataBase::DeviceDAO* m_pDeviceDAO;
 public slots:
 	void LoginSlot();

@@ -17,6 +17,7 @@ struct ItemStruct
 	int faultType;//1:控制、2:测量、3:动力
 	int code;
 	QString Name;
+	QString oldName;
 
 	int FaultCommandID;//故障指令id
 	vector<int> responseCommandID;//受影响指令id

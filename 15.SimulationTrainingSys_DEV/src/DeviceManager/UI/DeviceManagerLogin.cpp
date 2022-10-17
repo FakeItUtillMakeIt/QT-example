@@ -5,13 +5,15 @@
 
 
 
-DeviceManagerLogin::DeviceManagerLogin(DeviceManager* devManager, QWidget* parent)
+DeviceManagerLogin::DeviceManagerLogin(SingleApplication* app,DeviceManager* devManager, QWidget* parent)
 	: QWidget(parent)
 	, m_pDeviceDAO(nullptr)
 {
 	ui.setupUi(this);
 	m_app = AppCache::instance();
+	m_nowApp = app;
 	deviceManager = devManager;
+	this->setWindowIcon(QIcon(":/DeviceManager/images/教学管理64_64.ico"));
 	setWindowFlags(Qt::FramelessWindowHint);
 	Init();
 	connect(ui.LoginBt, SIGNAL(clicked()), this, SLOT(LoginSlot()));
@@ -53,14 +55,14 @@ void DeviceManagerLogin::LoginSlot()
 {
 	int typeId = ui.TypeComboBox->currentData().toUInt();
 	m_app->m_CurrentRocketType = m_app->m_allRocketType[typeId];
-	this->close();
-
+	
+	m_nowApp->w = deviceManager;
 	dataLoading->show();
+
+	this->close();
 	deviceManager->Init();
 
 	//	deviceManager->show();
-
-
 	//ControlComPage.show();
 }
 void DeviceManagerLogin::CloseSlot()

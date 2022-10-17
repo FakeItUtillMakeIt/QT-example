@@ -10,6 +10,11 @@
     <height>869</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>ControlMonitor</string>
   </property>
@@ -599,22 +604,6 @@ QPushButton {
                </property>
               </widget>
              </item>
-             <item row="2" column="4">
-              <widget class="QWidget" name="widget_7" native="true">
-               <property name="minimumSize">
-                <size>
-                 <width>10</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>10</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="5">
               <widget class="QPushButton" name="pb_close">
                <property name="minimumSize">
@@ -657,6 +646,23 @@ QPushButton {
                </property>
               </widget>
              </item>
+             <item row="2" column="2">
+              <widget class="QWidget" name="widget_6" native="true">
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>15</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <zorder>widget_4</zorder>
+              </widget>
+             </item>
              <item row="2" column="0">
               <widget class="QWidget" name="widget_4" native="true">
                <property name="sizePolicy">
@@ -673,17 +679,17 @@ QPushButton {
                </property>
               </widget>
              </item>
-             <item row="2" column="2">
-              <widget class="QWidget" name="widget_6" native="true">
+             <item row="2" column="4">
+              <widget class="QWidget" name="widget_7" native="true">
                <property name="minimumSize">
                 <size>
-                 <width>15</width>
+                 <width>10</width>
                  <height>0</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>15</width>
+                 <width>10</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -691,6 +697,25 @@ QPushButton {
              </item>
              <item row="1" column="2">
               <widget class="QWidget" name="widget_5" native="true"/>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="ftlabel_2">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>9</pointsize>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color:#98b8f9</string>
+               </property>
+               <property name="text">
+                <string>试用版</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

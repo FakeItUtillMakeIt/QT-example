@@ -34,6 +34,7 @@ public:
     void initDataSourcesFromXmlData();
     void updateCurveToGlobalInterface();
     void updataDataFromTool();
+    void UpdateObjectGeometryLimit();
     void UpdatePropertyByStyle();
     void update_customplot_range();
 
@@ -48,6 +49,16 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *ev);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
+#pragma region  移动
+    void ipressHandler(QMouseEvent* ev);
+    void imoveHandler(QMouseEvent* ev);
+    void ireleaseHandler(QMouseEvent* ev);
+    QPoint mLastMousePosition;
+    bool mMoving;
+#pragma endregion
+
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *event);
     void contextMenuEvent(QContextMenuEvent* event);
@@ -66,7 +77,7 @@ private:
     void AddTitle(QString title);
     QList<QColor>  colorlist;
     QMap<QString,QCPGraph*>  curvelist; //key 是  参数索引
-  //  void timerEvent(QTimerEvent* event);
+    void timerEvent(QTimerEvent* event);
 
     //记录范围
     double xvalueMax = 0;

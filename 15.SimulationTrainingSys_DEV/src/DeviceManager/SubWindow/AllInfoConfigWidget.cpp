@@ -4,7 +4,8 @@ AllInfoConfigWidget* AllInfoConfigWidget::instance = nullptr;
 
 AllInfoConfigWidget::AllInfoConfigWidget(QWidget* parent)
 	: QWidget(parent) {
-	this->setWindowFlags(Qt::FramelessWindowHint);
+	//this->setWindowFlags(Qt::FramelessWindowHint);
+	this->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
 
 	InitUILayout();
 
@@ -153,7 +154,9 @@ void AllInfoConfigWidget::initRocketConfigLayout() {
 	leftTopHbx->setContentsMargins(0, 0, 0, 0);
 	QVBoxLayout* leftVbx = new QVBoxLayout;
 	leftVbx->addLayout(leftTopHbx);
-	leftVbx->addWidget(rocketComProtoList);
+	leftVbx->addSpacing(33);
+	//不显示协议
+	//leftVbx->addWidget(rocketComProtoList);
 	rocketComProtoList->setFixedWidth(220);
 	leftVbx->setContentsMargins(0, 0, 0, 0);
 
@@ -168,6 +171,7 @@ void AllInfoConfigWidget::initRocketConfigLayout() {
 
 	//右侧
 	row = 0; column = 1;
+	selectParamTitle->setFixedHeight(30);
 	rightGrid->addWidget(selectParamTitle, row, column, Qt::AlignLeft);
 	rightGrid->addWidget(searchSelect, row, columnC - 1, Qt::AlignRight);
 	row++;
@@ -180,7 +184,7 @@ void AllInfoConfigWidget::initRocketConfigLayout() {
 
 	searchLineEdit->setPlaceholderText(QString("搜索"));
 	searchSelect->setPlaceholderText(QString("搜索"));
-
+	searchSelect->hide();
 	rocketWidget->setLayout(midUILayout);
 
 
@@ -331,6 +335,7 @@ void AllInfoConfigWidget::initCommandConfigLayout() {
 	cmdFrameLabel->hide();
 	addCmdFrame->hide();
 	cmdFrameTable->hide();
+	searchCmdCfg->hide();
 }
 
 /**
@@ -338,8 +343,10 @@ void AllInfoConfigWidget::initCommandConfigLayout() {
 	//加载已有协议时将已有协议的配置信息显示
 **/
 void AllInfoConfigWidget::loadRocketInfoData() {
-
-	deviceParamTree->setStyleSheet("QTreeWidget::item:selected{border-image:url(:/DeviceManager/bt_normal.png);}");
+	searchLineEdit->clear();
+	deviceParamTree->setStyleSheet("QTreeWidget::item:selected{border-image:url(:/DeviceManager/bt_normal.png);}\
+									QTreeWidget::item{color:black;}\
+									");
 	rocketComProtoList->clear();
 
 	QString qSqlString = QString("SELECT\
@@ -406,6 +413,7 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 
 				subItem->setCheckState(1, Qt::Unchecked);
 				subItem->setSelected(false);
+				subItem->setFlags(Qt::ItemIsEnabled);
 
 				subItem->setText(1, QString::fromStdString(ele1.second[3 + 4 * i]));
 
@@ -444,12 +452,14 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 				if (curSlcProtoInfo[deviceParamTree->topLevelItem(i)->child(j)->data(1, Qt::UserRole).toInt()].empty())
 				{
 					deviceParamTree->topLevelItem(i)->child(j)->setCheckState(1, Qt::Unchecked);
+					deviceParamTree->topLevelItem(i)->child(j)->setFlags(Qt::ItemIsEnabled);
 					deviceParamTree->topLevelItem(i)->child(j)->setSelected(false);
 				}
 				else
 				{
 					deviceParamTree->topLevelItem(i)->child(j)->setCheckState(1, Qt::Checked);
 					deviceParamTree->topLevelItem(i)->child(j)->setSelected(true);
+					deviceParamTree->topLevelItem(i)->child(j)->setFlags(Qt::ItemIsEnabled);
 					QListWidgetItem* selctDevParam = new QListWidgetItem(deviceParamTree->topLevelItem(i)->child(j)->text(1));
 					selctDevParam->setData(Qt::UserRole, deviceParamTree->topLevelItem(i)->child(j)->data(1, Qt::UserRole).toInt());
 					hadSelectedParamsL->addItem(selctDevParam);
@@ -457,6 +467,23 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 
 			}
 		}
+	}
+	else
+	{
+		QListWidgetItem* comProtoItem = new QListWidgetItem;
+		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			rocket_info.id,\
+			rocket_info.`name`,\
+			rocket_info.createTime,\
+			rocket_info.lastUpdateTime\
+			FROM\
+			rocket_info\
+			WHERE\
+			rocket_info.id = %1").arg(rocketID));
+		comProtoItem->setText(QString::fromLocal8Bit(DeviceDBConfigInfo::getInstance()->customReadInfoMap[rocketID][1].c_str()) + QString("-箭上通信协议"));
+		comProtoItem->setData(Qt::UserRole, -1);
+		rocketComProtoList->addItem(comProtoItem);
+		rocketComProtoList->setCurrentRow(0);
 	}
 #ifdef __0__
 	//else
@@ -790,6 +817,8 @@ void AllInfoConfigWidget::loadRocketInfoData() {
 
 **/
 void AllInfoConfigWidget::loadDeviceInfoData() {
+	searchDeviceCfg->hide();
+	searchDevParam->clear();
 	deviceCfgList->clear();
 
 	//list
@@ -830,6 +859,43 @@ void AllInfoConfigWidget::loadDeviceInfoData() {
 			}
 		});
 
+	//响应设备参数搜索
+	connect(searchDevParam, &QLineEdit::textChanged, this, [=](QString inputParamName) {
+		if (inputParamName.isEmpty())
+		{
+			for (auto firW : scrollAreaParam->widget()->children())
+			{
+				qDebug() << firW->objectName();
+				if (firW->objectName().isEmpty())
+				{
+					continue;
+				}
+				static_cast<QWidget*>(firW)->show();
+
+			}
+			return;
+		}
+		for (auto firW : scrollAreaParam->widget()->children())
+		{
+			if (firW->objectName().contains(inputParamName))
+			{
+				static_cast<QWidget*>(firW)->show();
+			}
+			else
+			{
+				if (firW->objectName().isEmpty())
+				{
+					continue;
+				}
+				static_cast<QWidget*>(firW)->hide();
+
+			}
+		}
+		scrollAreaParam->layout()->update();
+		scrollAreaParam->layout()->update();
+
+		});
+
 
 	//设备显示
 	rocketWidget->hide();
@@ -858,16 +924,16 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 	{
 		QWidget* widget = new QWidget;
 		//widget->setFixedWidth(330);
-		widget->setObjectName("widget");
+
 		QHBoxLayout* statusHbox = new QHBoxLayout;
 		QLabel* lab = new QLabel(QString::fromStdString(ele.second[1]));
-		lab->setFixedWidth(200);
+		lab->setFixedWidth(180);
 		lab->setProperty("id", ele.first);
 		lab->setObjectName("status");
 		statusHbox->addWidget(lab);
 
 		QLabel* fileLab = new QLabel;
-		fileLab->setFixedWidth(500);
+		fileLab->setFixedWidth(450);
 		fileLab->setFixedHeight(30);
 		fileLab->setObjectName("fileLab");
 		fileLab->setAlignment(Qt::AlignVCenter);
@@ -879,14 +945,24 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 		statusHbox->addStretch(1);
 
 		QCheckBox* statusCheck = new QCheckBox;
-		statusHbox->addStretch(1);
+		//statusHbox->addStretch(1);
 		statusHbox->addWidget(statusCheck);
 		statusCheck->setObjectName("checkbox");
+
+		QPushButton* delStatus = new QPushButton();
+		delStatus->setStyleSheet("QPushButton{width:18px;height:18px;color:red;border-image:url(:/DeviceManager/icon/close_b.png);}\
+									QPushButton::hover{border-image:url(:/DeviceManager/icon/close_small.png);}");
+
+		auto vv = QVariant(ele.second[1].c_str());
+		widget->setObjectName(vv.toString());
+		delStatus->setProperty("statName", vv);
+
+		statusHbox->addWidget(delStatus);
 
 		widget->setLayout(statusHbox);
 		rightGird->addWidget(widget, curInd / rightGridColumnC, curInd % rightGridColumnC);
 		rightGird->setRowStretch(curInd / rightGridColumnC, 1);
-		widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		widget->setStyleSheet(QString("QWidget#%1{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}").arg(vv.toString()));
 		deviceStatList.push_back(widget);
 		widget->setFixedHeight(40);
 		curInd++;
@@ -901,6 +977,17 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 			filepath1 = filepath1.split("/device/")[1];
 			fileLab->setWordWrap(true);
 			fileLab->setText(filepath1);
+			});
+
+		connect(delStatus, &QPushButton::clicked, this, [=]() {
+			//获取删除的信息
+			QString delStatName = delStatus->property("statName").toString();
+			QWidget* wait2DelW = scrollAreaStat->findChild<QWidget*>(delStatName);
+			QLabel* delwLab = wait2DelW->findChild<QLabel*>("status");
+			DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM `simulatedtraining`.`status_info` WHERE `name` = '%1';").arg(delStatName));
+			auto delwLabName = delwLab->text();
+			rightGird->removeWidget(wait2DelW);
+			wait2DelW->deleteLater();
 			});
 
 	}
@@ -923,6 +1010,7 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 	scrollAreaStatContent->setObjectName("content");
 
 	scrollAreaStat->setWidgetResizable(true);
+
 
 	//设备已有状态绑定
 	//根据当前设备设置选中项
@@ -965,6 +1053,8 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 		//需要输入一个状态名
 		QWidget* newStatW = new QWidget;
 		QVBoxLayout* newStatWLayout = new QVBoxLayout;
+		newStatW->setWindowIcon(QIcon(":/FaultInjection/images/指令2.png"));
+		newStatW->setWindowTitle(QString("添加新状态"));
 		QLabel* statName = new QLabel(QString("状态名:"));
 		QLineEdit* lineStat = new QLineEdit;
 		QPushButton* okStat = new QPushButton(QString("确定"));
@@ -972,22 +1062,48 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 		newStatWLayout->addWidget(lineStat);
 		newStatWLayout->addWidget(okStat);
 		newStatW->setLayout(newStatWLayout);
+		newStatW->setFixedSize(150, 100);
+		newStatW->setWindowFlags(Qt::WindowCloseButtonHint);
+		newStatW->setWindowModality(Qt::ApplicationModal);
+		//newStatW->setWindowFlags(this->windowFlags() | Qt::Dialog);
 		newStatW->show();
 
 		connect(okStat, &QPushButton::clicked, this, [=]() {
+			if (lineStat->text().isEmpty())
+			{
+				displaySuccsInfo(QString("状态名不能为空"));
+				return;
+			}
+			//先检查是否已存在状态
+			DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+				status_info.id,\
+				status_info.createTime,\
+				status_info.lastUpdateTime\
+				FROM\
+				status_info\
+				WHERE\
+				status_info.`name`='%1'\
+				").arg(lineStat->text()));
+			auto tmpa = DeviceDBConfigInfo::getInstance()->customReadInfoMap;
+			if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+			{
+				displaySuccsInfo(QString("已存在状态信息"));
+				return;
+			}
 			newStatW->deleteLater();
 
 			QWidget* widget = new QWidget;
-			//widget->setFixedWidth(330);
-			widget->setObjectName("widget");
+
+
 			QHBoxLayout* statusHbox = new QHBoxLayout;
 			QLabel* statLabb = new QLabel(lineStat->text());
 			statLabb->setObjectName("status");
-			statLabb->setFixedWidth(200);
+			statLabb->setFixedWidth(180);
 			statusHbox->addWidget(statLabb);
 
 			QLabel* fileLab = new QLabel;
-			fileLab->setFixedWidth(500);
+			fileLab->setFixedWidth(450);
+			fileLab->setFixedHeight(30);
 			fileLab->setObjectName("fileLab");
 			statusHbox->addWidget(fileLab);
 			statusHbox->addStretch(1);
@@ -1000,9 +1116,21 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 
 			statusHbox->addWidget(statusCheck);
 			statusCheck->setObjectName("checkbox");
+
+			QPushButton* delStatus = new QPushButton();
+			delStatus->setStyleSheet("QPushButton{width:18px;height:18px;color:red;border-image:url(:/DeviceManager/icon/close_b.png);}\
+									QPushButton::hover{border-image:url(:/DeviceManager/icon/close_small.png);}");
+
+			auto vv = QVariant(lineStat->text());
+			widget->setObjectName(vv.toString());
+			delStatus->setProperty("statName", vv);
+
+			statusHbox->addWidget(delStatus);
+
+
 			widget->setFixedHeight(40);
 			widget->setLayout(statusHbox);
-			widget->setStyleSheet(QString("QWidget#widget{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+			widget->setStyleSheet(QString("QWidget#%1{width:330px;height:58px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}").arg(lineStat->text()));
 			rightGird->addWidget(widget);
 			//同步至数据表
 			DeviceDBConfigInfo::getInstance()->customRunSql(QString("INSERT INTO `simulatedtraining`.`status_info`(`name`) VALUES ('%1')").arg(lineStat->text()));
@@ -1023,8 +1151,18 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 				fileLab->setText(filepath1);
 				});
 
-			});
+			connect(delStatus, &QPushButton::clicked, this, [=]() {
+				//获取删除的信息
+				QString delStatName = delStatus->property("statName").toString();
+				QWidget* wait2DelW = scrollAreaStat->findChild<QWidget*>(delStatName);
+				QLabel* delwLab = wait2DelW->findChild<QLabel*>("status");
+				DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM `simulatedtraining`.`status_info` WHERE `name` = '%1';").arg(delStatName));
+				auto delwLabName = delwLab->text();
+				rightGird->removeWidget(wait2DelW);
+				wait2DelW->deleteLater();
+				});
 
+			});
 
 		});
 
@@ -1056,8 +1194,9 @@ void AllInfoConfigWidget::deviceParamContentUpdate() {
 	for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
 	{
 		QWidget* widget = new QWidget;
-		widget->setObjectName("widget");
-		//widget->setFixedSize(600, 40);
+		auto vv = QVariant(ele.second[1].c_str());
+		widget->setObjectName(vv.toString());
+
 		widget->setFixedHeight(40);
 		QHBoxLayout* statusHbox = new QHBoxLayout;
 		QLabel* lab = new QLabel(QString::fromStdString(ele.second[1]));
@@ -1076,8 +1215,8 @@ void AllInfoConfigWidget::deviceParamContentUpdate() {
 
 		widget->setLayout(statusHbox);
 		rightGird2->addWidget(widget, curInd2 / rightGridColumnC2, curInd2 % rightGridColumnC2);
-		rightGird2->setRowStretch(curInd2 / rightGridColumnC2, 1);
-		widget->setStyleSheet(QString("QWidget#widget{width:600px;height:40px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}"));
+		//rightGird2->setRowStretch(curInd2 / rightGridColumnC2, 1);
+		widget->setStyleSheet(QString("QWidget#%1{width:600px;height:40px;border:1px solid black;border-radius:5px;background-color:rgba(255,255,255,1);}").arg(vv.toString()));
 		deviceParamList.push_back(widget);
 
 		curInd2++;
@@ -1120,6 +1259,9 @@ void AllInfoConfigWidget::deviceParamContentUpdate() {
 	}
 }
 
+/**
+	@brief 加载指令数据
+**/
 void AllInfoConfigWidget::loadCmdInfoData() {
 	cmdCfgList->clear();
 	//list
@@ -1387,14 +1529,16 @@ void AllInfoConfigWidget::InitUILayout() {
 	 //左侧
 	rocketSearch = new QLineEdit;
 	rocketSearch->setPlaceholderText(QString("搜索/新增协议"));
+	rocketSearch->hide();
 	addCommuProto = new QPushButton;
 	addCommuProto->setStyleSheet(QString("QPushButton{min-height:30px;border:none;image:url(:/icon/icon/+hao.png);}"));
 	addCommuProto->setAutoRepeat(true);
 	addCommuProto->setAutoRepeatInterval(100);
+	addCommuProto->hide();
 	rocketComProtoList = new QListWidget;
 	//rocketComProtoList->setStyleSheet(WidgetStyleSheet::getInstace()->deviceManageListSS.arg(":/icon/icon/ww.png").arg(":/icon/icon/bb.png"));
 	rocketComProtoList->setStyleSheet(QString("QListWidget{border:none;background-color:rgba(249,249,249,1);font:微软雅黑 14px bold;text-align:center;border-right-color:rgb(142,145,145);}\
-				QListWidget::item{border-radius:3px;padding:5px;margin:0 0 10 0;min-height:20px;focus:NoFocus;}\
+				QListWidget::item{border-radius:3px;padding:5px;margin:0 0 10 0;min-height:40px;focus:NoFocus;}\
 				QListWidget::item:hover{background-color:rgba(63,144,255,1);}\
 				QListWidget::item:selected{background-color:rgba(63,144,255,1);}"));
 	rocketComProtoList->setFocusPolicy(Qt::NoFocus);
@@ -1415,7 +1559,7 @@ void AllInfoConfigWidget::InitUILayout() {
 	searchSelect->setStatusTip(QString("搜索"));
 
 	hadSelectedParamsL = new QListWidget;
-
+	//hadSelectedParamsL->setFixedWidth(320);
 	/*!
 	 *  Inits the u i layout.设备配置
 	 */
@@ -1597,7 +1741,29 @@ void AllInfoConfigWidget::initConnect() {
 	connect(cancelBtn, &QPushButton::clicked, this, &AllInfoConfigWidget::clickedCancelBtn);
 	connect(okBtn, &QPushButton::clicked, this, &AllInfoConfigWidget::clickedOkBtn);
 
-	connect(searchLineEdit, &QLineEdit::editingFinished, this, [=]() {
+	connect(searchLineEdit, &QLineEdit::textEdited, this, [=]() {
+		if (searchLineEdit->text().isEmpty())
+		{
+			loadRocketInfoData();
+			return;
+		}
+
+		QList<QTreeWidgetItem*> releSearchRet;
+		for (int i = 0; i < deviceParamTree->topLevelItemCount(); i++)
+		{
+			for (int j = 0; j < deviceParamTree->topLevelItem(i)->childCount(); j++)
+			{
+				if (deviceParamTree->topLevelItem(i)->child(j)->text(1).contains(searchLineEdit->text()))
+				{
+					deviceParamTree->topLevelItem(i)->child(j)->setHidden(false);
+
+				}
+				else
+				{
+					deviceParamTree->topLevelItem(i)->child(j)->setHidden(true);
+				}
+			}
+		}
 
 		});
 
@@ -1650,6 +1816,50 @@ void AllInfoConfigWidget::clickedOkBtn() {
 		}
 		//读取rocketComProtoList中选中的选项作为使用的协议
 		int rocketDataID = rocketComProtoList->currentItem()->data(Qt::UserRole).toInt();
+		if (rocketDataID == -1)
+		{
+			//先检查表中同一火箭型号是否存在相同code
+			DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+			rocket_data_info.id,\
+			rocket_data_info.`name`,\
+			rocket_data_info.`code`,\
+			rocket_data_info.createTime,\
+			rocket_data_info.lastUpdateTime\
+			FROM\
+			rocket_data_info\
+			WHERE\
+			rocket_data_info.rocket_id = %1").arg(rocketID));
+			QVector<int> thisRocketCodes;
+			for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+			{
+				thisRocketCodes.push_back(atoi(ele.second[2].c_str()));
+			}
+			int addCode = 1;
+			for (int i = 1; i < 255; i++)
+			{
+				if (thisRocketCodes.count(i) == 0)
+				{
+					addCode = i;
+					break;
+				}
+			}
+			DeviceDBConfigInfo::getInstance()->rocketDataInfo2DB(rocketID, rocketComProtoList->item(0)->text(), addCode, 0x55aa);
+			DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
+				rocket_data_info.id,\
+				rocket_data_info.createTime,\
+				rocket_data_info.lastUpdateTime\
+				FROM\
+				rocket_data_info\
+				WHERE\
+				rocket_data_info.rocket_id = %1 AND\
+				rocket_data_info.`code` = %2").arg(rocketID).arg(addCode));
+
+			for (auto ele : DeviceDBConfigInfo::getInstance()->customReadInfoMap)
+			{
+				rocketDataID = ele.first;
+			}
+
+		}
 		//将之前该协议的配置清除
 		DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM `simulatedtraining`.`rockect_param_info` WHERE `rocket_data_id` = %1").arg(rocketDataID));
 		int paramIndex = -1;
@@ -1659,7 +1869,8 @@ void AllInfoConfigWidget::clickedOkBtn() {
 		{
 			DeviceDBConfigInfo::getInstance()->rocketParamInfo2DB(rocketDataID, hadSelectedParamsL->item(rowR)->data(Qt::UserRole).toInt(), rowR + 1, 1, 0);
 		}
-		QMessageBox::information(this, QString("信息"), QString("协议配置成功"));
+		//QMessageBox::information(this, QString("信息"), QString("协议配置成功"), QString("确定"));
+		displaySuccsInfo(QString("协议配置成功"));
 	}
 	else if (curWidget == DeviceCommonVaries::DEVICE_WIDGET)
 	{
@@ -1809,4 +2020,31 @@ void AllInfoConfigWidget::mouseReleaseEvent(QMouseEvent* event)
 		mMoving = false;
 		setCursor(Qt::ArrowCursor);
 	}
+}
+
+/**
+	@brief
+	@retval  -
+**/
+int AllInfoConfigWidget::delExecResult() {
+	QMessageBox msgBoxWarning;
+	msgBoxWarning.setText(QString("确认删除当前数据吗?"));
+	msgBoxWarning.setWindowTitle(QString("警告"));
+	msgBoxWarning.setWindowIcon(QIcon(":/DeviceManager/images/TeachingManagement.ico"));
+	msgBoxWarning.setIcon(QMessageBox::Warning);
+	msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+	int ret = msgBoxWarning.exec();
+	return ret;
+}
+
+
+void AllInfoConfigWidget::displaySuccsInfo(QString textinfo) {
+	QMessageBox msgBoxWarning;
+	msgBoxWarning.setText(textinfo);
+	msgBoxWarning.setWindowTitle(QString("信息"));
+	msgBoxWarning.setWindowIcon(QIcon(":/FaultInjection/images/指令2.png"));
+	msgBoxWarning.setIcon(QMessageBox::Information);
+	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+	int ret = msgBoxWarning.exec();
 }

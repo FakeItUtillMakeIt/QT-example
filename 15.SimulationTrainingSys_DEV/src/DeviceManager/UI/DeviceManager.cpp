@@ -15,16 +15,18 @@ DeviceManager::DeviceManager(QWidget* parent)
 	, tb_show(nullptr)
 	, m_myInfoTip(nullptr)
 	, m_isMax(false)
+	, m_hlayoutdisplay(nullptr)
 {
 	ui.setupUi(this);
 	m_app = AppCache::instance();
 	//ui.lb_title->setText(m_app->m_soft->GetName());//ui 进行了修改，标题不需要再读入（杨）
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
 	this->setWindowTitle(m_app->m_soft->GetName());
+	this->setWindowIcon(QIcon(":/DeviceManager/images/教学管理64_64.ico"));
 	setAttribute(Qt::WA_TranslucentBackground, true);
+	ui.tabWidget->setCurrentIndex(0);
 	//Init();
 
-	qDebug() << "DeviceManager：" << QThread::currentThreadId() << QThread::currentThread();
 	//加载时间
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(timeUpdate()));
@@ -219,8 +221,8 @@ void DeviceManager::Init()
 	//new twoDdisplay(ui.tab_taskManege);
 	if (m_hlayoutdisplay != nullptr)
 	{
-		delete m_twoDdisplay;
-		m_twoDdisplay = nullptr;
+		/*delete m_twoDdisplay;
+		m_twoDdisplay = nullptr;*/
 
 		delete m_hlayoutdisplay;
 		m_hlayoutdisplay = nullptr;
@@ -423,7 +425,7 @@ void DeviceManager::InitDevice()
 	connect(initThread, &QThread::started, initWorker, &WorkThread::doWork);
 	initThread->start();
 	connect(initWorker, &WorkThread::workFinished, this, [=]() {
-		QMessageBox::information(nullptr, "信息", "数据加载完毕！");
+		QMessageBox::information(this, "信息", "数据加载完毕！", "确定");
 		});
 
 	////设备参数初始化  四个需要初始化的值

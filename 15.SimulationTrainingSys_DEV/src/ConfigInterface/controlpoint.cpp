@@ -58,6 +58,7 @@ QRect & ControlPoint::ajust_distance(QRect& rect,QPoint&  interval )
 {
     switch (m_direct) {
     case dTopLeft:
+        rect = rect.adjusted(interval.x(), interval.y(), 0, 0);
         break;
     case dBottomLeft:
         rect = rect.adjusted(interval.x(),0,0,interval.y());

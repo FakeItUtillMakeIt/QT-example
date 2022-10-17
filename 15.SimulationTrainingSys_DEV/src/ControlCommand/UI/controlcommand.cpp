@@ -13,7 +13,7 @@ void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 {
 	if (!gCenterOperate)
 	{
-		QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
+		QMessageBox::warning(nullptr, ("错误"), ("指令处理接口未初始化"));
 		return;
 	}
 	gCenterOperate->sendCMDFromInterface(cmd, btn);

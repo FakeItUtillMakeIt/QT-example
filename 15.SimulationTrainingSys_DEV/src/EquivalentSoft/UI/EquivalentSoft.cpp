@@ -28,7 +28,7 @@ void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 {
 	if (!gCenterOperate)
 	{
-		QMessageBox::warning(nullptr, ("错误"), ("命令处理接口未初始化"));
+		QMessageBox::warning(nullptr, ("错误"), ("指令处理接口未初始化"));
 		return;
 	}
 	gCenterOperate->sendCMDFromInterface(cmd, btn);
@@ -51,7 +51,8 @@ EquivalentSoft::EquivalentSoft(QWidget* parent)
 	m_app = AppCache::instance();
 	//ui.lb_title->setText(m_app->m_soft->GetName());
 	this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);//去掉标题栏
-	//this->setWindowTitle(m_app->m_soft->GetName());
+	this->setWindowTitle(m_app->m_soft->GetName());
+	this->setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	ui.comboBox->setView(new  QListView());
 

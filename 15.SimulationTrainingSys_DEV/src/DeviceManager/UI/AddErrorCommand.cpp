@@ -8,12 +8,14 @@ AddErrorCommand::AddErrorCommand(QWidget* parent)
     : QWidget(parent)
     , m_scrollAreaFault(nullptr)
     , m_isAddFault(false)
+    , m_oldName("")
 {
     ui.setupUi(this);
     setAttribute(Qt::WA_ShowModal, true);
 
     m_app = AppCache::instance();
 
+    setWindowIcon(QIcon(":/DeviceManager/images/教学管理64_64.ico"));
     setWindowFlags(Qt::FramelessWindowHint);//去掉标题栏
     setAttribute(Qt::WA_TranslucentBackground, false);
     this->move(420, 108);    //设置位置
@@ -232,7 +234,7 @@ void AddErrorCommand::AddFault()
 void AddErrorCommand::OnFaultNode(QString name, int deviceid)
 {
     //根据传入的faultItems和name比较，显示出当前故障的信息数据
-
+    m_oldName = name;
     m_isAddFault = false;
     if (ui.pb_edit->text() == "完成")
     {
@@ -285,7 +287,7 @@ void AddErrorCommand::DelFault()
 {
     if (ui.le_errorName->text() == "")
     {
-        QMessageBox::information(this, tr("提示"), "请选择需要删除的故障！");
+        QMessageBox::information(this, tr("提示"), "请选择需要删除的故障！", "确定");
         return;
     }
 
@@ -350,13 +352,13 @@ void AddErrorCommand::EditFault()
 {
     if (ui.le_errorName->text() == "")
     {
-        QMessageBox::information(this, tr("提示"), "请输入故障名称！");
+        QMessageBox::information(this, tr("提示"), "请输入故障名称！", "确定");
         return;
     }
 
     if (m_faultItems.size() < 0)
     {
-        QMessageBox::information(this, tr("提示"), "请添加故障！");
+        QMessageBox::information(this, tr("提示"), "请添加故障！","确定");
         return;
     }
 
@@ -365,17 +367,21 @@ void AddErrorCommand::EditFault()
         ui.pb_edit->setText("完成");
 
         IsEnable(true);
+        ui.le_errorName->setReadOnly(false);
+        ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(0, 0, 0);");
 
         ShowParamsTable(ui.cb_faultType->currentIndex(),ui.cb_deciveType->currentIndex());//表格中全显示
     }
     else
     {
+        ui.le_errorName->setReadOnly(true);
+        ui.le_errorName->setStyleSheet("border:2px groove gray;border-radius:5px;padding:2px 4px;font: 12pt 微软雅黑;color: rgb(142, 142, 142);");
         //TODO  目前不支持即影响参数故障又影响指令故障。如果需要则需要判断是参数故障还是指令故障，如果是修改且需要判断之前是什么故障，更要注意数据库的增删该查
         if (ui.cb_faultType->currentIndex() == 0)
         {
             if (m_tempParamId.size() <= 0)
             {
-                QMessageBox::information(this, tr("提示"), "故障至少影响一个参数！");
+                QMessageBox::information(this, tr("提示"), "故障至少影响一个参数！", "确定");
                 return;
             }
         }
@@ -383,7 +389,7 @@ void AddErrorCommand::EditFault()
         {
             if (m_tempCommandId.size() <= 0)
             {
-                QMessageBox::information(this, tr("提示"), "故障至少影响一个指令！");
+                QMessageBox::information(this, tr("提示"), "故障至少影响一个指令！", "确定");
                 return;
             }
         }
@@ -422,22 +428,27 @@ void AddErrorCommand::EditFault()
         }
         else//修改
         {
-            //修改界面  （name是不可以修改的！！！）
+            //判断修改后的有效性
+            //if (AddFaultValidity() == false) return;
+
+            //修改界面  
             ItemStruct editFault;
             editFault.faultType = m_faultType;
+            editFault.oldName = m_oldName;
             editFault.Name = ui.le_errorName->text();
             editFault.deviceID = m_indexDevice[ui.cb_deciveType->currentIndex()];//TODO设备id，获取设备类型
             editFault.FaultCommandID = m_currentComandId;
             editFault.deviceParamInfoID = m_tempParamId;
             editFault.responseCommandID = m_tempCommandId;
             editFault.type = ui.cb_faultType->currentIndex() + 1;
-
             m_myFaultTree->EditToolItem(editFault);
+            
+            AddOneFaultInfo oneFault;
 
             //修改
             for (int i = 0; i < m_faultItems.size(); i++)
             {
-                if (m_faultItems[i].Name == editFault.Name)
+                if (m_faultItems[i].Name == m_oldName)
                 {
                     m_faultItems[i] = editFault;
                     break;
@@ -445,8 +456,8 @@ void AddErrorCommand::EditFault()
             }
 
             //暂存下来，后续确定后写修改数据库
-            AddOneFaultInfo oneFault;
             oneFault.faultType = m_faultType;
+            oneFault.m_oldName = m_oldName.toStdString();
             oneFault.m_name = editFault.Name.toStdString();
             oneFault.m_Type = editFault.type;
             oneFault.m_FaultCommandCode = editFault.FaultCommandID;
@@ -477,13 +488,13 @@ void AddErrorCommand::EditFault()
 /// </summary>
 bool AddErrorCommand::AddFaultValidity()
 {
-    string faultName = ui.le_errorName->text().toStdString() + "指令";
+    QString faultName = ui.le_errorName->text() + "指令";
 
     for (auto item: m_app->m_CommandInfoframes)
     {
-        if (item.second->m_name == faultName)
+        if (QString::fromStdString(item.second->m_name) == faultName)
         {
-            QMessageBox::information(this, tr("提示"), "该故障名称已存在！");
+            QMessageBox::information(this, tr("提示"), "该故障名称已存在！", "确定");
             return false;
         }
     }
@@ -857,7 +868,7 @@ void AddErrorCommand::IsChooseParam()
 {
     if (ui.pb_edit->text() == "编辑")
     {
-        QMessageBox::information(this, tr("提示"), "请进入编辑模式！");
+        QMessageBox::information(this, tr("提示"), "请进入编辑模式！", "确定");
         return;
     }
 
@@ -957,7 +968,7 @@ void AddErrorCommand::AddErrorOK()
     //数据入库，界面添加故障按钮
     if (ui.pb_edit->text() == "完成")
     {
-        QMessageBox::information(this, tr("提示"), "完成当前故障编辑！");
+        QMessageBox::information(this, tr("提示"), "完成当前故障编辑！", "确定");
         return;
     }
 

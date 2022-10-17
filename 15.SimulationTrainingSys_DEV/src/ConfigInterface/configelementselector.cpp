@@ -23,7 +23,7 @@ void ConfigElementSelector::handleDragEvent()
     md->setData("name","text");    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("operation",QByteArray::number(m_ctrlrole));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("controltype",QByteArray::number(m_ctrltype));    			//这是md中存储的内容(即拖放时传递的数据)。
-    md->setData("groupid","");    			//这是md中存储的内容(即拖放时传递的数据)。
+    md->setData("groupid", WidgetNew);    			//这是md中存储的内容(即拖放时传递的数据)。
 
     dg->setMimeData(md);   			//步骤1：设置拖动的数据。该函数会获得md的所有权。
     dg->setPixmap(getElementMap(m_ctrltype));

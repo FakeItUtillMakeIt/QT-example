@@ -32,7 +32,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>FaultInjectionLogin</string>
+   <string>任务模拟软件</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Labelbac{

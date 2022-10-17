@@ -28,6 +28,7 @@ public:
     void setValue(QString value);
     void updateGeometryData();
     void updataDataFromTool();
+    void UpdateObjectGeometryLimit();
     bool SelectStyle(StylePairLabel *&istyleinfo);
     void UpdatePropertyByStyle();
     bool  m_ingroup = false;
@@ -47,8 +48,18 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent* e);
+
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *event);
+
+#pragma region  移动
+    void ipressHandler(QMouseEvent* ev);
+    void imoveHandler(QMouseEvent* ev);
+    void ireleaseHandler(QMouseEvent* ev);
+    QPoint mLastMousePosition;
+    bool mMoving;
+#pragma endregion
 private:
     QLabel* namelabel;
     QLabel* valuelabel;
@@ -85,12 +96,14 @@ private:
     void updataGeometryFromData();
 
     QPoint startPos;
-    QString m_groupid;
+    QString m_groupid = WidgetFree;
    ControlRole  m_ctrlrole = cRealControl;
-    ControlType  m_ctrltype = cConfigButton;
+    ControlType  m_ctrltype = cConfigPairLabel;
     QString m_uuid;
     void handleDragEvent();
     bool UpdateStyleByStyleId(QString styleid);
+    bool  dragenabled = false;
+
 private slots:
     void showListMenu(const QPoint& point);
 };

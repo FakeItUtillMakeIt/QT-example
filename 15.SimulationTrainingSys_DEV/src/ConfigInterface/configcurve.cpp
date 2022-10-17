@@ -31,34 +31,34 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
  //  addGraph();
 
     //曲线测试
- //startTimer(1000);
+// startTimer(1000);
 }
 
-//void ConfigCurve::timerEvent(QTimerEvent* event)
-//{
-//    unsigned short m_iYear;
-//    ///月
-//    unsigned char m_iMonth;
-//    ///日
-//    unsigned char m_iDay;
-//    ///时间，相对于当日零时的纳秒数
-//    unsigned long long m_ullTime;
-//    ///帧计数
-//    using namespace boost::posix_time;
-//    ptime now = microsec_clock::local_time();
-//    tm t = to_tm(now);
-//    m_iYear = t.tm_year + 1900;
-//    m_iMonth = t.tm_mon + 1;
-//    m_iDay = t.tm_mday;
-//    //当天的纳秒数
-//    time_duration td = now.time_of_day();
-//    double itime = (unsigned long long)td.total_milliseconds() * 1000;
-//    QTime  st;
-//    st = QTime::currentTime();
-//    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-//    double ivalue = qrand()%50;
-//    updateGraph0Value(1, itime, ivalue);
-//}
+void ConfigCurve::timerEvent(QTimerEvent* event)
+{
+    unsigned short m_iYear;
+    ///月
+    unsigned char m_iMonth;
+    ///日
+    unsigned char m_iDay;
+    ///时间，相对于当日零时的纳秒数
+    unsigned long long m_ullTime;
+    ///帧计数
+    using namespace boost::posix_time;
+    ptime now = microsec_clock::local_time();
+    tm t = to_tm(now);
+    m_iYear = t.tm_year + 1900;
+    m_iMonth = t.tm_mon + 1;
+    m_iDay = t.tm_mday;
+    //当天的纳秒数
+    time_duration td = now.time_of_day();
+    double itime = (unsigned long long)td.total_milliseconds() * 1000;
+    QTime  st;
+    st = QTime::currentTime();
+    qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+    double ivalue = qrand()%50;
+    updateGraph0Value(1, itime, ivalue);
+}
 
 
 
@@ -224,19 +224,88 @@ void ConfigCurve::updateGeometryData()
     m_xPos  = irect.x();
     m_yPos = irect.y();
 }
+void ConfigCurve::ipressHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton && ev->modifiers() == Qt::NoModifier)
+    {
+        mMoving = true;
+        mLastMousePosition = ev->globalPos();
+    }
+}
+void ConfigCurve::imoveHandler(QMouseEvent* e)
+{
+    if (e->buttons().testFlag(Qt::LeftButton) && mMoving)
+    {
+        setCursor(Qt::OpenHandCursor);
+        QPoint offset = e->globalPos() - mLastMousePosition;
+
+        if (abs(offset.x()) > 50 || abs(offset.y()) > 50)
+        {
+
+            return;
+        }
+        this->move(this->pos() + (offset));
+        mLastMousePosition = e->globalPos();
+    }
+}
+void ConfigCurve::ireleaseHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton)
+    {
+        mMoving = false;
+        setCursor(Qt::ArrowCursor);
+    }
+}
+
+void ConfigCurve::mouseMoveEvent(QMouseEvent* e)
+{
+    if (!ConfigGlobal::isEditing)
+    {
+        QCustomPlot::mouseMoveEvent(e);
+        return;
+    }
+    imoveHandler(e);
+    QCustomPlot::mouseMoveEvent(e);
+}
+void ConfigCurve::mouseReleaseEvent(QMouseEvent* e)
+{
+    QCP::Interactions  curAction = interactions();
+    if (curAction == QCP::iNone)
+    {
+        setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+            QCP::iSelectLegend | QCP::iSelectPlottables);
+    }
+
+    if (!ConfigGlobal::isEditing)
+    {
+        QCustomPlot::mouseReleaseEvent(e);
+        return;
+    }
+
+    ireleaseHandler(e);
+    QCustomPlot::mouseReleaseEvent(e);
+}
 void ConfigCurve::mousePressEvent(QMouseEvent *ev)
 {
     qDebug() << "dataSourceList:" <<dataSourceList;
     if(!ConfigGlobal::isEditing)
     {
+        QCP::Interactions  curAction = interactions();
+        if (curAction == QCP::iNone)
+        {
+            setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes |
+                QCP::iSelectLegend | QCP::iSelectPlottables);
+        }
        QCustomPlot::mouseMoveEvent(ev);
        return;
     }
+    setInteractions(QCP::iNone);
     updateGeometryData();
+    UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigCurve,this, m_valueSetMap);
     MoveAbleFrame::update_ctrl_point_pos(this,(QWidget*)parent());
     MoveAbleFrame::setControlStyle(cConfigCurve, false,m_uuid);
-
+    ipressHandler(ev);
     QCustomPlot::mousePressEvent(ev);
 }
 
@@ -258,6 +327,14 @@ void ConfigCurve::resizeEvent(QResizeEvent *event)
 
     MoveAbleFrame::update_ctrl_point_pos_2();
     QCustomPlot::resizeEvent(event);
+
+}
+void  ConfigCurve::UpdateObjectGeometryLimit()
+{
+    m_valueSetMap["位置属性"].valuelist[ConfigCurve::eXPos]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigCurve::eYPos]->uplimit = ConfigGlobal::scenesize.height();
+    m_valueSetMap["位置属性"].valuelist[ConfigCurve::eWidth]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigCurve::eHeight]->uplimit = ConfigGlobal::scenesize.height();
 
 }
 void ConfigCurve::updataDataFromTool()

@@ -18,14 +18,15 @@ public:
 	int Darea_width;
 	int Darea_height;
 	QString color;
-	QString bind_module;
+	int bind_module;
+
+
 
 	int color_num;
 	QStringList colors;
+	bool editflag;
 	bool canDrag;
 	twoDdisplay* mainUI;
-
-	bool editflag;
 	DragArea::DragArea();
 	DragArea::DragArea(QWidget* parent);
 	DragArea::~DragArea();

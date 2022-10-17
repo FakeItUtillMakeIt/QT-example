@@ -1,0 +1,72 @@
+{
+ "base_Dcompid":"1",
+ "base_Dimgid":"1",
+ "base_areaid":"1",
+ "base_lineid":"1",
+ "base_moduleid":"5",
+  "modules": [
+    {
+      "components": [
+        {
+          "id": "1",
+          "type": "1",
+          "name": "dragimg_1",
+          "pos_x": "600",
+          "pos_y": "200",
+          "width": "408",
+          "height": "274",
+          "imgurl": "zkj-d2.png"
+        },
+        {
+          "id": "1",
+          "type": "2",
+          "name": "dragcomp_1",
+          "pos_x": "850",
+          "pos_y": "10",
+          "width": "120",
+          "height": "40",
+          "title": "综控机",
+          "textcontent": "火箭的“大脑”，由飞控模块、供配电模块、时序输出模块、射频综合基带模块、组成。完成火箭的飞控程序运行、全箭的其他电气设备供配电输出、全箭发动机分离自毁火工品的时序输出控制、遥测数据编码发送、传感器数据采集等功能。",
+
+          "filelist": [
+            "yjfdj.txt"
+          ],
+          "imglist": [
+            "zkj-x.png",
+            "zkj-d1.jpg",
+            "zkj-d2.png"
+          ],
+          "videolist": [
+            "Level1Engine.mp4"
+          ]
+        },
+        {
+          "id": "1",
+          "type": "4",
+          "name": "vline_1",
+          "color": "red",
+          "pos_x": "850",
+          "pos_y": "50",
+          "width": "10",
+          "height": "280"
+        },
+        {
+          "id": "1",
+          "type": "5",
+          "width": "150",
+          "height": "150",
+          "pos_x": "775",
+          "pos_y": "300",
+          "color": "blue",
+          "name": "area_1",
+		  "bind_module":"0"
+        }
+      ],
+      "id": "5",
+      "module_name": "自定义模型",
+      "name": "module_5",
+      "pagename": "page_5",
+      "thumbnail": "zkj.png"
+    }
+  ]
+}

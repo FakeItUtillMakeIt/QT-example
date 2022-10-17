@@ -34,6 +34,8 @@ public:
     ConfigTabButton* selbutton = nullptr;
     ConfigTabButton* delbutton = nullptr;
     void ButtonSwap(ConfigScene* swapScene);
+    GroupElement* getGroupElementById(QString groupid);
+    QWidget* TakeWidgetFromFreeList(ControlType ctrtype,QString elementid);
 
     QList<GroupElement*>  sceneGroupList;
     QList<ConfigButton*>  sceneButtonList;
@@ -78,6 +80,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent* event);
 private:
     QString m_sceneid;
     QString m_sceneName;
@@ -90,6 +93,8 @@ private:
     void CreateNewElement(ControlType  ctrltype, QPoint pos);
     void CopyElement(ControlType  ctrltype, QPoint pos, QString copyedid);
     bool GetSrcElementProperty(QString& outinput,ControlType itype,QMap<int,int>&  propertylist );
+    void AddElementByType(QWidget* curwidget, ControlType ctrltype);
+
 };
 ConfigNameSpaceEnd
 #endif // CONFIGSCENE_H

@@ -363,6 +363,37 @@ void CenterOperateF::EditFaultItem(vector<AddOneFaultInfo> editFaults)
 {
     if (editFaults.size() <= 0) return;
 
+#if 1 //能修改名称
+
+    //删除
+    string delName;
+    //根据名称 直接删除 
+    for (int i = 0; i < editFaults.size(); i++)
+    {
+        //对故障指令和故障回令进行删除
+        delName = editFaults[i].m_oldName;
+        m_pFaultDAO2->DelCommandInfoParam(delName + "指令");
+        m_pFaultDAO2->DelCommandInfoParam(delName + "回令");
+
+        if (editFaults[i].m_Type == 1)
+        {
+            //删除故障(该故障名称的所有绑定参数)
+            m_pFaultParamDAO2->DelFaultParamInfoFrame(delName);
+        }
+        else
+        {
+            //删除故障(该故障名称的所有绑定指令)
+            m_pFaultParamDAO2->DelFaultCommandInfoFrame(delName);
+        }
+    }
+
+    //添加
+    AddFaultItem(editFaults);
+    //刷新界面
+    FlashFualtInfo();
+
+#else //原本的不能修改名称
+
     int isDel = 0;
     string editName;
     //直接删除，然后写入
@@ -371,17 +402,12 @@ void CenterOperateF::EditFaultItem(vector<AddOneFaultInfo> editFaults)
         //写入数据库 1：参数故障；2：指令故障
         if (editFaults[i].m_Type == 1)
         {
-            isDel = 0;
+            //删除
+            m_pFaultParamDAO2->DelFaultParamInfoFrame(editFaults[i].m_oldName);
+
+            //写入
             for (auto item : editFaults[i].m_deviceParamInfoID)
             {
-                //删除
-                if (isDel == 0)
-                {
-                    m_pFaultParamDAO2->DelFaultParamInfoFrame(editFaults[i].m_name);
-                    isDel = 1;
-                }
-
-                //写入
                 FaultFaultParamInfo* oneControlFault = new FaultFaultParamInfo();
                 oneControlFault->m_name = editFaults[i].m_name;
                 oneControlFault->m_rocketID = m_app->m_rockedType;
@@ -414,9 +440,10 @@ void CenterOperateF::EditFaultItem(vector<AddOneFaultInfo> editFaults)
             }
         }
     }
-
     //刷新界面
     FlashFualtInfo();
+
+#endif // 0
 }
 
 

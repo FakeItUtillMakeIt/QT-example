@@ -23,14 +23,15 @@ void Draglabel::mousePressEvent(QMouseEvent* me)
 	if (me->button() == Qt::LeftButton)
 	{
 		this->dropwid->show();
+		this->dropwid->setGeometry(0, 0, 1630, 854);
 
 		QDrag* drag = new QDrag(this);
 		QMimeData* data = new QMimeData();
 		drag->setMimeData(data);
-		qDebug() << 123123;
+
 		if (this->label_type == 1)
 		{
-			qDebug() << 3333333;
+
 			data->setData("labeltype", "1");
 			drag->setPixmap(QPixmap(":/twoDdisplay/defaultimg"));
 			drag->setHotSpot(QPoint(130, 75));

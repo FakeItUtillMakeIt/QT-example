@@ -76,6 +76,8 @@ private:
 	bool m_isAddFault;
 	int m_faultType;//添加故障所属系统标志
 
+	QString m_oldName;
+
 	vector<ItemStruct> m_faultItems;//暂存当前故障项
 	vector<ItemStruct> searchItems;//用于搜索框显示
 	map<int, int> m_indexDevice;//索引和设备id,在界面上cb_deciveType根据指定项选择

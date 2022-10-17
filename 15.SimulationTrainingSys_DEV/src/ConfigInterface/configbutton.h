@@ -58,17 +58,28 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent* e);
+
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *event);
+
+#pragma region  移动
+    void ipressHandler(QMouseEvent* ev);
+    void imoveHandler(QMouseEvent* ev);
+    void ireleaseHandler(QMouseEvent* ev);
+    QPoint mLastMousePosition;
+    bool mMoving;
+#pragma endregion
 private:
     ControlOperateState m_state;
     void handleDragEvent();
     ControlRole  m_ctrlrole = cRealControl;
     ControlType  m_ctrltype = cConfigButton;
     QString m_uuid;
-    QString m_groupid;
+    QString m_groupid = WidgetFree;
     QString m_styleid = "";
     QPoint startPos;
+    bool  dragenabled = false;
     void init_value_set();
 
     QString normalstyle;

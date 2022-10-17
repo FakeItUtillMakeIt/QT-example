@@ -32,7 +32,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>ControlMonitorLogin</string>
+   <string>测发监控C3I软件</string>
   </property>
   <property name="styleSheet">
    <string notr="true">#Labelbac{
@@ -264,7 +264,7 @@ QComboBox QAbstractItemView::item:selected{
    </property>
    <property name="font">
     <font>
-     <family>STHeitiSC-Medium</family>
+     <family>STHeitiSC-Medium,STHeitiSC</family>
      <pointsize>-1</pointsize>
      <weight>62</weight>
      <bold>true</bold>

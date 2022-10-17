@@ -18,7 +18,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>DeviceManager</string>
+   <string>教学管理软件</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="vl_UI">
@@ -159,19 +159,6 @@
              <item>
               <widget class="QWidget" name="widget_4" native="true">
                <layout class="QGridLayout" name="gridLayout">
-                <item row="0" column="4">
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
                 <item row="0" column="0">
                  <spacer name="horizontalSpacer_5">
                   <property name="orientation">
@@ -188,7 +175,7 @@
                   </property>
                  </spacer>
                 </item>
-                <item row="0" column="7">
+                <item row="0" column="8">
                  <widget class="QPushButton" name="pb_close">
                   <property name="minimumSize">
                    <size>
@@ -230,6 +217,19 @@ QPushButton {
                   </property>
                  </widget>
                 </item>
+                <item row="0" column="2">
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                 <item row="0" column="1">
                  <widget class="QLabel" name="rtlabel">
                   <property name="minimumSize">
@@ -250,6 +250,22 @@ QPushButton {
                  </widget>
                 </item>
                 <item row="0" column="6">
+                 <spacer name="horizontalSpacer_7">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>5</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item row="0" column="7">
                  <widget class="QPushButton" name="pb_min">
                   <property name="minimumSize">
                    <size>
@@ -304,8 +320,8 @@ QPushButton {
                   </property>
                  </widget>
                 </item>
-                <item row="0" column="2">
-                 <spacer name="horizontalSpacer_3">
+                <item row="0" column="4">
+                 <spacer name="horizontalSpacer_2">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -318,20 +334,17 @@ QPushButton {
                  </spacer>
                 </item>
                 <item row="0" column="5">
-                 <spacer name="horizontalSpacer_7">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                 <widget class="QLabel" name="ctlabel_2">
+                  <property name="styleSheet">
+                   <string notr="true">color:#98b8f9</string>
                   </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
+                  <property name="text">
+                   <string>试用版</string>
                   </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>30</width>
-                    <height>20</height>
-                   </size>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
                   </property>
-                 </spacer>
+                 </widget>
                 </item>
                </layout>
               </widget>

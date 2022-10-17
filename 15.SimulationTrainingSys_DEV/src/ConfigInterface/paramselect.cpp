@@ -64,7 +64,9 @@ bool ParamSelect::showAllChildItems(QStandardItem* parenitem)
     for (int i = 0; i < parenitem->rowCount(); i++)
     {
         QStandardItem* item = parenitem->child(i);
-        ui->treeView->setRowHidden(i, parenitem->index(), false);
+        int itemdata = item->data(Qt::UserRole + 2).toInt();
+        if (itemdata != 111)
+            ui->treeView->setRowHidden(i, parenitem->index(), false);
         showAllChildItems(item);
     }
     return true;
@@ -74,7 +76,9 @@ void ParamSelect::showAllItems()
     for (int i = 0; i < paramModel->rowCount(); i++)
     {
         QStandardItem* item = paramModel->item(i);
-        ui->treeView->setRowHidden(i, item->index().parent(), false);
+        int itemdata = item->data(Qt::UserRole+2).toInt();
+        if(itemdata != 111)
+          ui->treeView->setRowHidden(i, item->index().parent(), false);
         showAllChildItems(item);
     }
 }
@@ -88,6 +92,11 @@ bool ParamSelect::searchChildItems(QStandardItem* parenitem,QString text)
     for (int i = 0; i < rowcount; i++)
     {
         QStandardItem* item = parenitem->child(i);
+        int itemdata = item->data(Qt::UserRole + 2).toInt();
+        if (itemdata == 111)
+        {
+            continue;
+        }
         QString itemtext = item->text();
         if (itemtext.contains(text))
         {
@@ -119,6 +128,11 @@ bool ParamSelect::searchChildItems_2(QStandardItem* parenitem, QString text)
     for (int i = 0; i < rowcount; i++)
     {
         QStandardItem* item = parenitem->child(i);
+        int itemdata = item->data(Qt::UserRole + 2).toInt();
+        if (itemdata == 111)
+        {
+            continue;
+        }
         QString itemtext = item->text();
         if (itemtext.contains(text))
         {
@@ -158,6 +172,11 @@ void ParamSelect::searchItems()
     for (int i = 0; i < paramModel->rowCount(); i++)
     {
         QStandardItem* item = paramModel->item(i);
+        int itemdata = item->data(Qt::UserRole + 2).toInt();
+        if (itemdata == 111)
+        {
+            continue;
+        }
         if (item->text().contains(serchtext))
         {
             if (item->rowCount() > 0)
@@ -335,6 +354,95 @@ void ParamSelect::update_data(map<int, Command*>& m_allCommadPrt, QVector<int> o
 //    }
 //
 //}
+
+void ParamSelect::update_turn_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid)
+{
+
+    map<int, QStandardItem*> deviceItemMap;
+    map<int, QStandardItem*> tableItemMap;
+    map<QStandardItem*, QStandardItem*> devicetablemap;
+    map<int, QList<int>> tabledevicemap;
+    disconnect(paramModel, &QStandardItemModel::itemChanged, 0, 0);
+    int rocketid = ConfigNameSpace::ConfigGlobal::currentRocketID;
+
+    for (auto it = m_allDeviceParam.begin(); it != m_allDeviceParam.end(); it++)
+    {
+        if (it->second->m_rockcketid != rocketid)
+            continue;
+        QStandardItem* devicenode = nullptr;  //获取设备节点
+        if (deviceItemMap.find(it->second->m_deviceId) != deviceItemMap.end())
+        {
+            devicenode = deviceItemMap[it->second->m_deviceId];
+        }
+        else
+        {
+            devicenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_deviceName.c_str()) + "(设备)");
+            if (it->second->m_tableId == -1)
+                paramModel->appendRow(devicenode);
+            deviceItemMap[it->second->m_deviceId] = devicenode;
+        }
+        if (it->second->m_tableId != -1)
+        {
+            QStandardItem* tabblenode = nullptr;  //获取参数表节点
+            if (tableItemMap.find(it->second->m_tableId) != tableItemMap.end())
+            {
+                tabblenode = tableItemMap[it->second->m_tableId];
+            }
+            else
+            {
+                tabblenode = new QStandardItem(QString::fromLocal8Bit(it->second->m_tableName.c_str()) + "(参数表)");
+                paramModel->appendRow(tabblenode);
+                tableItemMap[it->second->m_tableId] = tabblenode;
+            }
+            if (tabledevicemap[it->second->m_tableId].contains(it->second->m_deviceId) == false)
+            {
+                tabblenode->appendRow(devicenode);
+                tabledevicemap[it->second->m_tableId].push_back(it->second->m_deviceId);
+            }
+            devicetablemap[devicenode] = tabblenode;
+
+        }
+        if (it->second->m_type == 2)
+        {
+            //添加参数节点
+            QStandardItem* paramnode = new QStandardItem(QString::fromLocal8Bit(it->second->m_subParameterName.c_str()));
+            paramnode->setData(it->second->m_id, Qt::UserRole + 1);
+            devicenode->appendRow(paramnode);
+            paramnode->setCheckable(true);
+            if (oldparamid.size() > 0 && oldparamid.contains(it->second->m_id))
+            {
+                paramnode->setCheckState(Qt::Checked);
+                itemlist << paramnode->index();
+                QStandardItem* parentitem = paramnode->parent();
+                while (parentitem)
+                {
+                    ui->treeView->setExpanded(parentitem->index(), true);
+                    parentitem = parentitem->parent();
+                }
+            }
+        }
+    }
+    for (auto item : deviceItemMap)
+    {
+        if (item.second->hasChildren())
+            continue;
+
+        if (devicetablemap.count(item.second))
+        {
+            QStandardItem* tableitem =  devicetablemap[item.second];
+            item.second->setData(111,Qt::UserRole+2);
+            ui->treeView->setRowHidden(item.second->index().row(), item.second->parent()->index(),true);
+        }
+        else
+        {
+            item.second->setData(111, Qt::UserRole + 2);
+            ui->treeView->setRowHidden(item.second->index().row(),ui->treeView->rootIndex(), true);
+        }
+        
+    }
+    connect(paramModel, &QStandardItemModel::itemChanged, this, &ParamSelect::treeItemChanged);
+
+}
 
 void ParamSelect::update_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid)
 {

@@ -19,6 +19,7 @@ class Dropwid :public QWidget
 public:
 	twoDdisplay* mainUi;
 	QWidget* cur_editWid;
+	Dropwid::Dropwid();
 	Dropwid::Dropwid(QWidget* parent);
 	Dropwid::~Dropwid();
 	void dropEvent(QDropEvent* Qe);

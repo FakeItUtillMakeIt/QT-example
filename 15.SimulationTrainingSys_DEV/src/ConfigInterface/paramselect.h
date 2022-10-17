@@ -29,7 +29,8 @@ public:
     ~ParamSelect();
     void update_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid = {});
     void update_data(map<int, Command*>& m_allCommadPrt, QVector<int> oldparamid = {});
-
+    void update_turn_data(map<int, DeviceParam*>& m_allDeviceParam, QVector<int> oldparamid = {});
+    bool haveValidParam(QStandardItem* parent);
     void add_params(QStandardItem *groupnode, QList<ParamInterfaceStruct *>& paramlist);
     void searchItems();
     bool searchChildItems(QStandardItem* parenitem, QString text);

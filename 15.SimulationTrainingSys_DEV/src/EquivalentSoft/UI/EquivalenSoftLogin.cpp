@@ -7,6 +7,7 @@ EquivalenSoftLogin::EquivalenSoftLogin(EquivalentSoft *eq,QWidget *parent)
 	ui.setupUi(this);
 	m_app = AppCache::instance();
 	equivalentSoft = eq;
+	this->setWindowIcon(QIcon(":/EquivalentSoft/images/ÈÎÎñÄ£Äâ64_64.ico"));
 	setWindowFlags(Qt::FramelessWindowHint);
 	Init();
 	connect(ui.LoginBt, SIGNAL(clicked()), this, SLOT(LoginSlot()));
@@ -29,6 +30,7 @@ void EquivalenSoftLogin::LoginSlot()
 	}
 	m_app->m_softName = ui.TypeComboBox_2->currentText();
 	m_app->m_softID = ui.TypeComboBox_2->currentData().toInt();
+	equivalentSoft->setWindowTitle(m_app->m_softName);
 	equivalentSoft->CreatConfigInterface();	
 	equivalentSoft->show();
 	//ControlComPage.show();

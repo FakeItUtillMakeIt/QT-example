@@ -4,8 +4,41 @@
 #include <QProcess>
 #include "AppCache.h"
 #include "../Public/log.h"
+#include "../Model/SingleApplication.h"
+
 int main(int argc, char *argv[])
 {
+#if 1
+	SingleApplication app(argc, argv);
+	if (!app.isRunning())
+	{
+
+		// 初始化软件缓存，指定EXE所在位置，同时创建日志文件夹
+		if (!AppCache::instance()->SetExePath(app.applicationDirPath())) {
+			QMessageBox::critical(qApp->activeWindow(), QObject::tr("警告"), QObject::tr("创建日志文件夹失败!"));
+			app.exit();
+		}
+		AppCache::instance()->argc = &argc;
+		AppCache::instance()->argv = &argv;
+		//初始化日志
+		LogInit(argv[0], app.applicationDirPath().toStdString());
+		LOG(INFO) << "程序开始启动... " << endl;
+
+		//读取配置文件
+		if (!AppCache::instance()->ReadConfig()) {
+			QMessageBox::critical(qApp->activeWindow(), QObject::tr("错误"), QObject::tr("读取配置文件时出错，详细信息请查看日志。"));
+			app.exit();
+		}
+
+		ControlMonitor w;
+		w.hide();
+		ControlMonitorLogin login(&app, &w);
+		login.show();
+		return app.exec();
+	}
+	return 0;
+
+#else
     QApplication app(argc, argv);
 
 	// 只允许打开一个软件
@@ -48,4 +81,6 @@ int main(int argc, char *argv[])
 	ControlMonitorLogin login(&w);
 	login.show();
     return app.exec();
+
+#endif
 }

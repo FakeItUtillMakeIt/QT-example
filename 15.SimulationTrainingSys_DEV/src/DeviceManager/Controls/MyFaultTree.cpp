@@ -80,8 +80,9 @@ void MyFaultTree::EditToolItem(ItemStruct oneFault)
 {
 	for (int i = 0; i < items.size(); i++)
 	{
-		if (items[i].tab->getName() == oneFault.Name)
+		if (items[i].tab->getName() == oneFault.oldName)
 		{
+			items[i].tab->setName(oneFault.Name);
 			items[i].m_deviceID = oneFault.deviceID;
 			items[i].deviceParamInfoID = oneFault.deviceParamInfoID;
 			items[i].responseCommandID = oneFault.responseCommandID;

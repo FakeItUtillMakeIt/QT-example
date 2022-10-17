@@ -44,7 +44,8 @@ public:
 	void setCurrentUI(DeviceCommonVaries::InfoWidgetFlag);
 	void setInfoWidgetCfg(int rocketId, int deviceId, int cmdId);
 
-
+	int delExecResult();
+	void displaySuccsInfo(QString textinfo);
 
 private:
 	AllInfoConfigWidget(QWidget* parent = nullptr);

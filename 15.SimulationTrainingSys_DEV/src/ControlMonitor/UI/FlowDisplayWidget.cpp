@@ -107,7 +107,6 @@ void FlowDisplayWidget::InitLayout() {
 	layout->addWidget(flowLeftTopWidget, 0, 0, 1, columnCount);
 	layout->addWidget(flowTable, 1, 0, rowCount - 1, columnCount);
 
-
 	//流程生成界面
 	generateFlowWidget = new GenerateFlowCmdWidget;
 
@@ -115,7 +114,7 @@ void FlowDisplayWidget::InitLayout() {
 
 	layout->addWidget(generateFlowWidget, 0, 8, 10, 8);;
 
-	layout->setContentsMargins(20, 10, 20, 15);
+	layout->setContentsMargins(20, 10, 20, 50);
 
 	this->setLayout(layout);
 
@@ -145,18 +144,28 @@ void FlowDisplayWidget::addNewFlow()
 	flowEditWidget->setFlowCmdID(subFlowCmdID);
 
 	flowEditWidget->setFixedSize(QSize(this->width() / 2, this->width() * 0.3));
-	flowEditWidget->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::WindowCloseButtonHint);
+
+	flowEditWidget->setParent(this);
+	flowEditWidget->setWindowModality(Qt::ApplicationModal);
+	flowEditWidget->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::WindowCloseButtonHint);
+	QRect rtWorkArea;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+	flowEditWidget->move((rtWorkArea.width() - flowEditWidget->frameGeometry().width()) / 2, (rtWorkArea.height() - flowEditWidget->frameGeometry().height()) / 2);
 	flowEditWidget->show();
 
 	connect(flowEditWidget, &FlowEditWidget::updateDisPlayFlow, this, &FlowDisplayWidget::loadSavedFlow);
 }
 
+
 /**
-	@brief 加载已有流程  显示到flowDisplay->flowTable上
+	@brief	修复流程显示问题
+	加载已有流程  显示到flowDisplay->flowTable上
 **/
-void FlowDisplayWidget::loadSavedFlow()
-{
+void FlowDisplayWidget::loadSavedFlow() {
 	flowTable->clearContents();
+	flowTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+	flowTable->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 	mainFlowInfo.clear();
 	subFlowInfo.clear();
 	subFlowCmdID.clear();
@@ -202,6 +211,7 @@ void FlowDisplayWidget::loadSavedFlow()
 	subFlowInfo2.clear();
 	subFlowCmdID.clear();
 
+	int totalRowCount = 0;
 	//子流程ID 主流程name 主流程index  主流程返令信息 主流程备注 主流程ID 子流程name 子流程指令ID
 	for (auto ele = flowDBOp->customSearchInfo.begin(); ele != flowDBOp->customSearchInfo.end(); ele++)
 	{
@@ -212,92 +222,50 @@ void FlowDisplayWidget::loadSavedFlow()
 		subFlowInfo1[atoi(ele->second[5].c_str())].push_back(ele->second[8].c_str());
 		subFlowInfo2[atoi(ele->second[5].c_str())].push_back(ele->second[9].c_str());
 		subFlowCmdID[atoi(ele->second[5].c_str())].push_back(atoi(ele->second[7].c_str()));
+		totalRowCount++;
 	}
 
 	/*!
 	 *  Loads the saved flow.加载至流程显示
 	 */
-	flowTable->setRowCount(mainFlowInfo.size());
-	QLabel* label;
-	int width, height;
+	 //start
+	flowTable->setRowCount(totalRowCount);
+	int infoRow = 0;
 	for (int i = 1; i <= mainFlowInfo.size(); i++)
 	{
-		int column1 = 0;
-		//索引
-		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(QString::number(i)));
-		flowTable->setItem(i - 1, column1++, new QTableWidgetItem(mainFlowInfo[i][0]));
+		//主流程ID
 		int mainID = mainFlowInfo[i][3].toInt();
-
-		//子流程口令 
-		QWidget* cellWidg = new QWidget;
-		QVBoxLayout* boxLayout = new QVBoxLayout;
-		int cmdCount = 1, maxSize = 12, rows1 = 0, rows2 = 0, rows3 = 0, oneRow = 0;
-
-		for (auto val : subFlowInfo.value(mainID))
+		int startSpanRow = infoRow;
+		//子流程
+		QString subCmd, subBackCmd, subRemark;
+		for (int subIndex = 0; subIndex < subFlowInfo.value(mainID).size(); subIndex++)
 		{
-			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
-			rows1 += oneRow;
-			cmdCount++;
-			label = new QLabel(val.replace(QRegExp("[\s+\n\t]"), ""));
-			//label->setStyleSheet("QLabel{text-align:center;}");
-			//label->adjustSize();
-			//label->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
-			//label->setWordWrap(true);
-			label->setFixedHeight(ONEROWHEIGHT);
-			boxLayout->addWidget(label);
 
+			subCmd = subFlowInfo.value(mainID)[subIndex];
+			subCmd = subCmd.replace(QRegExp("[\s+\n\t]"), "");
+			subBackCmd = subFlowInfo1.value(mainID)[subIndex];
+			subBackCmd = subBackCmd.replace(QRegExp("[\s+\n\t]"), "");
+			subRemark = subFlowInfo2.value(mainID)[subIndex];
+			subRemark = subRemark.replace(QRegExp("[\s+\n\t]"), "");
+
+			flowTable->setItem(infoRow, 2, new QTableWidgetItem(subCmd));
+			flowTable->setItem(infoRow, 3, new QTableWidgetItem(subBackCmd));
+			QLineEdit* editRemark = new QLineEdit(subRemark);
+			editRemark->setCursorPosition(0);
+			editRemark->setReadOnly(true);
+			flowTable->setCellWidget(infoRow, 4, editRemark);
+			infoRow++;
 		}
+		//索引
+		flowTable->setItem(startSpanRow, 0, new QTableWidgetItem(QString::number(i)));
+		flowTable->setItem(startSpanRow, 1, new QTableWidgetItem(mainFlowInfo[i][0]));
+		flowTable->setSpan(startSpanRow, 0, subFlowInfo.value(mainID).size(), 1);
+		flowTable->setSpan(startSpanRow, 1, subFlowInfo.value(mainID).size(), 1);
 
-		cellWidg->setLayout(boxLayout);
-		flowTable->setCellWidget(i - 1, column1++, cellWidg);
-
-		//子流程回令 
-		cellWidg = new QWidget;
-		boxLayout = new QVBoxLayout;
-		for (auto val : subFlowInfo1.value(mainID))
-		{
-			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
-			rows2 += oneRow;
-
-			label = new QLabel(val.replace(QRegExp("[\s\n\t]"), ""));
-			//label->setStyleSheet("QLabel{border:1px solid red;text-align:center;}");
-			//label->adjustSize();
-			//label->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
-			//label->setWordWrap(true);
-			label->setFixedHeight(ONEROWHEIGHT);
-			boxLayout->addWidget(label);
-		}
-
-		cellWidg->setLayout(boxLayout);
-		flowTable->setCellWidget(i - 1, column1++, cellWidg);
-
-		//子流程备注 
-		maxSize = 17;
-		cellWidg = new QWidget;
-		boxLayout = new QVBoxLayout;
-		QLineEdit* lineEidt;
-		for (auto val : subFlowInfo2.value(mainID))
-		{
-			oneRow = val.size() % maxSize == 0 ? val.size() / maxSize : val.size() / maxSize + 1; //12表示最大字数
-			rows3 += oneRow;
-			/*label = new QLabel(val);
-			label->adjustSize();
-			label->setGeometry(0, 0, 200, 27 * 4);
-			label->setWordWrap(true);*/
-			lineEidt = new QLineEdit;
-			lineEidt->setText(val);
-			lineEidt->setCursorPosition(0);
-			lineEidt->setStyleSheet("QLineEdit{border:none; text-align: left;}");
-			//lineEidt->setGeometry(0, 0, 200, ONEROWHEIGHT * 4);
-			boxLayout->addWidget(lineEidt);
-		}
-		if (rows1 < rows2) rows1 = rows2;
-		if (rows1 < rows3) rows1 = rows3;
-
-		cellWidg->setLayout(boxLayout);
-		flowTable->setRowHeight(i - 1, (rows1 == 1 || rows1 == 0) ? 35 : rows1 * ONEROWHEIGHT);
-		flowTable->setCellWidget(i - 1, column1++, cellWidg);
 	}
+	flowTable->setStyleSheet("QLineEdit{border:none;}");
+
+	//end
 
 	if (generateFlowWidget == nullptr)
 	{
@@ -311,7 +279,6 @@ void FlowDisplayWidget::loadSavedFlow()
 	emit updateFlowOver();
 	emit sendMainflowchange();
 }
-
 
 /**
 	@brief 根据接收得到的icode和sendcode更新流程信息

@@ -35,7 +35,7 @@ void ConfigAlarm::showListMenu(const QPoint& point) {
         return;
     }
     QMenu* cmenu = new QMenu();
-    QAction* actSetCmd = cmenu->addAction("设置参数");
+    QAction* actSetCmd = cmenu->addAction("选择数据源");
     QString str = "为当前标签选择参数";
     connect(actSetCmd, &QAction::triggered, [=]() {
         {
@@ -46,7 +46,7 @@ void ConfigAlarm::showListMenu(const QPoint& point) {
             {
                 idlist.push_back(valueid.toInt());
             }
-            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr,idlist);
+            paramselect.update_turn_data(*ConfigGlobal::m_allDeviceParamPtr,idlist);
             if (paramselect.exec() == QDialog::Rejected)
                 return;
             int paramid = paramselect.get_select_key();
@@ -193,6 +193,10 @@ void ConfigAlarm::setRole(ControlRole role)
 void ConfigAlarm::setGroupId(QString groupid)
 {
     m_groupid = groupid;
+    if (m_groupid != WidgetFree)
+        m_ingroup = true;
+    else
+        m_ingroup = false;
 }
 
 QString ConfigAlarm::GetID()
@@ -208,19 +212,104 @@ void ConfigAlarm::mousePressEvent(QMouseEvent *ev)
        return;
     }
     qDebug() << "ConfigAlarm:"  << m_valueSetMap["数据源配置"].valuelist[ConfigAlarm::eDataSource]->getStrValue();
-    if (ev->button() == Qt::LeftButton)
-            startPos = ev->pos();
-
+    if ((ev->button() == Qt::LeftButton))
+    {
+        startPos = ev->pos();
+        if(m_ingroup)
+             dragenabled = true;
+        if (ev->modifiers() == Qt::ControlModifier)
+            dragenabled = true;
+    }
     updateGeometryData();
+    UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigAlarm,this, m_valueSetMap);
     if (!m_ingroup)
     {
         MoveAbleFrame::update_ctrl_point_pos(this, (QWidget*)parent());
         MoveAbleFrame::setControlStyle(cConfigAlarm, false,m_uuid);
+        ipressHandler(ev);
     }
    if(m_ingroup)
      ev->ignore();
 
+}
+void  ConfigAlarm::UpdateObjectGeometryLimit()
+{
+    m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eXPos]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eYPos]->uplimit = ConfigGlobal::scenesize.height();
+    m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eWidth]->uplimit = ConfigGlobal::scenesize.width();
+    m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eHeight]->uplimit = ConfigGlobal::scenesize.height();
+    if (m_ingroup)
+    {
+        m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eXPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eYPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eWidth]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigAlarm::eHeight]->editEabled = false;
+    }
+}
+
+bool ConfigAlarm::ColliderDetect(QRect  newrect)
+{
+    QObject* parent = this->parent();
+    QObjectList  objlist  = parent->children();
+    QRect  curRect;
+    for (auto obj : objlist)
+    {
+        QWidget* widget = (QWidget*)obj;
+        curRect = widget->geometry();
+        if (newrect.intersects(curRect))
+            return true;            
+    }
+    return false;
+}
+
+void ConfigAlarm::mouseReleaseEvent(QMouseEvent* e)
+{
+    if (!ConfigGlobal::isEditing)
+    {
+        QWidget::mouseReleaseEvent(e);
+        return;
+    }
+
+    if (!m_ingroup)
+     ireleaseHandler(e);
+     QWidget::mouseReleaseEvent(e);
+}
+void ConfigAlarm::ipressHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton && ev->modifiers() == Qt::NoModifier)
+    {
+        mMoving = true;
+        mLastMousePosition = ev->globalPos();
+    }
+}
+void ConfigAlarm::imoveHandler(QMouseEvent* e)
+{
+    if (e->buttons().testFlag(Qt::LeftButton) && mMoving)
+    {
+        setCursor(Qt::OpenHandCursor);
+        QPoint offset = e->globalPos() - mLastMousePosition;
+
+        if (abs(offset.x()) > 50 || abs(offset.y()) > 50)
+        {
+            return;
+        }
+     //   QPoint newpos = this->pos() + (offset);
+        //QRect  currect = this->geometry();
+        //currect.adjust(offset.x(), offset.y(),offset.x(), offset.y());
+        //if (ColliderDetect(currect))
+        //    return;
+        this->move(this->pos() + (offset));
+        mLastMousePosition = e->globalPos();
+    }
+}
+void ConfigAlarm::ireleaseHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton)
+    {
+        mMoving = false;
+        setCursor(Qt::ArrowCursor);
+    }
 }
 
 void ConfigAlarm::mouseMoveEvent(QMouseEvent *e)
@@ -230,13 +319,20 @@ void ConfigAlarm::mouseMoveEvent(QMouseEvent *e)
         QWidget::mouseMoveEvent(e);
         return;
     }
-    if(m_ingroup)
+    if(dragenabled)
     {
         if (e->buttons() & Qt::LeftButton) {
            int distance = (e->pos() - startPos).manhattanLength();
            if (distance >= QApplication::startDragDistance())
+           {
                handleDragEvent();
+               dragenabled = false;
+           }
         }
+    }
+    else
+    {
+        imoveHandler(e);
     }
 
     QWidget::mouseMoveEvent(e);
@@ -344,8 +440,7 @@ void ConfigAlarm::handleDragEvent()
     md->setData("operation",QByteArray::number(m_ctrlrole));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("controltype",QByteArray::number(m_ctrltype));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("groupid",m_groupid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
-
-
+    md->setData("elementid", m_uuid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
     dg->setMimeData(md);   			//步骤1：设置拖动的数据。该函数会获得md的所有权。
     dg->setPixmap(this->grab());
     dg->setHotSpot(QPoint(this->width()/2,this->height()/2));

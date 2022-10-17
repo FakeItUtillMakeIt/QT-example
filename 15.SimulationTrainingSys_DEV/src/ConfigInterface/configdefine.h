@@ -17,6 +17,8 @@ ConfigNameSpaceStart
 
 
 #define  MaximumPathLength   100
+#define  WidgetFree  "free"
+#define  WidgetNew  "new"
 
 //class  PropertySet;
 //PropertySet* g_propertyset;
@@ -81,6 +83,7 @@ struct  ConfigValue
     int downlimit;
     QString  getStrValue();
     void SetWidthStrValue(QString value);
+    bool  editEabled = true;
 };
 
 struct ConfigValueSet

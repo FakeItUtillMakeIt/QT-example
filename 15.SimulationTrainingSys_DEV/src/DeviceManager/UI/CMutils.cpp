@@ -5,12 +5,10 @@
 #include<qdebug.h>
 
 
-QString CMutils::destfilename_output(QString origin)
+QString CMutils::thumnailpath_output(QString origin)
 	{
-		QString Timestr = QString::number(QDateTime::currentDateTime().toTime_t());
-		QStringList filenamelist = origin.split(".");
-		QString filename = filenamelist[filenamelist.size() - 1];
-		QString destpath = QCoreApplication::applicationDirPath() + "/image/thumbnail/thumbnail" + Timestr + "." + filename;
+	    QString filename = origin.split("/")[origin.split("/").size() - 1];
+		QString destpath = QCoreApplication::applicationDirPath() + "/image/thumbnail/" + filename;
 		return destpath;
 	}
 QString CMutils::destimg_output(QString origin)
@@ -74,7 +72,7 @@ QString CMutils::upload_shortname(QString str)
 	for (int i = 0; i < str.length(); i++)
 	{
 		QString temp(str[i]);
-		if (weight >= 16)
+		if (weight >= 15)
 		{
 			shortname = str.mid(0, count);
 			shortname.append(".");

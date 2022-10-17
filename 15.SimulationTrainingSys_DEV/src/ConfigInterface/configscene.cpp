@@ -13,6 +13,13 @@ ConfigScene::ConfigScene(QWidget *parent):QWidget(parent)
     m_sceneid = get_uuid();
     setAcceptDrops(true);
 }
+void ConfigScene::paintEvent(QPaintEvent* event)
+{
+    //QPainter painter(this);
+    //QRect  rect = childrenRect();
+    //painter.drawRect(rect);
+    QWidget::paintEvent(event);
+}
 void ConfigScene::AutoCreateOpBtn(QString scenename)
 {
     selbutton = new ConfigTabButton(scenename);
@@ -89,6 +96,13 @@ void ConfigScene::SetScheduleEabled(bool eabled)
         {
             btn->setDisabled(false);
         }
+        for (GroupElement* group : sceneGroupList)
+        {
+            for (ConfigButton* btn : group->buttonlist)
+            {
+                btn->setDisabled(false);
+            }
+        }
     }
     else
     {   
@@ -152,63 +166,96 @@ void ConfigScene::SetScheduleEabled(bool eabled)
 }
 void ConfigScene::SetBtnScheduled(ConfigButton* curbtn)
 {
+    if (ConfigGlobal::mainSchedule.size() == 0)
+        return;
     int curcmd = atoi(curbtn->m_CmdSourceID);
-    bool  findcurrent = false;
-    int findcmdid = -1;
-    for (int cmdid : ConfigGlobal::mainSchedule)
+    int index  = ConfigGlobal::mainSchedule.indexOf(curcmd);
+    int lastcmd = ConfigGlobal::mainSchedule.last();
+    if (curcmd != lastcmd)
     {
-        for (ConfigButton* btn : sceneButtonList)
-        {
-            int btncmd = atoi(btn->m_CmdSourceID);
-            if (btncmd == curcmd)
-            {
-                findcurrent = true;
-                continue;
-            }
-            else if ((findcmdid != -1) && (findcmdid == cmdid))
-            {
-                btn->setDisabled(false);
-            }
-            else
-            {
-                if(findcurrent)
-                { 
-                    btn->setDisabled(false);
-                    findcmdid = cmdid;
-                   // return;
-                }
-            }
-        }
-        for (GroupElement* group : sceneGroupList)
-        {
-            for (ConfigButton* btn : group->buttonlist)
-            {
-                int btncmd = atoi(btn->m_CmdSourceID);
-                if (btncmd == curcmd)
-                {
-                    findcurrent = true;
-                    continue;
-                }
-                else if ((findcmdid != -1) && (findcmdid == cmdid))
-                {
-                    btn->setDisabled(false);
-                }
-                else
-                {
-                    if (findcurrent)
-                    {
-                        btn->setDisabled(false);
-                        findcmdid = cmdid;
-                       // return;
-                    }
-                }
-            }
-        }
-        if (findcmdid != -1)
-        {
-            break;
-        }
+          curcmd = ConfigGlobal::mainSchedule.at(index+1);
+           for (ConfigButton* btn : sceneButtonList)
+          {
+              int btncmd = atoi(btn->m_CmdSourceID);
+              if (btncmd == curcmd)
+              {
+                  btn->setDisabled(false);
+              }
+            
+          }
+          for (GroupElement* group : sceneGroupList)
+          {
+              for (ConfigButton* btn : group->buttonlist)
+              {
+                  int btncmd = atoi(btn->m_CmdSourceID);
+                  if (btncmd == curcmd)
+                  {
+                      btn->setDisabled(false);
+                  }
+             
+              }
+          }
     }
+
+    //int curcmd = atoi(curbtn->m_CmdSourceID);
+    //bool  findcurrent = false, findcurrent2 = false;
+    //int findcmdid = -1,findcmdid2 = -1;
+    //for (int cmdid : ConfigGlobal::mainSchedule)
+    //{
+    //    for (ConfigButton* btn : sceneButtonList)
+    //    {
+    //        int btncmd = atoi(btn->m_CmdSourceID);
+    //        if (btncmd == curcmd)
+    //        {
+    //            findcurrent = true;
+    //            continue;
+    //        }
+    //        else if ((!findcurrent)&&(findcmdid != -1) && (findcmdid == btncmd))
+    //        {
+    //            btn->setDisabled(false);
+    //        }
+    //        else
+    //        {
+    //            if(findcurrent)
+    //            { 
+    //                btn->setDisabled(false);
+    //                findcmdid = cmdid;
+    //                findcurrent = false;
+    //               // return;
+    //            }
+    //        }
+    //    }
+    //    for (GroupElement* group : sceneGroupList)
+    //    {
+    //        for (ConfigButton* btn : group->buttonlist)
+    //        {
+    //            int btncmd = atoi(btn->m_CmdSourceID);
+    //            if (btncmd == curcmd)
+    //            {
+    //                findcurrent2 = true;
+    //                continue;
+    //            }
+    //            else if ((!findcurrent2) && (findcmdid2 != -1) && (findcmdid2 == btncmd))
+    //            {
+    //                btn->setDisabled(false);
+    //            }
+    //            else
+    //            {
+    //                if (findcurrent2)
+    //                {
+    //                    btn->setDisabled(false);
+    //                    findcmdid2 = cmdid;
+    //                    findcurrent2 = false;
+    //                   // return;
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if ((findcmdid != -1)||(findcmdid2 != -1))
+    //    {
+    //        break;
+    //    }
+    //}
 }
 void ConfigScene::RestoreSceneInfo(SceneInfo &sceneinfo)
 {
@@ -284,6 +331,56 @@ void ConfigScene::RestoreSceneInfo(SceneInfo &sceneinfo)
 //        }
 //    }
 //}
+GroupElement* ConfigScene::getGroupElementById(QString groupid)
+{
+    for (auto element : sceneGroupList)
+    {
+        if (element->GetID() == groupid)
+            return  element;
+    }
+    return nullptr;
+}
+QWidget* ConfigScene::TakeWidgetFromFreeList(ControlType ctrtype, QString elementid)
+{
+    if (ctrtype == cConfigPairLabel)
+    {
+        for (auto element : scenePairLabelList)
+        {
+            if (element->GetID() == elementid)
+            {
+                scenePairLabelList.removeOne(element);
+                return element;
+            }
+        }
+
+    }
+    else if (ctrtype == cConfigButton)
+    {
+        for (auto element : sceneButtonList)
+        {
+            if (element->GetID() == elementid)
+            {
+                sceneButtonList.removeOne(element);
+                return element;
+            }
+        }
+    }   
+    else if (ctrtype == cConfigAlarm)
+    {
+        for (auto element : sceneAlarmList)
+        {
+            if (element->GetID() == elementid)
+            {
+                sceneAlarmList.removeOne(element);
+                return element;
+            }
+        }
+    }
+    else
+        return nullptr;
+
+    return  nullptr;
+}
 
 int ConfigScene::DeleteElementByIdFromOut(ControlType ctrtype, QString elementid)
 {
@@ -545,24 +642,59 @@ void ConfigScene::CopyElement(ControlType  ctrltype, QPoint pos,QString copyedid
     //update();
 
 }
-
+void ConfigScene::AddElementByType(QWidget* curwidget, ControlType ctrltype)
+{
+    if (ctrltype == cConfigButton)
+    {
+        ConfigButton* curbtn = (ConfigButton*)curwidget;
+        sceneButtonList.push_back(curbtn);
+        curbtn->setGroupId(WidgetFree);
+    }
+    else if (ctrltype == cConfigPairLabel)
+    {
+        ConfigPairLabel* curbtn = (ConfigPairLabel*)curwidget;
+        scenePairLabelList.push_back(curbtn);
+        curbtn->setGroupId(WidgetFree);
+    }
+    else if (ctrltype == cConfigAlarm)
+    {
+        ConfigAlarm* curbtn = (ConfigAlarm*)curwidget;
+        sceneAlarmList.push_back(curbtn);
+        curbtn->setGroupId(WidgetFree);
+    }
+}
 void ConfigScene::dropEvent(QDropEvent *event)
 {
     int index =    event->mimeData()->data("index").toInt();
     QByteArray name =    event->mimeData()->data("name");
     ControlRole  ctrlrole = (ControlRole)event->mimeData()->data("operation").toInt();
     ControlType  ctrltype = (ControlType)event->mimeData()->data("controltype").toInt();
+    QString  groupid = event->mimeData()->data("groupid");
+
     if (ctrlrole == cCreateEntry)
     {
         CreateNewElement(ctrltype, event->pos());
     }
-    if (ctrlrole == cCopycontrol)
+    else if (ctrlrole == cCopycontrol)
     {
         QString  srcgroupid =event->mimeData()->data("groupid");
 
         CopyElement(ctrltype, event->pos(), srcgroupid);
     }
- 
+    else if ((ctrlrole == cRealControl) &&(groupid != WidgetFree)&&(groupid != WidgetNew))
+    {
+        GroupElement*  group  = getGroupElementById(groupid);
+        if (!group)
+            return;
+        QWidget* srcwidget =  group->GetWidgetByIndex(index, groupid,ctrltype);
+        AddElementByType(srcwidget,ctrltype);
+        srcwidget->setParent(this);
+        srcwidget->move(event->pos());
+        srcwidget->show();
+        group->stateInit2();
+        update();
+    }
+
 
 }
 ConfigNameSpaceEnd

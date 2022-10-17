@@ -58,27 +58,27 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		string sql;
-		string sql2=to_string(id);
-		string sql3=" ORDER BY `index`;";
-		sql.append("SELECT `name`,`index` FROM main_flow_info where rocket_id=").append(sql2).append(sql3);
-		int res=0;
-		
+		string sql2 = to_string(id);
+		string sql3 = " ORDER BY `index`;";
+		sql.append("SELECT `name`,`index` FROM main_flow_info where rocket_id=").append(sql2);
+		int res = 0;
+
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.c_str());//查询
 
 		if (!res)
 		{
-		
+
 			result = mysql_store_result(&my_connection);
 			if (result)
 			{
-			
+
 				while (sql_row = mysql_fetch_row(result))
 				{
-			
+
 					QString str = QString(sql_row[0]);
 					m_app->mainflowlist.append(str);
-				
+
 				}
 			}
 			else

@@ -777,7 +777,8 @@ namespace DataBase
 		MYSQL_RES* result = nullptr;
 		MYSQL_ROW sql_row;
 		int res;
-		QString  sql = QString("select s.command_id from main_flow_info as m LEFT JOIN sub_flow_info as s on m.id=s.main_id where m.rocket_id=%1 ORDER BY s.main_id ").arg(rocketid);
+	//	QString  sql = QString("select s.command_id from main_flow_info as m LEFT JOIN sub_flow_info as s on m.id=s.main_id where m.rocket_id=%1 ORDER BY s.main_id ").arg(rocketid);
+		QString  sql = QString("select s.command_id from main_flow_info as m LEFT JOIN sub_flow_info as s on m.id=s.main_id where m.rocket_id=%1").arg(rocketid);
 		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
 		res = mysql_query(&my_connection, sql.toLocal8Bit().data());//查询
 		if (!res)

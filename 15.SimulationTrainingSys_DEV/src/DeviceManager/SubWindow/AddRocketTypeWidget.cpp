@@ -5,8 +5,8 @@ AddRocketTypeWidget* AddRocketTypeWidget::instance = nullptr;
 AddRocketTypeWidget::AddRocketTypeWidget(QWidget* parent)
 	: QWidget(parent)
 {
-	this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-
+	//this->setWindowFlags(Qt::Dialog);
+	this->setWindowFlags(Qt::FramelessWindowHint);
 	currentModule = DeviceCommonVaries::ADD_MODULE;
 
 	itemDelegate = new ItemDelegate(this);
@@ -266,6 +266,7 @@ void AddRocketTypeWidget::InitUILayout() {
 		userSelectCmdType->addItem(QString::fromLocal8Bit(ele.second.c_str()), ele.first);
 	}*/
 	userSelectCmdType->addItem(QString("测发指令"), 1);
+	userSelectCmdType->setEnabled(false);
 
 	QString qSqlString = QString("SELECT\
 		command_info.id,\
@@ -671,7 +672,8 @@ void AddRocketTypeWidget::opRocketInfo(DeviceCommonVaries::DeviceModule wid) {
 
 	if (userInputRocketName->text().isEmpty() | userInputDescript->text().isEmpty())
 	{
-		QMessageBox::warning(this, QString("警告"), QString("火箭型号或描述不能为空"));
+		//QMessageBox::warning(this, QString("警告"), QString("火箭型号或描述不能为空"), QString("确定"));
+		displayHaveExistInfo(QString("火箭型号或描述不能为空"));
 		return;
 	}
 	//检查表中是否有同名数据
@@ -684,14 +686,15 @@ void AddRocketTypeWidget::opRocketInfo(DeviceCommonVaries::DeviceModule wid) {
 		WHERE\
 		rocket_info.`name` = '%1'").arg(userInputRocketName->text()));
 
-
+	if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+	{
+		//QMessageBox::warning(this, QString("警告"), QString("火箭型号已存在"));
+		displayHaveExistInfo(QString("火箭型号已存在"));
+		return;
+	}
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
-		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
-		{
-			QMessageBox::warning(this, QString("警告"), QString("火箭型号已存在"));
-			return;
-		}
+
 		DeviceDBConfigInfo::getInstance()->rocketConfigOp2DB(userInputRocketName->text(), userInputDescript->text());
 	}
 	else
@@ -710,7 +713,8 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 
 	if (userInputParamName->text().isEmpty() | userInputParamUnit->text().isEmpty())
 	{
-		QMessageBox::warning(this, QString("警告"), QString("参数名称或单位不能为空"));
+		//QMessageBox::warning(this, QString("警告"), QString("参数名称或单位不能为空"), QString("确定"));
+		displayHaveExistInfo(QString("参数名称或单位不能为空"));
 		return;
 	}
 
@@ -727,13 +731,15 @@ void AddRocketTypeWidget::opParamInfo(DeviceCommonVaries::DeviceModule wid) {
 		parameter_info.`name` = '%2'")
 		.arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputParamName->text()));
 
+	if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+	{
+		//QMessageBox::warning(this, QString("警告"), QString("该型号下参数已存在"));
+		displayHaveExistInfo(QString("该型号下参数已存在"));
+		return;
+	}
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
-		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
-		{
-			QMessageBox::warning(this, QString("警告"), QString("该型号下参数已存在"));
-			return;
-		}
+
 		/*DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 			parameter_info.id,\
 			parameter_info.`name`,\
@@ -791,7 +797,8 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 
 	if (userInputDevName->text().isEmpty())
 	{
-		QMessageBox::warning(this, QString("警告"), QString("设备名称不能为空"));
+		//QMessageBox::warning(this, QString("警告"), QString("设备名称不能为空"), QString("确定"));
+		displayHaveExistInfo(QString("设备名称不能为空"));
 		return;
 	}
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
@@ -804,14 +811,15 @@ void AddRocketTypeWidget::opDeviceInfo(DeviceCommonVaries::DeviceModule wid) {
 		device_info.rocket_id = %1\
 		AND device_info.`name` = '%2'").arg(AppCache::instance()->m_CurrentRocketType->m_id).arg(userInputDevName->text()));
 
-
+	if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
+	{
+		//QMessageBox::warning(this, QString("警告"), QString("设备已存在"));
+		displayHaveExistInfo(QString("设备已存在"));
+		return;
+	}
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
-		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0)
-		{
-			QMessageBox::warning(this, QString("警告"), QString("设备已存在"));
-			return;
-		}
+
 		DeviceDBConfigInfo::getInstance()->deviceConfigOp2DB(AppCache::instance()->m_CurrentRocketType->m_id, userInputDevName->text(), userSelectDevType->currentData().toInt());
 
 	}
@@ -833,7 +841,8 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 
 	if (userInputCmdName->text().isEmpty())
 	{
-		QMessageBox::warning(this, QString("警告"), QString("指令名称不能为空"));
+		//QMessageBox::warning(this, QString("警告"), QString("指令名称不能为空"), QString("确定"));
+		displayHaveExistInfo(QString("指令名称不能为空"));
 		return;
 	}
 	DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
@@ -849,14 +858,17 @@ void AddRocketTypeWidget::opCommandInfo(DeviceCommonVaries::DeviceModule wid) {
 	int cmdcode = 1;
 	int backCmdCode = 1;
 
+	//查火箭型号下指令是否已存在
+	if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0) {
+		//QMessageBox::warning(this, QString("警告"), QString("该火箭型号下指令已存在"));
+		displayHaveExistInfo(QString("该火箭型号下指令已存在"));
+		return;
+	}
+
 	QVector<int> savedCode;
 	if (wid == DeviceCommonVaries::ADD_MODULE)
 	{
-		//查火箭型号下指令是否已存在
-		if (DeviceDBConfigInfo::getInstance()->customReadInfoMap.size() != 0) {
-			QMessageBox::warning(this, QString("警告"), QString("该火箭型号下指令已存在"));
-			return;
-		}
+
 		//同一火箭型号下指令code唯一
 		DeviceDBConfigInfo::getInstance()->customReadTableInfo(QString("SELECT\
 			command_info.id,\
@@ -1128,7 +1140,8 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 				{
 					if (QString::fromStdString(ele.second[1]) == paramTableType->currentText())
 					{
-						QMessageBox::warning(this, QString("警告"), QString("已存在同名参数表"));
+						//QMessageBox::warning(this, QString("警告"), QString("已存在同名参数表"));
+						displayHaveExistInfo(QString("已存在同名参数表"));
 						return true;
 					}
 				}
@@ -1174,7 +1187,8 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 				{
 					if (QString::fromStdString(ele.second[1]) == cmdTableType->currentText())
 					{
-						QMessageBox::warning(this, QString("警告"), QString("已存在同名指令表"));
+						//QMessageBox::warning(this, QString("警告"), QString("已存在同名指令表"));
+						displayHaveExistInfo(QString("已存在同名指令表"));
 						return true;
 					}
 				}
@@ -1202,4 +1216,19 @@ bool AddRocketTypeWidget::eventFilter(QObject* watched, QEvent* event) {
 		}
 	}
 	return QWidget::eventFilter(watched, event);
+}
+
+
+/**
+	@brief
+**/
+void AddRocketTypeWidget::displayHaveExistInfo(QString infotext) {
+	QMessageBox msgBoxWarning;
+	msgBoxWarning.setText(infotext);
+	msgBoxWarning.setWindowTitle(QString("警告"));
+	msgBoxWarning.setWindowIcon(QIcon(":/FaultInjection/images/指令2.png"));
+	msgBoxWarning.setIcon(QMessageBox::Warning);
+	msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+	int ret = msgBoxWarning.exec();
 }

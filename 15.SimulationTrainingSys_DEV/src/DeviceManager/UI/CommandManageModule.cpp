@@ -13,6 +13,7 @@ CommandManageModule::CommandManageModule(QWidget* parent)
 	configInfoTable->setColumnHidden(0, true);
 	configInfoTable->setColumnHidden(4, true);
 	configInfoTable->setColumnHidden(6, true);
+	configInfoTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
@@ -415,7 +416,7 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDType->setCurrentText(configInfoTable->item(curRow, 5)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->userSelectCMDPrefix->setCurrentText(configInfoTable->item(curRow, 6)->text());
 		CommandInfoConfig::InfoConfigWidget::getInstance()->show();
-});
+		});
 #endif // OLD_UI
 
 	hbox->addWidget(opEditBtn);
@@ -437,7 +438,16 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 			configInfoTable->item(curRow, 5)->text(), configInfoTable->item(curRow, 2)->text(),
 			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 7)->text());
 
+		editW->setParent(this);
+		editW->setWindowModality(Qt::ApplicationModal);
+		editW->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		editW->move((rtWorkArea.width() - editW->frameGeometry().width()) / 2, (rtWorkArea.height() - editW->frameGeometry().height()) / 2);
+
 		editW->show();
+
 		});
 
 	connect(opDeleteBtn, &QPushButton::clicked, this, [=]() {
@@ -451,6 +461,14 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 		w->setCurrentUI(DeviceCommonVaries::InfoWidgetFlag::COMMAND_WIDGET);
 		w->setWindowTitle(configInfoTable->item(opCfgCmdBtn->property("row").toInt(), 2)->text() + QString("-指令配置"));
 
+		w->setParent(this);
+		w->setWindowModality(Qt::ApplicationModal);
+		w->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		w->move((rtWorkArea.width() - w->frameGeometry().width()) / 2, (rtWorkArea.height() - w->frameGeometry().height()) / 2);
+
 		w->show();
 		});
 
@@ -462,8 +480,7 @@ void CommandManageModule::insertOneRow(int insertRow, QVector<QString> rowData) 
 **/
 void CommandManageModule::removeOneRow(int removeRow) {
 
-
-	int ret = QMessageBox::warning(CommandInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = AllInfoConfigWidget::getInstance()->delExecResult();
 	if (ret == 0)
 	{
 		return;
@@ -482,17 +499,7 @@ void CommandManageModule::removeOneRow(int removeRow) {
 	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_commandtable_info WHERE command_id=%1").arg(curCmdID));
 	//指令信息
 	DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
-	//指令信息
-	//DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM simulatedtraining.command_info WHERE id=%1").arg(curCmdID));
-	//QThread* deleteThread = new QThread;
-	//DeleteDBDataThread* thread11 = new DeleteDBDataThread();
-	//thread11->setCmdID(curCmdID);
-	//thread11->moveToThread(deleteThread);
-	//connect(deleteThread, &QThread::started, thread11, &DeleteDBDataThread::deleteCmdInfo);
-	//connect(thread11, &DeleteDBDataThread::workFinished, this, [=]() {
-	//	//QMessageBox::information(this, "info", "success");
-	//	});
-	//deleteThread->start();
+
 #endif __DELETE_RELE_TABLE__
 #ifdef __DELETE_ONLY__
 	//删除数据

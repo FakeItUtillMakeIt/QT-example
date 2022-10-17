@@ -59,10 +59,11 @@ public slots:
 
 private:
 	void InitLayout();
-	
+
 private slots:
 	void addNewFlow();
 	void loadSavedFlow();
+
 
 signals:
 	void updateMainFlowAndSubFlow(int mainIndex, QString curRunCmdName, QString backCmdInfo);

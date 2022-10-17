@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>EquivalentSoft</string>
+   <string>任务模拟软件</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="vl_UI">
@@ -485,7 +485,7 @@
              <string notr="true">color:#98b8f9;font-size:22px</string>
             </property>
             <property name="text">
-             <string>飞行时间</string>
+             <string>运行时间</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -768,6 +768,25 @@ QPushButton {
               <width>20</width>
               <height>16777215</height>
              </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3" colspan="2">
+           <widget class="QLabel" name="ftlabel_2">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>9</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:#98b8f9</string>
+            </property>
+            <property name="text">
+             <string>试用版</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -1608,6 +1627,10 @@ color: #262626;</string>
                <pixmap resource="EquivalentSoft.qrc">:/EquivalentSoft/images/deletedxq.png</pixmap>
               </property>
              </widget>
+             <zorder>delete_colse</zorder>
+             <zorder>label_9</zorder>
+             <zorder>label_15</zorder>
+             <zorder>ftlabel_2</zorder>
             </widget>
            </item>
            <item>

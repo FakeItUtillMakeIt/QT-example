@@ -12,6 +12,7 @@ ParamManageModule::ParamManageModule(QWidget* parent)
 	InitDisplayData();
 
 	configInfoTable->setColumnHidden(0, true);
+	configInfoTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 	connect(static_cast<DeviceManager*>(this->parent()->parent()->parent()->parent()->parent()->parent()->parent()), &DeviceManager::rocketTypeChanged, this, [=]() {
 		qDebug() << AppCache::instance()->m_CurrentRocketType->m_name.c_str();
@@ -411,6 +412,14 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 		int curRow = opEditBtn->property("row").toInt();
 		editW->setParamInfo(configInfoTable->item(curRow, 0)->text().toInt(), configInfoTable->item(curRow, 2)->text(),
 			configInfoTable->item(curRow, 3)->text(), configInfoTable->item(curRow, 4)->text(), configInfoTable->item(curRow, 5)->text());
+		editW->setParent(this);
+		editW->setWindowModality(Qt::ApplicationModal);
+		editW->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+		QRect rtWorkArea;
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+		editW->move((rtWorkArea.width() - editW->frameGeometry().width()) / 2, (rtWorkArea.height() - editW->frameGeometry().height()) / 2);
+
 		editW->show();
 		});
 
@@ -424,7 +433,7 @@ void ParamManageModule::insertOneRow(int insertRow, QVector<QString> rowData) {
 	@brief 删除一行
 **/
 void ParamManageModule::removeOneRow(int removeRow) {
-	int ret = QMessageBox::warning(ParamInfoConfig::InfoConfigWidget::getInstance(), QString("警告"), QString("确认删除当前数据吗？"), "取消", "确定");
+	int ret = AllInfoConfigWidget::getInstance()->delExecResult();
 
 	if (ret == 0)
 	{
@@ -506,6 +515,14 @@ void ParamManageModule::insertOneRowData() {
 	addRocketTypeW->setInfoWidget(DeviceCommonVaries::PARAM_WIDGET);
 	addRocketTypeW->setWindowName(QString("新增参数"));
 	addRocketTypeW->setParamInfo(0, "", "", "", "");
+	addRocketTypeW->setParent(this);
+	addRocketTypeW->setWindowModality(Qt::ApplicationModal);
+	addRocketTypeW->setWindowFlags(this->windowFlags() | Qt::Dialog | Qt::FramelessWindowHint);
+
+	QRect rtWorkArea;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rtWorkArea, 0);
+	addRocketTypeW->move((rtWorkArea.width() - addRocketTypeW->frameGeometry().width()) / 2, (rtWorkArea.height() - addRocketTypeW->frameGeometry().height()) / 2);
+
 	addRocketTypeW->show();
 #endif
 

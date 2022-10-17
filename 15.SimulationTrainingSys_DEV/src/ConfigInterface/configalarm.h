@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "configdefine.h"
 #include "stylealarm.h"
-
+#include <QPoint>
 ConfigNameSpaceStart
 
 class ConfigAlarm:public QWidget
@@ -60,6 +60,17 @@ public:
 protected:
     void mousePressEvent(QMouseEvent *ev);
     void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent* e);
+
+#pragma region  移动
+    void ipressHandler(QMouseEvent* ev);
+    void imoveHandler(QMouseEvent* ev);
+    void ireleaseHandler(QMouseEvent* ev);
+    bool ColliderDetect(QRect  newrect);
+    QPoint mLastMousePosition;
+    bool mMoving;
+#pragma endregion
+    void UpdateObjectGeometryLimit();
     void moveEvent(QMoveEvent *event);
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent* event);
@@ -73,9 +84,10 @@ private:
     ControlRole  m_ctrlrole = cRealControl;
     ControlType  m_ctrltype = cConfigAlarm;
     QString m_uuid;
-    QString m_groupid;
+    QString m_groupid  = WidgetFree;
     QString m_styleid = "";
     QPoint startPos;
+    bool  dragenabled = false;
     void init_value_set();
 
     QString m_img_error="";

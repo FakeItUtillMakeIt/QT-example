@@ -67,8 +67,8 @@ void StyleSet::initbuttonSetEntry()
     addIconSel("请选择背景图片",vlayout,StyleButton::Button_Common_Style,cConfigButton);
     addIconSel("请选择鼠标经过背景图片",vlayout,StyleButton::Button_Hoverd_Style,cConfigButton);
     addIconSel("请选择鼠标按下背景图片",vlayout,StyleButton::Button_Pressed_Style,cConfigButton);
-    addIconSel("请选择命令成功背景图片",vlayout,StyleButton::Button_Success_Style,cConfigButton);
-    addIconSel("请选择命令失败背景图片",vlayout,StyleButton::Button_Failed_Style,cConfigButton);
+    addIconSel("请选择指令成功背景图片",vlayout,StyleButton::Button_Success_Style,cConfigButton);
+    addIconSel("请选择指令失败背景图片",vlayout,StyleButton::Button_Failed_Style,cConfigButton);
     addIconSel("请选择按钮禁止时背景图片",vlayout,StyleButton::Button_Diable_Style,cConfigButton);
     addFontSel("请选择字体",vlayout,StyleButton::Button_Font_Style,cConfigButton);
     addTextColorSel("请选择字体颜色",vlayout,StyleButton::Button_Text_Color,cConfigButton);

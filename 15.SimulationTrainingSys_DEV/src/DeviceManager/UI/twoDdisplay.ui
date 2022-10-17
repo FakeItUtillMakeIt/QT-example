@@ -141,7 +141,7 @@
              <string notr="true">font-size:16px</string>
             </property>
             <property name="text">
-             <string>火箭-模型教学分解</string>
+             <string>火箭模型教学分解</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -239,6 +239,474 @@ background:transparent</string>
            <height>44</height>
           </rect>
          </property>
+        </widget>
+        <widget class="QToolButton" name="save_module">
+         <property name="geometry">
+          <rect>
+           <x>1500</x>
+           <y>8</y>
+           <width>91</width>
+           <height>30</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>110</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;</string>
+         </property>
+         <property name="text">
+          <string>保存当前模型</string>
+         </property>
+        </widget>
+        <widget class="QWidget" name="attr_wid" native="true">
+         <property name="geometry">
+          <rect>
+           <x>1150</x>
+           <y>10</y>
+           <width>331</width>
+           <height>131</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">#attr_wid{background-color:white}</string>
+         </property>
+         <widget class="QLineEdit" name="pos_x">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>40</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_181">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>70</y>
+            <width>51</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>高度 ：</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_182">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>40</y>
+            <width>51</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>坐标X：</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_183">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>40</y>
+            <width>51</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>坐标Y：</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="pos_y">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>40</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_184">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>51</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>宽度 ：</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="width_line">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>70</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="height_line">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>70</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="delete_comp">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>100</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#delete_comp
+{font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;}
+
+
+</string>
+          </property>
+          <property name="text">
+           <string>删除组件</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="delete_Allcomp">
+          <property name="geometry">
+           <rect>
+            <x>250</x>
+            <y>100</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#delete_Allcomp
+{font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+}
+
+
+</string>
+          </property>
+          <property name="text">
+           <string>删除所有</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="comp_fastcreate">
+          <property name="geometry">
+           <rect>
+            <x>110</x>
+            <y>100</y>
+            <width>60</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#comp_fastcreate
+{font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;}
+
+</string>
+          </property>
+          <property name="text">
+           <string>快速创建</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_185">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>70</y>
+            <width>20</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>px</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_186">
+          <property name="geometry">
+           <rect>
+            <x>300</x>
+            <y>70</y>
+            <width>21</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>px</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QWidget" name="widget_12" native="true">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>331</width>
+            <height>33</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#widget_12{border-bottom:1px solid gray;}</string>
+          </property>
+          <widget class="QLabel" name="label_187">
+           <property name="geometry">
+            <rect>
+             <x>12</x>
+             <y>5</y>
+             <width>71</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">font-size: 14px;
+font-weight:bold;
+</string>
+           </property>
+           <property name="text">
+            <string>属性面板</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="attr_close">
+           <property name="geometry">
+            <rect>
+             <x>300</x>
+             <y>0</y>
+             <width>30</width>
+             <height>30</height>
+            </rect>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="toolTip">
+            <string>关闭</string>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton:hover{
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/closehover);
+    border:0px;}
+QPushButton {
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/close);
+    border:0px;
+}
+
+</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QPushButton" name="toTop">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>100</y>
+            <width>41</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#toTop{font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;}
+
+</string>
+          </property>
+          <property name="text">
+           <string>置顶</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="toBottom">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>100</y>
+            <width>41</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">#toBottom{font-size: 12px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+}
+</string>
+          </property>
+          <property name="text">
+           <string>置底</string>
+          </property>
+         </widget>
         </widget>
        </widget>
       </item>
@@ -434,102 +902,7 @@ border:none</string>
 </string>
                    </property>
                    <property name="text">
-                    <string>全箭模型</string>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleeditbtn_1">
-                   <property name="geometry">
-                    <rect>
-                     <x>220</x>
-                     <y>5</y>
-                     <width>20</width>
-                     <height>20</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/editmodule);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleclosebtn_1">
-                   <property name="geometry">
-                    <rect>
-                     <x>240</x>
-                     <y>0</y>
-                     <width>30</width>
-                     <height>30</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/close);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
+                    <string>示例1 全箭模型</string>
                    </property>
                   </widget>
                  </widget>
@@ -667,102 +1040,7 @@ background-color:rgba(255,255,255,0.6);
 </string>
                    </property>
                    <property name="text">
-                    <string>上面级模型</string>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleclosebtn_2">
-                   <property name="geometry">
-                    <rect>
-                     <x>240</x>
-                     <y>0</y>
-                     <width>30</width>
-                     <height>30</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/close);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleeditbtn_2">
-                   <property name="geometry">
-                    <rect>
-                     <x>220</x>
-                     <y>5</y>
-                     <width>20</width>
-                     <height>20</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/editmodule);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
+                    <string>示例2 上面级模型</string>
                    </property>
                   </widget>
                  </widget>
@@ -899,102 +1177,7 @@ QPushButton {
 </string>
                    </property>
                    <property name="text">
-                    <string>控制舱模型</string>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleeditbtn_3">
-                   <property name="geometry">
-                    <rect>
-                     <x>220</x>
-                     <y>5</y>
-                     <width>20</width>
-                     <height>20</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/editmodule);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleclosebtn_3">
-                   <property name="geometry">
-                    <rect>
-                     <x>240</x>
-                     <y>0</y>
-                     <width>30</width>
-                     <height>30</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/close);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
+                    <string>示例3 控制舱模型</string>
                    </property>
                   </widget>
                  </widget>
@@ -1125,102 +1308,7 @@ QPushButton {
 </string>
                    </property>
                    <property name="text">
-                    <string>尾段模型</string>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleeditbtn_4">
-                   <property name="geometry">
-                    <rect>
-                     <x>220</x>
-                     <y>5</y>
-                     <width>20</width>
-                     <height>20</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/editmodule);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                  <widget class="QPushButton" name="moduleclosebtn_4">
-                   <property name="geometry">
-                    <rect>
-                     <x>240</x>
-                     <y>0</y>
-                     <width>30</width>
-                     <height>30</height>
-                    </rect>
-                   </property>
-                   <property name="minimumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>30</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-
-QPushButton {
-	background-color:transparent;
-	border-image: url(:/twoDdisplay/close);
-    border:0px;
-}</string>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="iconSize">
-                    <size>
-                     <width>20</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="flat">
-                    <bool>false</bool>
+                    <string>示例4 尾段模型</string>
                    </property>
                   </widget>
                  </widget>
@@ -4331,8 +4419,8 @@ color:rgb(98,109,125);</string>
                     <widget class="QWidget" name="delete_dialog" native="true">
                      <property name="geometry">
                       <rect>
-                       <x>1170</x>
-                       <y>240</y>
+                       <x>1240</x>
+                       <y>420</y>
                        <width>384</width>
                        <height>241</height>
                       </rect>
@@ -4494,22 +4582,6 @@ border:none;</string>
                           <set>Qt::AlignCenter</set>
                          </property>
                         </widget>
-                        <widget class="QLabel" name="label_2">
-                         <property name="geometry">
-                          <rect>
-                           <x>120</x>
-                           <y>60</y>
-                           <width>141</width>
-                           <height>21</height>
-                          </rect>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true">color:red</string>
-                         </property>
-                         <property name="text">
-                          <string>（*展示内容无法删除！*)</string>
-                         </property>
-                        </widget>
                        </widget>
                       </item>
                       <item>
@@ -4604,7 +4676,7 @@ border: 1px solid #FF4D4F;</string>
                        <x>720</x>
                        <y>220</y>
                        <width>361</width>
-                       <height>450</height>
+                       <height>460</height>
                       </rect>
                      </property>
                      <property name="styleSheet">
@@ -4803,7 +4875,7 @@ border:none;</string>
                          <property name="geometry">
                           <rect>
                            <x>130</x>
-                           <y>285</y>
+                           <y>300</y>
                            <width>91</width>
                            <height>31</height>
                           </rect>
@@ -4827,7 +4899,7 @@ border-radius: 4px;</string>
                            <x>40</x>
                            <y>120</y>
                            <width>272</width>
-                           <height>153</height>
+                           <height>176</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -4837,7 +4909,10 @@ border-radius: 4px;</string>
                           <string/>
                          </property>
                          <property name="scaledContents">
-                          <bool>true</bool>
+                          <bool>false</bool>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
                          </property>
                         </widget>
                         <widget class="QLabel" name="namewarning">
@@ -5155,6 +5230,7 @@ background-color:rgba(255,255,255,0.25);</string>
                            </property>
                            <property name="font">
                             <font>
+                             <family>Adobe 黑体 Std R</family>
                              <pointsize>-1</pointsize>
                             </font>
                            </property>
@@ -5436,11 +5512,11 @@ border-radius: 4px;</string>
                   <x>0</x>
                   <y>0</y>
                   <width>1630</width>
-                  <height>750</height>
+                  <height>854</height>
                  </rect>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">border:0;</string>
+                 <string notr="true">#scrollArea_3{border:0;}</string>
                 </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
@@ -5451,7 +5527,7 @@ border-radius: 4px;</string>
                    <x>0</x>
                    <y>0</y>
                    <width>1630</width>
-                   <height>750</height>
+                   <height>854</height>
                   </rect>
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -5988,6 +6064,325 @@ color:rgb(98,109,125);</string>
                       </item>
                      </layout>
                     </widget>
+                    <widget class="QWidget" name="area_bindwid" native="true">
+                     <property name="geometry">
+                      <rect>
+                       <x>1000</x>
+                       <y>280</y>
+                       <width>384</width>
+                       <height>241</height>
+                      </rect>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">background-color:white</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_15" stretch="1,3,1">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QWidget" name="widget_19" native="true">
+                        <property name="autoFillBackground">
+                         <bool>false</bool>
+                        </property>
+                        <widget class="QPushButton" name="Area_close">
+                         <property name="geometry">
+                          <rect>
+                           <x>350</x>
+                           <y>0</y>
+                           <width>30</width>
+                           <height>30</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>30</width>
+                           <height>30</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="toolTip">
+                          <string>关闭</string>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QPushButton:hover{
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/closehover);
+    border:0px;}
+QPushButton {
+	background-color:transparent;
+	background-image: url(:/twoDdisplay/close);
+    border:0px;
+}
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_188">
+                         <property name="geometry">
+                          <rect>
+                           <x>60</x>
+                           <y>10</y>
+                           <width>131</width>
+                           <height>31</height>
+                          </rect>
+                         </property>
+                         <property name="autoFillBackground">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 18px;
+font-weight: 500;
+color: #262626;</string>
+                         </property>
+                         <property name="text">
+                          <string>区域跳转绑定</string>
+                         </property>
+                         <property name="textFormat">
+                          <enum>Qt::PlainText</enum>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                        <widget class="QLabel" name="label_189">
+                         <property name="geometry">
+                          <rect>
+                           <x>20</x>
+                           <y>10</y>
+                           <width>31</width>
+                           <height>31</height>
+                          </rect>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="pixmap">
+                          <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_20" native="true">
+                        <property name="styleSheet">
+                         <string notr="true">border:1px solid rgba(38,38,38,0.1000)</string>
+                        </property>
+                        <widget class="QComboBox" name="module_select">
+                         <property name="geometry">
+                          <rect>
+                           <x>30</x>
+                           <y>50</y>
+                           <width>331</width>
+                           <height>40</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>40</height>
+                          </size>
+                         </property>
+                         <property name="toolTipDuration">
+                          <number>-1</number>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QComboBox
+{
+border-radius: 4px;
+border: 1px solid rgba(38,38,38,0.1700);
+font-family:&quot;Microsoft Yahei&quot;;
+font-size:14px;
+padding:10px;
+}
+QComboBox QAbstractItemView::item
+{
+height:36px;
+}
+QComboBox::drop-down
+{  border:none;
+   margin-right:10px;
+
+}
+QComboBox::down-arrow{
+
+	border-image:url(:/twoDdisplay/images/selectarr.png);
+	width:10px;
+    height:10px
+}</string>
+                         </property>
+                         <property name="editable">
+                          <bool>false</bool>
+                         </property>
+                         <property name="currentText">
+                          <string>无</string>
+                         </property>
+                         <property name="currentIndex">
+                          <number>0</number>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>无</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>全箭模型</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>上面级模型</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>控制舱模型</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>尾端模型</string>
+                          </property>
+                         </item>
+                        </widget>
+                        <widget class="QLabel" name="label_190">
+                         <property name="geometry">
+                          <rect>
+                           <x>30</x>
+                           <y>20</y>
+                           <width>91</width>
+                           <height>21</height>
+                          </rect>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 14px;
+font-family: Microsoft Yahei;
+font-weight: 400;
+color: #262626;
+border:none;</string>
+                         </property>
+                         <property name="text">
+                          <string>跳转模型名称</string>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QFrame" name="frame_3">
+                        <property name="frameShape">
+                         <enum>QFrame::StyledPanel</enum>
+                        </property>
+                        <property name="frameShadow">
+                         <enum>QFrame::Raised</enum>
+                        </property>
+                        <widget class="QPushButton" name="Area_cancle">
+                         <property name="geometry">
+                          <rect>
+                           <x>210</x>
+                           <y>8</y>
+                           <width>66</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>66</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>66</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: rgb(220,220,220);
+border-radius: 4px;
+border:1px solid rgb(230,230,230)
+</string>
+                         </property>
+                         <property name="text">
+                          <string>取消</string>
+                         </property>
+                        </widget>
+                        <widget class="QPushButton" name="Area_ok">
+                         <property name="geometry">
+                          <rect>
+                           <x>300</x>
+                           <y>8</y>
+                           <width>66</width>
+                           <height>34</height>
+                          </rect>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>66</width>
+                           <height>34</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>34</width>
+                           <height>16777215</height>
+                          </size>
+                         </property>
+                         <property name="cursor">
+                          <cursorShape>PointingHandCursor</cursorShape>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">font-size: 16px;
+color: #ffffff;
+background: #006FFE;
+border-radius: 4px;
+
+</string>
+                         </property>
+                         <property name="text">
+                          <string>确定</string>
+                         </property>
+                        </widget>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
                     <zorder>fdj_label_9</zorder>
                     <zorder>fdj_label_8</zorder>
                     <zorder>label_10</zorder>
@@ -5997,6 +6392,7 @@ color:rgb(98,109,125);</string>
                     <zorder>label_135</zorder>
                     <zorder>fdj_label_10</zorder>
                     <zorder>label_127</zorder>
+                    <zorder>area_bindwid</zorder>
                    </widget>
                   </item>
                  </layout>
@@ -9484,7 +9880,7 @@ QToolButton {
 </string>
                     </property>
                     <property name="currentIndex">
-                     <number>2</number>
+                     <number>3</number>
                     </property>
                     <widget class="QWidget" name="image_page">
                      <widget class="QPushButton" name="imagebtn_1">
@@ -10201,7 +10597,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename1_2">
@@ -10337,7 +10733,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename2_2">
@@ -10473,7 +10869,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename3_2">
@@ -10609,7 +11005,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename4_2">
@@ -10745,7 +11141,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename6_2">
@@ -10881,7 +11277,7 @@ border:2px dashed rgb(252,252,252);
                         <set>Qt::AlignCenter</set>
                        </property>
                        <property name="wordWrap">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                       </widget>
                       <widget class="QLabel" name="filename5_2">
@@ -11216,766 +11612,6 @@ border:0;
                 </widget>
                </widget>
               </widget>
-              <widget class="QWidget" name="page_5">
-               <widget class="QWidget" name="attr_wid" native="true">
-                <property name="geometry">
-                 <rect>
-                  <x>1299</x>
-                  <y>0</y>
-                  <width>331</width>
-                  <height>131</height>
-                 </rect>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16777215</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">#attr_wid{background-color:white}</string>
-                </property>
-                <widget class="QLineEdit" name="pos_x">
-                 <property name="geometry">
-                  <rect>
-                   <x>60</x>
-                   <y>40</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_8">
-                 <property name="geometry">
-                  <rect>
-                   <x>180</x>
-                   <y>70</y>
-                   <width>51</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>高度 ：</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_3">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>40</y>
-                   <width>51</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>坐标X：</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_6">
-                 <property name="geometry">
-                  <rect>
-                   <x>180</x>
-                   <y>40</y>
-                   <width>51</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>坐标Y：</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLineEdit" name="pos_y">
-                 <property name="geometry">
-                  <rect>
-                   <x>240</x>
-                   <y>40</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_9">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>70</y>
-                   <width>51</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>宽度 ：</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLineEdit" name="width_line">
-                 <property name="geometry">
-                  <rect>
-                   <x>60</x>
-                   <y>70</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLineEdit" name="height_line">
-                 <property name="geometry">
-                  <rect>
-                   <x>240</x>
-                   <y>70</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QPushButton" name="delete_comp">
-                 <property name="geometry">
-                  <rect>
-                   <x>180</x>
-                   <y>100</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">font-size: 12px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                 </property>
-                 <property name="text">
-                  <string>删除组件</string>
-                 </property>
-                </widget>
-                <widget class="QPushButton" name="delete_Allcomp">
-                 <property name="geometry">
-                  <rect>
-                   <x>250</x>
-                   <y>100</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">font-size: 12px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                 </property>
-                 <property name="text">
-                  <string>删除所有</string>
-                 </property>
-                </widget>
-                <widget class="QPushButton" name="comp_fastcreate">
-                 <property name="geometry">
-                  <rect>
-                   <x>110</x>
-                   <y>100</y>
-                   <width>60</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">font-size: 12px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                 </property>
-                 <property name="text">
-                  <string>快速创建</string>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_18">
-                 <property name="geometry">
-                  <rect>
-                   <x>120</x>
-                   <y>70</y>
-                   <width>20</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>px</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QLabel" name="label_19">
-                 <property name="geometry">
-                  <rect>
-                   <x>300</x>
-                   <y>70</y>
-                   <width>21</width>
-                   <height>21</height>
-                  </rect>
-                 </property>
-                 <property name="text">
-                  <string>px</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-                <widget class="QWidget" name="widget_2" native="true">
-                 <property name="geometry">
-                  <rect>
-                   <x>0</x>
-                   <y>0</y>
-                   <width>331</width>
-                   <height>33</height>
-                  </rect>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">#widget_2{border-bottom:1px solid gray;}</string>
-                 </property>
-                 <widget class="QLabel" name="label_21">
-                  <property name="geometry">
-                   <rect>
-                    <x>12</x>
-                    <y>5</y>
-                    <width>71</width>
-                    <height>21</height>
-                   </rect>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">font-size: 14px;
-font-weight:bold;
-</string>
-                  </property>
-                  <property name="text">
-                   <string>属性面板</string>
-                  </property>
-                 </widget>
-                 <widget class="QPushButton" name="attr_close">
-                  <property name="geometry">
-                   <rect>
-                    <x>300</x>
-                    <y>0</y>
-                    <width>30</width>
-                    <height>30</height>
-                   </rect>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>30</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>30</width>
-                    <height>30</height>
-                   </size>
-                  </property>
-                  <property name="cursor">
-                   <cursorShape>PointingHandCursor</cursorShape>
-                  </property>
-                  <property name="toolTip">
-                   <string>关闭</string>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-QPushButton {
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/close);
-    border:0px;
-}
-
-</string>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </widget>
-                <widget class="QPushButton" name="toTop">
-                 <property name="geometry">
-                  <rect>
-                   <x>10</x>
-                   <y>100</y>
-                   <width>41</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">font-size: 12px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                 </property>
-                 <property name="text">
-                  <string>置顶</string>
-                 </property>
-                </widget>
-                <widget class="QPushButton" name="toBottom">
-                 <property name="geometry">
-                  <rect>
-                   <x>60</x>
-                   <y>100</y>
-                   <width>41</width>
-                   <height>24</height>
-                  </rect>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">font-size: 12px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                 </property>
-                 <property name="text">
-                  <string>置底</string>
-                 </property>
-                </widget>
-               </widget>
-               <widget class="QLabel" name="label_23">
-                <property name="geometry">
-                 <rect>
-                  <x>140</x>
-                  <y>190</y>
-                  <width>54</width>
-                  <height>12</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/Darea</pixmap>
-                </property>
-               </widget>
-               <widget class="QWidget" name="area_bindwid" native="true">
-                <property name="geometry">
-                 <rect>
-                  <x>880</x>
-                  <y>260</y>
-                  <width>384</width>
-                  <height>241</height>
-                 </rect>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">background-color:white</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_11" stretch="1,3,1">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QWidget" name="widget_17" native="true">
-                   <property name="autoFillBackground">
-                    <bool>false</bool>
-                   </property>
-                   <widget class="QPushButton" name="Area_close">
-                    <property name="geometry">
-                     <rect>
-                      <x>350</x>
-                      <y>0</y>
-                      <width>30</width>
-                      <height>30</height>
-                     </rect>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>30</width>
-                      <height>30</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>30</width>
-                      <height>30</height>
-                     </size>
-                    </property>
-                    <property name="cursor">
-                     <cursorShape>PointingHandCursor</cursorShape>
-                    </property>
-                    <property name="toolTip">
-                     <string>关闭</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">QPushButton:hover{
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/closehover);
-    border:0px;}
-QPushButton {
-	background-color:transparent;
-	background-image: url(:/twoDdisplay/close);
-    border:0px;
-}
-
-</string>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_31">
-                    <property name="geometry">
-                     <rect>
-                      <x>60</x>
-                      <y>10</y>
-                      <width>131</width>
-                      <height>31</height>
-                     </rect>
-                    </property>
-                    <property name="autoFillBackground">
-                     <bool>false</bool>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-size: 18px;
-font-weight: 500;
-color: #262626;</string>
-                    </property>
-                    <property name="text">
-                     <string>区域跳转绑定</string>
-                    </property>
-                    <property name="textFormat">
-                     <enum>Qt::PlainText</enum>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                   <widget class="QLabel" name="label_32">
-                    <property name="geometry">
-                     <rect>
-                      <x>20</x>
-                      <y>10</y>
-                      <width>31</width>
-                      <height>31</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="pixmap">
-                     <pixmap resource="twoDdisplay.qrc">:/twoDdisplay/images/adddxq.png</pixmap>
-                    </property>
-                   </widget>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_18" native="true">
-                   <property name="styleSheet">
-                    <string notr="true">border:1px solid rgba(38,38,38,0.1000)</string>
-                   </property>
-                   <widget class="QComboBox" name="module_select">
-                    <property name="geometry">
-                     <rect>
-                      <x>30</x>
-                      <y>50</y>
-                      <width>331</width>
-                      <height>40</height>
-                     </rect>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>16777215</width>
-                      <height>40</height>
-                     </size>
-                    </property>
-                    <property name="toolTipDuration">
-                     <number>-1</number>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">QComboBox
-{
-border-radius: 4px;
-border: 1px solid rgba(38,38,38,0.1700);
-font-family:&quot;Microsoft Yahei&quot;;
-font-size:14px;
-padding:10px;
-}
-QComboBox QAbstractItemView::item
-{
-height:36px;
-}
-QComboBox::drop-down
-{  border:none;
-   margin-right:10px;
-
-}
-QComboBox::down-arrow{
-
-	border-image:url(:/EquivalentSoft/images/selectarr.png);
-	width:10px;
-    height:10px
-}</string>
-                    </property>
-                    <property name="editable">
-                     <bool>false</bool>
-                    </property>
-                    <property name="currentText">
-                     <string>全箭模型</string>
-                    </property>
-                    <property name="currentIndex">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>全箭模型</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>上面级模型</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>控制舱模型</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>尾端模型</string>
-                     </property>
-                    </item>
-                   </widget>
-                   <widget class="QLabel" name="label_35">
-                    <property name="geometry">
-                     <rect>
-                      <x>30</x>
-                      <y>20</y>
-                      <width>91</width>
-                      <height>21</height>
-                     </rect>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-size: 14px;
-font-family: Microsoft Yahei;
-font-weight: 400;
-color: #262626;
-border:none;</string>
-                    </property>
-                    <property name="text">
-                     <string>跳转模型名称</string>
-                    </property>
-                    <property name="alignment">
-                     <set>Qt::AlignCenter</set>
-                    </property>
-                   </widget>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QFrame" name="frame_2">
-                   <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
-                   </property>
-                   <widget class="QPushButton" name="Area_cancle">
-                    <property name="geometry">
-                     <rect>
-                      <x>210</x>
-                      <y>8</y>
-                      <width>66</width>
-                      <height>34</height>
-                     </rect>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>66</width>
-                      <height>34</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>66</width>
-                      <height>34</height>
-                     </size>
-                    </property>
-                    <property name="cursor">
-                     <cursorShape>PointingHandCursor</cursorShape>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-size: 16px;
-color: rgb(220,220,220);
-border-radius: 4px;
-border:1px solid rgb(230,230,230)
-</string>
-                    </property>
-                    <property name="text">
-                     <string>取消</string>
-                    </property>
-                   </widget>
-                   <widget class="QPushButton" name="Area_ok">
-                    <property name="geometry">
-                     <rect>
-                      <x>300</x>
-                      <y>8</y>
-                      <width>66</width>
-                      <height>34</height>
-                     </rect>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>66</width>
-                      <height>34</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>34</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="cursor">
-                     <cursorShape>PointingHandCursor</cursorShape>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true">font-size: 16px;
-color: #ffffff;
-background: #006FFE;
-border-radius: 4px;
-
-</string>
-                    </property>
-                    <property name="text">
-                     <string>确定</string>
-                    </property>
-                   </widget>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </widget>
              </widget>
             </item>
            </layout>
@@ -11991,10 +11627,6 @@ border-radius: 4px;
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="twoDdisplay.qrc"/>
-  <include location="../../EquivalentSoft/UI/EquivalentSoft.qrc"/>
-  <include location="twoDdisplay.qrc"/>
-  <include location="EquivalentSoft.qrc"/>
   <include location="twoDdisplay.qrc"/>
  </resources>
  <connections/>

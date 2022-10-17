@@ -27,7 +27,7 @@ ConfigButton::ConfigButton(const QString &text, QWidget *parent):
 void ConfigButton::handleEvent()
 {
     if (ConfigGlobal::isEditing) return;
-    QString datasourceid = m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    QString datasourceid = m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
     if (ConfigGlobal::VerifyNumber(datasourceid) && ConfigNameSpace::ConfigGlobal::cmdhandler)
     {
         ConfigNameSpace::ConfigGlobal::cmdhandler(datasourceid.toInt(), this);
@@ -62,12 +62,13 @@ void ConfigButton::showListMenu(const QPoint& point) {
         return;
     }
     QMenu* cmenu = new QMenu();
-    QAction* actSetCmd = cmenu->addAction("设置命令");
-    QString str = "为当前按钮设置命令";
+    QAction* actSetCmd = cmenu->addAction("设置指令");
+    QString str = "为当前按钮设置指令";
     connect(actSetCmd, &QAction::triggered, [=]() {
         {
             ParamSelect  paramselect;
-            QString  valueid = m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+            paramselect.setWindowTitle("指令选择");
+            QString  valueid = m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
             QVector<int>  idlist;
             if (valueid != "未设置")
             {
@@ -77,7 +78,7 @@ void ConfigButton::showListMenu(const QPoint& point) {
             if (paramselect.exec() == QDialog::Rejected)
                 return;
             int paramid = paramselect.get_select_key();
-            m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->SetWidthStrValue(QString::number(paramid));
+            m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->SetWidthStrValue(QString::number(paramid));
             QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allCommadPrt)[paramid]->m_sName.c_str());
             setText(paramname);
             ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
@@ -135,7 +136,7 @@ void ConfigButton::InitFromDefineStyle(QString istyleid)
 
 void ConfigButton::updateDataSource(QString datasourceid, QString datasourcename, int  addordelete)
 {
-    QString paramid =  m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    QString paramid =  m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
     if (ConfigGlobal::VerifyNumber(paramid))
         ConfigGlobal::updateButtonMap(paramid.toInt(), this);
     setText(datasourcename);
@@ -166,12 +167,12 @@ void ConfigButton::init_value_set()
     }
     {
           ConfigValueSet  m_valueSet;
-          m_valueSet.valueSetname = "命令配置";
-          m_valueSet.valuelist[ConfigButton::eDataSource] = new ConfigValue(m_CmdSourceID, eConfigCommand,"选择命令");
-          m_valueSetMap["命令配置"] = m_valueSet;
-          m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->SetWidthStrValue("未设置");
+          m_valueSet.valueSetname = "指令配置";
+          m_valueSet.valuelist[ConfigButton::eDataSource] = new ConfigValue(m_CmdSourceID, eConfigCommand,"选择指令");
+          m_valueSetMap["指令配置"] = m_valueSet;
+          m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->SetWidthStrValue("未设置");
 
-         /* char* styleinfo =  (char*)m_valueSetMap["命令配置"].valuelist[ConfigButton::eConfigCommand]->value;
+         /* char* styleinfo =  (char*)m_valueSetMap["指令配置"].valuelist[ConfigButton::eConfigCommand]->value;
           memset(styleinfo,0,MaximumPathLength);
           memcpy(styleinfo,"",1);*/
     }
@@ -197,12 +198,22 @@ void ConfigButton::InitFromXmlInfo(QMap<QString, QString> &buttoninfo)
         for(auto elementkey: m_valueSetMap[groupkey].valuelist.keys())
         {
             QString infokey = groupkey + ":" + QString::number(elementkey);
-            QString strvalue  = buttoninfo[infokey];
+            QString strvalue;
+            if(buttoninfo.contains(infokey))
+                strvalue  = buttoninfo[infokey];
+            else
+            {
+                if (infokey.contains("指令配置"))
+                {
+                    infokey = infokey.replace("指令配置", "命令配置");
+                    strvalue = buttoninfo[infokey];
+                }
+            }
             m_valueSetMap[groupkey].valuelist[elementkey]->SetWidthStrValue(strvalue);
          //   qDebug() <<"infokey:" << infokey << " value:" <<m_valueSetMap[groupkey].valuelist[elementkey]->getStrValue() << " strvalue:" <<strvalue;
         }
     }
-    QString datasourceid = m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    QString datasourceid = m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
     if (ConfigGlobal::VerifyNumber(datasourceid))
     {
         if ((*ConfigGlobal::m_allCommadPrt).find(datasourceid.toInt()) != (*ConfigGlobal::m_allCommadPrt).end())
@@ -231,6 +242,10 @@ void ConfigButton::setRole(ControlRole role)
 void ConfigButton::setGroupId(QString groupid)
 {
     m_groupid = groupid;
+    if(m_groupid!= WidgetFree)
+        m_ingroup = true;
+    else
+        m_ingroup = false;
 }
 
 QString ConfigButton::GetID()
@@ -243,7 +258,59 @@ void  ConfigButton::UpdateObjectGeometryLimit()
     m_valueSetMap["位置属性"].valuelist[ConfigButton::eYPos]->uplimit = ConfigGlobal::scenesize.height();
     m_valueSetMap["位置属性"].valuelist[ConfigButton::eWidth]->uplimit = ConfigGlobal::scenesize.width();
     m_valueSetMap["位置属性"].valuelist[ConfigButton::eHeight]->uplimit = ConfigGlobal::scenesize.height();
+    if (m_ingroup)
+    {
+        m_valueSetMap["位置属性"].valuelist[ConfigButton::eXPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigButton::eYPos]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigButton::eWidth]->editEabled = false;
+        m_valueSetMap["位置属性"].valuelist[ConfigButton::eHeight]->editEabled = false;
+    }
+}
 
+void ConfigButton::ipressHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton && ev->modifiers() == Qt::NoModifier)
+    {
+        mMoving = true;
+        mLastMousePosition = ev->globalPos();
+    }
+}
+void ConfigButton::imoveHandler(QMouseEvent* e)
+{
+    if (e->buttons().testFlag(Qt::LeftButton) && mMoving)
+    {
+        setCursor(Qt::OpenHandCursor);
+        QPoint offset = e->globalPos() - mLastMousePosition;
+
+        if (abs(offset.x()) > 50 || abs(offset.y()) > 50)
+        {
+
+            return;
+        }
+        this->move(this->pos() + (offset));
+        mLastMousePosition = e->globalPos();
+    }
+}
+void ConfigButton::ireleaseHandler(QMouseEvent* ev)
+{
+    if (ev->button() == Qt::LeftButton)
+    {
+        mMoving = false;
+        setCursor(Qt::ArrowCursor);
+    }
+}
+void ConfigButton::mouseReleaseEvent(QMouseEvent* e)
+{
+    if (!ConfigGlobal::isEditing)
+    {
+        QPushButton::mouseReleaseEvent(e);
+        return;
+    }
+    dragenabled = false;
+
+    if (!m_ingroup)
+        ireleaseHandler(e);
+    QPushButton::mouseReleaseEvent(e);
 }
 void ConfigButton::mousePressEvent(QMouseEvent *ev)
 {
@@ -252,10 +319,15 @@ void ConfigButton::mousePressEvent(QMouseEvent *ev)
        QPushButton::mousePressEvent(ev);
        return;
     }
-    qDebug() << "configbutton press:"  << m_valueSetMap["命令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
+    qDebug() << "configbutton press:"  << m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
     if (ev->button() == Qt::LeftButton)
-            startPos = ev->pos();
-
+    {
+        startPos = ev->pos();
+      if(m_ingroup)
+         dragenabled = true;
+      if(ev->modifiers() == Qt::ControlModifier)
+          dragenabled = true;
+    }
     updateGeometryData();
     UpdateObjectGeometryLimit();
     ConfigGlobal::gpropeetyset->setObject(cConfigButton,this, m_valueSetMap);
@@ -263,23 +335,37 @@ void ConfigButton::mousePressEvent(QMouseEvent *ev)
     {
         MoveAbleFrame::update_ctrl_point_pos(this, (QWidget*)parent());
         MoveAbleFrame::setControlStyle(cConfigButton, false,m_uuid);
+        ipressHandler(ev);
     }
-   if(m_ingroup)
+  if(m_ingroup)
      ev->ignore();
 
 }
 
 void ConfigButton::mouseMoveEvent(QMouseEvent *e)
 {
-    if(m_ingroup)
+    if (!ConfigGlobal::isEditing)
+    {
+        QPushButton::mousePressEvent(e);
+        return;
+    }
+
+    if(dragenabled)
     {
         if (e->buttons() & Qt::LeftButton) {
            int distance = (e->pos() - startPos).manhattanLength();
            if (distance >= QApplication::startDragDistance())
+           {
                handleDragEvent();
+               dragenabled = false;
+               return;
+           }
         }
     }
-
+    else
+    {
+        imoveHandler(e);
+    }
     QPushButton::mouseMoveEvent(e);
 }
 void ConfigButton::updataDataFromTool()
@@ -297,6 +383,16 @@ void ConfigButton::moveEvent(QMoveEvent *event)
 
     if(!m_ingroup)
         MoveAbleFrame::update_ctrl_point_pos_2();
+
+    //for (auto groupctrl : m_scene->sceneGroupList)
+    //{
+    //    if (groupctrl->geometry().intersects(this->geometry()))
+    //    {
+    //        this->hide();
+    //        handleDragEvent();
+    //    }
+    //}
+
     QPushButton::moveEvent(event);
 }
 
@@ -409,6 +505,7 @@ void ConfigButton::handleDragEvent()
     md->setData("operation",QByteArray::number(m_ctrlrole));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("controltype",QByteArray::number(m_ctrltype));    			//这是md中存储的内容(即拖放时传递的数据)。
     md->setData("groupid",m_groupid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
+    md->setData("elementid", m_uuid.toLatin1());    			//这是md中存储的内容(即拖放时传递的数据)。
 
 
     dg->setMimeData(md);   			//步骤1：设置拖动的数据。该函数会获得md的所有权。

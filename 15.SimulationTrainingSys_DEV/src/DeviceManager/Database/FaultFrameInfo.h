@@ -182,6 +182,7 @@ namespace DataBaseF
 		~AddOneFaultInfo() {};
 
 		string m_name;//故障名称
+		string m_oldName;//存放编辑名称之前的故障名称，用于编辑故障时候使用
 		int m_Type;//故障类型 1：参数故障；2：指令故障
 		int faultType;//1:控制、2:测量、3:动力
 		int m_FaultCommandCode;//故障指令id

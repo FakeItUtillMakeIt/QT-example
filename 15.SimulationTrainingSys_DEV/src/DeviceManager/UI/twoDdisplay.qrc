@@ -64,5 +64,7 @@
         <file alias="dlineh">images/twoDdisplay/dragline_h.png</file>
         <file alias="dlinev">images/twoDdisplay/dragline_v.png</file>
         <file alias="gotoarea">images/twoDdisplay/goto_area.png</file>
+        <file alias="zkj">images/twoDdisplay/zkj.png</file>
+        <file>images/selectarr.png</file>
     </qresource>
 </RCC>
