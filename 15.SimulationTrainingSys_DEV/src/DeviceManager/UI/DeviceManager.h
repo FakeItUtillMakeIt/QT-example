@@ -89,6 +89,8 @@ private:
 	twoDdisplay* m_twoDdisplay;
 
 
+	bool CheckDatabase();
+
 protected:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);

@@ -26,6 +26,7 @@ namespace DataBase
 		DeviceDAO(OutputPath* path);
 		~DeviceDAO();
 		bool exec_sql(string sql);
+		bool Isexist(string name);
 		bool connected();
 		bool connect();
 		bool test();

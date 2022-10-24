@@ -92,7 +92,7 @@ void   ConfigGlobal::updateControlValue(int validity,int key,double itime,double
     {
         for (auto curve : curvemap[key])
         {
-            curve->updateValue(key,itime,value);
+            curve->NewUpdateValue(key,itime,value);
         }
     }
 }

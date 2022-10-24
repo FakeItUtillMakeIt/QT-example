@@ -26,6 +26,7 @@ void StyleButton::DefaultUiInit()
     m_infomap[Button_Font_Style] = QPair<bool,QString>(false,this->font().toString());
     m_infomap[Button_Text_Color] = QPair<bool,QString>(false,QColor(0,0,0).name(QColor::QColor::HexArgb));
     m_infomap[Button_Diable_Style] = QPair<bool,QString>(false,":/rc/forbit.png");
+    m_defaultinfomap = m_infomap;
 
 }
 void StyleButton::mousePressEvent(QMouseEvent *ev)

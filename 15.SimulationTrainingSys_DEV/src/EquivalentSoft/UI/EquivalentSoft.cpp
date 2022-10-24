@@ -33,7 +33,34 @@ void processCMD(int cmd, ConfigNameSpace::ConfigButton* btn)
 	}
 	gCenterOperate->sendCMDFromInterface(cmd, btn);
 }
-
+bool  EquivalentSoft::GetBoolResult(QString  hint)
+{
+	QDialog  dlg;
+	bool  bret = false;
+	dlg.resize(300, 70);
+	dlg.setWindowTitle("提示");
+	dlg.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+	dlg.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
+	QPushButton  okbtn("确认");
+	QPushButton  cancelbtn("取消");
+	connect(&okbtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
+	connect(&cancelbtn, &QPushButton::clicked, [&dlg]() { dlg.reject(); });
+	QVBoxLayout  vlayout;
+	QHBoxLayout  hlayout;
+	QLabel  labelhint;
+	labelhint.setText(hint);
+	vlayout.addWidget(&labelhint);
+	hlayout.addWidget(&okbtn);
+	hlayout.addWidget(&cancelbtn);
+	vlayout.addLayout(&hlayout);
+	dlg.setLayout(&vlayout);
+	QDesktopWidget* desktop = QApplication::desktop();
+	int  iret = dlg.exec();
+	dlg.move((desktop->width() - dlg.width()) / 2, (desktop->height() - dlg.height()) / 2);
+	if (iret == QDialog::Rejected)
+		return false;
+	return  true;
+}
 
 EquivalentSoft::EquivalentSoft(QWidget* parent)
 	: QMainWindow(parent)
@@ -694,7 +721,10 @@ void EquivalentSoft::deletedxq()
 {
 	btnToDelete = (QPushButton*)sender();
 	cur = btnToDelete->parentWidget();
-	hbj2->show();
+	bool  bret = GetBoolResult("确认删除等效器？删除后无法恢复！");
+	if (bret)
+		delete_ok();
+	//hbj2->show();
 }
 //删除成功
 void EquivalentSoft::delete_ok()

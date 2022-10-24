@@ -49,7 +49,7 @@ void StyleManager::initStyleList()
     pairLabelstylelist = new StyleList;
     alarmstylelist = new StyleList;
     stylestack->addWidget(buttonstylelist);
-    stylestack->addWidget(labelstylelist);
+    stylestack->addWidget(pairLabelstylelist);
     stylestack->addWidget(groupstylelist);
     stylestack->addWidget(curvestylelist);
     stylestack->addWidget(alarmstylelist);

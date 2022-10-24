@@ -437,6 +437,50 @@ void DeviceManager::InitDevice()
 
 }
 
+/// <summary>
+/// 检查数据库是否存在，不存在就创建相关信息
+/// </summary>
+bool DeviceManager::CheckDatabase()
+{
+	return true;
+
+	//判断数据库中是否存 SimulatedTraining 数据库
+	if (m_pDeviceDAO->Isexist("SimulatedTraining"))
+	{
+		return true;
+	}
+
+	//执行此数据库，大约需要两分钟
+	QString path = QCoreApplication::applicationDirPath().append("/linglongdata.sql");
+	QFile qfile(path);
+	if (!qfile.exists()) {
+		return -1;
+	}
+	if (!qfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		return -1;
+	}
+	QTextStream in(&qfile);
+	in.setCodec("UTF-8");
+	QString qstr_file_data = in.readAll();
+	//QSqlQuery qsql(m_database);
+	QStringList qstrlist_sql = qstr_file_data.split(";");
+	for (int i = 0; i < qstrlist_sql.size() - 1; i++) {
+		QString qstr_sql_part = qstrlist_sql.at(i).toUtf8();
+		bool sql_result = m_pDeviceDAO->exec_sql(qstr_sql_part.toStdString());
+		if (!sql_result) {
+			//QSqlError sql_error = qsql.lastError();
+			//std::cout << sql_error.text().toStdString() << std::endl;
+			//std::cout << sql_error.number() << std::endl;
+			//qDebug() << sql_error;
+			//iRet = -1;
+			return false;
+		}
+	}
+
+	return true;
+
+}
+
 void DeviceManager::displayStatuInfo(QString info, bool is_alarm)
 {
 	m_myInfoTip->setLabelText(is_alarm, info);

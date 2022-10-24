@@ -2,6 +2,8 @@
 ConfigNameSpaceStart
 BoolDialog::BoolDialog(QWidget *parent, Qt::WindowFlags f):QDialog(parent,f)
 {
+    setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
     okbtn.setText("是");
     cancelbtn.setText("否");
     hlayout.addWidget(&okbtn);

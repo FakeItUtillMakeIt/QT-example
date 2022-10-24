@@ -10,6 +10,7 @@
 #include "multiinputget.h"
 #include "qaction.h"
 #include "paramselect.h"
+
 ConfigNameSpaceStart
 
 ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
@@ -28,10 +29,10 @@ ConfigCurve::ConfigCurve(QWidget *parent):QCustomPlot(parent)
     init_value_set();
 
     colorlist << QColor(250,0,0) <<QColor(0,250,0) <<QColor(0,0,250);
- //  addGraph();
+  // addGraph();
 
     //曲线测试
-// startTimer(1000);
+ //startTimer(1000);
 }
 
 void ConfigCurve::timerEvent(QTimerEvent* event)
@@ -60,26 +61,23 @@ void ConfigCurve::timerEvent(QTimerEvent* event)
     updateGraph0Value(1, itime, ivalue);
 }
 
-
-
 void ConfigCurve::contextMenuEvent(QContextMenuEvent* event)
 {
-    
+
     QAction  act_is_roll(this);
     act_is_roll.setText("曲线滚动");
     act_is_roll.setCheckable(true);
     act_is_roll.setChecked(xrool);
     connect(&act_is_roll, &QAction::triggered, [=](bool checked)
-    {
+        {
             if (xrange == -1)
             {
-                bool ok;
-                double a = QInputDialog::getDouble(this, "输入", "请输入X轴滚动范围", 10, 0.01, 100000, 2, &ok);
-                qDebug() << "value:" << a << " bool:" << ok;
-                if (!ok)
+                double currentvalue = 10;
+                bool bret = ConfigTools::GetInputDouble("请输入X轴滚动范围", currentvalue);
+                if (!bret)
                     return;
                 xrool = checked;
-                xrange = a;
+                xrange = currentvalue;
             }
             else
             {
@@ -87,77 +85,79 @@ void ConfigCurve::contextMenuEvent(QContextMenuEvent* event)
             }
             update_customplot_range();
             replot(QCustomPlot::rpQueuedReplot);
-        
-    });
+
+        });
 
     QAction act_set_roll_range(this);
     act_set_roll_range.setText("设置滚动范围");
-   // connect(&act_set_roll_range, SIGNAL(triggered()), this, SLOT(setrollchange()));
+    // connect(&act_set_roll_range, SIGNAL(triggered()), this, SLOT(setrollchange()));
     connect(&act_set_roll_range, &QAction::triggered, [=](bool checked)
         {
             bool ok;
             double currentvalue = 10;
             if (xrange != -1)
                 currentvalue = xrange;
-            double a = QInputDialog::getDouble(nullptr, "输入", "请输入X轴滚动范围", currentvalue, 0.01, 100000, 2, &ok);
-            if (!ok)
+            bool bret = ConfigTools::GetInputDouble("请输入X轴滚动范围", currentvalue);
+            if (!bret)
                 return;
-            qDebug() << "value:" << a << " bool:" << ok;
             xrool = true;
-            xrange = a;
+            xrange = currentvalue;
             update_customplot_range();
             replot(QCustomPlot::rpQueuedReplot);
 
         });
-  //  QAction act_set_tmp_range(this);
-  //  act_set_tmp_range.setText("设置临时显示范围");
-  ////  connect(&act_set_tmp_range, SIGNAL(triggered()), this, SLOT(settmprange()));
-  //  connect(&act_set_tmp_range, &QAction::triggered, [=](bool checked)
-  //      {
-  //          MultiInputGet  multiinputget;
-  //          multiinputget.setWindowTitle("请输入范围");
-  //          multiinputget.update_range(xvalueMin, xvalueMax, yvalueMin, yvalueMax);
-  //          if (multiinputget.exec() == QDialog::Rejected)
-  //              return;
+    //  QAction act_set_tmp_range(this);
+    //  act_set_tmp_range.setText("设置临时显示范围");
+    ////  connect(&act_set_tmp_range, SIGNAL(triggered()), this, SLOT(settmprange()));
+    //  connect(&act_set_tmp_range, &QAction::triggered, [=](bool checked)
+    //      {
+    //          MultiInputGet  multiinputget;
+    //          multiinputget.setWindowTitle("请输入范围");
+    //          multiinputget.update_range(xvalueMin, xvalueMax, yvalueMin, yvalueMax);
+    //          if (multiinputget.exec() == QDialog::Rejected)
+    //              return;
 
-  //          double xmin, xmax, ymin, ymax;
-  //          if (multiinputget.get_x_range(xmin, xmax))
-  //          {
-  //              xAxis->setRange(xmin, xmax);
-  //          }
-  //          if (multiinputget.get_y_range(ymin, ymax))
-  //          {
-  //              yAxis->setRange(ymin, ymax);
-  //          }
-  //          replot();
-  //      });
+    //          double xmin, xmax, ymin, ymax;
+    //          if (multiinputget.get_x_range(xmin, xmax))
+    //          {
+    //              xAxis->setRange(xmin, xmax);
+    //          }
+    //          if (multiinputget.get_y_range(ymin, ymax))
+    //          {
+    //              yAxis->setRange(ymin, ymax);
+    //          }
+    //          replot();
+    //      });
 
     QMenu menu;
     act_is_roll.setChecked(xrool);
     menu.addAction(&act_is_roll);
-   // menu.addSeparator();
+    // menu.addSeparator();
     menu.addAction(&act_set_roll_range);
-    menu.addAction("选择数据源", [=]()
-        {
-            ParamSelect  paramselect;
-            paramselect.enableMultiSelect(true);
-            QVector<int>  idlist;
-            for (auto ds : dataSourceList)
+    if (ConfigGlobal::isEditing)
+    {
+        menu.addAction("选择数据源", [=]()
             {
-                idlist.push_back(ds.toInt());
-            }           
-            paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
-            if (paramselect.exec() == QDialog::Rejected)
-                return;
-            QVector<int> paramids = paramselect.get_multiselect_key();
-            dataSourceList.clear();
-            for (auto paramid : paramids)
-            {               
-                dataSourceList.push_back(QString::number(paramid));
-            }
-            updateCurve("1", "", 1);
-            ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
-        });
+                ParamSelect  paramselect;
+                paramselect.enableMultiSelect(true);
+                QVector<int>  idlist;
+                for (auto ds : dataSourceList)
+                {
+                    idlist.push_back(ds.toInt());
+                }
+                paramselect.update_data(*ConfigGlobal::m_allDeviceParamPtr, idlist);
+                if (paramselect.exec() == QDialog::Rejected)
+                    return;
+                QVector<int> paramids = paramselect.get_multiselect_key();
+                dataSourceList.clear();
+                for (auto paramid : paramids)
+                {
+                    dataSourceList.push_back(QString::number(paramid));
+                }
+                updateCurve("1", "", 1);
+                ConfigGlobal::gpropeetyset->UpdateDataFromObject(this);
+            });
+    }
   //  menu.addSeparator();
   //  menu.addAction(&act_set_tmp_range);
     //menu.addSeparator();
@@ -210,11 +210,13 @@ void ConfigCurve::updateCurveToGlobalInterface()
 
 void ConfigCurve::initDataSourcesFromXmlData()
 {
-    for (auto paramid : dataSourceList)
-    {
-        QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allDeviceParamPtr)[paramid.toInt()]->m_subParameterName.c_str());
-        updateCurve(paramid, paramname,1);
-    }    
+    //for (auto paramid : dataSourceList)
+    //{
+    //    QString paramname = QString::fromLocal8Bit((*ConfigGlobal::m_allDeviceParamPtr)[paramid.toInt()]->m_subParameterName.c_str());
+    //    updateCurve(paramid, paramname,1);
+    //}    
+    updateCurve("1", "", 1);
+
 }
 void ConfigCurve::updateGeometryData()
 {
@@ -373,12 +375,23 @@ void ConfigCurve::updateCurve(QString datasourceid,QString datasourcename,int  a
         int datasourceid = datasource.toInt();
         graph->setName(datasourcename);
         curvelist[datasource] = graph;
+        if (valuelimits.contains(datasource) == false)
+        {
+            valuelimits[datasource].resize(4);
+        }
         QColor  color = colorlist.back();
         colorlist.pop_back();
         graph->setPen(QPen(color));
         if (colorlist.size() == 0)
         {
             colorlist << QColor(250, 0, 0) << QColor(0, 250, 0) << QColor(0, 250, 0);
+        }
+    }
+    for (auto ikey : valuelimits.keys())
+    {
+        if (dataSourceList.contains(ikey) == false)
+        {
+            valuelimits.remove(ikey);
         }
     }
    ConfigGlobal::updateCurveMap(dataSourceList,this);
@@ -460,6 +473,73 @@ void ConfigCurve::updateValue(int ikey,double itime,double ivalue)
      }
      update_customplot_range();
      replot(QCustomPlot::rpQueuedReplot);
+
+}
+void ConfigCurve::NewUpdateValue(int ikey, double itime, double ivalue)
+{
+    QString strkey = QString::number(ikey);
+    if (!curvelist.contains(strkey))
+        return;
+
+    if (!firstinit)
+    {
+        m_base_time = itime;
+        firstinit = true;
+    }
+
+    if (firstrecord.contains(strkey) == false)
+    {
+        firstrecord.push_back(strkey);
+        //xvalueMax = xvalueMin = 0;
+        //yvalueMax = yvalueMin = ivalue;
+        valuelimits[strkey][eXValueMax] = valuelimits[strkey][eXValueMin] = 0;
+        valuelimits[strkey][eYValueMax] = valuelimits[strkey][eYValueMin] = ivalue;
+        curvelist[strkey]->addData(0, ivalue);
+        return;
+    }
+    double  newXValue = (itime - m_base_time) / 1000000;
+    double  newYValue = ivalue;
+    curvelist[strkey]->addData(newXValue, newYValue);
+
+//判断当前值是否超过其 key对应曲线的显示范围，超过则更新 范围
+
+    if (valuelimits.contains(strkey))
+    {
+        if (valuelimits[strkey][eXValueMax] < newXValue)
+            valuelimits[strkey][eXValueMax] = newXValue;
+
+        if (valuelimits[strkey][eXValueMin] > newXValue)
+            valuelimits[strkey][eXValueMin] = newXValue;
+
+        if (valuelimits[strkey][eYValueMax] < newYValue)
+            valuelimits[strkey][eYValueMax] = newYValue;
+
+        if (valuelimits[strkey][eXValueMin] > newYValue)
+            valuelimits[strkey][eXValueMin] = newYValue;
+
+    }
+
+//获取当前所有曲线的最大值和最小值
+    xvalueMax = valuelimits.first()[eXValueMax];
+    xvalueMin = valuelimits.first()[eXValueMin];
+    yvalueMax = valuelimits.first()[eYValueMax];
+    yvalueMin = valuelimits.first()[eYValueMin];
+    for (auto ikey : valuelimits.keys())
+    {
+        if (valuelimits[ikey][eXValueMin] < xvalueMin)
+            xvalueMin = valuelimits[ikey][eXValueMin];
+
+        if (valuelimits[ikey][eXValueMax] > xvalueMax)
+            xvalueMax = valuelimits[ikey][eXValueMax];
+
+        if (valuelimits[ikey][eYValueMax] > yvalueMax)
+            yvalueMax = valuelimits[ikey][eYValueMax];
+
+        if (valuelimits[ikey][eYValueMin] < yvalueMin)
+            yvalueMin = valuelimits[ikey][eYValueMin];
+    }
+    update_customplot_range();
+    replot(QCustomPlot::rpQueuedReplot);
 
 }
 void ConfigCurve::update_customplot_range()

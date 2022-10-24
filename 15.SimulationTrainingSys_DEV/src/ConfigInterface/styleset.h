@@ -29,7 +29,7 @@ public:
     void SetElement(StyleCurve *curveEx);
     void SetElement(StylePairLabel *pairlabelEx);
     void SetElement(StyleAlarm* alarmEx);
-
+    void ChoiceDialog();
     void addIconSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle);
     void addFontSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle);
     void addTextColorSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle);
@@ -63,7 +63,7 @@ private:
     StyleAlarm* m_alarmEx = nullptr;
 
     QWidget  * initwidget;
-
+    QString reset_property(ControlType ctrltyle, int enumvalue);
     void update_property(ControlType ctrltyle, int enumvalue, QString result);
 };
 ConfigNameSpaceEnd

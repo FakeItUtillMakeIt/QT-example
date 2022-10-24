@@ -43,8 +43,10 @@ public:
     void InitFromXmlInfo(QMap<QString, QString> &curveinfo);
     void updateCurve(QString datasourceid, QString datasourcename, int addordelete);
     void updateValue(int ikey, double itime, double ivalue);
-    void updateGraph0Value(int ikey, double itime, double ivalue);
+    void NewUpdateValue(int ikey, double itime, double ivalue);
 
+    void updateGraph0Value(int ikey, double itime, double ivalue);
+    
     void setBaseTime(double basetime);
 
 protected:
@@ -84,6 +86,18 @@ private:
     double xvalueMin =0;
     double yvalueMax = 0;
     double yvalueMin = 0;
+    enum EnumLimits
+    {
+        eXValueMax = 0,
+        eXValueMin = 1,
+        eYValueMax = 2,
+        eYValueMin  = 3
+    };
+
+    QMap<QString, QVector<double> >  valuelimits; //key 是  参数索引
+    QList<QString>  firstrecord; //key 是  参数索引
+
+
     bool firstinit = false;
     double m_base_time;
 

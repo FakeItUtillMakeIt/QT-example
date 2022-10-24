@@ -121,7 +121,13 @@ enum  RunState
     StateSuccess,
     StateFailed
 };
-
-
+class ConfigTools:public QObject
+{
+    Q_OBJECT
+public:
+        static  bool  GetInputDouble(QString  hint, double& value);
+        static bool   GetInputString(QString  hint, QString& value);
+        static bool   GetInputInt(QString  hint, int& value);
+};
 ConfigNameSpaceEnd
 #endif // CONFIGDEFINE_H

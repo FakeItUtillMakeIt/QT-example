@@ -24,6 +24,8 @@ public:
        Curve_Title_Color//标题文字颜色
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
+    QMap<int, QPair<bool, QString>>  m_defaultinfomap;
+
     void updateStyle();
     StyleSet*  styleset;
     QCheckBox* m_namelabel;

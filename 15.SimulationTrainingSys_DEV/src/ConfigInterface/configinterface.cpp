@@ -35,7 +35,7 @@ void ConfigInterface::timerEvent(QTimerEvent* event)
         DeviceParam* param = it->second;
         if (param->m_Validity == 0)
         {
-            continue;
+             continue;
         }
         if(param->m_type == 1)
             ConfigGlobal::updateControlValue(param->m_Validity, param->m_id, param->m_time, param->m_iCurValue,param->m_curStatus.m_id);

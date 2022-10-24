@@ -152,7 +152,49 @@ void StyleSet::initPairLabelSetEntry()
     vlayout->addStretch();
     pairLabelSetEntry->setLayout(vlayout);
 }
-
+QString StyleSet::reset_property(ControlType ctrltyle, int enumvalue)
+{
+    QString default;
+    if (ctrltyle == cConfigButton)
+    {
+        default = m_btnEx->m_defaultinfomap[enumvalue].second;
+        m_btnEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_btnEx->updateStyle();
+    }
+    else if (ctrltyle == cConfigLabel)
+    {
+      /*  QString default = m_labelEx->m_defaultinfomap[enumvalue].second;
+        m_labelEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_labelEx->updateStyle();*/
+    }
+    else if (ctrltyle == cConfigGroup)
+    {
+        default = m_groupEx->m_defaultinfomap[enumvalue].second;
+        m_groupEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_groupEx->updateStyle();
+    }
+    else if (ctrltyle == cConfigCurve)
+    {
+        default = m_curveEx->m_defaultinfomap[enumvalue].second;
+        m_curveEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_curveEx->updateStyle();
+        QList<ConfigCurve*> styleusers = m_curveEx->getStyleUsers();
+        ConfigGlobal::updateCurveStyle(styleusers);
+    }
+    else if (ctrltyle == cConfigPairLabel)
+    {
+        default = m_pairlabelEx->m_defaultinfomap[enumvalue].second;
+        m_pairlabelEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_pairlabelEx->updateStyle();
+    }
+    else if (ctrltyle == cConfigAlarm)
+    {
+        default = m_alarmEx->m_deaultinfomap[enumvalue].second;
+        m_alarmEx->m_infomap[enumvalue] = QPair<bool, QString>(true, default);
+        m_alarmEx->updateStyle();
+    }
+    return  default;
+}
 
 void StyleSet::update_property( ControlType ctrltyle, int enumvalue,QString result)
 {
@@ -197,13 +239,13 @@ void StyleSet::addTextEdit(QString title, QVBoxLayout* vlayout, int enumvalue,Co
     textbrowser->setAlignment(Qt::AlignCenter);
     textbrowser->setMaximumHeight(50);
     connect(inputbtn,&QPushButton::clicked,[=](){
-        QInputDialog inputdlg;
-        inputdlg.setLabelText(title);
-        inputbtn->setWindowIconText("获取输入");
-        inputdlg.exec();
-        QString text =  inputdlg.textValue();
-        textbrowser->setText(text);
-        update_property(ctrltyle,enumvalue,text);
+        QString retstr;
+        bool  ok = ConfigTools::GetInputString("获取输入", retstr);
+        if (ok)
+        {
+            textbrowser->setText(retstr);
+            update_property(ctrltyle, enumvalue, retstr);
+        }
     });
     vlayout->addWidget(inputbtn);
     vlayout->addWidget(textbrowser);
@@ -218,15 +260,14 @@ void StyleSet::addIntSel(QString title, QVBoxLayout *vlayout, int enumvalue, Con
     textbrowser->setAlignment(Qt::AlignCenter);
     textbrowser->setMaximumHeight(50);
     connect(inputbtn,&QPushButton::clicked,[=](){
-        QInputDialog inputdlg;
-        inputdlg.setInputMode(QInputDialog::IntInput);
-        inputdlg.setLabelText(title);
-        inputbtn->setWindowIconText("获取输入");
-        if(inputdlg.exec() == QInputDialog::Rejected)
-            return;
-        QString text =  QString::number(inputdlg.intValue());
-        textbrowser->setText(text);
-        update_property(ctrltyle,enumvalue,text);
+        int retval;
+        bool  ok = ConfigTools::GetInputInt("获取输入", retval);
+        if (ok)
+        { 
+            QString text =  QString::number(retval);
+            textbrowser->setText(text);
+            update_property(ctrltyle,enumvalue,text);
+        }
     });
     vlayout->addWidget(inputbtn);
     vlayout->addWidget(textbrowser);
@@ -235,7 +276,12 @@ void StyleSet::addIntSel(QString title, QVBoxLayout *vlayout, int enumvalue, Con
 
 void StyleSet::addIconSel(QString title, QVBoxLayout* vlayout, int enumvalue,ControlType ctrltyle)
 {
+    QHBoxLayout* hlayout = new QHBoxLayout;
     QPushButton* lpath = new QPushButton(title);
+    QPushButton* resetbtn = new QPushButton(QIcon(":/rc/reset.png"), "");
+
+    resetbtn->setFixedSize(20,20);
+    resetbtn->setFlat(true);
     QLabel* textbrowser = new QLabel;
     textbrowser->setAlignment(Qt::AlignHCenter);
     textbrowser->setMaximumHeight(50);
@@ -244,18 +290,34 @@ void StyleSet::addIconSel(QString title, QVBoxLayout* vlayout, int enumvalue,Con
        QString path  =  QFileDialog::getOpenFileName(this,title);
        if(path.isNull())
        {
-           textbrowser->setText("未选择");
+        //   textbrowser->setText("未选择");
            return;
        }
        textbrowser->setText(path);
        update_property(ctrltyle,enumvalue,path);
     });
-    vlayout->addWidget(lpath);
+    connect(resetbtn, &QPushButton::clicked, [=]() {
+        QString result = reset_property(ctrltyle, enumvalue);
+        textbrowser->setText(result);
+     });
+
+    hlayout->addWidget(lpath);
+    hlayout->addWidget(resetbtn);
+    hlayout->setStretch(0, 1);
+    hlayout->setStretch(1, 0);
+    hlayout->setSpacing(2);
+
+    vlayout->addLayout(hlayout);
     vlayout->addWidget(textbrowser);
     m_tbmap[ctrltyle][enumvalue] = textbrowser;
 }
 void StyleSet::addFontSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle)
 {
+    QHBoxLayout* hlayout = new QHBoxLayout;
+    QPushButton* resetbtn = new QPushButton(QIcon(":/rc/reset.png"), "");
+    resetbtn->setFixedSize(20, 20);
+    resetbtn->setFlat(true);
+
     QPushButton* lpath = new QPushButton(title);
     QLabel* textbrowser = new QLabel;
     textbrowser->setAlignment(Qt::AlignHCenter);
@@ -277,13 +339,27 @@ void StyleSet::addFontSel(QString title, QVBoxLayout *vlayout, int enumvalue, Co
        textbrowser->setText(path);
        update_property(ctrltyle,enumvalue,path);
     });
-    vlayout->addWidget(lpath);
+    connect(resetbtn, &QPushButton::clicked, [=]() {
+        QString result = reset_property(ctrltyle, enumvalue);
+        textbrowser->setText(result);
+        });
+  //  vlayout->addWidget(lpath);
+    hlayout->addWidget(lpath);
+    hlayout->addWidget(resetbtn);
+    hlayout->setStretch(0, 1);
+    hlayout->setStretch(1, 0);
+    hlayout->setSpacing(2);
+    vlayout->addLayout(hlayout);
     vlayout->addWidget(textbrowser);
     m_tbmap[ctrltyle][enumvalue] = textbrowser;
 }
 
 void StyleSet::addTextColorSel(QString title, QVBoxLayout *vlayout, int enumvalue, ControlType ctrltyle)
 {
+    QHBoxLayout* hlayout = new QHBoxLayout;
+    QPushButton* resetbtn = new QPushButton(QIcon(":/rc/reset.png"), "");
+    resetbtn->setFixedSize(20, 20);
+    resetbtn->setFlat(true);
     QPushButton* lpath = new QPushButton(title);
     QLabel* textbrowser = new QLabel;
     textbrowser->setAlignment(Qt::AlignHCenter);
@@ -299,7 +375,17 @@ void StyleSet::addTextColorSel(QString title, QVBoxLayout *vlayout, int enumvalu
        update_property(ctrltyle,enumvalue,colorstr);
 
     });
-    vlayout->addWidget(lpath);
+    connect(resetbtn, &QPushButton::clicked, [=]() {
+        QString result = reset_property(ctrltyle, enumvalue);
+        textbrowser->setText(result);
+        });
+    hlayout->addWidget(lpath);
+    hlayout->addWidget(resetbtn);
+    hlayout->setStretch(0, 1);
+    hlayout->setStretch(1, 0);
+    hlayout->setSpacing(2);
+    vlayout->addLayout(hlayout);
+   // vlayout->addWidget(lpath);
     vlayout->addWidget(textbrowser);
     m_tbmap[ctrltyle][enumvalue] = textbrowser;
 
@@ -355,7 +441,6 @@ void StyleSet::SetElement(StyleButton *btnEx)
             m_tbmap[cConfigButton][enumi]->clear();
         }
     }
-
     stackwidget->setCurrentWidget(buttonSetEntry);
 }
 void StyleSet::SetElement(StyleGroup *groupEx)

@@ -1,6 +1,14 @@
 ﻿#include "configdefine.h"
 #include "QUuid"
 #include <QDebug>
+#include <qgridlayout.h>
+#include <qlabel.h>
+#include <QLineEdit>
+#include <qpushbutton.h>
+#include <qdialog.h>
+#include <QDesktopWidget>
+#include <qapplication.h>
+#include <qspinbox.h>
 ConfigNameSpaceStart
 
 
@@ -105,5 +113,91 @@ void ConfigValue::SetWidthStrValue(QString strvalue)
     }
 }
 
+
+bool  ConfigTools::GetInputDouble(QString  hint,double & value)
+{
+    QDialog  dlg;
+    bool  bret  = false;
+    dlg.setWindowTitle(hint);
+    dlg.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    dlg.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
+    QPushButton  okbtn("确认");
+    QPushButton  cancelbtn("取消");
+    connect(&okbtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
+    connect(&cancelbtn, &QPushButton::clicked, [&dlg]() { dlg.reject(); });
+    QVBoxLayout  vlayout;
+    QHBoxLayout  hlayout;
+    QDoubleSpinBox  spinbox;
+    spinbox.setRange(-1000000,1000000);
+    spinbox.setValue(value);
+    vlayout.addWidget(&spinbox);
+    hlayout.addWidget(&okbtn);
+    hlayout.addWidget(&cancelbtn);
+    vlayout.addLayout(&hlayout);
+    dlg.setLayout(&vlayout);
+    QDesktopWidget* desktop = QApplication::desktop();
+    int  iret = dlg.exec();
+    dlg.move((desktop->width() - dlg.width()) / 2, (desktop->height() - dlg.height()) / 2);
+    if (iret == QDialog::Rejected)
+        return false;
+    value = spinbox.value();
+    return  true;
+}
+bool  ConfigTools::GetInputString(QString  hint, QString& value)
+{
+    QDialog  dlg;
+    bool  bret = false;
+    dlg.setWindowTitle(hint);
+    dlg.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    dlg.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
+    QPushButton  okbtn("确认");
+    QPushButton  cancelbtn("取消");
+    connect(&okbtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
+    connect(&cancelbtn, &QPushButton::clicked, [&dlg]() { dlg.reject(); });
+    QVBoxLayout  vlayout;
+    QHBoxLayout  hlayout;
+    QLineEdit  lineEdit;
+    lineEdit.setText(value);
+    vlayout.addWidget(&lineEdit);
+    hlayout.addWidget(&okbtn);
+    hlayout.addWidget(&cancelbtn);
+    vlayout.addLayout(&hlayout);
+    dlg.setLayout(&vlayout);
+    QDesktopWidget* desktop = QApplication::desktop();
+    int  iret = dlg.exec();
+    dlg.move((desktop->width() - dlg.width()) / 2, (desktop->height() - dlg.height()) / 2);
+    if (iret == QDialog::Rejected)
+        return false;
+    value = lineEdit.text();
+    return  true;
+}
+bool  ConfigTools::GetInputInt(QString  hint, int& value)
+{
+    QDialog  dlg;
+    bool  bret = false;
+    dlg.setWindowTitle(hint);
+    dlg.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    dlg.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
+    QPushButton  okbtn("确认");
+    QPushButton  cancelbtn("取消");
+    connect(&okbtn, &QPushButton::clicked, [&dlg]() { dlg.accept(); });
+    connect(&cancelbtn, &QPushButton::clicked, [&dlg]() { dlg.reject(); });
+    QVBoxLayout  vlayout;
+    QHBoxLayout  hlayout;
+    QSpinBox  spinbox;
+    spinbox.setValue(value);
+    vlayout.addWidget(&spinbox);
+    hlayout.addWidget(&okbtn);
+    hlayout.addWidget(&cancelbtn);
+    vlayout.addLayout(&hlayout);
+    dlg.setLayout(&vlayout);
+    QDesktopWidget* desktop = QApplication::desktop();
+    int  iret = dlg.exec();
+    dlg.move((desktop->width() - dlg.width()) / 2, (desktop->height() - dlg.height()) / 2);
+    if (iret == QDialog::Rejected)
+        return false;
+    value = spinbox.value();
+    return  true;
+}
 
 ConfigNameSpaceEnd

@@ -42,6 +42,7 @@ void AddTask::IsOK()
     oneTask.softName = ui.le_roketSoftName->text();
 
     if (!ValidityCheck(oneTask)) return;
+    ui.le_roketSoftName->clear();
 
     emit addTask(oneTask);
     //this->close();

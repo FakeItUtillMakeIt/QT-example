@@ -228,7 +228,14 @@ void TaskConfiguration::DeleteOneTask()
     string taskSoftName = model->data(index).toString().toStdString();//注意参数故障和指令故障绑定的影响id表不一样
 
     QString qstr = QString("确认删除：%1 吗？").arg(QString::fromStdString(taskSoftName));// "确认删除：" + ui.le_errorName->text() + "吗？";
-    int ret = QMessageBox::warning(this, QString("警告"), qstr, "取消", "确定");
+    QMessageBox msgBoxWarning;
+    msgBoxWarning.setText(qstr);
+    msgBoxWarning.setWindowTitle(QString("警告"));
+    msgBoxWarning.setWindowIcon(this->windowIcon());
+    msgBoxWarning.setIcon(QMessageBox::Warning);
+    msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+    msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+    int ret = msgBoxWarning.exec();
     if (ret == 0)
     {
         return;

@@ -203,7 +203,13 @@ void PropertySet::updateObject()
 void PropertySet::addIntSelect(QVBoxLayout* vlayout, ConfigValue* configvalue )
 {
     //界面生成
-    QLabel* namelabel = new QLabel(configvalue->valuename);
+    QLabel* namelabel = new QLabel();
+    QString  labelname = QString("%1 (%2-%3)").arg(configvalue->valuename).arg(configvalue->downlimit).arg(configvalue->uplimit);
+    if(configvalue->downlimit == 1 && configvalue->uplimit == 1000)
+    {
+        labelname = configvalue->valuename;
+    }
+    namelabel->setText(labelname);
     namelabel->setAlignment(Qt::AlignCenter);
     QSpinBox* spinbox = new QSpinBox();
     spinbox->setRange(configvalue->downlimit,configvalue->uplimit);
@@ -440,6 +446,8 @@ void PropertySet::addCommand(QVBoxLayout* vlayout, ConfigValue* configvalue)
     connect(btnsel, &QPushButton::clicked, [=](int) {
         ParamSelect  paramselect;
         paramselect.setWindowTitle("指令选择");
+        paramselect.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+        paramselect.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
         QString  valueid = configvalue->getStrValue();
         QVector<int>  idlist;
         if (valueid != "未设置")

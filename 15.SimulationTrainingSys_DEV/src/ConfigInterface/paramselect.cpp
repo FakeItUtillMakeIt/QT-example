@@ -13,6 +13,8 @@ ParamSelect::ParamSelect(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("参数选择");
+    setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+    setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
     ui->treeView->setHeaderHidden(true);
     ui->treeView->setStyle(QStyleFactory::create("windows")); //该风格显示节点关系连接线
     ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection); 

@@ -28,6 +28,8 @@ public:
        Button_Text_Color//文字颜色
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
+    QMap<int, QPair<bool, QString>>  m_defaultinfomap;
+
     QList<ConfigButton*>  styleusers;
 
     StyleButton(const QString &text, QWidget *parent = Q_NULLPTR);

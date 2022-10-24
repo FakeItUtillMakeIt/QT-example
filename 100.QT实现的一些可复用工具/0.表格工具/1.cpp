@@ -4,6 +4,11 @@
 
 FlowEditWidget* FlowEditWidget::instance = nullptr;
 
+/**
+	@brief  构造函数
+	@param  parent -
+	@retval        -
+**/
 FlowEditWidget::FlowEditWidget(QWidget* parent)
 	: QWidget(parent)
 {
@@ -17,8 +22,13 @@ FlowEditWidget::FlowEditWidget(QWidget* parent)
 
 }
 
+/**
+	@brief FlowEditWidget object destructor
+**/
 FlowEditWidget::~FlowEditWidget()
-{}
+{
+
+}
 
 
 /**
@@ -78,9 +88,6 @@ void FlowEditWidget::InitLayout() {
 
 	rightTable->setMinimumWidth(600);
 	rightTable->setMinimumHeight(400);
-
-	//rightBottomBtnCancel->setMaximumHeight(20);
-	//rightBottomBtnOK->setMaximumHeight(20);
 
 	QGridLayout* leftLayout = new QGridLayout;
 	QHBoxLayout* leftTopLayout = new QHBoxLayout;
@@ -143,6 +150,9 @@ void FlowEditWidget::InitLayout() {
 
 }
 
+/**
+	@brief 初始化信号槽关系
+**/
 void FlowEditWidget::initConnection()
 {
 	connect(leftTopAdd, &QPushButton::clicked, this, &FlowEditWidget::addNewFlow);
@@ -154,25 +164,46 @@ void FlowEditWidget::initConnection()
 	connect(rightBottomBtnCancel, &QPushButton::clicked, this, &FlowEditWidget::clickCancelButton);
 }
 
+/**
+	@brief	设置主流程信息
+	@param mainFlowInfo -
+**/
 void FlowEditWidget::setMainFlowInfo(QMap<int, QVector<QString>> mainFlowInfo) {
 	mainFlowInfo_.clear();
 	mainFlowInfo_ = mainFlowInfo;
 }
+
+/**
+	@brief
+	@param subFlowInfo -
+**/
 void FlowEditWidget::setSubFlowInfo(QMap<int, QVector<QString>> subFlowInfo) {
 	subFlowInfo_.clear();
 	subFlowInfo_ = subFlowInfo;
 }
 
+/**
+	@brief
+	@param subFlowInfo1 -
+**/
 void FlowEditWidget::setSubFlowInfo1(QMap<int, QVector<QString>> subFlowInfo1) {
 	subFlowInfo1_.clear();
 	subFlowInfo1_ = subFlowInfo1;
 }
 
+/**
+	@brief
+	@param subFlowInfo2 -
+**/
 void FlowEditWidget::setSubFlowInfo2(QMap<int, QVector<QString>> subFlowInfo2) {
 	subFlowInfo2_.clear();
 	subFlowInfo2_ = subFlowInfo2;
 }
 
+/**
+	@brief 设置流程指令ID
+	@param subFlowCmdID -
+**/
 void FlowEditWidget::setFlowCmdID(QMap<int, QVector<int>> subFlowCmdID) {
 	subFlowCmdID_.clear();
 	subFlowCmdID_ = subFlowCmdID;
@@ -261,8 +292,6 @@ void FlowEditWidget::loadFlowDisplayFlow() {
 		tableFlowInfoHeader1 = tableFlowInfoHeader1->next;
 
 	}
-
-
 }
 
 /**
@@ -294,6 +323,11 @@ void FlowEditWidget::addNewFlow() {
 	rocketType += rocketCode + leftTopInput->text();
 }
 
+/**
+	@brief 设置火箭型号
+	@param rocketTypeCode -
+	@param rocketId       -
+**/
 void FlowEditWidget::setRocketType(QString rocketTypeCode, int rocketId) {
 
 	rocketCode = rocketTypeCode;
@@ -495,7 +529,7 @@ void FlowEditWidget::tableCellClick(int row, int column) {
 					recurseUpdate(tmpHeader->next, 4);
 					rightTable->setSpan(tmpHeader->next->startRowNum, 0, tmpHeader->next->rowSpanCount, 1);
 					rightTable->setSpan(tmpHeader->next->startRowNum, 1, tmpHeader->next->rowSpanCount, 1);
-
+					updateSortIndex(tableFlowInfoHeader->next);
 					break;
 				}
 				tmpHeader = tmpHeader->next;
@@ -811,6 +845,14 @@ void FlowEditWidget::addRow(int rowIndex) {
 
 }
 
+/**
+	@brief  警示框
+	@param  title    -
+	@param  textinfo -
+	@param  icon     -
+	@param  typee    -
+	@retval          -
+**/
 int FlowEditWidget::displayMsgInfo(QString title, QString textinfo, QIcon icon, QMessageBox::Icon typee) {
 	QMessageBox msgBoxWarning;
 	msgBoxWarning.setText(textinfo);

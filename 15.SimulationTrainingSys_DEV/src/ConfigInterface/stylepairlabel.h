@@ -27,6 +27,8 @@ public:
        PairLabel_Space
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
+    QMap<int, QPair<bool, QString>>  m_defaultinfomap;
+
     QCheckBox* m_namelabel;
     StyleSet*  styleset;
     QLabel* paramnamelabel;

@@ -47,6 +47,8 @@ public:
 	int delExecResult();
 	void displaySuccsInfo(QString textinfo);
 
+	int displayMsgInfo(QString title, QString textinfo, QIcon icon, QMessageBox::Icon typee);
+
 private:
 	AllInfoConfigWidget(QWidget* parent = nullptr);
 	~AllInfoConfigWidget();

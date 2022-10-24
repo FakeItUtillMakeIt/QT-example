@@ -26,6 +26,8 @@ public:
        Group_Icon_Style
     };
     QMap<int,QPair<bool,QString>>  m_infomap;
+    QMap<int, QPair<bool, QString>>  m_defaultinfomap;
+
     QCheckBox * m_namelabel;
     QList<GroupElement*>  styleusers;
 

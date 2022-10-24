@@ -54,6 +54,7 @@ private:
     void AutoAddDxq(ConfigNameSpace::ConfigTabButton* selbtn, ConfigNameSpace::ConfigTabButton* delbtn);
     void changeResize();
     map<int, DeviceParam*> m_allDeviceParam;//设备参数
+    bool  GetBoolResult(QString  hint);
 
 protected:
     void mouseMoveEvent(QMouseEvent* event);

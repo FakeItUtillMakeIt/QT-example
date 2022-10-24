@@ -982,6 +982,11 @@ void AllInfoConfigWidget::deviceStatContentUpdate() {
 		connect(delStatus, &QPushButton::clicked, this, [=]() {
 			//获取删除的信息
 			QString delStatName = delStatus->property("statName").toString();
+			if (displayMsgInfo(QString("警告"), QString("确定删除%1吗?").arg(delStatName), QIcon(":/FaultInjection/images/指令2.png"), QMessageBox::Warning))
+			{
+				return;
+			}
+
 			QWidget* wait2DelW = scrollAreaStat->findChild<QWidget*>(delStatName);
 			QLabel* delwLab = wait2DelW->findChild<QLabel*>("status");
 			DeviceDBConfigInfo::getInstance()->customRunSql(QString("DELETE FROM `simulatedtraining`.`status_info` WHERE `name` = '%1';").arg(delStatName));
@@ -2047,4 +2052,16 @@ void AllInfoConfigWidget::displaySuccsInfo(QString textinfo) {
 	msgBoxWarning.setIcon(QMessageBox::Information);
 	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
 	int ret = msgBoxWarning.exec();
+}
+
+int AllInfoConfigWidget::displayMsgInfo(QString title, QString textinfo, QIcon icon, QMessageBox::Icon typee) {
+	QMessageBox msgBoxWarning;
+	msgBoxWarning.setText(textinfo);
+	msgBoxWarning.setWindowTitle(title);
+	msgBoxWarning.setWindowIcon(icon);
+	msgBoxWarning.setIcon(typee);
+	msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+	msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+	int ret = msgBoxWarning.exec();
+	return ret;
 }

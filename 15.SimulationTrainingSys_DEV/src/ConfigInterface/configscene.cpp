@@ -58,15 +58,15 @@ void ConfigScene::AddContextMenuToBtn(QPushButton* selbtn)
             QMenu  menu;
             QAction* action = menu.addAction("修改名称");
             connect(action, &QAction::triggered, [=]() {
-                bool  ok;
-                QString text = QInputDialog::getText(nullptr, "请输入软件名称", "软件名称", QLineEdit::Normal, QDir::home().dirName(), &ok);
-                if (ok && !text.isEmpty())
+                QString retstr;
+                bool  ok = ConfigTools::GetInputString("请输入软件名称", retstr);
+                if (ok)
                 {
-                    SetName(text);
-                    selbutton->setText(text);
+                    SetName(retstr);
+                    selbutton->setText(retstr);
                     XmlStore::UpdateSceneNameToFile(this);
                 }
-                });
+             });
             action = menu.addAction("监测并使用控制流程");
             action->setCheckable(true);
             action->setChecked(userSchedule);

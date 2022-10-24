@@ -28,6 +28,8 @@ public:
         Alarm_Text_Color//ÎÄ×ÖÑÕÉ«
      };
      QMap<int,QPair<bool,QString>>  m_infomap;
+     QMap<int, QPair<bool, QString>>  m_deaultinfomap;
+
    //  QList<ConfigButton*>  styleusers;
      QCheckBox* m_namelabel;
      StyleSet* styleset;

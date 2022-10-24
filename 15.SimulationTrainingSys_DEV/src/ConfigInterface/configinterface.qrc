@@ -36,5 +36,6 @@
         <file>rc/alarmInit.png</file>
         <file>rc/alarmNormal.png</file>
         <file>rc/lampiconfailed.png</file>
+        <file>rc/reset.png</file>
     </qresource>
 </RCC>

@@ -515,6 +515,48 @@ namespace DataBase
 		}
 	}
 
+
+	/// <summary>
+	/// 判断数据库是否存在
+	/// </summary>
+	/// <param name="sql"></param>
+	/// <returns></returns>
+	bool DeviceDAO::Isexist(string name)
+	{
+		//TODO 需要解决使用这中第三方库如何在没有想要的数据库的情况下如何连接上数据库，不能就要qt的库
+		if (!connected())
+		{
+			LOG(INFO) << "创建数据库连接";
+			if (!connect())
+				return false;
+		}
+		int res;
+		MYSQL_RES* result = nullptr;
+		string sql;
+		sql.append("select * from information_schema.SCHEMATA where SCHEMA_NAME = '");
+		sql.append(name);
+		sql.append("';");
+		mysql_query(&my_connection, "SET NAMES UTF8"); //设置编码格式
+		res = mysql_query(&my_connection, sql.c_str());
+		if (!res)
+		{
+			result = mysql_store_result(&my_connection);
+			if (result->row_count >= 1)
+			{
+				return true;//存在
+			}
+			else
+			{
+				return false;//不存在
+			}
+		}
+		else
+		{
+			//LOG(ERROR) << "SQL执行失败，错误："<< mysql_errno(&my_connection) << "，错误信息：" << mysql_error(&my_connection);
+			return false;
+		}
+	}
+
 	/**
 	@brief  获取数据
 	@param  sql_str -

@@ -292,11 +292,17 @@ void AddErrorCommand::DelFault()
     }
 
     QString qstr = "确认删除：" + ui.le_errorName->text() + "吗？";
-    int ret = QMessageBox::warning(this, QString("警告"), qstr, "取消", "确定");
-    if (ret == 0)
-    {
-        return;
-    }
+    QMessageBox msgBoxWarning;
+    msgBoxWarning.setText(qstr);
+    msgBoxWarning.setWindowTitle(QString("警告"));
+    msgBoxWarning.setWindowIcon(this->windowIcon());
+    msgBoxWarning.setIcon(QMessageBox::Warning);
+    msgBoxWarning.addButton(QString("取消"), QMessageBox::RejectRole);
+    msgBoxWarning.addButton(QString("确定"), QMessageBox::AcceptRole);
+    int ret = msgBoxWarning.exec();
+    
+    if (ret == 0) return;
+    //int ret = QMessageBox::warning(this, QString("警告"), qstr, "确定", "取消");
     //if (QMessageBox::Cancel == QMessageBox::warning(this, tr("警告"), qstr, QMessageBox::Cancel | QMessageBox::Ok)) return;
 
     //删除界面对应项

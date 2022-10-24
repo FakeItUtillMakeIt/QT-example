@@ -68,6 +68,8 @@ void ConfigButton::showListMenu(const QPoint& point) {
         {
             ParamSelect  paramselect;
             paramselect.setWindowTitle("指令选择");
+            paramselect.setWindowFlags(Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+            paramselect.setWindowIcon(QIcon(":/EquivalentSoft/images/任务模拟64_64.ico"));
             QString  valueid = m_valueSetMap["指令配置"].valuelist[ConfigButton::eDataSource]->getStrValue();
             QVector<int>  idlist;
             if (valueid != "未设置")
