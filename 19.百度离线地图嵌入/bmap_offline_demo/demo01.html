@@ -1,0 +1,471 @@
+<!DOCTYPE html>  
+<html>  
+    <head>  
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <title>Baidu Map</title>  
+        <style type="text/css">  
+		body,
+        html{height:100%;width:100%;margin:0px;}  
+        
+        #container {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: "微软雅黑";
+   		}
+		ul li {
+			list-style: none;
+		}
+		.drawing-panel {
+			z-index: 999;
+			position: fixed;
+			bottom: 3.5rem;
+			margin-left: 3rem;
+			padding: 1rem 1rem;
+			border-radius: .25rem;
+			background-color: #fff;
+			box-shadow: 0 2px 6px 0 rgba(27, 142, 236, 0.5);
+		}
+		.btn {
+			width: 90px;
+			height: 30px;
+			float: left;
+			background-color: #fff;
+			color: rgba(27, 142, 236, 1);
+			font-size: 14px;
+			border:1px solid rgba(27, 142, 236, 1);
+			border-radius: 5px;
+			margin: 0 5px;
+			text-align: center;
+			line-height: 30px;
+		}
+		.btn:hover {
+			background-color: rgba(27, 142, 236, 0.8);
+			color: #fff;
+		}
+
+        </style>  
+
+		<script type="text/javascript" src="./qwebchannel.js"></script>
+		<script type="text/javascript" src="map_load.js"></script>
+        <script type="text/javascript" src="./modules/local_k0pcpi.js"></script>
+
+		<script type="text/javascript" src="./modules/drawingManager_min.js"></script>
+		<link rel="stylesheet" href="./modules/drawingManager_min.css" />
+		<script type="text/javascript" src="./modules/LuShu_min.js"></script>
+		
+		<!-- <script type="text/javascript" src="./modules/Route.js"></script> -->
+		
+	</head>  
+
+    <body>  
+		
+        <div id="container"></div> 
+		<!-- <ul id='result'>
+			城市名: <input id="cityName" type="text"/>
+			<button onclick="theLocation()"/>查询</button>
+		</ul>
+		<ul id='result1'>
+			经度: <input id="lng" type="text"/>
+			纬度: <input id="lat" type="text"/>
+			<button onclick="theLocation1()"/>查询</button>
+		</ul> -->
+		<!-- <ul id='result2'>
+			轨迹移动:
+			<button onclick="drawLuShu()"/>开始</button>
+		</ul> -->
+		
+	</body> 
+		
+		<script type="text/javascript">//与QT通信接口
+			var jsCommIns;
+			var overlays=new Array;
+
+			function initWebchannel(){
+				new QWebChannel(qt.webChannelTransport,function(channel){
+					jsCommIns=channel.objects.jsCommWithQt;
+					
+				});
+			}
+
+			function recvFromQt(message){
+				alert(message);
+			}
+
+			function sendToQt(message){
+				jsCommIns.commFromJS(message);
+			}
+
+			function execQtCommand(method){
+				if(method==1){//添加标记
+					
+					map.addEventListener("click",function(e){
+						addPoint(e.point.lng,e.point.lat);
+					});
+				}
+				else if(method==2){
+					
+					drawingManager.setDrawingMode(BMAP_DRAWING_POLYLINE);
+					drawingManager.enableCalculate();
+					drawingManager.open();//开启绘制模式
+					
+				}
+				else if(method==3){
+					drawLuShu();
+				}
+				else if(method==99){
+					//map.clearOverlays();
+					drawingManager.close();
+				}
+			}
+			
+			function citySearch(city){
+				if(city != ""){
+					var ptt=i_getCityPoint(city);
+					map.centerAndZoom(ptt,5);      // 用城市名设置地图中心点
+					addPoint(ptt.lng,ptt.lat);
+				}
+			}
+
+			function clearPolyline(){
+				for(let i=0;i<overlays.length;i++){
+					if(overlays[i].tagId=='polyline'){
+						map.removeOverlay(overlays[i]);
+						return;
+					}
+				}
+			}
+
+			
+
+			initWebchannel();
+
+		</script>
+        <script type="text/javascript"> 
+
+            var outputPath = 'tiles/';    //地图瓦片所在的文件夹
+			var fromat = ".jpg";    //格式
+
+			var tileLayer = new BMap.TileLayer();
+			tileLayer.getTilesUrl = function (tileCoord, zoom) {
+				var x = tileCoord.x;
+				var y = tileCoord.y;
+				var url = outputPath + zoom + '/' + x + '/' + y + fromat;
+				return url;
+			}
+			var tileMapType = new BMap.MapType('tileMapType', tileLayer);
+
+			var map = new BMap.Map("container",{
+				enableBizAuthLogo:false
+			});
+			
+			
+
+			//添加点
+			function addPoint(lat,lng){
+				allPoints.push([lat,lng]);
+				var mkr = new BMap.Marker(new BMap.Point(lat,lng));/*, {enableDragging:true, raiseOnDrag: true}*/
+				//mkr.setAnimation(BMAP_ANIMATION_BOUNCE);
+				map.addOverlay(mkr);
+			}
+
+			 //添加文本
+			 function addText(text,lng,lat){
+				var pt = new BMap.Point(lng,lat);
+				var lbl = new BMap.Label(text, {position: pt});
+				lbl.setStyle({
+					'backgroundColor': 'rgba(0, 0, 0, 0.7)',
+					'padding': '3px',
+					'borderRadius': '5px',
+					'border': 'none',
+					'color': 'white',
+					'fontSize': '15px'
+				});
+				map.addOverlay(lbl);
+			}
+
+			function drawLuShu(){
+				var lushu=new BMapLib.LuShu(map,polyline.getPath(),{
+					defaultContent:"正在路上",
+					autoView:true,
+					icon:new BMap.Icon('./images/Plane.png',new BMap.Size(50,50),
+						{
+							anchor:new BMap.Size(24,24),
+							imageOffset:new BMap.Size(0,0),
+						}	
+					),
+					speed:1000,
+					enableRotation:true,
+				});
+				lushu.start();
+				lushu.showInfoWindow();
+			}
+
+			//实例化鼠标绘制工具
+			var drawingManager = new BMapLib.DrawingManager(map, {
+				isOpen: false, //是否开启绘制模式
+				enableDrawingTool: true, //是否显示工具栏
+				scale: 0.8,
+				drawingTypes : [
+					BMAP_DRAWING_MARKER,
+					BMAP_DRAWING_CIRCLE,
+					BMAP_DRAWING_POLYLINE,
+					BMAP_DRAWING_POLYGON,
+					BMAP_DRAWING_RECTANGLE 
+				],
+				drawingToolOptions: {
+					anchor: BMAP_ANCHOR_TOP_RIGHT, //位置
+					offset: new BMap.Size(100, 5), //偏离值
+				}
+			})
+		
+			drawingManager.addEventListener("overlaycomplete",function(e){
+				
+				window.polyline=e.overlay;
+				var paths=polyline.getPath();
+				polyline.tagId='polyline';
+				overlays.push(polyline);
+				for(var i=0;i<paths.length;i++){
+					map.addOverlay(new BMap.Marker(paths[i]));
+				}
+
+				//map.addOverlay(new BMap.Marker(paths[0]));
+				e.calculate;
+				e.label;
+			});
+			
+			
+			
+
+			var point = new BMap.Point(106.595635, 29.619598);  // 创建点坐标  
+			map.centerAndZoom(point, 6);                 // 初始化地图，设置中心点坐标和地图级别  
+			//添加地图类型控件
+			var mapTypeCtrl=new BMap.MapTypeControl({
+				
+				anchor:BMAP_ANCHOR_TOP_RIGHT,
+				mapTypes:[
+					BMAP_NORMAL_MAP,
+					BMAP_SATELLITE_MAP,
+					BMAP_HYBRID_MAP,
+       		]});
+			map.addControl(mapTypeCtrl);	  
+			var naviCtrl=new BMap.NavigationControl();
+			map.addControl(naviCtrl);//导航
+			var scaleCtrl=new BMap.ScaleControl();
+			map.addControl(scaleCtrl);
+			// var zoomCtrl=new BMap.ZoomControl();
+			// map.addControl(zoomCtrl);
+			var overviewCtrl=new BMap.OverviewMapControl();
+			map.addControl(overviewCtrl);
+		
+			var cityLstCtrl=new BMap.CityListControl();
+			map.addControl(cityLstCtrl);
+			map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的
+			map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+			map.enableKeyboard(true);
+			
+			var marker=new BMap.Marker(point);
+			map.addOverlay(marker);
+			marker.enableDragging();
+
+			var local=new BMap.LocalSearch('重庆',{
+
+				renderOptions:{
+					map:map
+				}
+			});
+
+			//定位
+			var locationCtrl=new BMap.GeolocationControl( 
+				{
+					// 控件的停靠位置（可选，默认左上角）
+					anchor:BMAP_ANCHOR_TOP_RIGHT,
+					// 控件基于停靠位置的偏移量（可选）
+					offset:new BMap.Size(20, 50)
+				}	
+			);
+			map.addControl(locationCtrl);
+			locationCtrl.addEventListener("locationSuccess", function(e){
+				alert("当前定位地址为：" + e.point.lng+','+e.point.lat);
+        	});
+			locationCtrl.addEventListener("locationError",function(e){
+            	alert(e.message);
+       	 	});
+
+
+        </script>  
+		<script type="text/javascript">
+			//路线
+			function routeLine(){
+				//map.centerAndZoom(new BMap.Point(116.404, 39.915), 13); 
+				var driving = new BMap.DrivingRoute(map, { 
+					renderOptions: { 
+						map: map, 
+						autoViewport: true 
+					}
+				});
+			
+				var start = i_getCityPoint("重庆");
+				var end = i_getCityPoint("成都");
+				map.addOverlay(new BMap.Marker(start));
+				map.addOverlay(new BMap.Marker(end));
+				map.addOverlay(new BMap.Polyline([start,end]),{
+					strokeColor:"blue", strokeWeight:6, strokeOpacity:0.5
+				});
+
+				
+				driving.search(start, end);
+				// alert(num.getNumPlans());
+				
+			}
+
+			
+			//沿路线运动
+			function routeLine1(){
+				map.centerAndZoom(new BMap.Point(116.404, 39.915), 15);
+				var bounds = null;
+				var linesPoints = null;
+				var spoi1 = new BMap.Point(116.380967,39.913285);    // 起点1
+				var spoi2 = new BMap.Point(116.380967,39.953285);    // 起点2
+				var epoi  = new BMap.Point(116.424374,39.914668);    // 终点
+				var myIcon = new BMap.Icon("./images/m0.png", new BMap.Size(32, 70), {imageOffset: new BMap.Size(0, 0)});
+				function initLine(){
+					bounds = new Array();
+					linesPoints = new Array();
+					map.clearOverlays();                                                    // 清空覆盖物
+					var driving3 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+						driving3.search(spoi1, epoi);                                       // 搜索一条线路
+					var driving4 = new BMap.DrivingRoute(map,{onSearchComplete:drawLine});  // 驾车实例,并设置回调
+						driving4.search(spoi2, epoi);                                       // 搜索一条线路
+				}
+				function run(){
+					for(var m = 0;m < linesPoints.length; m++){
+						var pts = linesPoints[m];
+						var len = pts.length;
+						var carMk = new BMap.Marker(pts[0],{icon:myIcon});
+						map.addOverlay(carMk);
+						resetMkPoint(1,len,pts,carMk)
+					}
+					
+					function resetMkPoint(i,len,pts,carMk){
+						carMk.setPosition(pts[i]);
+						if(i < len){
+							setTimeout(function(){
+								i++;
+								resetMkPoint(i,len,pts,carMk);
+							},100);
+						}
+					}
+					
+				}
+				function drawLine(results){
+					var opacity = 0.45;
+					var planObj = results.getPlan(0);
+					var b = new Array();
+					var addMarkerFun = function(point,imgType,index,title){
+						var url;
+						var width;
+						var height
+						var myIcon;
+						// imgType:1的场合，为起点和终点的图；2的场合为车的图形
+						if(imgType == 1){
+							url = "./images/plane.png";
+							width = 42;
+							height = 34;
+							myIcon = new BMap.Icon(url,new BMap.Size(width, height),{offset: new BMap.Size(14, 32),imageOffset: new BMap.Size(0, 0 - index * height)});
+						}else{
+							url = "./images/plane.png";
+							width = 22;
+							height = 25;
+							var d = 25;
+							var cha = 0;
+							var jia = 0
+							if(index == 2){
+								d = 21;
+								cha = 5;
+								jia = 1;
+							}
+							myIcon = new BMap.Icon(url,new BMap.Size(width, d),{offset: new BMap.Size(10, (11 + jia)),imageOffset: new BMap.Size(0, 0 - index * height - cha)});
+						}
+						
+						var marker = new BMap.Marker(point, {icon: myIcon});
+						if(title != null && title != ""){
+							marker.setTitle(title);
+						}
+						// 起点和终点放在最上面
+						if(imgType == 1){
+							marker.setTop(true);
+						}
+						map.addOverlay(marker);
+					}
+					var addPoints1 = function(points){
+						for(var i = 0; i < points.length; i++){
+							bounds.push(points[i]);
+							b.push(points[i]);
+						}
+					}	
+					// 绘制驾车步行线路
+					for (var i = 0; i < planObj.getNumRoutes(); i ++){
+						var route = planObj.getRoute(i);
+						if (route.getDistance(false) <= 0){continue;}
+						addPoints1(route.getPath());
+						// 驾车线路
+						if(route.getRouteType() == BMAP_ROUTE_TYPE_DRIVING){
+							map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: "#0030ff",strokeOpacity:opacity,strokeWeight:6,enableMassClear:true}));
+						}else{
+						// 步行线路有可能为0
+							map.addOverlay(new BMap.Polyline(route.getPath(), {strokeColor: "#30a208",strokeOpacity:0.75,strokeWeight:4,enableMassClear:true}));
+						}
+					}	
+					map.setViewport(bounds);	
+					// 终点
+					addMarkerFun(results.getEnd().point,1,1);
+					// 开始点
+					addMarkerFun(results.getStart().point,1,0);
+					linesPoints[linesPoints.length] = b;
+				}
+				initLine();
+				setTimeout(function(){
+					run();
+				},1500);
+			
+			}
+
+			//城市定位
+			function theLocation(){
+				drawingManager.enableDrawingTool=false;
+				sendToQt("JS comm with QT");
+
+				var city = document.getElementById("cityName").value;
+				
+				if(city != ""){
+					var ptt=i_getCityPoint(city);
+					map.centerAndZoom(ptt,5);      // 用城市名设置地图中心点
+					addPoint(ptt.lng,ptt.lat);
+				}
+
+				routeLine();
+        	}
+
+			var allPoints=[];
+
+			function theLocation1(){
+				map.clearOverlays();
+
+				if(document.getElementById("lng").value != "" && document.getElementById("lat").value != ""){
+					map.clearOverlays(); 
+					var new_point = new BMap.Point(document.getElementById("lng").value,document.getElementById("lat").value);
+					// var tmpmarker = new BMap.Marker(new_point);  // 创建标注
+					// map.addOverlay(tmpmarker);              // 将标注添加到地图中
+					addPoint(new_point.lat,new_point.lng);
+					map.panTo(new_point);  
+					map.centerAndZoom(new_point,8);
+				}	
+			}  
+			
+		</script>
+		
+</html>
